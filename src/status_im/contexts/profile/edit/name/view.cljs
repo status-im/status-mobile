@@ -25,13 +25,15 @@
         typing?                  (reagent/atom false)
         validate-name            (debounce/debounce (fn [name]
                                                       (reset! error-msg
-                                                        (profile-validator/validation-name name))
+                                                              (profile-validator/validation-name name))
                                                       (reset! typing? false))
                                                     300)
         on-change-text           (fn [s]
                                    (reset! typing? true)
                                    (reset! full-name s)
-                                   (validate-name s))]
+                                   (validate-name s))
+        set-placeholder?         (profile-validator/validation-name display-name)]
+    (when set-placeholder? (reset! full-name ""))
     (fn []
       [quo/overlay
        {:type            :shell
@@ -51,7 +53,8 @@
           {:blur?           true
            :error?          (not (string/blank? @error-msg))
            :container-style {:margin-bottom -11}
-           :default-value   @full-name
+           :placeholder     (when set-placeholder? display-name)
+           :default-value   (when-not set-placeholder? @full-name)
            :auto-focus      true
            :char-limit      constants/profile-name-max-length
            :label           (i18n/label :t/profile-name)

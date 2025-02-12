@@ -16,9 +16,5 @@
         (dissoc :customizationColor)
         (assoc :customization-color (keyword customizationColor))
         (assoc :ens-name? (utils.ens/is-valid-eth-name? (:name profile)))
-        (assoc :keycard-pairing (when-not (string/blank? keycard-pairing) keycard-pairing))
-        #_(update :name
-                #(if (empty? %)
-                   "Unnamed profile" ;; TODO: move to i18n
-                   (:name profile))))
+        (assoc :keycard-pairing (when-not (string/blank? keycard-pairing) keycard-pairing)))
     profile))
