@@ -3,7 +3,7 @@
             [status-im.config :as config]))
 
 (def default-config
-  {:server-enabled?    (config/enabled? config/STATUS_BACKEND_SERVER_ENABLED)
+  {:server-enabled?    true ;(config/enabled? config/STATUS_BACKEND_SERVER_ENABLED)
    :status-go-endpoint (str "http://" config/STATUS_BACKEND_SERVER_HOST "/statusgo/")
    :signal-endpoint    (str "ws://" config/STATUS_BACKEND_SERVER_HOST "/signals")
    :root-data-dir      config/STATUS_BACKEND_SERVER_ROOT_DATA_DIR})

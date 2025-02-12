@@ -65,12 +65,13 @@
      :align-items      :center
      :background-color (colors/resolve-color customization-color theme)}))
 
-(defn default-user-icon-size [size]
+(defn default-user-icon-size
+  [size]
   (case size
-    :big 32
-    :medium 20
-    :small 16
-    :xs 16
+    :big         32
+    :medium      20
+    :small       16
+    :xs          16
     (:xxs :xxxs) 12
     20))
 

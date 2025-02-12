@@ -1,18 +1,18 @@
 (ns quo.components.avatars.user-avatar.view
   (:require
-   [clojure.string :as string]
-   [quo.components.avatars.user-avatar.schema :as component-schema]
-   [quo.components.avatars.user-avatar.style :as style]
-   [quo.components.common.no-flicker-image :as no-flicker-image]
-   [quo.components.icon :as icon]
-   [quo.components.markdown.text :as text]
-   [quo.foundations.colors :as colors]
-   [quo.theme]
-   [react-native.core :as rn]
-   [react-native.fast-image :as fast-image]
-   [schema.core :as schema]
-   [utils.image-server :as image-server]
-   utils.string))
+    [clojure.string :as string]
+    [quo.components.avatars.user-avatar.schema :as component-schema]
+    [quo.components.avatars.user-avatar.style :as style]
+    [quo.components.common.no-flicker-image :as no-flicker-image]
+    [quo.components.icon :as icon]
+    [quo.components.markdown.text :as text]
+    [quo.foundations.colors :as colors]
+    [quo.theme]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [schema.core :as schema]
+    [utils.image-server :as image-server]
+    utils.string))
 
 (defn initials-avatar
   [{:keys [full-name size customization-color]
@@ -76,7 +76,8 @@
 
       :else {:uri profile-picture})))
 
-(defn default-display-name? [display-name]
+(defn default-display-name?
+  [display-name]
   (and (some? display-name)
        (or (= display-name "")
            (string/includes? display-name "…"))))
@@ -109,8 +110,9 @@
     [rn/view {:style outer-styles :accessibility-label :user-avatar}
      (cond
        use-icon?
-       [icon-avatar {:customization-color (-> picture-config :options :customization-color)
-                     :size                size}]
+       [icon-avatar
+        {:customization-color (-> picture-config :options :customization-color)
+         :size                size}]
 
        ;; this is for things that's not user-avatar but are currently using user-avatar to render
        ;; the initials e.g. community avatar

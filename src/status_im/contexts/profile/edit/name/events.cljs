@@ -1,6 +1,5 @@
 (ns status-im.contexts.profile.edit.name.events
   (:require [utils.i18n :as i18n]
-            [status-im.contexts.profile.utils :as utils]
             [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :profile/edit-profile-name-success
