@@ -26,16 +26,22 @@
 
 (rf/reg-event-fx :profile.login/local-paired-user
  (fn [{:keys [db]}]
-   (let [{:keys [key-uid password]} (get-in db [:syncing :profile])
-         login-sha3-password        (get-in db [:syncing :login-sha3-password])
-         password                   (if-not (nil? login-sha3-password) ;; already logged in
-                                      login-sha3-password
-                                      password)
-         masked-password            (security/mask-data password)]
-     {:db                    (-> db
-                                 (assoc-in [:onboarding/profile :password] masked-password)
-                                 (assoc-in [:onboarding/profile :syncing?] true))
-      :effects.profile/login [key-uid password]})))
+   (let [{:keys [key-uid password keycard-pairing
+                 whisper-private-key]} (get-in db [:syncing :profile])
+         login-sha3-password           (get-in db [:syncing :login-sha3-password])
+         password                      (if-not (nil? login-sha3-password) ;; already logged in
+                                         login-sha3-password
+                                         password)
+         masked-password               (security/mask-data password)]
+     {:db (-> db
+              (assoc-in [:onboarding/profile :password] masked-password)
+              (assoc-in [:onboarding/profile :syncing?] true))
+      :fx [(if keycard-pairing
+             [:effects.keycard/login-with-keycard
+              {:password            password
+               :whisper-private-key whisper-private-key
+               :key-uid             key-uid}]
+             [:effects.profile/login [key-uid password]])]})))
 
 ;; login phase 1: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/login-existing-profile
