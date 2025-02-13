@@ -34,11 +34,6 @@
    :arbitrum "ARB"
    :base     "ETH"})
 
-(defn prnt
-  [data]
-  (js/console.log "DATA: " (clj->js data))
-  data)
-
 (defn networks
   [networks-to-show theme]
   (->> networks-to-show
@@ -52,13 +47,12 @@
               :divider? (not= (dec i) (-> networks-to-show keys count))
               :theme    theme}])))
        (remove nil?)
-       (prnt)
        (into [rn/view
               {:style               style/networks-container
                :accessibility-label :networks}])))
 
 (defn- view-internal
-  [{:keys [type account-props token-props networks-to-show]}]
+  [{:keys [type account-props network-props token-props networks-to-show]}]
   (let [theme   (quo.theme/use-theme)
         address (or (:address account-props) (:address token-props))]
     [rn/view
@@ -73,16 +67,26 @@
                          (assoc account-props
                                 :size     :size-32
                                 :neutral? true)]
+        :network        [rn/image
+                         {:source (resources/get-network (:network-name network-props))
+                          :style  style/network-icon}]
         [user-avatar/user-avatar account-props])
       [rn/view {:style {:margin-left 8}}
-       (when (not= type :account)
-         [text/text {:weight :semi-bold} (or (:name account-props) (:label token-props))])
+       (when (not (some #{type} [:account :network]))
+         [text/text
+          {:weight :semi-bold}
+          (or (:name account-props) (:label token-props))])
+       (when (= type :network)
+         [text/text
+          {:weight :semi-bold}
+          (:full-name network-props)])
        [rn/view
         {:style {:flex-direction :row
                  :align-items    :center}}
         (when (= type :user)
           [:<>
-           [rn/view {:style {:margin-right 4}} [account-avatar/view (:status-account account-props)]]
+           [rn/view {:style {:margin-right 4}}
+            [account-avatar/view (:status-account account-props)]]
            [text/text
             {:size  :paragraph-2
              :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}

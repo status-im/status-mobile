@@ -55,3 +55,11 @@
                                                        :arbitrum 25}
                                     :account-props    status-account-props}])
     (h/is-null (h/query-by-label-text :networks))))
+
+(h/describe "Wallet: network summary info"
+  (h/test "Type of `network` title renders"
+    (h/render-with-theme-provider [summary-info/view
+                                   {:type          :network
+                                    :network-props {:full-name    "Ethereum"
+                                                    :network-name :ethereum}}])
+    (h/is-truthy (h/get-by-text "Ethereum"))))

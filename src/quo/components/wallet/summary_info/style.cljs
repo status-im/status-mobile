@@ -39,3 +39,7 @@
    :height             32
    :flex-direction     :row
    :align-items        :center})
+
+(def network-icon
+  {:width  32
+   :height 32})

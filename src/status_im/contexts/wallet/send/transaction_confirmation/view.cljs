@@ -163,8 +163,8 @@
          :accessibility-label accessibility-label}
         label]
        [quo/summary-info
-        {:type    :network
-         :network :ethereum}]])))
+        {:type          :network
+         :network-props network}]])))
 
 (defn- data-item
   [{:keys [title subtitle]}]
@@ -348,5 +348,5 @@
          :account-to?         true
          :theme               theme}]
        [network-summary
-        {:label (i18n/label :t/on)
+        {:label (i18n/label :t/on-capitalized)
          :theme theme}]]]]))

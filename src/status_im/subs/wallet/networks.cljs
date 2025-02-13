@@ -76,10 +76,7 @@
  :wallet/send-selected-network
  :<- [:wallet/wallet-send]
  (fn [{:keys [to-values-by-chain]}]
-   (let [network-name (-> to-values-by-chain
-                          keys
-                          first
-                          network-utils/id->network)]
-     (if (= network-name :mainnet)
-       :ethereum
-       network-name))))
+   (-> to-values-by-chain
+       keys
+       first
+       network-utils/get-network-details)))
