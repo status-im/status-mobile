@@ -11,9 +11,9 @@
   {;; Temporary fix until https://github.com/status-im/status-go/issues/3024 is resolved
    :wakuV2Nameserver              "8.8.8.8"
    :kdfIterations                 3200
-   :ethRpcProxyUser             config/ETH_RPC_PROXY_USER
-   :ethRpcProxyPassword         config/ETH_RPC_PROXY_PASSWORD
-   :ethRpcProxyUrl             config/ETH_RPC_PROXY_URL
+   :ethRpcProxyUser               config/STATUS_BUILD_ETH_RPC_PROXY_USER
+   :ethRpcProxyPassword           config/STATUS_BUILD_ETH_RPC_PROXY_PASSWORD
+   :ethRpcProxyUrl                config/STATUS_BUILD_ETH_RPC_PROXY_URL
    :statusProxyEnabled            config/status-proxy-enabled?
    :statusProxyStageName          config/status-proxy-stage-name
    :statusProxyMarketUser         config/STATUS_BUILD_PROXY_USER

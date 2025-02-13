@@ -90,9 +90,9 @@
      status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
      status-im.config/ALCHEMY_BASE_MAINNET_TOKEN #shadow/env "ALCHEMY_BASE_MAINNET_TOKEN"
      status-im.config/ALCHEMY_BASE_SEPOLIA_TOKEN #shadow/env "ALCHEMY_BASE_SEPOLIA_TOKEN"
-     status-im.config/ETH_RPC_PROXY_USER #shadow/env "ETH_RPC_PROXY_USER"
-     status-im.config/ETH_RPC_PROXY_PASSWORD #shadow/env "ETH_RPC_PROXY_PASSWORD"
-     status-im.config/ETH_RPC_PROXY_URL #shadow/env "ETH_RPC_PROXY_URL"}
+     status-im.config/STATUS_BUILD_ETH_RPC_PROXY_USER #shadow/env "ETH_RPC_PROXY_USER"
+     status-im.config/STATUS_BUILD_ETH_RPC_PROXY_PASSWORD #shadow/env "ETH_RPC_PROXY_PASSWORD"
+     status-im.config/STATUS_BUILD_ETH_RPC_PROXY_URL #shadow/env "ETH_RPC_PROXY_URL"}
     :compiler-options {:output-feature-set :es5
                        ;; We disable `:fn-deprecated` warnings because we
                        ;; are managing deprecation via clj-kondo and we
@@ -114,26 +114,26 @@
    :chunks {:fleets legacy.status-im.fleet.default-fleet/default-fleets}
    :release
    {:closure-defines
-    {status-im.config/POKT_TOKEN                     #shadow/env "POKT_TOKEN"
-     status-im.config/INFURA_TOKEN                   #shadow/env "INFURA_TOKEN"
-     status-im.config/STATUS_BUILD_PROXY_USER        #shadow/env "STATUS_BUILD_PROXY_USER"
-     status-im.config/STATUS_BUILD_PROXY_PASSWORD    #shadow/env "STATUS_BUILD_PROXY_PASSWORD"
-     status-im.config/OPENSEA_API_KEY                #shadow/env "OPENSEA_API_KEY"
-     status-im.config/MIXPANEL_APP_ID                #shadow/env "MIXPANEL_APP_ID"
-     status-im.config/MIXPANEL_TOKEN                 #shadow/env "MIXPANEL_TOKEN"
-     status-im.config/RARIBLE_MAINNET_API_KEY        #shadow/env "RARIBLE_MAINNET_API_KEY"
-     status-im.config/RARIBLE_TESTNET_API_KEY        #shadow/env "RARIBLE_TESTNET_API_KEY"
-     status-im.config/ALCHEMY_ETHEREUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ETHEREUM_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ETHEREUM_SEPOLIA_TOKEN"
-     status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
-     status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
-     status-im.config/ALCHEMY_BASE_MAINNET_TOKEN     #shadow/env "ALCHEMY_BASE_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_BASE_SEPOLIA_TOKEN     #shadow/env "ALCHEMY_BASE_SEPOLIA_TOKEN"
-     status-im.config/ETH_RPC_PROXY_USER             #shadow/env "ETH_RPC_PROXY_USER"
-     status-im.config/ETH_RPC_PROXY_PASSWORD         #shadow/env "ETH_RPC_PROXY_PASSWORD"
-     status-im.config/ETH_RPC_PROXY_URL              #shadow/env "ETH_RPC_PROXY_URL"}
+    {status-im.config/POKT_TOKEN                          #shadow/env "POKT_TOKEN"
+     status-im.config/INFURA_TOKEN                        #shadow/env "INFURA_TOKEN"
+     status-im.config/STATUS_BUILD_PROXY_USER             #shadow/env "STATUS_BUILD_PROXY_USER"
+     status-im.config/STATUS_BUILD_PROXY_PASSWORD         #shadow/env "STATUS_BUILD_PROXY_PASSWORD"
+     status-im.config/OPENSEA_API_KEY                     #shadow/env "OPENSEA_API_KEY"
+     status-im.config/MIXPANEL_APP_ID                     #shadow/env "MIXPANEL_APP_ID"
+     status-im.config/MIXPANEL_TOKEN                      #shadow/env "MIXPANEL_TOKEN"
+     status-im.config/RARIBLE_MAINNET_API_KEY             #shadow/env "RARIBLE_MAINNET_API_KEY"
+     status-im.config/RARIBLE_TESTNET_API_KEY             #shadow/env "RARIBLE_TESTNET_API_KEY"
+     status-im.config/ALCHEMY_ETHEREUM_MAINNET_TOKEN      #shadow/env "ALCHEMY_ETHEREUM_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN      #shadow/env "ALCHEMY_ETHEREUM_SEPOLIA_TOKEN"
+     status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN      #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN      #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
+     status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN      #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN      #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
+     status-im.config/ALCHEMY_BASE_MAINNET_TOKEN          #shadow/env "ALCHEMY_BASE_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_BASE_SEPOLIA_TOKEN          #shadow/env "ALCHEMY_BASE_SEPOLIA_TOKEN"
+     status-im.config/STATUS_BUILD_ETH_RPC_PROXY_USER     #shadow/env "ETH_RPC_PROXY_USER"
+     status-im.config/STATUS_BUILD_ETH_RPC_PROXY_PASSWORD #shadow/env "ETH_RPC_PROXY_PASSWORD"
+     status-im.config/STATUS_BUILD_ETH_RPC_PROXY_URL      #shadow/env "ETH_RPC_PROXY_URL"}
     :compiler-options {:output-feature-set :es6
                        ;;disable for android build as there
                        ;;is an intermittent warning with deftype

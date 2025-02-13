@@ -28,9 +28,9 @@
 (goog-define WALLET_CONNECT_PROJECT_ID "87815d72a81d739d2a7ce15c2cfdefb3")
 (goog-define MIXPANEL_APP_ID "3350627")
 (goog-define MIXPANEL_TOKEN "5c73bda2d36a9f688a5ee45641fb6775")
-(goog-define ETH_RPC_PROXY_USER "")
-(goog-define ETH_RPC_PROXY_PASSWORD "")
-(goog-define ETH_RPC_PROXY_URL "")
+(goog-define STATUS_BUILD_ETH_RPC_PROXY_USER "")
+(goog-define STATUS_BUILD_ETH_RPC_PROXY_PASSWORD "")
+(goog-define STATUS_BUILD_ETH_RPC_PROXY_URL "")
 
 (def mainnet-rpc-url (str "https://eth-archival.rpc.grove.city/v1/" POKT_TOKEN))
 (def sepolia-rpc-url (str "https://sepolia-archival.rpc.grove.city/v1/" POKT_TOKEN))
