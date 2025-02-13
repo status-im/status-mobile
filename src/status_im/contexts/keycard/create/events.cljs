@@ -1,5 +1,7 @@
 (ns status-im.contexts.keycard.create.events
   (:require [clojure.string :as string]
+            [status-im.common.resources :as resources]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [utils.security.core :as security]))
 
@@ -49,10 +51,13 @@
               security/safe-unmask-data
               (string/join " ")
               security/mask-data))
-    :fx [[:dispatch [:keycard/create.create-or-enter-pin]]]}))
+    :fx [[:dispatch
+          [:keycard/create.create-or-enter-pin
+           {:ready-to-add-screen-title (i18n/label :t/ready-add-keypair-keycard)
+            :ready-to-add-screen-image (resources/get-image :add-key-to-keycard)}]]]}))
 
 (rf/reg-event-fx :keycard/create.create-or-enter-pin
- (fn [{:keys [db]}]
+ (fn [{:keys [db]} [{:keys [ready-to-add-screen-title ready-to-add-screen-image]}]]
    (let [{:keys [initialized?]} (get-in db [:keycard :application-info])]
      {:fx [[:dispatch [:navigate-back]]
            (if initialized?
@@ -66,7 +71,9 @@
                {:on-complete (fn [new-pin]
                                (rf/dispatch [:navigate-back])
                                (rf/dispatch [:keycard/create.save-pin new-pin])
-                               (rf/dispatch [:open-modal :screen/keycard.create.ready-to-add]))}]])]})))
+                               (rf/dispatch [:open-modal :screen/keycard.create.ready-to-add
+                                             {:title ready-to-add-screen-title
+                                              :image ready-to-add-screen-image}]))}]])]})))
 
 (rf/reg-event-fx :keycard/create.save-pin
  (fn [{:keys [db]} [pin]]
@@ -123,4 +130,7 @@
    (if (contains? (:profile/profiles-overview db) key-uid)
      {:fx [[:dispatch [:onboarding/multiaccount-already-exists key-uid]]]}
      {:db (assoc-in db [:keycard :create :masked-phrase] masked-seed-phrase)
-      :fx [[:dispatch [:keycard/create.create-or-enter-pin]]]})))
+      :fx [[:dispatch
+            [:keycard/create.create-or-enter-pin
+             {:ready-to-add-screen-title (i18n/label :t/ready-to-import-keypair-keycard)
+              :ready-to-add-screen-image (resources/get-image :import-key-to-keycard)}]]]})))

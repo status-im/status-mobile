@@ -48,25 +48,24 @@
 
 (defn ready-to-add
   []
-  [:<>
-   [quo/page-nav
-    {:icon-name  :i/close
-     :on-press   events-helper/navigate-back
-     :right-side [{:icon-name :i/info
-                   :on-press  #(rf/dispatch [:show-bottom-sheet
-                                             {:content ready-to-add-documentation
-                                              :theme   :dark
-                                              :shell?  true}])}]}]
-   [quo/page-top
-    {:title            (i18n/label :t/ready-add-keypair-keycard)
-     :description      :text
-     :description-text ""}]
-   [rn/image
-    {:resize-mode :contain
-     :style       {:flex 1 :align-self :center :margin-vertical 37}
-     :source      (resources/get-image :add-key-to-keycard)}]
-   [common.view/tips]
-   [quo/bottom-actions
-    {:actions          :one-action
-     :button-one-label (i18n/label :t/scan-keycard)
-     :button-one-props {:on-press #(rf/dispatch [:keycard/create.start])}}]])
+  (let [{:keys [title image]} (rf/sub [:get-screen-params])]
+    [:<>
+     [quo/page-nav
+      {:icon-name  :i/close
+       :on-press   events-helper/navigate-back
+       :right-side [{:icon-name :i/info
+                     :on-press  #(rf/dispatch [:show-bottom-sheet
+                                               {:content ready-to-add-documentation
+                                                :theme   :dark
+                                                :shell?  true}])}]}]
+     [quo/page-top
+      {:title title}]
+     [rn/image
+      {:resize-mode :contain
+       :style       {:flex 1 :align-self :center :margin-vertical 37}
+       :source      image}]
+     [common.view/tips]
+     [quo/bottom-actions
+      {:actions          :one-action
+       :button-one-label (i18n/label :t/scan-keycard)
+       :button-one-props {:on-press #(rf/dispatch [:keycard/create.start])}}]]))
