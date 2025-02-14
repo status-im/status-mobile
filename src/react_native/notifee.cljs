@@ -22,26 +22,27 @@
        (get authorization-statuses)
        (format-auth-status-helper)))
 
-(defn- notifee-settings->notification-auth-statuses
-  [notifee-settings]
-  (let [auth-status (format-auth-status (.-authorizationStatus notifee-settings))]
-    {:authorized? (= auth-status :authorized)
-     :denied?     (= auth-status :denied)
-     :auth-status auth-status}))
+(defn- notification-permissions->notification-permission-statuses
+  [notifee-permissions]
+  (let [permission-status (format-auth-status (.-authorizationStatus notifee-permissions))]
+    {:authorized?   (= permission-status :authorized)
+     :denied?       (= permission-status :denied)
+     :undetermined? (= permission-status :not_determined)
+     :provisional?  (= permission-status :provisional)}))
 
-(defn request-notification-settings
+(defn check-notification-permissions
   []
   (-> (.getNotificationSettings notifee/default)
-      (promesa/then (comp (fn [settings] {:ok settings})
-                          notifee-settings->notification-auth-statuses))
+      (promesa/then (comp (fn [permissions] {:ok permissions})
+                          notification-permissions->notification-permission-statuses))
       (promesa/catch (fn [error]
                        {:error error}))))
 
 (defn request-notification-permissions
   []
   (-> (.requestPermission notifee/default)
-      (promesa/then (comp (fn [settings] {:ok settings})
-                          notifee-settings->notification-auth-statuses))
+      (promesa/then (comp (fn [permissions] {:ok permissions})
+                          notification-permissions->notification-permission-statuses))
       (promesa/catch (fn [error]
                        {:error error}))))
 

@@ -1,7 +1,9 @@
 (ns react-native.permissions
   (:require
     ["react-native-permissions" :refer
-     [check PERMISSIONS requestMultiple requestNotifications RESULTS]]
+     [check checkNotifications PERMISSIONS requestMultiple requestNotifications RESULTS]]
+    [clojure.string :as string]
+    [promesa.core :as promesa]
     [react-native.platform :as platform]
     [taoensso.timbre :as log]))
 
@@ -62,3 +64,38 @@
                    (do
                      (on-denied response)
                      (log/debug "Notification permission were denied" response))))))))
+
+(defn- format-permission-status
+  [raw-permission-status]
+  (-> raw-permission-status string/lower-case keyword))
+
+(defn- notification-permissions->notification-permission-statuses
+  [raw-notification-permissions]
+  (let [notification-permissions (js->clj raw-notification-permissions
+                                          :keywordize-keys
+                                          true)
+        permission-status        (-> notification-permissions
+                                     :status
+                                     format-permission-status)]
+    {:authorized?   (= permission-status :granted)
+     :denied?       (= permission-status :blocked)
+     :undetermined? (= permission-status :denied)
+     :provisional?  (true? (-> notification-permissions
+                               :settings
+                               :provisional))}))
+
+(defn request-notification-permissions
+  [options]
+  (-> (requestNotifications (clj->js options))
+      (promesa/then (comp (fn [permissions] {:ok permissions})
+                          notification-permissions->notification-permission-statuses))
+      (promesa/catch (fn [error]
+                       {:error error}))))
+
+(defn check-notification-permissions
+  []
+  (-> (checkNotifications)
+      (promesa/then (comp (fn [permissions] {:ok permissions})
+                          notification-permissions->notification-permission-statuses))
+      (promesa/catch (fn [error]
+                       {:error error}))))
