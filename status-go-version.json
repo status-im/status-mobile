@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v10.0.0",
-    "commit-sha1": "dcce8e9b8aec04876b854eacb56d9de95fd96a59",
-    "src-sha256": "008z0wrf6slf32iy3navq4zznfy6lam72lpqhxqwl8705hk4a4mj"
+    "version": "feat/implement-deactiveable-networks",
+    "commit-sha1": "8003c9ca0f49de7e31e9effefe2d02e8dfa70fbd",
+    "src-sha256": "1lz6mvgvnmy0g0zzin3q4sz4kp7gcxs5cvlba38hzxr1437gl4jl"
 }
