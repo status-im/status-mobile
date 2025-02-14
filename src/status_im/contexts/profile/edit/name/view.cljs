@@ -25,7 +25,7 @@
         typing?                  (reagent/atom false)
         validate-name            (debounce/debounce (fn [name]
                                                       (reset! error-msg
-                                                              (profile-validator/validation-name name))
+                                                        (profile-validator/validation-name name))
                                                       (reset! typing? false))
                                                     300)
         on-change-text           (fn [s]
