@@ -97,7 +97,6 @@
     :as   props}]
   (let [theme          (quo.theme/use-theme)
         picture-config (:config profile-picture)
-        full-name      full-name
         ;; image generated with `profile-picture-fn` is round cropped
         ;; no need to add border-radius for them
         outer-styles   (style/outer size (not picture-config))
