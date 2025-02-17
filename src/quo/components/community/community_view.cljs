@@ -11,11 +11,8 @@
     [react-native.gesture :as gesture]))
 
 (defn community-stats-column
-  [{:keys [type members-count active-count]}]
-  [rn/view
-   (if (= type :card-view)
-     (style/card-stats-container)
-     (style/list-stats-container))
+  [{:keys [type members-count active-members-count]}]
+  [rn/view (if (= type :card-view) style/card-stats-container style/list-stats-container)
    [community-stat/view
     {:accessibility-label :stats-members-count
      :icon                :i/group
@@ -24,7 +21,7 @@
    [community-stat/view
     {:accessibility-label :stats-active-count
      :icon                :i/active-members
-     :value               active-count}]])
+     :value               active-members-count}]])
 
 (defn community-tags
   [{:keys [tags container-style last-item-style]}]
