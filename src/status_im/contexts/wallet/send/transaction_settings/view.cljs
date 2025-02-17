@@ -15,7 +15,8 @@
   (let [max-base-fee   (:current (rf/sub [:wallet/tx-settings-max-base-fee]))
         priority-fee   (:current (rf/sub [:wallet/tx-settings-priority-fee]))
         max-gas-amount (:current (rf/sub [:wallet/tx-settings-max-gas-amount]))
-        nonce          (:current (rf/sub [:wallet/tx-settings-nonce]))]
+        nonce          (:current (rf/sub [:wallet/tx-settings-nonce]))
+        account-color  (rf/sub [:wallet/current-viewing-account-color])]
     [rn/view
      [quo/drawer-top
       {:title (i18n/label :t/custom)}]
@@ -63,12 +64,14 @@
                     :preview-size      :size-32}]}]
      [quo/bottom-actions
       {:actions          :one-action
-       :button-one-props {:on-press #(rf/dispatch [:hide-bottom-sheet])}
+       :button-one-props {:on-press            #(rf/dispatch [:hide-bottom-sheet])
+                          :customization-color account-color}
        :button-one-label (i18n/label :t/confirm)}]]))
 
 (defn settings-sheet
   []
   (let [current-transaction-setting                   (rf/sub [:wallet/tx-fee-mode])
+        account-color                                 (rf/sub [:wallet/current-viewing-account-color])
         [transaction-setting set-transaction-setting] (rn/use-state current-transaction-setting)
         set-normal                                    #(set-transaction-setting :tx-fee-mode/normal)
         set-fast                                      #(set-transaction-setting :tx-fee-mode/fast)
@@ -85,15 +88,16 @@
                :image             :emoji
                :description       :text
                :action            :selector
-               :action-props      {:type      :radio
-                                   :checked?  (= :tx-fee-mode/normal transaction-setting)
+               :action-props      {:type                :radio
+                                   :checked?            (= :tx-fee-mode/normal transaction-setting)
+                                   :customization-color account-color
                                    ;; there is an UI isssue in quo/category, it has :on-press event
                                    ;; and child radio button has own :on-change. If they are not set
                                    ;; to the same action then we are getting inconsistent behaviour
                                    ;; when user can click on settings item but cant on radio itself.
                                    ;; So duplication is to prevent that until general fix is applied
                                    ;; to quo/category
-                                   :on-change set-normal}
+                                   :on-change           set-normal}
                :on-press          set-normal
                :label             :text
                :preview-size      :size-32}
@@ -104,9 +108,10 @@
                :image             :emoji
                :description       :text
                :action            :selector
-               :action-props      {:type      :radio
-                                   :checked?  (= :tx-fee-mode/fast transaction-setting)
-                                   :on-change set-fast}
+               :action-props      {:type                :radio
+                                   :checked?            (= :tx-fee-mode/fast transaction-setting)
+                                   :on-change           set-fast
+                                   :customization-color account-color}
                :on-press          set-fast
                :label             :text
                :preview-size      :size-32}
@@ -117,9 +122,10 @@
                :image             :emoji
                :description       :text
                :action            :selector
-               :action-props      {:type      :radio
-                                   :checked?  (= :tx-fee-mode/urgent transaction-setting)
-                                   :on-change set-urgent}
+               :action-props      {:type                :radio
+                                   :checked?            (= :tx-fee-mode/urgent transaction-setting)
+                                   :customization-color account-color
+                                   :on-change           set-urgent}
                :on-press          set-urgent
                :label             :text
                :preview-size      :size-32}
@@ -137,10 +143,11 @@
                  :preview-size      :size-32})]}]
      [quo/bottom-actions
       {:actions          :one-action
-       :button-one-props {:on-press (fn []
-                                      (rf/dispatch [:wallet/quick-fee-mode-confirmed
-                                                    transaction-setting])
-                                      (rf/dispatch [:hide-bottom-sheet]))}
+       :button-one-props {:on-press            (fn []
+                                                 (rf/dispatch [:wallet/quick-fee-mode-confirmed
+                                                               transaction-setting])
+                                                 (rf/dispatch [:hide-bottom-sheet]))
+                          :customization-color account-color}
        :button-one-label (i18n/label :t/confirm)}]]))
 
 (defn- hint
