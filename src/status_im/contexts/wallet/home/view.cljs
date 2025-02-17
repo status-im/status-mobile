@@ -94,9 +94,10 @@
                                  (rf/dispatch [:wallet/clean-send-data])
                                  (when-not multiple-accounts?
                                    (rf/dispatch [:wallet/switch-current-viewing-account
-                                                 first-account-address]))
-                                 (rf/dispatch [:wallet/start-bridge])
+                                                 first-account-address])
+                                   (rf/dispatch [:wallet/start-bridge]))
                                  (when multiple-accounts?
+                                   (rf/dispatch [:wallet/set-send-tx-type :tx/bridge])
                                    (rf/dispatch [:open-modal :screen/wallet.select-from])))
                                [multiple-accounts? first-account-address])
         on-swap-press         (rn/use-callback
