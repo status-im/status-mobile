@@ -141,9 +141,11 @@
                         :style {:margin-bottom 16}}
                        (if (= view-type :card-view)
                          [quo/community-card-view-item
-                          {:community (assoc community :cover cover
-                                                       :members-count (count (:members community)))
-                           :on-press  #(rf/dispatch [:communities/navigate-to-community-overview community-id])}]
+                          {:community (assoc community
+                                             :cover         cover
+                                             :members-count (count (:members community)))
+                           :on-press  #(rf/dispatch [:communities/navigate-to-community-overview
+                                                     community-id])}]
                          [quo/community-list
                           {:on-press      (fn []
                                             (rf/dispatch [:dismiss-keyboard])
@@ -162,8 +164,9 @@
   [rn/view {:style {:flex 1}}
    (case @selected-tab
      :all
-     [other-communities-list {:communities (rf/sub [:communities/other-contract-communities])
-                              :view-type   view-type}]
+     [other-communities-list
+      {:communities (rf/sub [:communities/other-contract-communities])
+       :view-type   view-type}]
 
      :open
      [:<>]
@@ -193,10 +196,11 @@
      {:style (style/blur-tabs-header (safe-area/get-top))}
      [discover-communities-segments selected-tab true]]))
 
-(defn discover-screen-content []
-  (let [view-type                  (reagent/atom :card-view)
-        selected-tab               (reagent/atom :all)
-        scroll-height              (reagent/atom 0)]
+(defn discover-screen-content
+  []
+  (let [view-type     (reagent/atom :card-view)
+        selected-tab  (reagent/atom :all)
+        scroll-height (reagent/atom 0)]
     (fn []
       (let [theme                      (quo.theme/use-theme)
             featured-communities       (rf/sub [:communities/featured-contract-communities])
@@ -222,8 +226,9 @@
   []
   (let [theme (quo.theme/use-theme)]
     (rn/use-mount #(rf/dispatch [:fetch-contract-communities]))
-    [rn/view {:style (style/discover-screen-container (colors/theme-colors
-                                                       colors/white
-                                                       colors/neutral-95
-                                                       theme))}
+    [rn/view
+     {:style (style/discover-screen-container (colors/theme-colors
+                                               colors/white
+                                               colors/neutral-95
+                                               theme))}
      [discover-screen-content]]))

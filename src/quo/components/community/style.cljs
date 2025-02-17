@@ -140,14 +140,14 @@
    :background-color   (colors/theme-colors colors/white colors/neutral-90 theme)})
 
 (def loading-tags-container
-  {:margin-top 20
+  {:margin-top     20
    :flex-direction :row
-   :align-items :center})
+   :align-items    :center})
 
 (def loading-stats-container
-  {:margin-top 20
+  {:margin-top     20
    :flex-direction :row
-   :align-items :center})
+   :align-items    :center})
 
 (defn loading-stat-circle
   [theme margin-left]

@@ -19,7 +19,8 @@
       :on-success  #(rf/dispatch [:communities/cancel-request-to-join-success %])
       :js-response true
       :on-error    #(log/error "failed to cancel request to join community"
-                               request-to-join-id %)}]}))
+                               request-to-join-id
+                               %)}]}))
 
 (rf/reg-event-fx :communities/left
  (fn [_ [response-js]]

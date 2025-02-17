@@ -64,9 +64,10 @@
          {:title       name
           :description description}]
         [rn/view {:style style/card-stats-position}
-         [community-view/community-stats-column {:type                 :card-view
-                                                 :members-count        (:members-count community)
-                                                 :active-members-count (:active-members-count community)}]]
+         [community-view/community-stats-column
+          {:type                 :card-view
+           :members-count        (:members-count community)
+           :active-members-count (:active-members-count community)}]]
         [rn/view {:style style/community-tags-position}
          [community-view/community-tags {:tags tags}]]]]]]))
 
