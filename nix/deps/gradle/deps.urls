@@ -418,7 +418,10 @@ https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/30.4.2/dvlib-30.
 https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/31.1.1/dvlib-31.1.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/emulator/proto/31.1.1/proto-31.1.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/external/com-intellij/intellij-core/26.0.1/intellij-core-26.0.1.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/external/com-intellij/intellij-core/31.1.1/intellij-core-31.1.1.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/external/com-intellij/kotlin-compiler/31.1.1/kotlin-compiler-31.1.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/external/org-jetbrains/uast/26.0.1/uast-26.0.1.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/external/org-jetbrains/uast/31.1.1/uast-31.1.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/26.0.1/layoutlib-api-26.0.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/26.2.1/layoutlib-api-26.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/26.5.3/layoutlib-api-26.5.3.pom
@@ -430,11 +433,14 @@ https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-ap
 https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/30.4.2/layoutlib-api-30.4.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/31.1.1/layoutlib-api-31.1.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-api/26.0.1/lint-api-26.0.1.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-api/31.1.1/lint-api-31.1.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-checks/26.0.1/lint-checks-26.0.1.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-checks/31.1.1/lint-checks-31.1.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-gradle-api/26.2.1/lint-gradle-api-26.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-gradle-api/26.5.3/lint-gradle-api-26.5.3.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-gradle-api/26.5.4/lint-gradle-api-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-gradle-api/27.1.0/lint-gradle-api-27.1.0.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-gradle/31.1.1/lint-gradle-31.1.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-model/27.1.0/lint-model-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-model/30.0.4/lint-model-30.0.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-model/30.2.1/lint-model-30.2.1.pom
@@ -446,6 +452,8 @@ https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-typedef-remo
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-typedef-remover/30.4.2/lint-typedef-remover-30.4.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-typedef-remover/31.1.1/lint-typedef-remover-31.1.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint/26.0.1/lint-26.0.1.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint/31.1.1/lint-31.1.1.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/play-sdk-proto/31.1.1/play-sdk-proto-31.1.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/repository/26.0.1/repository-26.0.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/repository/26.2.1/repository-26.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/repository/26.5.3/repository-26.5.3.pom

@@ -1022,3 +1022,4 @@ org.gradle.toolchains.foojay-resolver-convention:org.gradle.toolchains.foojay-re
 org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.8.0
 com.android.tools.build:gradle:3.5.4
 com.facebook.react:hermes-android:0.73.5
+com.android.tools.lint:lint-gradle:31.1.1

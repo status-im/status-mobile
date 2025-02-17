@@ -6784,6 +6784,36 @@
   },
 
   {
+    "path": "com/android/tools/external/com-intellij/intellij-core/31.1.1",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "intellij-core-31.1.1.pom": {
+        "sha1": "e74a7533b6d6e0db54ea6bc35b15efe2fd00da27",
+        "sha256": "sha256-V495OImIIeT/dCkdYBymlYn5rTRz0uFvcAiMq20H4dM="
+      },
+      "intellij-core-31.1.1.jar": {
+        "sha1": "ed4e36f3c2c41cf488aaf1303a96ba2064d6bf8f",
+        "sha256": "sha256-VY235L4/CactFcnsGt9MeteLa4r5J7Nrw+GxCT6Gt+o="
+      }
+    }
+  },
+
+  {
+    "path": "com/android/tools/external/com-intellij/kotlin-compiler/31.1.1",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "kotlin-compiler-31.1.1.pom": {
+        "sha1": "d3836527cf8b72fa3cc43df621a15eb823cbc226",
+        "sha256": "sha256-UDMcEDSty4XUa9VqYX2bmAZD14JqkhEjfx3xc14nH10="
+      },
+      "kotlin-compiler-31.1.1.jar": {
+        "sha1": "ca679200f5902b43a2a7bf3ebaf27c4c50a60010",
+        "sha256": "sha256-Wa9fMRuIZN8hEpP+a6OoAZu0D1/CJuzn7LzQoGFKMms="
+      }
+    }
+  },
+
+  {
     "path": "com/android/tools/external/org-jetbrains/uast/26.0.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -6794,6 +6824,21 @@
       "uast-26.0.1.jar": {
         "sha1": "663906c592ce867fa2e9bcbffbe2130397078132",
         "sha256": "sha256-7NRtxp9SErNesh1k22gHL5VsAACDAw/1PgnR+BSHxYA="
+      }
+    }
+  },
+
+  {
+    "path": "com/android/tools/external/org-jetbrains/uast/31.1.1",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "uast-31.1.1.pom": {
+        "sha1": "564979086715d09649bb66f3d40276c1fff8c3ff",
+        "sha256": "sha256-l0xuVJOGRG34wCrqeI8PgoBNWFLoV5Itx+6KDkA8jAE="
+      },
+      "uast-31.1.1.jar": {
+        "sha1": "362abd636073c3e0f20fb708053f178cbbf9279a",
+        "sha256": "sha256-PLzgbYhZttOfSYMWuzL1QviWMSUUR7WTjleDoabq158="
       }
     }
   },
@@ -6968,6 +7013,21 @@
   },
 
   {
+    "path": "com/android/tools/lint/lint-api/31.1.1",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "lint-api-31.1.1.pom": {
+        "sha1": "19bd73fd700a6a44e7938b2243e80bee63530acc",
+        "sha256": "sha256-Rec29/CMq3IbVzWQV6gAratV97+5yqqznZZdAtSjilQ="
+      },
+      "lint-api-31.1.1.jar": {
+        "sha1": "7aecc68b4129bb13377d63d9ec2ca5f9837ebe83",
+        "sha256": "sha256-0Lc7UJRSwstgcNKhHl3c0La8rUUq96UxvLCVeXJXkws="
+      }
+    }
+  },
+
+  {
     "path": "com/android/tools/lint/lint-checks/26.0.1",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -6978,6 +7038,21 @@
       "lint-checks-26.0.1.jar": {
         "sha1": "a5df32c64598e190808accaa03820fb9db9f8201",
         "sha256": "sha256-lJJGAgwIoFQziQgq84Jozc5O56eoIYCXNpuYRXUoZss="
+      }
+    }
+  },
+
+  {
+    "path": "com/android/tools/lint/lint-checks/31.1.1",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "lint-checks-31.1.1.pom": {
+        "sha1": "ea747cad48b1cf70bb68fa35ab99ea152855a8fa",
+        "sha256": "sha256-Phxnpsiak9TjgPzC+/9MkKjTeQcyEzggJ+ImKVNFzzA="
+      },
+      "lint-checks-31.1.1.jar": {
+        "sha1": "429af1de53157365fff26f815c766aa25beeeb58",
+        "sha256": "sha256-OHVtwpKdX9bezZBoDEIupXc2OS7fPB80sgkhaN2beVI="
       }
     }
   },
@@ -7038,6 +7113,21 @@
       "lint-gradle-api-27.1.0.jar": {
         "sha1": "2ed2e2ea08ef9bc4705153e5742209edc81344fd",
         "sha256": "sha256-bv/uEsK4wXR8WC1CiWoE8sTi4lmJzrxBPbHX0iXAOaM="
+      }
+    }
+  },
+
+  {
+    "path": "com/android/tools/lint/lint-gradle/31.1.1",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "lint-gradle-31.1.1.pom": {
+        "sha1": "2bf09746f723163bc69b2a57baf6b7c1a6f58ccd",
+        "sha256": "sha256-5KmUW6sAnQIZovEHzzbgR+p8lwXz1yQd+ex3NtZ7d9c="
+      },
+      "lint-gradle-31.1.1.jar": {
+        "sha1": "684709eff4ce13cd8acb0864e0331947e0f95f3a",
+        "sha256": "sha256-47+tF26FuDMG9IfKH3C2Ow4uJ+ldMoC4cwBRyYkNJLI="
       }
     }
   },
@@ -7207,6 +7297,36 @@
       "lint-26.0.1.jar": {
         "sha1": "541bfb082a95a3b55d0158d69b067f1d7c623122",
         "sha256": "sha256-rrGXFYovtr0suSM+IodPgFH4KJHb2CtrCJ9J4wn4LkA="
+      }
+    }
+  },
+
+  {
+    "path": "com/android/tools/lint/lint/31.1.1",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "lint-31.1.1.pom": {
+        "sha1": "fef414797b25887e835a341ccd65f08293ad1a0c",
+        "sha256": "sha256-b4X4Fig2gy3tAXr6EezaqNMTeklziLR+I21vbETbsvg="
+      },
+      "lint-31.1.1.jar": {
+        "sha1": "1a8e67dded8fd4c1079005c10f3812b888e8800e",
+        "sha256": "sha256-SXpKXJ6rBgPIZlGqHjVanw/QUXGwavZy0R6pmbT0vxY="
+      }
+    }
+  },
+
+  {
+    "path": "com/android/tools/play-sdk-proto/31.1.1",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "play-sdk-proto-31.1.1.pom": {
+        "sha1": "78d2bf75f979fb8389500ae11a23c94e640aaece",
+        "sha256": "sha256-Tiyq9PdGXZcAlzvXwzihHn5ATQbzZpzjvJrSwAaW5e8="
+      },
+      "play-sdk-proto-31.1.1.jar": {
+        "sha1": "95e818a5c126927c34d12190deb8e55f5c8ba306",
+        "sha256": "sha256-XHfNX6vj0ognLAiLBVdgheu/0d2qwpm767k85TsP/n4="
       }
     }
   },

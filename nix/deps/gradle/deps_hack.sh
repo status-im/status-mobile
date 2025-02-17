@@ -36,4 +36,5 @@ org.gradle.toolchains.foojay-resolver-convention:org.gradle.toolchains.foojay-re
 org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:$kotlin_version
 com.android.tools.build:gradle:$tools_version
 com.facebook.react:hermes-android:$hermes_version
+com.android.tools.lint:lint-gradle:31.1.1
 EOF
