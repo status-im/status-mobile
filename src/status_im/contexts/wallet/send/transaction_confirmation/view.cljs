@@ -182,18 +182,17 @@
        [rn/activity-indicator {:style {:flex 1}}]
        route-loaded?
        [:<>
-        (when (ff/enabled? ::ff/wallet.transaction-params)
-          [quo/button
-           {:icon-only?          true
-            :type                :outline
-            :size                32
-            :inner-style         {:opacity 1}
-            :accessibility-label :advanced-button
-            :container-style     {:margin-right 8}
-            :on-press            #(rf/dispatch
-                                   [:show-bottom-sheet
-                                    {:content transaction-settings/settings-sheet}])}
-           :i/advanced])
+        [quo/button
+         {:icon-only?          true
+          :type                :outline
+          :size                32
+          :inner-style         {:opacity 1}
+          :accessibility-label :advanced-button
+          :container-style     {:margin-right 8}
+          :on-press            #(rf/dispatch
+                                 [:show-bottom-sheet
+                                  {:content transaction-settings/settings-sheet}])}
+         :i/advanced]
         [data-item
          {:title    (i18n/label :t/est-time)
           :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time-min)})}]

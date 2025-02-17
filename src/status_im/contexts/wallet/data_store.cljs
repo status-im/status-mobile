@@ -5,6 +5,7 @@
     [clojure.string :as string]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.collectible.utils :as collectible-utils]
+    [status-im.contexts.wallet.send.transaction-settings.core :as transaction-settings]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.collection :as utils.collection]
     [utils.money :as money]
@@ -255,18 +256,18 @@
                                                         new-path)
                                                        precision)
                                  :suggested-gas-fees-for-setting
-                                 {:transaction-setting/normal (send-utils/convert-to-gwei
-                                                               (:low
-                                                                suggested-levels-for-max-fees-per-gas)
-                                                               precision)
-                                  :transaction-setting/fast   (send-utils/convert-to-gwei
-                                                               (:medium
-                                                                suggested-levels-for-max-fees-per-gas)
-                                                               precision)
-                                  :transaction-setting/urgent (send-utils/convert-to-gwei
-                                                               (:high
-                                                                suggested-levels-for-max-fees-per-gas)
-                                                               precision)}}
+                                 {:tx-fee-mode/normal (send-utils/convert-to-gwei
+                                                       (:low
+                                                        suggested-levels-for-max-fees-per-gas)
+                                                       precision)
+                                  :tx-fee-mode/fast   (send-utils/convert-to-gwei
+                                                       (:medium
+                                                        suggested-levels-for-max-fees-per-gas)
+                                                       precision)
+                                  :tx-fee-mode/urgent (send-utils/convert-to-gwei
+                                                       (:high
+                                                        suggested-levels-for-max-fees-per-gas)
+                                                       precision)}}
      :bridge-name               (:processor-name new-path)
      :amount-out                (:amount-out new-path)
      :approval-contract-address (:approval-contract-address new-path)
@@ -276,7 +277,9 @@
      :approval-amount-required  (:approval-amount-required new-path)
      ;;  :cost () ;; tbd not used on desktop
      :gas-amount                (:tx-gas-amount new-path)
-     :router-input-params-uuid  (:router-input-params-uuid new-path)}))
+     :router-input-params-uuid  (:router-input-params-uuid new-path)
+     :tx-fee-mode               (transaction-settings/gas-rate->tx-fee-mode (:tx-gas-fee-mode
+                                                                             new-path))}))
 
 (defn tokens-never-loaded?
   [db]

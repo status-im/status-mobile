@@ -5,6 +5,7 @@
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [status-im.common.controlled-input.utils :as controlled-input]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -67,7 +68,7 @@
 
 (defn settings-sheet
   []
-  (let [current-transaction-setting                   (rf/sub [:wallet/confirmed-tx-setting])
+  (let [current-transaction-setting                   (rf/sub [:wallet/tx-fee-mode])
         [transaction-setting set-transaction-setting] (rn/use-state current-transaction-setting)]
     [rn/view
      [quo/drawer-top
@@ -77,54 +78,55 @@
        :data [{:title             (str (i18n/label :t/normal) "~60s")
                :image-props       "🍿"
                :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
-                                                  :transaction-setting/normal])}
+                                                  :tx-fee-mode/normal])}
                :image             :emoji
                :description       :text
                :action            :selector
                :action-props      {:type     :radio
-                                   :checked? (= :transaction-setting/normal transaction-setting)}
-               :on-press          #(set-transaction-setting :transaction-setting/normal)
+                                   :checked? (= :tx-fee-mode/normal transaction-setting)}
+               :on-press          #(set-transaction-setting :tx-fee-mode/normal)
                :label             :text
                :preview-size      :size-32}
               {:title             (str (i18n/label :t/fast) "~40s")
                :image-props       "🚗"
                :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
-                                                  :transaction-setting/fast])}
+                                                  :tx-fee-mode/fast])}
                :image             :emoji
                :description       :text
                :action            :selector
                :action-props      {:type     :radio
-                                   :checked? (= :transaction-setting/fast transaction-setting)}
-               :on-press          #(set-transaction-setting :transaction-setting/fast)
+                                   :checked? (= :tx-fee-mode/fast transaction-setting)}
+               :on-press          #(set-transaction-setting :tx-fee-mode/fast)
                :label             :text
                :preview-size      :size-32}
               {:title             (str (i18n/label :t/urgent) "~15s")
                :image-props       "🚀"
                :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
-                                                  :transaction-setting/urgent])}
+                                                  :tx-fee-mode/urgent])}
                :image             :emoji
                :description       :text
                :action            :selector
                :action-props      {:type     :radio
-                                   :checked? (= :transaction-setting/urgent transaction-setting)}
-               :on-press          #(set-transaction-setting :transaction-setting/urgent)
+                                   :checked? (= :tx-fee-mode/urgent transaction-setting)}
+               :on-press          #(set-transaction-setting :tx-fee-mode/urgent)
                :label             :text
                :preview-size      :size-32}
-              {:title             (i18n/label :t/custom)
-               :image-props       :i/edit
-               :description-props {:text "Set your own fees and nonce"}
-               :image             :icon
-               :description       :text
-               :action            :arrow
-               :on-press          #(rf/dispatch
-                                    [:show-bottom-sheet
-                                     {:content custom-settings-sheet}])
-               :label             :text
-               :preview-size      :size-32}]}]
+              (when (ff/enabled? ::ff/wallet.transaction-params)
+                {:title             (i18n/label :t/custom)
+                 :image-props       :i/edit
+                 :description-props {:text "Set your own fees and nonce"}
+                 :image             :icon
+                 :description       :text
+                 :action            :arrow
+                 :on-press          #(rf/dispatch
+                                      [:show-bottom-sheet
+                                       {:content custom-settings-sheet}])
+                 :label             :text
+                 :preview-size      :size-32})]}]
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-props {:on-press (fn []
-                                      (rf/dispatch [:wallet/quick-transaction-settings-confirmed
+                                      (rf/dispatch [:wallet/quick-fee-mode-confirmed
                                                     transaction-setting])
                                       (rf/dispatch [:hide-bottom-sheet]))}
        :button-one-label (i18n/label :t/confirm)}]]))

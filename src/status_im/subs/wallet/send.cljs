@@ -207,14 +207,14 @@
 
 
 (rf/reg-sub
- :wallet/confirmed-tx-setting
- :<- [:wallet/wallet-send]
- :-> :confirmed-tx-setting)
-
-(rf/reg-sub
  :wallet/custom-tx-settings
  :<- [:wallet/wallet-send]
  :-> :custom-tx-settings)
+
+(rf/reg-sub
+ :wallet/tx-settings-fee-mode-user
+ :<- [:wallet/custom-tx-settings]
+ :-> :tx-fee-mode)
 
 (rf/reg-sub
  :wallet/tx-settings-max-base-fee
@@ -235,3 +235,10 @@
  :wallet/tx-settings-nonce
  :<- [:wallet/custom-tx-settings]
  :-> :nonce)
+
+(rf/reg-sub
+ :wallet/tx-fee-mode
+ :<- [:wallet/send-route]
+ :<- [:wallet/tx-settings-fee-mode-user]
+ (fn [[route value-set-by-user]]
+   (or value-set-by-user (:tx-fee-mode (first route)))))

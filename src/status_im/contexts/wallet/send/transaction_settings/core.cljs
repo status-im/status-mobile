@@ -2,12 +2,22 @@
   (:require
     [status-im.constants :as constants]))
 
-(def default-transaction-setting :transaction-setting/fast)
+(def default-transaction-setting :tx-fee-mode/fast)
 
-(defn transaction-setting->gas-rate
-  [transaction-setting]
-  (case transaction-setting
-    :transaction-setting/normal constants/gas-rate-low
-    :transaction-setting/fast   constants/gas-rate-medium
-    :transaction-setting/urgent constants/gas-rate-high
+(defn tx-fee-mode->gas-rate
+  [tx-fee-mode]
+  (case tx-fee-mode
+    :tx-fee-mode/normal constants/gas-rate-low
+    :tx-fee-mode/fast   constants/gas-rate-medium
+    :tx-fee-mode/urgent constants/gas-rate-high
+    :tx-fee-mode/custom constants/gas-rate-custom
     constants/gas-rate-medium))
+
+(defn gas-rate->tx-fee-mode
+  [gas-rate]
+  (condp = gas-rate
+    constants/gas-rate-low    :tx-fee-mode/normal
+    constants/gas-rate-medium :tx-fee-mode/fast
+    constants/gas-rate-high   :tx-fee-mode/urgent
+    constants/gas-rate-custom :tx-fee-mode/custom
+    :tx-fee-mode/fast))

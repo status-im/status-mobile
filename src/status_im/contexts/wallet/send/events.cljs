@@ -664,7 +664,10 @@
  :wallet/handle-suggested-routes
  (fn [{:keys [db]} [data]]
    (let [{send :send swap? :swap} (-> db :wallet :ui)
-         skip-processing-routes?  (:skip-processing-suggested-routes? send)]
+         skip-processing-routes?  (:skip-processing-suggested-routes? send)
+         clean-user-tx-settings?  (get-in db
+                                          [:wallet :ui :send :custom-tx-settings
+                                           :delete-on-routes-update?])]
      (when (or swap? (not skip-processing-routes?))
        (let [{error-code :code
               :as        error} (:ErrorResponse data)
@@ -675,13 +678,16 @@
            (log/error "failed to get suggested routes (async)"
                       {:event :wallet/handle-suggested-routes
                        :error error-message}))
-         {:fx [[:dispatch
-                (cond
-                  (and failure? swap?) [:wallet/swap-proposal-error error]
-                  failure?             [:wallet/suggested-routes-error error-message]
-                  swap?                [:wallet/swap-proposal-success (fix-routes data)]
-                  :else                [:wallet/suggested-routes-success (fix-routes data)
-                                        enough-assets?])]]})))))
+         (merge
+          (when clean-user-tx-settings?
+            {:db (update-in db [:wallet :ui :send] dissoc :custom-tx-settings)})
+          {:fx [[:dispatch
+                 (cond
+                   (and failure? swap?) [:wallet/swap-proposal-error error]
+                   failure?             [:wallet/suggested-routes-error error-message]
+                   swap?                [:wallet/swap-proposal-success (fix-routes data)]
+                   :else                [:wallet/suggested-routes-success (fix-routes data)
+                                         enough-assets?])]]}))))))
 
 (rf/reg-event-fx
  :wallet/transaction-success
@@ -852,8 +858,7 @@
                        :max-gas-amount {:low     30000
                                         :current 31000}
                        :nonce          {:last-transaction 21
-                                        :current          22}})
-            (assoc-in [:wallet :ui :send :confirmed-tx-setting] :transaction-setting/fast))}))
+                                        :current          22}}))}))
 
 (rf/reg-event-fx
  :wallet/set-max-base-fee
@@ -875,20 +880,32 @@
  (fn [{db :db} [value]]
    {:db (assoc-in db [:wallet :ui :send :tx-settings :nonce :current] value)}))
 
-(rf/reg-event-fx :wallet/quick-transaction-settings-confirmed
- (fn [{db :db} [confirmed-setting]]
-   (let [gas-rate         (transaction-settings/transaction-setting->gas-rate confirmed-setting)
+(rf/reg-event-fx :wallet/quick-fee-mode-confirmed
+ (fn [{db :db} [fee-mode]]
+   (let [gas-rate         (transaction-settings/tx-fee-mode->gas-rate fee-mode)
          route            (first (get-in db [:wallet :ui :send :route]))
          path-tx-identity (send-utils/path-identity route)
          params           [path-tx-identity gas-rate]]
-     {:db            (assoc-in db [:wallet :ui :send :confirmed-tx-setting] confirmed-setting)
-      :json-rpc/call [{:method   "wallet_setFeeMode"
-                       :params   params
-                       :on-error (fn [error]
-                                   (log/error "failed to set quick transaction settings"
-                                              {:event  :wallet/quick-transaction-settings-confirmed
-                                               :error  (:message error)
-                                               :params params}))}]})))
+     {:db (assoc-in db [:wallet :ui :send :custom-tx-settings :tx-fee-mode] fee-mode)
+      :fx [[:json-rpc/call
+            [{:method   "wallet_setFeeMode"
+              :params   params
+              :on-error (fn [error]
+                          (log/error "failed to set quick transaction settings"
+                                     {:event  :wallet/quick-fee-mode-confirmed
+                                      :error  (:message error)
+                                      :params params}))}]]
+           [:dispatch [:wallet/mark-user-tx-settings-for-deletion]]]})))
+
+
+;; There is a delay between the moment when user selected
+;; custom settings and the moment when new route arrived
+;; with those settings applied. During this delay
+;; we should keep user settings for ui. After new route
+;; arrived we should clean the settings.
+(rf/reg-event-fx :wallet/mark-user-tx-settings-for-deletion
+ (fn [{db :db}]
+   {:db (assoc-in db [:wallet :ui :send :custom-tx-settings :delete-on-routes-update?] true)}))
 
 
 (rf/reg-event-fx :wallet.send/set-sign-transactions-callback-fx
