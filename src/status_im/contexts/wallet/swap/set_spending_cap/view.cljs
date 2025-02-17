@@ -223,9 +223,9 @@
         sign-on-keycard?        (get-in transaction-for-signing
                                         [:signingDetails :signOnKeycard])
         on-auth-success         (rn/use-callback
-                                 #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap %]))
+                                 #(rf/dispatch [:wallet/prepare-signatures-for-swap-transactions %]))
         on-complete             (rn/use-callback
-                                 #(rf/dispatch [:wallet/prepare-signatures-for-transactions :swap ""]))]
+                                 #(rf/dispatch [:wallet/prepare-signatures-for-swap-transactions ""]))]
     [standard-auth/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-sign)

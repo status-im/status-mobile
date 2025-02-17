@@ -176,17 +176,13 @@
       :container-style     {:z-index 2}
       :customization-color account-color
       :disabled?           (or loading-swap-proposal?
-                               (not swap-proposal)
-                               (not transaction-for-signing))
+                               (not swap-proposal))
       :auth-button-label   (i18n/label :t/confirm)
       :on-complete         (when sign-on-keycard?
                              #(rf/dispatch
-                               [:wallet/prepare-signatures-for-transactions
-                                :swap
-                                ""]))
+                               [:wallet/prepare-signatures-for-swap-transactions ""]))
       :on-auth-success     (fn [data]
-                             (rf/dispatch [:wallet/stop-get-swap-proposal])
-                             (rf/dispatch [:wallet/prepare-signatures-for-transactions :swap data]))}]))
+                             (rf/dispatch [:wallet/prepare-signatures-for-swap-transactions data]))}]))
 
 (defn footer
   []
