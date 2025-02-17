@@ -69,7 +69,10 @@
 (defn settings-sheet
   []
   (let [current-transaction-setting                   (rf/sub [:wallet/tx-fee-mode])
-        [transaction-setting set-transaction-setting] (rn/use-state current-transaction-setting)]
+        [transaction-setting set-transaction-setting] (rn/use-state current-transaction-setting)
+        set-normal                                    #(set-transaction-setting :tx-fee-mode/normal)
+        set-fast                                      #(set-transaction-setting :tx-fee-mode/fast)
+        set-urgent                                    #(set-transaction-setting :tx-fee-mode/urgent)]
     [rn/view
      [quo/drawer-top
       {:title (i18n/label :t/transaction-settings)}]
@@ -82,9 +85,16 @@
                :image             :emoji
                :description       :text
                :action            :selector
-               :action-props      {:type     :radio
-                                   :checked? (= :tx-fee-mode/normal transaction-setting)}
-               :on-press          #(set-transaction-setting :tx-fee-mode/normal)
+               :action-props      {:type      :radio
+                                   :checked?  (= :tx-fee-mode/normal transaction-setting)
+                                   ;; there is an UI isssue in quo/category, it has :on-press event
+                                   ;; and child radio button has own :on-change. If they are not set
+                                   ;; to the same action then we are getting inconsistent behaviour
+                                   ;; when user can click on settings item but cant on radio itself.
+                                   ;; So duplication is to prevent that until general fix is applied
+                                   ;; to quo/category
+                                   :on-change set-normal}
+               :on-press          set-normal
                :label             :text
                :preview-size      :size-32}
               {:title             (str (i18n/label :t/fast) "~40s")
@@ -94,9 +104,10 @@
                :image             :emoji
                :description       :text
                :action            :selector
-               :action-props      {:type     :radio
-                                   :checked? (= :tx-fee-mode/fast transaction-setting)}
-               :on-press          #(set-transaction-setting :tx-fee-mode/fast)
+               :action-props      {:type      :radio
+                                   :checked?  (= :tx-fee-mode/fast transaction-setting)
+                                   :on-change set-fast}
+               :on-press          set-fast
                :label             :text
                :preview-size      :size-32}
               {:title             (str (i18n/label :t/urgent) "~15s")
@@ -106,9 +117,10 @@
                :image             :emoji
                :description       :text
                :action            :selector
-               :action-props      {:type     :radio
-                                   :checked? (= :tx-fee-mode/urgent transaction-setting)}
-               :on-press          #(set-transaction-setting :tx-fee-mode/urgent)
+               :action-props      {:type      :radio
+                                   :checked?  (= :tx-fee-mode/urgent transaction-setting)
+                                   :on-change set-urgent}
+               :on-press          set-urgent
                :label             :text
                :preview-size      :size-32}
               (when (ff/enabled? ::ff/wallet.transaction-params)
