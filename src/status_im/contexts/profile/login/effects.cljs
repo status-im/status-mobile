@@ -8,7 +8,10 @@
  (fn [[key-uid hashed-password]]
    ;;"node.login" signal will be triggered as a callback
    (native-module/login-account
-    (assoc (profile.config/login) :keyUid key-uid :password hashed-password))))
+    (assoc (merge (profile.config/login)
+                  (profile.config/fix-node-config-migration))
+           :keyUid   key-uid
+           :password hashed-password))))
 
 (rf/reg-fx :effects.profile/enable-local-notifications
  (fn []
