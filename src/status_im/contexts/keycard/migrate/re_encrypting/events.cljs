@@ -27,5 +27,7 @@
              :callback
              (fn [{:keys [error]}]
                (if (string/blank? error)
-                 (rf/dispatch [:navigate-to :screen/keycard.migrate.success])
+                 (do
+                   (rf/dispatch [:biometric/disable])
+                   (rf/dispatch [:navigate-to :screen/keycard.migrate.success]))
                  (rf/dispatch [:navigate-to :screen/keycard.migrate.fail])))}]]})))
