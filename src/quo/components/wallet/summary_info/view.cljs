@@ -28,7 +28,7 @@
      [rn/view
       {:style (style/dot-divider theme)}])])
 
-(def default-token-symbols
+(def ^:private default-token-symbols
   {:ethereum "ETH"
    :optimism "OETH"
    :arbitrum "ARB"
@@ -56,7 +56,7 @@
   (let [theme   (quo.theme/use-theme)
         address (or (:address account-props) (:address token-props))]
     [rn/view
-     {:style (style/container networks-to-show theme)}
+     {:style (style/container (seq? networks-to-show) theme)}
      [rn/view
       {:style style/info-container}
       (case type

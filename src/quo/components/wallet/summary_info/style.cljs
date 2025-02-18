@@ -3,13 +3,13 @@
     [quo.foundations.colors :as colors]))
 
 (defn container
-  [networks-to-show theme]
+  [networks-to-show? theme]
   {:width         "100%"
-   :height        (if networks-to-show 90 56)
+   :height        (if networks-to-show? 90 56)
    :border-radius 16
    :border-width  1
    :border-color  (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
-   :margin-bottom (if networks-to-show 4 8)})
+   :margin-bottom (if networks-to-show? 4 8)})
 
 (def info-container
   {:flex-direction     :row
