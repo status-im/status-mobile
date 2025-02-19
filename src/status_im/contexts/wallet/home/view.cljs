@@ -91,6 +91,9 @@
                                                               {:content buy-token/view}]))
         on-bridge-press       (rn/use-callback
                                (fn []
+                                 ;; For a single account, it starts the bridge flow immediately. For
+                                 ;; multiple accounts, it sets the transaction type and starts the
+                                 ;; bridge flow after account selection.
                                  (rf/dispatch [:wallet/clean-send-data])
                                  (when-not multiple-accounts?
                                    (rf/dispatch [:wallet/switch-current-viewing-account
