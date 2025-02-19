@@ -17,50 +17,48 @@
 
 (defn view
   []
-  (let [{:keys [edit?]} (rf/sub [:get-screen-params])
-        {:keys [address name customization-color ens ens?]}
-        (rf/sub [:wallet/saved-address])
+  (let [{:keys [address name customization-color ens
+                ens? edit?]}              (rf/sub [:get-screen-params])
         [address-label set-address-label] (rn/use-state (or name ""))
         [address-color set-address-color] (rn/use-state (or customization-color
                                                             (rand-nth colors/account-colors)))
-        placeholder (i18n/label :t/address-name)
-        address-text (rn/use-callback
-                      (fn []
-                        [quo/address-text
-                         {:full-address? true
-                          :address       address
-                          :format        :long}])
-                      [address])
-        on-press-save (rn/use-callback
-                       (fn []
-                         (rf/dispatch [:wallet/save-address
-                                       {:on-success
-                                        (if edit?
-                                          [:wallet/edit-saved-address-success]
-                                          [:wallet/add-saved-address-success
-                                           (i18n/label :t/address-saved)])
-                                        :on-error
-                                        [:wallet/add-saved-address-failed]
-                                        :name address-label
-                                        :ens (when ens? ens)
-                                        :address address
-                                        :customization-color address-color}]))
-                       [address address-label
-                        address-color])
-        data-item-props (rn/use-memo
-                         #(cond-> {:status          :default
-                                   :size            :default
-                                   :subtitle-type   :default
-                                   :label           :none
-                                   :blur?           true
-                                   :card?           true
-                                   :title           (i18n/label :t/address)
-                                   :subtitle        ens
-                                   :custom-subtitle address-text
-                                   :container-style style/data-item}
-                            ens?
-                            (dissoc :custom-subtitle))
-                         [ens ens? address-text])]
+        placeholder                       (i18n/label :t/address-name)
+        address-text                      (rn/use-callback
+                                           (fn []
+                                             [quo/address-text
+                                              {:full-address? true
+                                               :address       address
+                                               :format        :long}])
+                                           [address])
+        on-press-save                     (rn/use-callback
+                                           (fn []
+                                             (rf/dispatch [:wallet/save-address
+                                                           {:on-success
+                                                            (if edit?
+                                                              [:wallet/edit-saved-address-success]
+                                                              [:wallet/add-saved-address-success
+                                                               (i18n/label :t/address-saved)])
+                                                            :on-error
+                                                            [:wallet/add-saved-address-failed]
+                                                            :name address-label
+                                                            :ens (when ens? ens)
+                                                            :address address
+                                                            :customization-color address-color}]))
+                                           [address address-label
+                                            address-color])
+        data-item-props                   (rn/use-memo
+                                           #(cond-> {:status          :default
+                                                     :size            :default
+                                                     :subtitle-type   :default
+                                                     :blur?           true
+                                                     :card?           true
+                                                     :title           (i18n/label :t/address)
+                                                     :subtitle        ens
+                                                     :custom-subtitle address-text
+                                                     :container-style style/data-item}
+                                              ens?
+                                              (dissoc :custom-subtitle))
+                                           [ens ens? address-text])]
     [quo/overlay {:type :shell}
      [floating-button-page/view
       {:footer-container-padding     (if edit? (+ (safe-area/get-bottom) 12) 0)
