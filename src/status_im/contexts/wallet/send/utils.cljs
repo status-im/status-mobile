@@ -250,5 +250,6 @@
   [path]
   {:routerInputParamsUuid (:router-input-params-uuid path)
    :pathName              (:bridge-name path)
-   :chainID               (get-in path [:to :chain-id])
-   :isApprovalTx          (:approval-required path)})
+   :chainID               (get-in path [:from :chain-id])
+   :isApprovalTx          (:approval-required path)
+   :communityID           nil})
