@@ -23,4 +23,7 @@
                   (do
                     (rf/dispatch [:keycard/disconnect])
                     (rf/dispatch [:open-modal :screen/keycard.empty]))
-                  (rf/dispatch [:keycard/on-application-info-error error])))}]]]})))
+                  (rf/dispatch [:keycard/on-application-info-error
+                                (if (= error :keycard/error.keycard-wrong-profile)
+                                  :keycard/error.keycard-not-empty
+                                  error)])))}]]]})))
