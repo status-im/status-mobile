@@ -171,6 +171,12 @@
      [pay-input-amount])
     (rn/use-effect
      (fn []
+       ;; Restart swap proposal fetch after approval confirmation, as route building was paused.
+       (when (and approval-required (= approval-transaction-status :confirmed))
+         (request-fetch-swap-proposal)))
+     [approval-required approval-transaction-status])
+    (rn/use-effect
+     (fn []
        (when-not overlay-shown?
          (some-> @input-ref
                  (oops/ocall "focus"))))
