@@ -3,6 +3,7 @@
     [re-frame.core :as re-frame]
     status-im.subs.activity-center
     status-im.subs.alert-banner
+    status-im.subs.app
     status-im.subs.biometrics
     status-im.subs.bottom-sheet
     status-im.subs.chats
@@ -191,3 +192,8 @@
 
 ;;keycard
 (reg-root-key-sub :keycard :keycard)
+
+(reg-root-key-sub :ui :ui)
+(reg-root-key-sub :infra :infra)
+(reg-root-key-sub :app :app)
+(reg-root-key-sub :domain :domain)

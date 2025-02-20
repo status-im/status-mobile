@@ -162,25 +162,7 @@
   (->> (map rpc->keypair keypairs)
        (sort-by #(if (= (:type %) :profile) 0 1))))
 
-(defn- add-keys-to-saved-address
-  [saved-address]
-  (assoc saved-address :ens? (not (string/blank? (:ens saved-address)))))
 
-(defn rpc->saved-address
-  [saved-address]
-  (-> saved-address
-      (set/rename-keys {:chainShortNames  :chain-short-names
-                        :isTest           :test?
-                        :createdAt        :created-at
-                        :colorId          :customization-color
-                        :mixedcaseAddress :mixedcase-address
-                        :removed          :removed?})
-      (update :customization-color (comp keyword string/lower-case))
-      add-keys-to-saved-address))
-
-(defn rpc->saved-addresses
-  [saved-addresses]
-  (map rpc->saved-address saved-addresses))
 
 (defn reconcile-keypairs
   [keypairs]

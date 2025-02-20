@@ -52,7 +52,7 @@
     (fn []
       (rn/use-effect
        (fn []
-         (rf/dispatch [:wallet/get-saved-addresses])))
+         (rf/dispatch [:infra/get-saved-addresses])))
       (let [transaction-details (rf/sub [:wallet/send-transaction-progress])]
         [floating-button-page/view
          {:footer-container-padding 0

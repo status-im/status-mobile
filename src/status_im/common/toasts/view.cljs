@@ -58,6 +58,8 @@
 
 (defn toasts
   []
+  (tap> {:in   :toasts
+         :data (rf/sub [:view-id])})
   (->> (rf/sub [:toasts])
        :ordered
        (into [rn/view {:style (style/outmost-transparent-container)}]

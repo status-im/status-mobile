@@ -12,7 +12,7 @@
           result-fx   (:fx effects)
           expected-fx [[:json-rpc/call
                         [{:method     "wakuext_getSavedAddresses"
-                          :on-success [:wallet/get-saved-addresses-success]
+                          :on-success [:infra/convert-saved-addresses]
                           :on-error   [:wallet/saved-addresses-rpc-error :get-saved-addresses]}]]]]
       (is (match? expected-fx result-fx)))))
 
@@ -56,10 +56,10 @@
 (deftest get-saved-addresses-success-test
   (let [cofx                {:db {}}
         raw-saved-addresses [saved-address-rpc-1]
-        effects             (events/get-saved-addresses-success cofx [raw-saved-addresses])
+        effects             (events/convert-saved-addresses cofx [raw-saved-addresses])
         saved-addresses     (data-store/rpc->saved-addresses raw-saved-addresses)
         result-fx           (:fx effects)
-        expected-fx         [[:dispatch [:wallet/reconcile-saved-addresses saved-addresses]]]]
+        expected-fx         [[:dispatch [:domain/reconcile-saved-addresses saved-addresses]]]]
     (is (match? expected-fx result-fx))))
 
 (deftest reconcile-saved-addresses-test
@@ -220,7 +220,7 @@
           toast-message "Address saved"
           effects       (events/add-saved-address-success cofx [toast-message])
           result-fx     (:fx effects)
-          expected-fx   [[:dispatch [:wallet/get-saved-addresses]]
+          expected-fx   [[:dispatch [:infra/get-saved-addresses]]
                          [:dispatch [:dismiss-modal :screen/settings.add-address-to-save]]
                          [:dispatch [:dismiss-modal :screen/settings.save-address]]
                          [:dispatch-later
@@ -238,7 +238,7 @@
           toast-message "Address edited"
           effects       (events/edit-saved-address-success cofx)
           result-fx     (:fx effects)
-          expected-fx   [[:dispatch [:wallet/get-saved-addresses]]
+          expected-fx   [[:dispatch [:infra/get-saved-addresses]]
                          [:dispatch [:dismiss-modal :screen/settings.edit-saved-address]]
                          [:dispatch-later
                           {:ms       100

@@ -32,17 +32,11 @@
                                            [address])
         on-press-save                     (rn/use-callback
                                            (fn []
-                                             (rf/dispatch [:wallet/save-address
-                                                           {:on-success
-                                                            (if edit?
-                                                              [:wallet/edit-saved-address-success]
-                                                              [:wallet/add-saved-address-success
-                                                               (i18n/label :t/address-saved)])
-                                                            :on-error
-                                                            [:wallet/add-saved-address-failed]
-                                                            :name address-label
-                                                            :ens (when ens? ens)
-                                                            :address address
+                                             (rf/dispatch [:app/save-address
+                                                           {:edit?               edit?
+                                                            :name                address-label
+                                                            :ens                 (when ens? ens)
+                                                            :address             address
                                                             :customization-color address-color}]))
                                            [address address-label
                                             address-color])

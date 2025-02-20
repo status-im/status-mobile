@@ -41,4 +41,5 @@
    :stickers/packs-pending             #{}
    :settings/change-password           {}
    :keycard                            {}
-   :theme                              :dark})
+   :theme                              :dark
+   :app                                {:last-user-notification {}}})
