@@ -58,9 +58,15 @@
 
 (defn toasts
   []
-  (tap> {:in   :toasts
-         :data (rf/sub [:view-id])})
+  (tap> {:in           :toasts
+         :data         (rf/sub [:view-id])
+         :notification (rf/sub [:app/last-user-notification])})
+  (rf/sub [:app/last-user-notification])
+  (rf/dispatch [:toasts/upsert
+                {:type :positive
+                 :text "This is a test notification3"}])
   (->> (rf/sub [:toasts])
+       #_(rf/sub [:app/last-user-notification])
        :ordered
        (into [rn/view {:style (style/outmost-transparent-container)}]
              (map #(with-meta [f-container %] {:key %})))))

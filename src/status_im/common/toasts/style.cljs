@@ -3,12 +3,13 @@
 
 (defn outmost-transparent-container
   []
-  {:elevation       2
-   :pointer-events  :box-none
-   :padding-top     (+ (safe-area/get-top) 6)
-   :flex-direction  :column
-   :justify-content :center
-   :align-items     :center})
+  {:elevation        2
+   :pointer-events   :box-none
+   :padding-top      (+ (safe-area/get-top) 6)
+   :flex-direction   :column
+   :justify-content  :center
+   :align-items      :center
+   :background-color :yellow})
 
 (def each-toast-container
   {:width         "100%"
