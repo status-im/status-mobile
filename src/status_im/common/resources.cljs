@@ -29,6 +29,7 @@
    :keycard-migration             (js/require "../resources/images/ui2/keycard-migration.png")
    :keycard-migration-failed      (js/require "../resources/images/ui2/keycard-migration-failed.png")
    :keycard-migration-succeeded   (js/require "../resources/images/ui2/keycard-migration-succeeded.png")
+   :keycard-not-same              (js/require "../resources/images/ui2/keycard-not-same.png")
    :not-keycard                   (js/require "../resources/images/ui2/not-keycard.png")
    :discover                      (js/require "../resources/images/ui2/discover.png")
    :invite-friends                (js/require "../resources/images/ui2/invite-friends.png")

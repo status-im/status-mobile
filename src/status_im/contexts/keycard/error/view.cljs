@@ -9,16 +9,16 @@
             [utils.re-frame :as rf]))
 
 (def titles
-  {:keycard/error.keycard-empty         {:title       (i18n/label :t/keycard-empty)
-                                         :description (i18n/label :t/no-key-pair-keycard)}
-   :keycard/error.keycard-wrong-profile {:title       (i18n/label :t/keycard-not-empty)
-                                         :description (i18n/label :t/cant-store-new-keys)}
-   :keycard/error.keycard-unpaired      {:title       (i18n/label :t/keycard-full)
-                                         :description (i18n/label :t/pairing-slots-occupied)}
-   :keycard/error.keycard-frozen        {:title       (i18n/label :t/keycard-blocked)
-                                         :description (i18n/label :t/cant-use-right-now)}
-   :keycard/error.keycard-locked        {:title       (i18n/label :t/keycard-blocked)
-                                         :description (i18n/label :t/cant-use-right-now)}})
+  {:keycard/error.keycard-empty     {:title       (i18n/label :t/keycard-empty)
+                                     :description (i18n/label :t/no-key-pair-keycard)}
+   :keycard/error.keycard-not-empty {:title       (i18n/label :t/keycard-not-empty)
+                                     :description (i18n/label :t/cant-store-new-keys)}
+   :keycard/error.keycard-unpaired  {:title       (i18n/label :t/keycard-full)
+                                     :description (i18n/label :t/pairing-slots-occupied)}
+   :keycard/error.keycard-frozen    {:title       (i18n/label :t/keycard-blocked)
+                                     :description (i18n/label :t/cant-use-right-now)}
+   :keycard/error.keycard-locked    {:title       (i18n/label :t/keycard-blocked)
+                                     :description (i18n/label :t/cant-use-right-now)}})
 
 (defn view
   []

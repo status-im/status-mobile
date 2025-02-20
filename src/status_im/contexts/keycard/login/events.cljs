@@ -46,7 +46,7 @@
            {:theme :dark
             :on-error
             (fn [error]
-              (if (= error :keycard/error.keycard-wrong-profile)
+              (if (= error :keycard/error.keycard-not-empty)
                 (do
                   (rf/dispatch [:keycard/disconnect])
                   (rf/dispatch [:open-modal :screen/keycard.pin.enter

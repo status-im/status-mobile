@@ -132,8 +132,9 @@
     :fx [[:dispatch [:keycard/disconnect]]
          [:dispatch
           [:open-modal
-           (if (= :keycard/error.not-keycard error)
-             :screen/keycard.not-keycard
+           (case error
+             :keycard/error.not-keycard           :screen/keycard.not-keycard
+             :keycard/error.keycard-wrong-profile :screen/keycard.different-card
              :screen/keycard.error)]]]}))
 
 (rf/reg-event-fx :keycard/update-application-info

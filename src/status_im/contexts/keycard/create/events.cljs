@@ -83,7 +83,7 @@
  (fn [{:keys [db]} [error]]
    (if (or (= error :keycard/error.keycard-empty)
            (and (get-in db [:keycard :application-info :initialized?])
-                (= error :keycard/error.keycard-wrong-profile)))
+                (= error :keycard/error.keycard-not-empty)))
      (rf/dispatch [:keycard/create.continue])
      (rf/dispatch [:keycard/on-application-info-error error]))))
 

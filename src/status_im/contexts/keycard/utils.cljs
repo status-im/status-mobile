@@ -41,6 +41,10 @@
     (not paired?)
     :keycard/error.keycard-unpaired
 
+    (and (nil? profile-key-uid)
+         (some? key-uid))
+    :keycard/error.keycard-not-empty
+
     (not= profile-key-uid key-uid)
     :keycard/error.keycard-wrong-profile
 

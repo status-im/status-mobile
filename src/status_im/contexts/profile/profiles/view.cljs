@@ -256,6 +256,12 @@
             (rf/dispatch
              [:keycard/connect
               {:key-uid key-uid
+               :on-error
+               (fn [error]
+                 (rf/dispatch [:keycard/on-application-info-error
+                               (if (= error :keycard/error.keycard-empty)
+                                 :keycard/error.keycard-wrong-profile
+                                 error)]))
                :on-success
                (fn []
                  (rf/dispatch

@@ -32,11 +32,7 @@
                      (reset-card)
                      (do
                        (rf/dispatch [:navigate-back])
-                       (if (= error :keycard/error.keycard-wrong-profile)
-                         (do
-                           (rf/dispatch [:keycard/disconnect])
-                           (rf/dispatch [:open-modal :screen/keycard.different-card]))
-                         (rf/dispatch [:keycard/on-application-info-error error])))))}]))
+                       (rf/dispatch [:keycard/on-application-info-error error]))))}]))
 
 (defn success-view
   []
