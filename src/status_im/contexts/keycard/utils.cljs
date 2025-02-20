@@ -30,6 +30,13 @@
     (not has-master-key?)
     :keycard/error.keycard-empty
 
+    (and (nil? profile-key-uid)
+         (some? key-uid))
+    :keycard/error.keycard-not-empty
+
+    (not= profile-key-uid key-uid)
+    :keycard/error.keycard-wrong-profile
+
     (and (zero? pin-retry-counter)
          (or (nil? puk-retry-counter)
              (pos? puk-retry-counter)))
@@ -40,13 +47,6 @@
 
     (not paired?)
     :keycard/error.keycard-unpaired
-
-    (and (nil? profile-key-uid)
-         (some? key-uid))
-    :keycard/error.keycard-not-empty
-
-    (not= profile-key-uid key-uid)
-    :keycard/error.keycard-wrong-profile
 
     :else
     nil))
