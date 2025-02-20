@@ -487,7 +487,7 @@
         :on-max-press     on-max-press
         :input-focused?   pay-input-focused?
         :on-token-press   #(rf/dispatch [:show-bottom-sheet {:content pay-token-bottom-sheet}])
-        :on-approve-press #(rf/dispatch [:wallet.swap/approve])
+        :on-approve-press #(rf/dispatch [:open-modal :screen/wallet.swap-set-spending-cap])
         :on-input-focus   (fn []
                             (when platform/android? (rf/dispatch [:dismiss-keyboard]))
                             (set-pay-input-focused? true))}]

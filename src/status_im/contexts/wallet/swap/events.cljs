@@ -410,11 +410,6 @@
    {:db (assoc-in db [:wallet :ui :swap :sign-transactions-callback-fx] callback-fx)}))
 
 (rf/reg-event-fx
- :wallet.swap/approve
- (fn [_]
-   {:fx [[:dispatch [:open-modal :screen/wallet.swap-set-spending-cap]]]}))
-
-(rf/reg-event-fx
  :wallet.swap/review-swap
  (fn [{:keys [db]}]
    {:db (-> db
