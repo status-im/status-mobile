@@ -8,13 +8,13 @@
 
 (rf/defn save-log-level
   {:events [:log-level.ui/change-log-level-confirmed]}
-  [{:keys [db] :as cofx} log-level]
+  [{:keys [db]} log-level]
   (let [old-log-level (get-in db [:profile/profile :log-level])]
     (when (not= old-log-level log-level)
       (let [need-set-log-enabled? (or (empty? old-log-level) (empty? log-level))
-            log-enabled?          (not (empty? log-level))
+            log-enabled?          (boolean (seq log-level))
             rpc-calls             (cond-> []
-                                    (not (empty? log-level))
+                                    log-enabled?
                                     (conj {:method   "wakuext_setLogLevel"
                                            :params   [{:logLevel log-level}]
                                            :on-error #(log/error "Failed to set log level" %)})
@@ -31,7 +31,7 @@
 
 (rf/defn update-multiaccount
   {:events [:log-level/update-multiaccount]}
-  [{:keys [db] :as cofx} log-level]
+  [cofx log-level]
   (multiaccounts.update/multiaccount-update
    cofx
    :log-level
