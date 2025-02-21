@@ -35,6 +35,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 
     NSURL *mainGethLogsFile = [rootUrl URLByAppendingPathComponent:@"geth.log"];
     NSURL *mainLogsFile = [logsFolderName URLByAppendingPathComponent:@"geth.log"];
+    NSURL *preLoginLogFile = [rootUrl URLByAppendingPathComponent:@"pre_login.log"];
 
     NSURL *requestsLogFile = [rootUrl URLByAppendingPathComponent:@"api.log"];
 
@@ -45,6 +46,10 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     
     if ([fileManager fileExistsAtPath:requestsLogFile.path]) {
         [fileManager copyItemAtPath:requestsLogFile.path toPath:[logsFolderName URLByAppendingPathComponent:@"api.log"].path error:nil];
+    }
+    
+    if ([fileManager fileExistsAtPath:preLoginLogFile.path]) {
+        [fileManager copyItemAtPath:preLoginLogFile.path toPath:[logsFolderName URLByAppendingPathComponent:@"pre_login.log"].path error:nil];
     }
 
     [SSZipArchive createZipFileAtPath:zipFile.path withContentsOfDirectory:logsFolderName.path];

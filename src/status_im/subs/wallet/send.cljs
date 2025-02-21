@@ -205,27 +205,40 @@
      {:crypto (str crypto-formatted " " (:symbol token))
       :fiat   fiat-formatted})))
 
+
 (rf/reg-sub
- :wallet/tx-settings
+ :wallet/custom-tx-settings
  :<- [:wallet/wallet-send]
- :-> :tx-settings)
+ :-> :custom-tx-settings)
+
+(rf/reg-sub
+ :wallet/tx-settings-fee-mode-user
+ :<- [:wallet/custom-tx-settings]
+ :-> :tx-fee-mode)
 
 (rf/reg-sub
  :wallet/tx-settings-max-base-fee
- :<- [:wallet/tx-settings]
+ :<- [:wallet/custom-tx-settings]
  :-> :max-base-fee)
 
 (rf/reg-sub
  :wallet/tx-settings-priority-fee
- :<- [:wallet/tx-settings]
+ :<- [:wallet/custom-tx-settings]
  :-> :priority-fee)
 
 (rf/reg-sub
  :wallet/tx-settings-max-gas-amount
- :<- [:wallet/tx-settings]
+ :<- [:wallet/custom-tx-settings]
  :-> :max-gas-amount)
 
 (rf/reg-sub
  :wallet/tx-settings-nonce
- :<- [:wallet/tx-settings]
+ :<- [:wallet/custom-tx-settings]
  :-> :nonce)
+
+(rf/reg-sub
+ :wallet/tx-fee-mode
+ :<- [:wallet/send-route]
+ :<- [:wallet/tx-settings-fee-mode-user]
+ (fn [[route value-set-by-user]]
+   (or value-set-by-user (:tx-fee-mode (first route)))))

@@ -410,7 +410,17 @@
    {:db (assoc-in db [:wallet :ui :swap :sign-transactions-callback-fx] callback-fx)}))
 
 (rf/reg-event-fx
- :wallet.swap/approve
+ :wallet.swap/review-swap
+ (fn [{:keys [db]}]
+   {:db (-> db
+            (update-in [:wallet :ui :swap] dissoc :transaction-for-signing))
+    :fx [[:dispatch
+          [:navigate-to-within-stack
+           [:screen/wallet.swap-confirmation
+            :screen/wallet.setup-swap]]]]}))
+
+(rf/reg-event-fx
+ :wallet/prepare-signatures-for-swap-transactions
  (fn [{:keys [db]}]
    (let [last-request-uuid (get-in db [:wallet :ui :swap :last-request-uuid])
          max-slippage      (get-in db [:wallet :ui :swap :max-slippage])]
@@ -420,23 +430,7 @@
               :slippage     max-slippage}]]
            [:dispatch
             [:wallet.swap/set-sign-transactions-callback-fx
-             [:dispatch [:open-modal :screen/wallet.swap-set-spending-cap]]]]]})))
-
-(rf/reg-event-fx
- :wallet.swap/review-swap
- (fn [{:keys [db]}]
-   (let [last-request-uuid (get-in db [:wallet :ui :swap :last-request-uuid])
-         max-slippage      (get-in db [:wallet :ui :swap :max-slippage])]
-     {:db (-> db
-              (update-in [:wallet :ui :swap] dissoc :transaction-for-signing))
-      :fx [[:dispatch
-            [:wallet/build-transactions-from-route
-             {:request-uuid last-request-uuid
-              :slippage     max-slippage}]]
-           [:dispatch
-            [:navigate-to-within-stack
-             [:screen/wallet.swap-confirmation
-              :screen/wallet.setup-swap]]]]})))
+             [:dispatch [:wallet/prepare-signatures-for-transactions :swap]]]]]})))
 
 (defn transaction-approval-required?
   [transactions {:keys [swap-proposal approval-transaction-id]}]

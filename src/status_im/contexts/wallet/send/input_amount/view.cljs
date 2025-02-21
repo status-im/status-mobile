@@ -72,11 +72,6 @@
 
     :else (rf/dispatch [:wallet/stop-and-clean-suggested-routes])))
 
-(defn- get-fee-formatted
-  [route]
-  (when-let [native-currency-symbol (-> route first :from :native-currency-symbol)]
-    (rf/sub [:wallet/wallet-send-fee-fiat-formatted native-currency-symbol])))
-
 (defn- insufficient-asset-amount?
   [{:keys [token-symbol owned-eth-token input-state limit-exceeded? enough-assets?]}]
   (let [eth-selected?              (= token-symbol (string/upper-case constants/mainnet-short-name))
@@ -172,7 +167,7 @@
                                           (empty? route)
                                           (not valid-input?))
         fee-formatted                 (when (or (not confirm-disabled?) not-enough-asset?)
-                                        (get-fee-formatted route))
+                                        (rf/sub [:wallet/wallet-send-fee-fiat-formatted]))
         handle-on-confirm             (fn [amount]
                                         (rf/dispatch [:wallet/set-token-amount-to-send
                                                       {:amount   amount
