@@ -421,7 +421,7 @@
 
 (rf/reg-event-fx
  :wallet/prepare-signatures-for-swap-transactions
- (fn [{:keys [db]} [sha3-pwd]]
+ (fn [{:keys [db]}]
    (let [last-request-uuid (get-in db [:wallet :ui :swap :last-request-uuid])
          max-slippage      (get-in db [:wallet :ui :swap :max-slippage])]
      {:fx [[:dispatch
@@ -430,7 +430,7 @@
               :slippage     max-slippage}]]
            [:dispatch
             [:wallet.swap/set-sign-transactions-callback-fx
-             [:dispatch [:wallet/prepare-signatures-for-transactions :swap sha3-pwd]]]]]})))
+             [:dispatch [:wallet/prepare-signatures-for-transactions :swap]]]]]})))
 
 (defn transaction-approval-required?
   [transactions {:keys [swap-proposal approval-transaction-id]}]
