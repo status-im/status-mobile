@@ -163,13 +163,12 @@
 
 (defn- slide-button
   []
-  (let [loading-swap-proposal?  (rf/sub [:wallet/swap-loading-swap-proposal?])
-        transaction-for-signing (rf/sub [:wallet/swap-transaction-for-signing])
-        swap-proposal           (rf/sub [:wallet/swap-proposal-without-fees])
-        account                 (rf/sub [:wallet/current-viewing-account])
-        biometric-auth?         (= (rf/sub [:auth-method]) constants/auth-method-biometric)
-        biometric-type          (rf/sub [:biometrics/supported-type])
-        account-color           (:color account)]
+  (let [loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
+        swap-proposal          (rf/sub [:wallet/swap-proposal-without-fees])
+        account                (rf/sub [:wallet/current-viewing-account])
+        biometric-auth?        (= (rf/sub [:auth-method]) constants/auth-method-biometric)
+        biometric-type         (rf/sub [:biometrics/supported-type])
+        account-color          (:color account)]
     [quo/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-swap)
@@ -179,8 +178,7 @@
                              (biometric/get-icon-by-type biometric-type)
                              :password)
       :disabled?           (or loading-swap-proposal?
-                               (not swap-proposal)
-                               (not transaction-for-signing))
+                               (not swap-proposal))
       :on-complete         #(rf/dispatch [:wallet/prepare-signatures-for-swap-transactions])}]))
 
 (defn footer
