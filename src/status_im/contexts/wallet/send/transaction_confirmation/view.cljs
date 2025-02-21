@@ -5,9 +5,10 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
+    [status-im.common.biometric.utils :as biometric]
     [status-im.common.events-helper :as events-helper]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.common.standard-authentication.core :as standard-auth]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
     [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
@@ -168,10 +169,9 @@
     :subtitle        subtitle}])
 
 (defn- transaction-details
-  [{:keys [estimated-time-min max-fees to-network route
-           transaction-type]}]
-  (let [route-loaded?             (and route (seq route))
-        loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+  [{:keys [estimated-time-min max-fees to-network
+           transaction-type route-loaded?]}]
+  (let [loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         amount                    (rf/sub [:wallet/send-total-amount-formatted])]
     [rn/view
      {:style (style/details-container
@@ -182,18 +182,17 @@
        [rn/activity-indicator {:style {:flex 1}}]
        route-loaded?
        [:<>
-        (when (ff/enabled? ::ff/wallet.transaction-params)
-          [quo/button
-           {:icon-only?          true
-            :type                :outline
-            :size                32
-            :inner-style         {:opacity 1}
-            :accessibility-label :advanced-button
-            :container-style     {:margin-right 8}
-            :on-press            #(rf/dispatch
-                                   [:show-bottom-sheet
-                                    {:content transaction-settings/settings-sheet}])}
-           :i/advanced])
+        [quo/button
+         {:icon-only?          true
+          :type                :outline
+          :size                32
+          :inner-style         {:opacity 1}
+          :accessibility-label :advanced-button
+          :container-style     {:margin-right 8}
+          :on-press            #(rf/dispatch
+                                 [:show-bottom-sheet
+                                  {:content transaction-settings/settings-sheet}])}
+         :i/advanced]
         [data-item
          {:title    (i18n/label :t/est-time)
           :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time-min)})}]
@@ -225,11 +224,7 @@
         estimated-time-min        (reduce + (map :estimated-time route))
         token-symbol              (or token-display-name
                                       (-> send-transaction-data :token :symbol))
-        first-route               (first route)
-        native-currency-symbol    (get-in first-route
-                                          [:from :native-currency-symbol])
-        fee-formatted             (rf/sub [:wallet/wallet-send-fee-fiat-formatted
-                                           native-currency-symbol])
+        fee-formatted             (rf/sub [:wallet/wallet-send-fee-fiat-formatted])
         account                   (rf/sub [:wallet/current-viewing-account])
         account-color             (:color account)
         bridge-to-network         (when bridge-to-chain-id
@@ -237,7 +232,6 @@
                                              bridge-to-chain-id]))
         loading-suggested-routes? (rf/sub
                                    [:wallet/wallet-send-loading-suggested-routes?])
-        transaction-for-signing   (rf/sub [:wallet/wallet-send-transaction-for-signing])
         from-account-props        {:customization-color account-color
                                    :size                32
                                    :emoji               (:emoji account)
@@ -249,20 +243,9 @@
         user-props                {:full-name to-address
                                    :address   (utils/get-shortened-address
                                                to-address)}
-        sign-on-keycard?          (get-in transaction-for-signing
-                                          [:signingDetails :signOnKeycard])]
+        biometric-auth?           (= (rf/sub [:auth-method]) constants/auth-method-biometric)
+        biometric-type            (rf/sub [:biometrics/supported-type])]
     (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clean-route-data-for-collectible-tx]))
-    ;; In token send flow we already have transaction built when
-    ;; we reach confirmation screen. But in send collectible flow
-    ;; routes request happens at the same time with navigation to
-    ;; confirmation screen. So we need to build the transaction as soon
-    ;; as route is available.
-    (rn/use-effect
-     (fn []
-       (when (and (send-utils/tx-type-collectible? transaction-type)
-                  first-route)
-         (rf/dispatch [:wallet/build-transaction-for-collectible-route])))
-     [first-route])
     (rn/use-mount
      (fn []
        (when (ff/enabled? ::ff/wallet.transaction-params)
@@ -283,27 +266,21 @@
                                     :to-network         bridge-to-network
                                     :theme              theme
                                     :route              route
-                                    :transaction-type   transaction-type}]
+                                    :transaction-type   transaction-type
+                                    :route-loaded?      (and route (seq route))}]
                                   (when (and (not loading-suggested-routes?) route (seq route))
-                                    [standard-auth/slide-button
-                                     {:size :size-48
-                                      :track-text (if (= transaction-type :tx/bridge)
-                                                    (i18n/label :t/slide-to-bridge)
-                                                    (i18n/label :t/slide-to-send))
-                                      :container-style {:z-index 2}
-                                      :disabled? (not transaction-for-signing)
+                                    [quo/slide-button
+                                     {:size                :size-48
+                                      :track-text          (if (= transaction-type :tx/bridge)
+                                                             (i18n/label :t/slide-to-bridge)
+                                                             (i18n/label :t/slide-to-send))
+                                      :container-style     {:z-index 2}
                                       :customization-color account-color
-                                      :auth-button-label (i18n/label :t/confirm)
-                                      :on-complete (when sign-on-keycard?
-                                                     #(rf/dispatch
-                                                       [:wallet/prepare-signatures-for-transactions
-                                                        :send
-                                                        ""]))
-                                      :on-auth-success
-                                      (fn [psw]
-                                        (rf/dispatch
-                                         [:wallet/prepare-signatures-for-transactions :send
-                                          psw]))}])]
+                                      :track-icon          (if biometric-auth?
+                                                             (biometric/get-icon-by-type biometric-type)
+                                                             :password)
+                                      :on-complete         #(rf/dispatch
+                                                             [:wallet.send/auth-slider-completed])}])]
        :gradient-cover?          true
        :customization-color      (:color account)}
       [rn/view

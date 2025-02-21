@@ -6,10 +6,12 @@
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]
+    [status-im.contexts.wallet.send.transaction-settings.core :as transaction-settings]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
     [taoensso.timbre :as log]
     [utils.address]
+    [utils.i18n :as i18n]
     [utils.money :as utils.money]
     [utils.number]
     [utils.re-frame :as rf]
@@ -384,16 +386,100 @@
 (rf/reg-event-fx
  :wallet/set-token-amount-to-send
  (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
+   {:db (assoc-in db [:wallet :ui :send :amount] amount)
+    :fx [[:dispatch
+          [:wallet/wizard-navigate-forward
+           {:current-screen stack-id
+            :start-flow?    start-flow?
+            :flow-id        :wallet-send-flow}]]]}))
+
+(rf/reg-event-fx
+ :wallet.send/auth-slider-completed
+ (fn [{:keys [db]}]
    (let [last-request-uuid (get-in db [:wallet :ui :send :last-request-uuid])]
-     {:db (-> db
-              (assoc-in [:wallet :ui :send :amount] amount)
-              (update-in [:wallet :ui :send] dissoc :transaction-for-signing))
+     {:db (update-in db [:wallet :ui :send] dissoc :transaction-for-signing)
       :fx [[:dispatch [:wallet/build-transactions-from-route {:request-uuid last-request-uuid}]]
            [:dispatch
-            [:wallet/wizard-navigate-forward
-             {:current-screen stack-id
-              :start-flow?    start-flow?
-              :flow-id        :wallet-send-flow}]]]})))
+            [:wallet.send/set-sign-transactions-callback-fx
+             [:dispatch
+              [:wallet/prepare-signatures-for-transactions :send]]]]]})))
+
+(defn log-transaction-signature-error
+  [error]
+  (log/error
+   "failed to prepare signatures for transactions"
+   {:event :wallet/prepare-signatures-for-transactions
+    :error error})
+  (rf/dispatch
+   [:toasts/upsert
+    {:id   :prepare-signatures-for-transactions-error
+     :type :negative
+     :text (:message error)}]))
+
+(defn- send-transactions-with-signatures
+  [tx-type signatures]
+  (rf/dispatch
+   [:wallet/send-router-transactions-with-signatures tx-type
+    signatures]))
+
+(rf/reg-event-fx
+ :wallet/send-router-transactions-with-signatures
+ (fn [{:keys [db]} [tx-type signatures]]
+   (let [transaction-for-signing (get-in db [:wallet :ui tx-type :transaction-for-signing])
+         signatures-map          (reduce (fn [acc {:keys [message signature]}]
+                                           (assoc acc
+                                                  message
+                                                  (send-utils/signature-rsv signature)))
+                                         {}
+                                         signatures)]
+     {:json-rpc/call [{:method     "wallet_sendRouterTransactionsWithSignatures"
+                       :params     [{:uuid       (get-in transaction-for-signing [:sendDetails :uuid])
+                                     :signatures signatures-map}]
+                       :on-success (fn []
+                                     (rf/dispatch [:hide-bottom-sheet]))
+                       :on-error   (fn [error]
+                                     (log/error "failed to send router transactions with signatures"
+                                                {:event :wallet/send-router-transactions-with-signatures
+                                                 :error error})
+                                     (rf/dispatch [:toasts/upsert
+                                                   {:id   :send-router-transactions-with-signatures-error
+                                                    :type :negative
+                                                    :text (:message error)}]))}]})))
+
+(rf/reg-event-fx
+ :wallet/prepare-signatures-for-transactions
+ (fn [{:keys [db]} [tx-type]]
+   (let [transaction-for-signing                (get-in db
+                                                        [:wallet :ui tx-type :transaction-for-signing])
+         signing-details                        (:signingDetails transaction-for-signing)
+         {:keys [hashes address signOnKeycard]} signing-details
+         send-tx-fn                             (partial send-transactions-with-signatures tx-type)]
+     (if signOnKeycard
+       {:fx [[:dispatch
+              [:standard-auth/authorize-with-keycard
+               {:on-complete (fn [pin]
+                               (rf/dispatch [:keycard/connect-and-sign-hashes
+                                             {:keycard-pin pin
+                                              :address     address
+                                              :hashes      hashes
+                                              :on-success  send-tx-fn
+                                              :on-failure  log-transaction-signature-error}]))}]]]}
+       {:fx [[:dispatch
+              [:standard-auth/authorize
+               {:on-auth-success   (fn [sha3-pwd]
+                                     (rf/dispatch [:wallet/standard-auth-autorization-success hashes
+                                                   address sha3-pwd send-tx-fn]))
+                :auth-button-label (i18n/label :t/confirm)}]]]}))))
+
+(rf/reg-event-fx
+ :wallet/standard-auth-autorization-success
+ (fn [_ [hashes address sha3-pwd send-tx-fn]]
+   {:fx [[:effects.wallet/sign-transaction-hashes
+          {:hashes     hashes
+           :address    address
+           :password   (security/safe-unmask-data sha3-pwd)
+           :on-success send-tx-fn
+           :on-error   log-transaction-signature-error}]]}))
 
 (rf/reg-event-fx
  :wallet/build-transaction-for-collectible-route
@@ -409,16 +495,14 @@
 (rf/reg-event-fx
  :wallet/set-token-amount-to-bridge
  (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
-   (let [last-request-uuid (get-in db [:wallet :ui :send :last-request-uuid])]
-     {:db (-> db
-              (assoc-in [:wallet :ui :send :amount] amount)
-              (update-in [:wallet :ui :send] dissoc :transaction-for-signing))
-      :fx [[:dispatch [:wallet/build-transactions-from-route {:request-uuid last-request-uuid}]]
-           [:dispatch
-            [:wallet/wizard-navigate-forward
-             {:current-screen stack-id
-              :start-flow?    start-flow?
-              :flow-id        :wallet-bridge-flow}]]]})))
+   {:db (-> db
+            (assoc-in [:wallet :ui :send :amount] amount)
+            (update-in [:wallet :ui :send] dissoc :transaction-for-signing))
+    :fx [[:dispatch
+          [:wallet/wizard-navigate-forward
+           {:current-screen stack-id
+            :start-flow?    start-flow?
+            :flow-id        :wallet-bridge-flow}]]]}))
 
 (rf/reg-event-fx
  :wallet/clean-bridge-to-selection
@@ -580,7 +664,10 @@
  :wallet/handle-suggested-routes
  (fn [{:keys [db]} [data]]
    (let [{send :send swap? :swap} (-> db :wallet :ui)
-         skip-processing-routes?  (:skip-processing-suggested-routes? send)]
+         skip-processing-routes?  (:skip-processing-suggested-routes? send)
+         clean-user-tx-settings?  (get-in db
+                                          [:wallet :ui :send :custom-tx-settings
+                                           :delete-on-routes-update?])]
      (when (or swap? (not skip-processing-routes?))
        (let [{error-code :code
               :as        error} (:ErrorResponse data)
@@ -591,13 +678,16 @@
            (log/error "failed to get suggested routes (async)"
                       {:event :wallet/handle-suggested-routes
                        :error error-message}))
-         {:fx [[:dispatch
-                (cond
-                  (and failure? swap?) [:wallet/swap-proposal-error error]
-                  failure?             [:wallet/suggested-routes-error error-message]
-                  swap?                [:wallet/swap-proposal-success (fix-routes data)]
-                  :else                [:wallet/suggested-routes-success (fix-routes data)
-                                        enough-assets?])]]})))))
+         (merge
+          (when clean-user-tx-settings?
+            {:db (update-in db [:wallet :ui :send] dissoc :custom-tx-settings)})
+          {:fx [[:dispatch
+                 (cond
+                   (and failure? swap?) [:wallet/swap-proposal-error error]
+                   failure?             [:wallet/suggested-routes-error error-message]
+                   swap?                [:wallet/swap-proposal-success (fix-routes data)]
+                   :else                [:wallet/suggested-routes-success (fix-routes data)
+                                         enough-assets?])]]}))))))
 
 (rf/reg-event-fx
  :wallet/transaction-success
@@ -668,66 +758,6 @@
                                                {:id   :build-transactions-from-route-error
                                                 :type :negative
                                                 :text (:message error)}]))}]}))
-
-(rf/reg-event-fx
- :wallet/prepare-signatures-for-transactions
- (fn [{:keys [db]} [type sha3-pwd]]
-   (let [{:keys [hashes address signOnKeycard]} (get-in db
-                                                        [:wallet :ui type :transaction-for-signing
-                                                         :signingDetails])
-         on-success                             (fn [signatures]
-                                                  (rf/dispatch
-                                                   [:wallet/send-router-transactions-with-signatures type
-                                                    signatures]))
-         on-error                               (fn [error]
-                                                  (log/error
-                                                   "failed to prepare signatures for transactions"
-                                                   {:event :wallet/prepare-signatures-for-transactions
-                                                    :error error})
-                                                  (rf/dispatch
-                                                   [:toasts/upsert
-                                                    {:id   :prepare-signatures-for-transactions-error
-                                                     :type :negative
-                                                     :text (:message error)}]))]
-     (if signOnKeycard
-       {:fx [[:dispatch
-              [:standard-auth/authorize-with-keycard
-               {:on-complete #(rf/dispatch [:keycard/connect-and-sign-hashes
-                                            {:keycard-pin %
-                                             :address     address
-                                             :hashes      hashes
-                                             :on-success  on-success
-                                             :on-failure  on-error}])}]]]}
-       {:fx [[:effects.wallet/sign-transaction-hashes
-              {:hashes     hashes
-               :address    address
-               :password   (security/safe-unmask-data sha3-pwd)
-               :on-success on-success
-               :on-error   on-error}]]}))))
-
-(rf/reg-event-fx
- :wallet/send-router-transactions-with-signatures
- (fn [{:keys [db]} [type signatures]]
-   (let [transaction-for-signing (get-in db [:wallet :ui type :transaction-for-signing])
-         signatures-map          (reduce (fn [acc {:keys [message signature]}]
-                                           (assoc acc
-                                                  message
-                                                  (send-utils/signature-rsv signature)))
-                                         {}
-                                         signatures)]
-     {:json-rpc/call [{:method     "wallet_sendRouterTransactionsWithSignatures"
-                       :params     [{:uuid       (get-in transaction-for-signing [:sendDetails :uuid])
-                                     :signatures signatures-map}]
-                       :on-success (fn []
-                                     (rf/dispatch [:hide-bottom-sheet]))
-                       :on-error   (fn [error]
-                                     (log/error "failed to send router transactions with signatures"
-                                                {:event :wallet/send-router-transactions-with-signatures
-                                                 :error error})
-                                     (rf/dispatch [:toasts/upsert
-                                                   {:id   :send-router-transactions-with-signatures-error
-                                                    :type :negative
-                                                    :text (:message error)}]))}]})))
 
 (rf/reg-event-fx
  :wallet/select-from-account
@@ -817,35 +847,69 @@
 (rf/reg-event-fx
  :wallet/init-tx-settings
  (fn [{db :db}]
-   {:db (assoc-in db
-         [:wallet :ui :send :tx-settings]
-         {:max-base-fee   {:low     5
-                           :current 8.2
-                           :high    9}
-          :priority-fee   {:low     0.6
-                           :high    5.1
-                           :current 1.1}
-          :max-gas-amount {:low     30000
-                           :current 31000}
-          :nonce          {:last-transaction 21
-                           :current          22}})}))
+   {:db (-> db
+            (assoc-in [:wallet :ui :send :custom-tx-settings]
+                      {:max-base-fee   {:low     5
+                                        :current 8.2
+                                        :high    9}
+                       :priority-fee   {:low     0.6
+                                        :high    5.1
+                                        :current 1.1}
+                       :max-gas-amount {:low     30000
+                                        :current 31000}
+                       :nonce          {:last-transaction 21
+                                        :current          22}}))}))
 
 (rf/reg-event-fx
  :wallet/set-max-base-fee
  (fn [{db :db} [value]]
-   {:db (assoc-in db [:wallet :ui :send :tx-settings :max-base-fee :current] value)}))
+   {:db (assoc-in db [:wallet :ui :send :custom-tx-settings :max-base-fee :current] value)}))
 
 (rf/reg-event-fx
  :wallet/set-priority-fee
  (fn [{db :db} [value]]
-   {:db (assoc-in db [:wallet :ui :send :tx-settings :priority-fee :current] value)}))
+   {:db (assoc-in db [:wallet :ui :send :custom-tx-settings :priority-fee :current] value)}))
 (rf/reg-event-fx
 
  :wallet/set-max-gas-amount
  (fn [{db :db} [value]]
-   {:db (assoc-in db [:wallet :ui :send :tx-settings :max-gas-amount :current] value)}))
+   {:db (assoc-in db [:wallet :ui :send :custom-tx-settings :max-gas-amount :current] value)}))
 
 (rf/reg-event-fx
  :wallet/set-nonce
  (fn [{db :db} [value]]
    {:db (assoc-in db [:wallet :ui :send :tx-settings :nonce :current] value)}))
+
+(rf/reg-event-fx :wallet/quick-fee-mode-confirmed
+ (fn [{db :db} [fee-mode]]
+   (let [gas-rate         (transaction-settings/tx-fee-mode->gas-rate fee-mode)
+         route            (first (get-in db [:wallet :ui :send :route]))
+         path-tx-identity (send-utils/path-identity route)
+         params           [path-tx-identity gas-rate]]
+     {:db (assoc-in db [:wallet :ui :send :custom-tx-settings :tx-fee-mode] fee-mode)
+      :fx [[:json-rpc/call
+            [{:method   "wallet_setFeeMode"
+              :params   params
+              :on-error (fn [error]
+                          (log/error "failed to set quick transaction settings"
+                                     {:event  :wallet/quick-fee-mode-confirmed
+                                      :error  (:message error)
+                                      :params params}))}]]
+           [:dispatch [:wallet/mark-user-tx-settings-for-deletion]]]})))
+
+
+;; There is a delay between the moment when user selected
+;; custom settings and the moment when new route arrived
+;; with those settings applied. During this delay
+;; we should keep user settings for ui. After new route
+;; arrived we should clean the settings.
+(rf/reg-event-fx :wallet/mark-user-tx-settings-for-deletion
+ (fn [{db :db}]
+   {:db (assoc-in db [:wallet :ui :send :custom-tx-settings :delete-on-routes-update?] true)}))
+
+
+(rf/reg-event-fx :wallet.send/set-sign-transactions-callback-fx
+ (fn [{:keys [db]} [callback-fx]]
+   {:db (assoc-in db
+         [:wallet :ui :send :sign-transactions-callback-fx]
+         callback-fx)}))

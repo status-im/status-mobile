@@ -178,21 +178,21 @@
 (deftest calculate-gas-fee-test
   (testing "EIP-1559 transaction without L1 fee"
     (let [data            {:gas-amount "23487"
-                           :gas-fees   {:max-fee-per-gas-medium "2.259274911"
-                                        :eip-1559-enabled       true
-                                        :l-1-gas-fee            "0"}}
+                           :gas-fees   {:tx-max-fees-per-gas "2.259274911"
+                                        :eip-1559-enabled    true
+                                        :l-1-gas-fee         "0"}}
           expected-result (money/bignumber "53063589834657")] ; This is in Wei
-      (is (money/equal-to (utils/calculate-gas-fee data)
+      (is (money/equal-to (utils/path-gas-fee data)
                           expected-result))))
 
   (testing "EIP-1559 transaction with L1 fee of 60,000 Gwei"
     (let [data            {:gas-amount "23487"
-                           :gas-fees   {:max-fee-per-gas-medium "2.259274911"
-                                        :eip-1559-enabled       true
-                                        :l-1-gas-fee            "60000"}}
+                           :gas-fees   {:tx-max-fees-per-gas "2.259274911"
+                                        :eip-1559-enabled    true
+                                        :l-1-gas-fee         "60000"}}
           expected-result (money/bignumber "113063589834657")] ; Added 60,000 Gwei in Wei to the
                                                                ; previous result
-      (is (money/equal-to (utils/calculate-gas-fee data)
+      (is (money/equal-to (utils/path-gas-fee data)
                           expected-result))))
 
   (testing "Non-EIP-1559 transaction with specified gas price"
@@ -202,48 +202,48 @@
                                         :l-1-gas-fee      "0"}}
           expected-result (money/bignumber "67471600217343")] ; This is in Wei, for the specified
                                                               ; gas amount and price
-      (is (money/equal-to (utils/calculate-gas-fee data)
+      (is (money/equal-to (utils/path-gas-fee data)
                           expected-result)))))
 
 (deftest calculate-full-route-gas-fee-test
   (testing "Route with a single EIP-1559 transaction, no L1 fees"
     (let [route           [{:gas-amount "23487"
-                            :gas-fees   {:max-fee-per-gas-medium "2.259274911"
-                                         :eip-1559-enabled       true
-                                         :l-1-gas-fee            "0"}}]
+                            :gas-fees   {:tx-max-fees-per-gas "2.259274911"
+                                         :eip-1559-enabled    true
+                                         :l-1-gas-fee         "0"}}]
           expected-result (money/bignumber "0.000053063589834657")] ; The Wei amount for the
                                                                     ; transaction, converted to
                                                                     ; Ether
-      (is (money/equal-to (utils/calculate-full-route-gas-fee route)
+      (is (money/equal-to (utils/full-route-gas-fee route)
                           expected-result))))
 
   (testing "Route with two EIP-1559 transactions, no L1 fees"
     (let [route           [{:gas-amount "23487"
-                            :gas-fees   {:max-fee-per-gas-medium "2.259274911"
-                                         :eip-1559-enabled       true
-                                         :l-1-gas-fee            "0"}}
+                            :gas-fees   {:tx-max-fees-per-gas "2.259274911"
+                                         :eip-1559-enabled    true
+                                         :l-1-gas-fee         "0"}}
                            {:gas-amount "23487"
-                            :gas-fees   {:max-fee-per-gas-medium "2.259274911"
-                                         :eip-1559-enabled       true
-                                         :l-1-gas-fee            "0"}}]
+                            :gas-fees   {:tx-max-fees-per-gas "2.259274911"
+                                         :eip-1559-enabled    true
+                                         :l-1-gas-fee         "0"}}]
           expected-result (money/bignumber "0.000106127179669314")] ; Sum of both transactions' Wei
                                                                     ; amounts, converted to Ether
-      (is (money/equal-to (utils/calculate-full-route-gas-fee route)
+      (is (money/equal-to (utils/full-route-gas-fee route)
                           expected-result))))
 
   (testing "Route with two EIP-1559 transactions, one with L1 fee of 60,000 Gwei"
     (let [route           [{:gas-amount "23487"
-                            :gas-fees   {:max-fee-per-gas-medium "2.259274911"
-                                         :eip-1559-enabled       true
-                                         :l-1-gas-fee            "0"}}
+                            :gas-fees   {:tx-max-fees-per-gas "2.259274911"
+                                         :eip-1559-enabled    true
+                                         :l-1-gas-fee         "0"}}
                            {:gas-amount "23487"
-                            :gas-fees   {:max-fee-per-gas-medium "2.259274911"
-                                         :eip-1559-enabled       true
-                                         :l-1-gas-fee            "60000"}}]
+                            :gas-fees   {:tx-max-fees-per-gas "2.259274911"
+                                         :eip-1559-enabled    true
+                                         :l-1-gas-fee         "60000"}}]
           expected-result (money/bignumber "0.000166127179669314")] ; Added 60,000 Gwei in Wei to
                                                                     ; the previous total and
                                                                     ; converted to Ether
-      (is (money/equal-to (utils/calculate-full-route-gas-fee route)
+      (is (money/equal-to (utils/full-route-gas-fee route)
                           expected-result)))))
 
 (deftest token-available-networks-for-suggested-routes-test

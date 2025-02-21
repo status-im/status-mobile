@@ -1,6 +1,7 @@
 import time
 
 import pytest
+from selenium.common import NoSuchElementException
 
 from tests import common_password
 from views.base_element import Button, EditBox, Text, BaseElement
@@ -28,6 +29,24 @@ class AssetElement(Button):
                 return float(amount)
         except ValueError:
             pytest.fail("Cannot get %s amount" % self.asset_name)
+
+
+class CollectibleItemElement(Button):
+
+    def __init__(self, driver, collectible_name):
+        self.collectible_name = collectible_name
+        self.locator = "//*[@content-desc='collectible-list-item']//*[contains(@text,'%s')]/../.." % collectible_name
+        super().__init__(driver=driver, xpath=self.locator)
+        self.image_element = BaseElement(self.driver, xpath=self.locator + "//android.widget.ImageView")
+
+    @property
+    def quantity(self):
+        counter_element = BaseElement(
+            self.driver, xpath=self.locator + "//*[@content-desc='collectible-counter']/android.widget.TextView")
+        try:
+            return int(counter_element.text.strip('x'))
+        except NoSuchElementException:
+            return 1
 
 
 class ActivityElement(BaseElement):
@@ -111,11 +130,13 @@ class WalletView(BaseView):
 
         # Sending transaction
         self.address_text_input = EditBox(self.driver, accessibility_id='address-text-input')
+        self.collectibles_tab_on_select_token_view = Button(self.driver, accessibility_id='Collectibles')
         self.amount_input = EditBox(self.driver, xpath="//android.widget.EditText")
         self.from_network_text = Text(
             self.driver, xpath="(//*[@content-desc='loading']/following-sibling::android.widget.TextView)[1]")
         self.confirm_button = Button(self.driver, accessibility_id='button-one')
         self.done_button = Button(self.driver, accessibility_id='done')
+        self.amount_input_increase_button = Button(self.driver, accessibility_id='amount-input-inc-button')
 
         # Review Send and Review Bridge screens
         self.from_data_container = ConfirmationViewInfoContainer(self.driver, label_name='from')
@@ -153,6 +174,11 @@ class WalletView(BaseView):
         self.passphrase_word_number_container = Text(
             self.driver, xpath="//*[@content-desc='number-container']/android.widget.TextView")
 
+        # Collectible view
+        self.expanded_collectible_image = BaseElement(
+            self.driver, xpath="//*[@content-desc='expanded-collectible']//android.widget.ImageView")
+        self.send_from_collectible_info_button = Button(self.driver, accessibility_id="icon, Send")
+
     def set_network_in_wallet(self, network_name: str):
         self.network_drop_down.click()
         Button(self.driver, accessibility_id="%s, label-component" % network_name.capitalize()).click()
@@ -165,6 +191,9 @@ class WalletView(BaseView):
         element = AssetElement(driver=self.driver, asset_name=asset_name)
         element.scroll_to_element(down_start_y=0.89, down_end_y=0.8)
         return element
+
+    def get_collectible_element(self, collectible_name: str):
+        return CollectibleItemElement(driver=self.driver, collectible_name=collectible_name)
 
     def select_asset(self, asset_name: str):
         Button(driver=self.driver,
