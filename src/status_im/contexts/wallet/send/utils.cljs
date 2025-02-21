@@ -240,12 +240,6 @@
   [token-symbol]
   (not (constants/bridge-assets token-symbol)))
 
-(defn signature-rsv
-  [signature]
-  {:r (subs signature 0 64)
-   :s (subs signature 64 128)
-   :v (subs signature 128 130)})
-
 (defn path-identity
   [path]
   {:routerInputParamsUuid (:router-input-params-uuid path)

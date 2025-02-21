@@ -15,7 +15,8 @@
     [utils.money :as utils.money]
     [utils.number]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.security.core :as security]
+    [utils.signatures :as signatures]))
 
 (rf/reg-event-fx :wallet/clean-send-data
  (fn [{:keys [db]}]
@@ -429,7 +430,7 @@
          signatures-map          (reduce (fn [acc {:keys [message signature]}]
                                            (assoc acc
                                                   message
-                                                  (send-utils/signature-rsv signature)))
+                                                  (signatures/signature->rsv signature)))
                                          {}
                                          signatures)]
      {:json-rpc/call [{:method     "wallet_sendRouterTransactionsWithSignatures"
