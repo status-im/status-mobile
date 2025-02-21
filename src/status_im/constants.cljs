@@ -261,6 +261,7 @@
 
 (def ^:const create-account-link "https://status.app/help/wallet/create-wallet-accounts")
 (def ^:const mobile-upvote-link "https://status-mobile.featureupvote.com")
+(def ^:const status-help-link "https://status.app/help")
 
 (def ^:const visibility-status-unknown 0)
 (def ^:const visibility-status-automatic 1)

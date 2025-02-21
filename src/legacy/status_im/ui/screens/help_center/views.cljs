@@ -5,18 +5,19 @@
     [quo.core :as quo]
     [re-frame.core :as re-frame]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im.constants :as const]))
 
 (def data
   [{:size                :small
-    :title               (i18n/label :t/glossary)
-    :accessibility-label :glossary-button
-    :on-press            #(re-frame/dispatch [:open-modal :glossary])
-    :chevron             true}
-   {:size                :small
     :title               (i18n/label :t/submit-bug)
     :accessibility-label :submit-bug-button
     :on-press            #(re-frame/dispatch [:open-modal :bug-report])
+    :chevron             true}
+   {:size                :small
+    :title               (i18n/label :t/status-help)
+    :accessibility-label :status-help-button
+    :on-press            #(rf/dispatch [:open-url const/status-help-link])
     :chevron             true}])
 
 (defn help-center
