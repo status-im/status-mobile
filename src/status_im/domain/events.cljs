@@ -16,8 +16,6 @@
         :prod {}})
    new-saved-addresses))
 
-(defn reconcile-saved-addresses
-  [{:keys [db]} [saved-addresses]]
-  {:db (update-in db [:wallet :saved-addresses] update-saved-addresses saved-addresses)})
-
-(rf/reg-event-fx :domain/reconcile-saved-addresses reconcile-saved-addresses)
+(rf/reg-event-fx :domain/reconcile-saved-addresses
+ (fn [{:keys [db]} [saved-addresses]]
+   {:db (update-in db [:wallet :saved-addresses] update-saved-addresses saved-addresses)}))

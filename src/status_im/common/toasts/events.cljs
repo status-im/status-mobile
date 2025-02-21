@@ -44,8 +44,8 @@
           effect                   {:db db}]
       (if empty-ordered?
         (-> effect
-            #_(update-in [:db :toasts] assoc :hide-toasts-timer-set true)
-            #_(assoc :dispatch-later [{:ms 500 :dispatch [:toasts/hide-with-check]}]))
+            (update-in [:db :toasts] assoc :hide-toasts-timer-set true)
+            (assoc :dispatch-later [{:ms 500 :dispatch [:toasts/hide-with-check]}]))
         effect))))
 
 (rf/defn close-all-toasts
