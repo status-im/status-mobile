@@ -435,14 +435,16 @@
 (rf/reg-event-fx
  :wallet/start-bridge
  (fn [{:keys [db]}]
-   (let [view-id (:view-id db)]
-     (cond-> {:db (assoc-in db [:wallet :ui :send :tx-type] :tx/bridge)}
-       (= view-id :screen/wallet.accounts)
-       (assoc :fx
-              [[:dispatch
-                [:wallet/wizard-navigate-forward
-                 {:start-flow? true
-                  :flow-id     :wallet-bridge-flow}]]])))))
+   {:db (assoc-in db [:wallet :ui :send :tx-type] :tx/bridge)
+    :fx [[:dispatch
+          [:wallet/wizard-navigate-forward
+           {:start-flow? true
+            :flow-id     :wallet-bridge-flow}]]]}))
+
+(rf/reg-event-fx
+ :wallet/set-send-tx-type
+ (fn [{:keys [db]} [type]]
+   {:db (assoc-in db [:wallet :ui :send :tx-type] type)}))
 
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
