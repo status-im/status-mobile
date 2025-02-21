@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
+            [status-im.common.resources :as resources]
             [utils.i18n :as i18n]))
 
 (defn view
@@ -14,8 +15,11 @@
     {:title            (i18n/label :t/different-keycard)
      :description      :text
      :description-text (i18n/label :t/scan-previous-keycard)}]
-   [rn/view {:style {:flex 1}}]
-   [rn/view {:style {:padding-horizontal 20}}
+   [rn/image
+    {:resize-mode :contain
+     :style       {:flex 1 :width (:width (rn/get-window))}
+     :source      (resources/get-image :keycard-not-same)}]
+   [rn/view {:style {:padding-horizontal 20 :padding-vertical 12}}
     [quo/button {:on-press events-helper/navigate-back}
      (i18n/label :t/try-again)]]])
 

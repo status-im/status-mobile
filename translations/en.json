@@ -796,7 +796,7 @@
   "device-syncing": "Device syncing",
   "devices": "Devices",
   "devices-count": "{{number}} devices",
-  "different-keycard": "It’s a different Keycard",
+  "different-keycard": "This is a different Keycard",
   "disable": "disable",
   "disable-all": "Disable all",
   "disable-later-in-settings": "You can disable this later in Settings",

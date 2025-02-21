@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
+            [status-im.common.resources :as resources]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -48,8 +49,11 @@
     {:title            (i18n/label :t/keycard-reset-success)
      :description      :text
      :description-text (i18n/label :t/keycard-empty-ready)}]
-   [rn/view {:style {:flex 1}}]
-   [rn/view {:style {:padding-horizontal 20}}
+   [rn/image
+    {:resize-mode :contain
+     :style       {:flex 1 :width (:width (rn/get-window))}
+     :source      (resources/get-image :keycard-reset-positive)}]
+   [rn/view {:style {:padding-horizontal 20 :padding-vertical 12}}
     [quo/button {:on-press events-helper/navigate-back}
      (i18n/label :t/done)]]])
 
@@ -61,8 +65,11 @@
      :on-press  events-helper/navigate-back}]
    [quo/page-top
     {:title (i18n/label :t/keycard-reset-failed)}]
-   [rn/view {:style {:flex 1}}]
-   [rn/view {:style {:padding-horizontal 20}}
+   [rn/image
+    {:resize-mode :contain
+     :style       {:flex 1 :width (:width (rn/get-window))}
+     :source      (resources/get-image :keycard-reset-negative)}]
+   [rn/view {:style {:padding-horizontal 20 :padding-vertical 12}}
     [quo/button {:on-press events-helper/navigate-back}
      (i18n/label :t/try-again)]]])
 
