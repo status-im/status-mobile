@@ -30,7 +30,7 @@
 (goog-define STATUS_BUILD_ETH_RPC_PROXY_PASSWORD "")
 (goog-define STATUS_BUILD_ETH_RPC_PROXY_URL "")
 (goog-define MIXPANEL_APP_ID "")
-(goog-define MIXPANEL_TOKEN "")
+(goog-define MIXPANEL_APP_TOKEN "")
 
 (def mainnet-rpc-url (str "https://eth-archival.rpc.grove.city/v1/" POKT_TOKEN))
 (def sepolia-rpc-url (str "https://sepolia-archival.rpc.grove.city/v1/" POKT_TOKEN))
@@ -65,7 +65,7 @@
 (def mixpanel-token
   "MixPanel token is not supposed to be secret, but we still want to avoid
   committing it to source."
-  MIXPANEL_TOKEN)
+  MIXPANEL_APP_TOKEN)
 
 (def opensea-api-key OPENSEA_API_KEY)
 (def status-proxy-enabled? true)
