@@ -328,16 +328,16 @@
 
 (defn- action-button
   [{:keys [on-press]}]
-  (let [account-color               (rf/sub [:wallet/current-viewing-account-color])
-        swap-proposal               (rf/sub [:wallet/swap-proposal-without-fees])
-        error-response              (rf/sub [:wallet/swap-error-response])
-        loading-swap-proposal?      (rf/sub [:wallet/swap-loading-swap-proposal?])
-        approval-required?          (rf/sub [:wallet/swap-proposal-approval-required])
-        approval-transaction-status (rf/sub [:wallet/swap-approval-transaction-status])]
+  (let [account-color                 (rf/sub [:wallet/current-viewing-account-color])
+        swap-proposal-received-amount (rf/sub [:wallet/swap-proposal-amount-out])
+        error-response                (rf/sub [:wallet/swap-error-response])
+        loading-swap-proposal?        (rf/sub [:wallet/swap-loading-swap-proposal?])
+        approval-required?            (rf/sub [:wallet/swap-proposal-approval-required])
+        approval-transaction-status   (rf/sub [:wallet/swap-approval-transaction-status])]
     [quo/bottom-actions
      {:actions          :one-action
       :button-one-label (i18n/label :t/review-swap)
-      :button-one-props {:disabled?           (or (not swap-proposal)
+      :button-one-props {:disabled?           (or (not swap-proposal-received-amount)
                                                   error-response
                                                   (and approval-required?
                                                        (not= approval-transaction-status :confirmed))
