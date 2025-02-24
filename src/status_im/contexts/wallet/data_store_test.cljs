@@ -265,3 +265,13 @@
   (testing "returns false when db does not contain wallet data"
     (let [db {}]
       (is (false? (sut/selected-keypair-keycard? db))))))
+
+(deftest rpc->collectible-id-test
+  (testing "Transforms JSON with `updated` key into collectible ID"
+    (let
+      [json
+       "{\"updated\": [{\"contractID\": {\"chainID\": 222, \"address\": \"0x123456\"}, \"tokenID\": 77}]}"
+       expected {:contract-id {:chain-id 222
+                               :address  "0x123456"}
+                 :token-id    "77"}]
+      (is (= expected (sut/rpc->collectible-id json))))))

@@ -271,7 +271,8 @@ class HomeView(BaseView):
 
         # Notification centre
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
-        self.notifications_unread_badge = BaseElement(self.driver, accessibility_id="activity-center-unread-count")
+        self.notifications_unread_badge = BaseElement(
+            self.driver, xpath="//*[@content-desc='activity-center-unread-count']/android.widget.TextView")
         self.open_activity_center_button = Button(self.driver, accessibility_id="open-activity-center-button")
         self.close_activity_centre = Button(self.driver, accessibility_id="close-activity-center")
 
@@ -375,11 +376,11 @@ class HomeView(BaseView):
         chat_element = self.get_activity_center_element_by_text(message_body)
         return chat_element
 
-    def handle_contact_request(self, username: str, action='accept'):
+    def handle_contact_request(self, username: str, action: str = 'accept', notifications_count: int = 1):
         if self.toast_content_element.is_element_displayed(10):
             self.toast_content_element.wait_for_invisibility_of_element()
         try:
-            self.notifications_unread_badge.wait_for_visibility_of_element(120)
+            self.notifications_unread_badge.wait_for_element_text(text=str(notifications_count), wait_time=120)
         except TimeoutException:
             pass
         self.open_activity_center_button.click_until_presence_of_element(self.close_activity_centre)
@@ -396,7 +397,7 @@ class HomeView(BaseView):
                 chat_element.cancel_contact_request()
             else:
                 self.driver.fail("Illegal option for CR!")
-        except NoSuchElementException:
+        except (NoSuchElementException, TimeoutException):
             self.driver.fail("No contact request received from %s" % username)
         finally:
             self.close_activity_centre.wait_for_rendering_ended_and_click()

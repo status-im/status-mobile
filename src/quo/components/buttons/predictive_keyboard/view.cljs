@@ -58,7 +58,7 @@
 
         :error
         [info-message/view
-         {:icon   :i/info
+         {:icon   :i/alert
           :size   :default
           :status :error}
          text]

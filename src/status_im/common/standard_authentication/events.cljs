@@ -10,16 +10,35 @@
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
+(defn- partially-operable-accounts?
+  [accounts]
+  (->> accounts
+       vals
+       (some #(= :partially (:operable %)))
+       boolean))
+
+(rf/reg-event-fx :standard-auth/migrate-partially-operable-accounts
+ (fn [{:keys [db]} [{:keys [masked-password on-success]}]]
+   (let [on-auth-success-callback         #(on-success masked-password)
+         has-partially-operable-accounts? (-> (get-in db [:wallet :accounts])
+                                              partially-operable-accounts?)]
+     {:fx [(if has-partially-operable-accounts?
+             [:dispatch
+              [:wallet/make-partially-operable-accounts-fully-operable
+               {:password   masked-password
+                :on-success on-auth-success-callback
+                :on-error   on-auth-success-callback}]]
+             [:effects.standard-auth/on-auth-success on-auth-success-callback])]})))
+
 (defn- handle-password-success
-  [has-partially-operable-accounts? on-auth-success masked-password]
+  [{:keys [migrate-partially-operable-accounts? on-auth-success masked-password]}]
   (let [on-auth-success-callback #(on-auth-success masked-password)]
     (rf/dispatch [:standard-auth/set-success true])
     (rf/dispatch [:standard-auth/reset-login-password])
-    (if has-partially-operable-accounts?
-      (rf/dispatch [:wallet/make-partially-operable-accounts-fully-operable
-                    {:password   masked-password
-                     :on-success on-auth-success-callback
-                     :on-error   on-auth-success-callback}])
+    (if migrate-partially-operable-accounts?
+      (rf/dispatch [:standard-auth/migrate-partially-operable-accounts
+                    {:masked-password masked-password
+                     :on-success      on-auth-success}])
       (on-auth-success-callback))))
 
 (defn authorize
@@ -42,9 +61,10 @@
                     {:pin        pin
                      :on-success (fn [{:keys [encryption-public-key]}]
                                    (rf/dispatch [:keycard/disconnect])
-                                   (handle-password-success false
-                                                            on-auth-success
-                                                            (security/mask-data encryption-public-key)))
+                                   (handle-password-success {:migrate-partially-operable-accounts? false
+                                                             :on-auth-success on-auth-success
+                                                             :masked-password (security/mask-data
+                                                                               encryption-public-key)}))
                      :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error
                                                 %])}]))}]))}]]
         [:effects.biometric/check-if-available
@@ -85,7 +105,12 @@
         keycard? (get-in db [:profile/profile :keycard-pairing])]
     {:fx [(if keycard?
             [:keychain/get-keycard-keys [key-uid on-auth-success]]
-            [:keychain/get-user-password [key-uid on-auth-success]])
+            [:keychain/get-user-password
+             [key-uid
+              (fn [masked-password]
+                (rf/dispatch [:standard-auth/migrate-partially-operable-accounts
+                              {:masked-password masked-password
+                               :on-success      on-auth-success}]))]])
           [:dispatch [:standard-auth/set-success true]]
           [:dispatch [:standard-auth/reset-login-password]]]}))
 
@@ -108,15 +133,14 @@
 (defn- bottom-sheet-password-view
   [{:keys [on-press-biometric on-auth-success auth-button-icon-left auth-button-label]}]
   (fn []
-    (let [has-partially-operable-accounts? (rf/sub [:wallet/has-partially-operable-accounts?])]
-      [enter-password/view
-       {:on-enter-password   #(handle-password-success
-                               has-partially-operable-accounts?
-                               on-auth-success
-                               (security/hash-masked-password %))
-        :on-press-biometrics on-press-biometric
-        :button-icon-left    auth-button-icon-left
-        :button-label        auth-button-label}])))
+    [enter-password/view
+     {:on-enter-password   #(handle-password-success {:migrate-partially-operable-accounts? true
+                                                      :on-auth-success on-auth-success
+                                                      :masked-password (security/hash-masked-password
+                                                                        %)})
+      :on-press-biometrics on-press-biometric
+      :button-icon-left    auth-button-icon-left
+      :button-label        auth-button-label}]))
 
 (defn authorize-with-keycard
   [_ [{:keys [on-complete]}]]
@@ -154,6 +178,12 @@
  (fn [{:keys [on-close success?]}]
    (when on-close
      (on-close success?))))
+
+(rf/reg-fx
+ :effects.standard-auth/on-auth-success
+ (fn [on-auth-success]
+   (when on-auth-success
+     (on-auth-success))))
 
 (rf/reg-event-fx
  :standard-auth/close

@@ -31,7 +31,7 @@
        :placeholder  (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-20 theme)
        :text         (colors/theme-colors colors/neutral-100 colors/white theme)}
       :error
-      {:border-color (colors/theme-colors colors/danger-opa-40 colors/danger-opa-40 theme)
+      {:border-color colors/danger-50-opa-40
        :placeholder  (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
        :text         (colors/theme-colors colors/neutral-100 colors/white theme)}
       :disabled
@@ -48,7 +48,7 @@
        :placeholder  (colors/theme-colors colors/neutral-30 colors/neutral-60 theme)
        :text         (colors/theme-colors colors/neutral-100 colors/white theme)}
       :error
-      {:border-color (colors/theme-colors colors/danger-opa-40 colors/danger-opa-40 theme)
+      {:border-color colors/danger-50-opa-40
        :placeholder  (colors/theme-colors colors/neutral-40 colors/white-opa-40 theme)
        :text         (colors/theme-colors colors/neutral-100 colors/white theme)}
       :disabled

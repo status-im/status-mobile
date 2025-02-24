@@ -25,21 +25,42 @@
              transaction-hashes))
 
 (defn calculate-gas-fee
-  [data]
-  (let [gas-amount         (money/bignumber (get data :gas-amount))
-        gas-fees           (get data :gas-fees)
-        eip1559-enabled?   (get gas-fees :eip-1559-enabled)
-        optimal-price-gwei (money/bignumber (if eip1559-enabled?
-                                              (get gas-fees :max-fee-per-gas-medium)
-                                              (get gas-fees :gas-price)))
-        total-gas-fee-wei  (money/mul (money/->wei :gwei optimal-price-gwei) gas-amount)
-        l1-fee-wei         (money/->wei :gwei (get gas-fees :l-1-gas-fee))]
+  [{:keys [gas-amount gas-price l1-gas-fee]}]
+  (let [total-gas-fee-wei (money/mul (money/->wei :gwei gas-price) gas-amount)
+        l1-fee-wei        (money/->wei :gwei l1-gas-fee)]
     (money/add total-gas-fee-wei l1-fee-wei)))
 
-(defn calculate-full-route-gas-fee
+(defn path-gas-fee
+  [path]
+  (let [gas-amount       (money/bignumber (get path :gas-amount))
+        gas-fees         (get path :gas-fees)
+        eip1559-enabled? (get gas-fees :eip-1559-enabled)
+        gas-price        (money/bignumber (if eip1559-enabled?
+                                            (get gas-fees :tx-max-fees-per-gas)
+                                            (get gas-fees :gas-price)))
+        l1-gas-fee       (get gas-fees :l-1-gas-fee)]
+    (calculate-gas-fee {:gas-amount gas-amount
+                        :gas-price  gas-price
+                        :l1-gas-fee l1-gas-fee})))
+
+(defn path-gas-fee-for-custom-gas-price
+  [route gas-price]
+  (let [gas-amount (money/bignumber (get route :gas-amount))
+        gas-fees   (get route :gas-fees)
+        l1-gas-fee (get gas-fees :l-1-gas-fee)]
+    (calculate-gas-fee {:gas-amount gas-amount
+                        :gas-price  (money/bignumber gas-price)
+                        :l1-gas-fee l1-gas-fee})))
+
+(defn full-route-gas-fee
   "Sums all the routes fees in wei and then convert the total value to ether"
   [route]
-  (money/wei->ether (reduce money/add (map calculate-gas-fee route))))
+  (money/wei->ether (reduce money/add (map path-gas-fee route))))
+
+(defn full-route-gas-fee-for-custom-gas-price
+  "Sums all the routes fees in wei and then convert the total value to ether"
+  [route gas-price]
+  (money/wei->ether (reduce money/add (map #(path-gas-fee-for-custom-gas-price % gas-price) route))))
 
 (defn- path-amount-in
   [path]
@@ -224,3 +245,11 @@
   {:r (subs signature 0 64)
    :s (subs signature 64 128)
    :v (subs signature 128 130)})
+
+(defn path-identity
+  [path]
+  {:routerInputParamsUuid (:router-input-params-uuid path)
+   :pathName              (:bridge-name path)
+   :chainID               (get-in path [:from :chain-id])
+   :isApprovalTx          (:approval-required path)
+   :communityID           nil})

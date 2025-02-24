@@ -17,24 +17,20 @@
 (def detail-container
   {:flex 1})
 
-(defn card-stats-container
-  []
+(def card-stats-container
   {:flex-direction :row})
 
-(defn list-stats-container
-  []
+(def list-stats-container
   {:flex-direction :row
    :align-items    :center})
 
-(defn card-stats-position
-  []
+(def card-stats-position
   {:position :absolute
    :top      116
    :right    12
    :left     12})
 
-(defn community-tags-position
-  []
+(def community-tags-position
   {:position :absolute
    :top      154
    :right    12
@@ -68,8 +64,7 @@
                       colors/neutral-90
                       theme)})
 
-(defn membership-info-container
-  []
+(def membership-info-container
   {:flex-direction :row
    :border-radius  16
    :align-items    :center
@@ -87,8 +82,7 @@
    :border-top-left-radius  20
    :background-color        colors/primary-50-opa-20})
 
-(defn permission-tag-styles
-  []
+(def permission-tag-styles
   {:position :absolute
    :top      8
    :right    8})
@@ -146,10 +140,14 @@
    :background-color   (colors/theme-colors colors/white colors/neutral-90 theme)})
 
 (def loading-tags-container
-  {:margin-top 20 :flex-direction :row :align-items :center})
+  {:margin-top     20
+   :flex-direction :row
+   :align-items    :center})
 
 (def loading-stats-container
-  {:margin-top 20 :flex-direction :row :align-items :center})
+  {:margin-top     20
+   :flex-direction :row
+   :align-items    :center})
 
 (defn loading-stat-circle
   [theme margin-left]

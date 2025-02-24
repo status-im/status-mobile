@@ -94,7 +94,8 @@
 (rf/reg-fx :effects.keycard/login-with-keycard
  (fn [{:keys [key-uid password whisper-private-key]}]
    (native-module/login-account
-    (assoc (profile.config/login)
+    (assoc (merge (profile.config/login)
+                  (profile.config/fix-node-config-migration))
            :keyUid                   key-uid
            :password                 password
            :keycardWhisperPrivateKey whisper-private-key))))

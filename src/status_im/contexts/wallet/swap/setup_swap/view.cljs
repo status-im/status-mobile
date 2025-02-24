@@ -171,6 +171,12 @@
      [pay-input-amount])
     (rn/use-effect
      (fn []
+       ;; Restart swap proposal fetch after approval confirmation, as route building was paused.
+       (when (and approval-required (= approval-transaction-status :confirmed))
+         (request-fetch-swap-proposal)))
+     [approval-required approval-transaction-status])
+    (rn/use-effect
+     (fn []
        (when-not overlay-shown?
          (some-> @input-ref
                  (oops/ocall "focus"))))
@@ -343,12 +349,37 @@
                           (= (:symbol token)
                              (:symbol asset-to-pay)))}]))
 
+(defn- swap-exchange-rate-view
+  []
+  (let [theme                     (quo.theme/use-theme)
+        asset-to-pay              (rf/sub [:wallet/swap-asset-to-pay])
+        asset-to-receive          (rf/sub [:wallet/swap-asset-to-receive])
+        swap-exchange-rate-crypto (rf/sub [:wallet/swap-exchange-rate-crypto])
+        swap-exchange-rate-fiat   (rf/sub [:wallet/swap-exchange-rate-fiat])
+        loading-swap-proposal?    (rf/sub [:wallet/swap-loading-swap-proposal?])]
+    (cond
+      loading-swap-proposal?
+      [rn/view {:style (style/exchange-rate-loader theme)}]
+      swap-exchange-rate-crypto
+      [rn/view {:style style/exchange-rate-container}
+       [quo/text
+        {:weight :medium
+         :size   :paragraph-2
+         :style  style/exchange-rate-crypto-label}
+        (i18n/label :t/swap-exchange-rate-in-crypto
+                    {:receive-token-symbol (:symbol asset-to-receive)
+                     :exchange-rate        swap-exchange-rate-crypto
+                     :pay-token-symbol     (:symbol asset-to-pay)})]
+       [quo/text
+        {:weight :medium
+         :size   :paragraph-2
+         :style  (style/exchange-rate-fiat-label theme)}
+        (str " (" swap-exchange-rate-fiat ")")]])))
+
 (defn view
   []
   (let [[pay-input-state set-pay-input-state]       (rn/use-state controlled-input/init-state)
         [pay-input-focused? set-pay-input-focused?] (rn/use-state true)
-        refetch-interval                            (rn/use-ref-atom nil)
-        error-response                              (rf/sub [:wallet/swap-error-response])
         loading-swap-proposal?                      (rf/sub [:wallet/swap-loading-swap-proposal?])
         swap-proposal                               (rf/sub [:wallet/swap-proposal-without-fees])
         asset-to-pay                                (rf/sub [:wallet/swap-asset-to-pay])
@@ -406,32 +437,6 @@
                                                           (controlled-input/set-input-value
                                                            input-state
                                                            max-value)))))
-        on-refresh-swap-proposal                    (rn/use-callback
-                                                     (fn []
-                                                       (let
-                                                         [bottom-sheets (rf/sub
-                                                                         [:bottom-sheet-sheets])
-                                                          approval-transaction-status
-                                                          (rf/sub
-                                                           [:wallet/swap-approval-transaction-status])]
-                                                         (when-not valid-pay-input?
-                                                           (when @refetch-interval
-                                                             (js/clearTimeout @refetch-interval))
-                                                           (reset! refetch-interval nil))
-                                                         (when @refetch-interval
-                                                           (js/clearTimeout @refetch-interval))
-                                                         (reset! refetch-interval nil)
-                                                         (when (and valid-pay-input?
-                                                                    (not loading-swap-proposal?)
-                                                                    (not bottom-sheets)
-                                                                    (not= approval-transaction-status
-                                                                          :pending))
-                                                           (fetch-swap-proposal
-                                                            {:amount pay-input-amount
-                                                             :valid-input? valid-pay-input?
-                                                             :clean-approval-transaction? false}))))
-                                                     [valid-pay-input? loading-swap-proposal?
-                                                      pay-input-amount])
         refetch-swap-proposal                       (fn []
                                                       (when valid-pay-input?
                                                         (fetch-swap-proposal
@@ -439,38 +444,19 @@
                                                           :valid-input?                valid-pay-input?
                                                           :clean-approval-transaction? true})))]
     (rn/use-effect (fn []
-                     (when @refetch-interval
-                       (js/clearInterval @refetch-interval)
-                       (reset! refetch-interval nil))
-                     (when (or swap-proposal error-response)
-                       (reset! refetch-interval
-                         (js/setInterval
-                          on-refresh-swap-proposal
-                          constants/swap-proposal-refresh-interval-ms))))
-                   [swap-proposal error-response])
-    (rn/use-effect (fn []
                      (rf/dispatch [:wallet/clean-swap-proposal
                                    {:clean-amounts?              false
                                     :clean-approval-transaction? true}])
-                     (when @refetch-interval
-                       (js/clearInterval @refetch-interval)
-                       (reset! refetch-interval nil))
                      (refetch-swap-proposal))
                    [current-account-address])
     (rn/use-unmount (fn []
                       (rf/dispatch [:wallet/clean-swap-proposal
                                     {:clean-amounts?              true
-                                     :clean-approval-transaction? true}])
-                      (when @refetch-interval
-                        (js/clearInterval @refetch-interval)
-                        (reset! refetch-interval nil))))
+                                     :clean-approval-transaction? true}])))
     (rn/use-effect
      (fn []
        (when asset-to-pay
          (let [swap-amount (rf/sub [:wallet/swap-amount])]
-           (when (and swap-amount refetch-interval)
-             (js/clearTimeout @refetch-interval)
-             (reset! refetch-interval nil))
            (cond (and swap-amount (not= swap-amount pay-input-amount))
                  (set-pay-input-state
                   (fn [input-state]
@@ -495,26 +481,24 @@
        :params        {:show-account-balances? true
                        :asset-symbol           (:symbol asset-to-pay)
                        :network                network}}]
-     [rn/view {:style style/inputs-container}
+     [rn/scroll-view {:style style/inputs-container}
       [pay-token-input
        {:input-state      pay-input-state
         :on-max-press     on-max-press
         :input-focused?   pay-input-focused?
         :on-token-press   #(rf/dispatch [:show-bottom-sheet {:content pay-token-bottom-sheet}])
-        :on-approve-press #(rf/dispatch [:wallet.swap/approve])
+        :on-approve-press #(rf/dispatch [:open-modal :screen/wallet.swap-set-spending-cap])
         :on-input-focus   (fn []
                             (when platform/android? (rf/dispatch [:dismiss-keyboard]))
                             (set-pay-input-focused? true))}]
       [swap-order-button
        {:on-press (fn []
-                    (when @refetch-interval
-                      (js/clearTimeout @refetch-interval)
-                      (reset! refetch-interval nil))
                     (rf/dispatch [:wallet.swap/flip-assets]))}]
       [receive-token-input
        {:input-focused? (not pay-input-focused?)
         :on-token-press #(rf/dispatch [:show-bottom-sheet {:content receive-token-bottom-sheet}])
-        :on-input-focus #(set-pay-input-focused? false)}]]
+        :on-input-focus #(set-pay-input-focused? false)}]
+      [swap-exchange-rate-view]]
      [rn/view {:style style/footer-container}
       (when-not loading-swap-proposal? [alert-banner {:pay-input-error? pay-input-error?}])
       (when (or loading-swap-proposal? swap-proposal)

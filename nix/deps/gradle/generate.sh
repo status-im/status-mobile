@@ -41,7 +41,7 @@ function gen_deps_list() {
 # FIXME: Fix for missing packages.
 # https://github.com/status-im/status-mobile/issues/15447
 function add_deps_hack() {
-   "${CUR_DIR}/deps_versions.sh" >> "${DEPS_LIST}"
+   "${CUR_DIR}/deps_hack.sh" >> "${DEPS_LIST}"
 }
 
 # Find download URLs for each dependency.

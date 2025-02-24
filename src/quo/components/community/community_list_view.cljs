@@ -60,7 +60,7 @@
              :style          {:border-radius 12
                               :margin-left   12}}
             props)
-     [rn/view (merge (style/membership-info-container) style)
+     [rn/view (merge style/membership-info-container style)
       [community-icon/community-icon
        {:images images} 32]
       [rn/view

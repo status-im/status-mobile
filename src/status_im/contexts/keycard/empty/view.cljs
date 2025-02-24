@@ -25,7 +25,7 @@
      :accessibility-label :create-new-profile-keycard
      :container-style     {:margin-horizontal 20 :margin-top 8}
      :image               (resources/get-image :keycard-buy)
-     :button-type         :primary
+     :button-props        {:type :primary}
      :on-press            #(rf/dispatch [:keycard/create.get-phrase])}]
    [quo/small-option-card
     {:variant             :icon

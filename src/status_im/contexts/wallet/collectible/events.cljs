@@ -70,7 +70,7 @@
    (let [current-collectible-idx (get-in db [:wallet :accounts account :current-collectible-idx] 0)
          collectibles-filter     nil
          data-type               (collectible-data-types :header)
-         fetch-criteria          {:fetch-type            (fetch-type :fetch-if-not-cached)
+         fetch-criteria          {:fetch-type            (fetch-type :fetch-if-cache-old)
                                   :max-cache-age-seconds max-cache-age-seconds}
          chain-ids               (chain/chain-ids db)
          request-params          [request-id
@@ -171,16 +171,33 @@
 
 (rf/reg-event-fx
  :wallet/collectible-ownership-update-finished
- (fn [{:keys [db]} [{:keys [accounts chainId]}]]
+ (fn [{:keys [db]} [{:keys [accounts chainId message]}]]
    (let [address            (first accounts)
          pending-chain-ids  (get-in db [:wallet :ui :collectibles :updating address])
          updated-chain-ids  (disj pending-chain-ids chainId)
-         all-chain-updated? (and (some? pending-chain-ids) (empty? updated-chain-ids))]
+         all-chain-updated? (and (some? pending-chain-ids) (empty? updated-chain-ids))
+         collectible-id     (data-store/rpc->collectible-id message)]
      {:db (cond-> db
             (some? pending-chain-ids)
             (assoc-in [:wallet :ui :collectibles :updating address] updated-chain-ids))
       :fx [(when all-chain-updated?
-             [:dispatch [:wallet/request-collectibles-for-account address]])]})))
+             [:dispatch [:wallet/request-collectibles-for-account address]])
+           (when collectible-id
+             (let [collectible-unique-id (collectible-utils/get-collectible-unique-id {:id
+                                                                                       collectible-id})
+                   pending-collectible?  (-> db
+                                             (get-in [:wallet :ui :collectibles :pending])
+                                             (contains? collectible-unique-id))]
+               (when pending-collectible?
+                 [:dispatch
+                  [:wallet/update-pending-collectible-details collectible-id
+                   collectible-unique-id]])))]})))
+
+(rf/reg-event-fx
+ :wallet/update-pending-collectible-details
+ (fn [{:keys [db]} [collectible-id collectible-unique-id]]
+   {:db (update-in db [:wallet :ui :collectibles :pending] dissoc collectible-unique-id)
+    :fx [[:dispatch [:wallet/get-collectibles-by-unique-id-async collectible-id]]]}))
 
 (defn- update-collectibles-in-account
   [existing-collectibles updated-collectibles]
@@ -282,28 +299,33 @@
       [{{collectible-id :id :as collectible} :collectible
         aspect-ratio                         :aspect-ratio
         gradient-color                       :gradient-color}]]
+   {:db (assoc-in db
+         [:wallet :ui :collectible]
+         {:details        collectible
+          :aspect-ratio   aspect-ratio
+          :gradient-color gradient-color})
+    :fx [[:dispatch [:wallet/get-collectibles-by-unique-id-async collectible-id]]
+         ;; We delay the navigation because we need re-frame to update the DB on time.
+         ;; By doing it, we skip a blink while visiting the collectible detail page.
+         [:dispatch-later
+          {:ms       20
+           :dispatch [:open-modal :screen/wallet.collectible]}]]}))
+
+(rf/reg-event-fx
+ :wallet/get-collectibles-by-unique-id-async
+ (fn [_ [collectible-id]]
    (let [request-id               0
          collectible-id-converted (cske/transform-keys transforms/->PascalCaseKeyword collectible-id)
          data-type                (collectible-data-types :details)
          request-params           [request-id [collectible-id-converted] data-type]]
-     {:db (assoc-in db
-           [:wallet :ui :collectible]
-           {:details        collectible
-            :aspect-ratio   aspect-ratio
-            :gradient-color gradient-color})
-      :fx [[:json-rpc/call
+     {:fx [[:json-rpc/call
             [{:method   "wallet_getCollectiblesByUniqueIDAsync"
               :params   request-params
               :on-error (fn [error]
                           (log/error "failed to request collectible"
                                      {:event  :wallet/navigate-to-collectible-details
                                       :error  error
-                                      :params request-params}))}]]
-           ;; We delay the navigation because we need re-frame to update the DB on time.
-           ;; By doing it, we skip a blink while visiting the collectible detail page.
-           [:dispatch-later
-            {:ms       17
-             :dispatch [:open-modal :screen/wallet.collectible]}]]})))
+                                      :params request-params}))}]]]})))
 
 (defn- keep-not-empty-value
   [old-value new-value]
@@ -318,18 +340,42 @@
                                                             (transforms/json->clj message))
          {[collectible] :collectibles} response
          known-collectible-info        (get-in db [:wallet :ui :collectible :details])
+         current-account-address       (get-in db [:wallet :current-viewing-account-address])
+         total-owned                   (collectible-utils/collectible-balance collectible
+                                                                              current-account-address)
          merged-collectible            (as-> known-collectible-info c
                                          (merge-with keep-not-empty-value
                                                      c
                                                      collectible)
                                          (update c
                                                  :ownership
-                                                 collectible-utils/remove-duplicates-in-ownership))]
+                                                 collectible-utils/remove-duplicates-in-ownership))
+         updated-collectible           (assoc merged-collectible
+                                              :total-owned
+                                              total-owned)]
      (if collectible
-       {:db (assoc-in db [:wallet :ui :collectible :details] merged-collectible)}
+       {:db (assoc-in db [:wallet :ui :collectible :details] updated-collectible)
+        :fx [[:dispatch [:wallet/update-collectibles-data updated-collectible]]]}
        (log/error "failed to get collectible details"
                   {:event    :wallet/get-collectible-details-done
                    :response response})))))
+
+(rf/reg-event-fx
+ :wallet/update-collectibles-data
+ (fn [{:keys [db]} [collectible]]
+   (let [collectibles-by-address (collectible-utils/group-collectibles-by-ownership-address collectible)]
+     {:db (update-in db
+                     [:wallet :accounts]
+                     #(reduce-kv
+                       (fn [accounts address updated-collectibles]
+                         (if (contains? accounts address)
+                           (update-in accounts
+                                      [address :collectibles]
+                                      update-collectibles-in-account
+                                      [updated-collectibles])
+                           accounts))
+                       %
+                       collectibles-by-address))})))
 
 (rf/reg-event-fx
  :wallet/clear-collectible-details

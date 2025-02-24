@@ -1,5 +1,6 @@
 (ns quo.components.keycard.view
   (:require
+    [clojure.string :as string]
     [quo.components.keycard.style :as style]
     [quo.components.tags.tag :as tag]
     [quo.foundations.colors :as colors]
@@ -14,12 +15,9 @@
   - :locked? - Boolean to specify whether the keycard is locked or not
   - :theme :light/:dark
   "
-  [{:keys [holder-name locked?]}]
-  (let [theme (quo.theme/use-theme)
-        label (if holder-name
-                (i18n/label :t/user-keycard {:name holder-name})
-                (i18n/label :t/empty-keycard))]
-    [rn/view {:style (style/card-container locked? theme)}
+  [{:keys [holder-name locked? blur?]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style (style/card-container locked? theme blur?)}
      [rn/image
       {:source (resources/get-image :keycard-logo)
        :style  (style/keycard-logo locked? theme)}]
@@ -27,16 +25,14 @@
       {:source (resources/get-image
                 (if (or locked? (= :dark theme)) :keycard-chip-dark :keycard-chip-light))
        :style  style/keycard-chip}]
-     [rn/image
-      {:source (resources/get-image :keycard-watermark)
-       :style  (style/keycard-watermark locked? theme)}]
-     [tag/tag
-      {:size                32
-       :type                (when locked? :icon)
-       :label               label
-       :labelled?           true
-       :blurred?            true
-       :resource            (when locked? :i/locked)
-       :accessibility-label :holder-name
-       :icon-color          colors/white-70-blur
-       :override-theme      (when locked? :dark)}]]))
+     (when-not (string/blank? holder-name)
+       [tag/tag
+        {:size                32
+         :type                (when locked? :icon)
+         :label               (i18n/label :t/user-keycard {:name holder-name})
+         :labelled?           true
+         :blurred?            true
+         :resource            (when locked? :i/locked)
+         :accessibility-label :holder-name
+         :icon-color          colors/white-70-blur
+         :override-theme      (when locked? :dark)}])]))

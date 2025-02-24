@@ -31,11 +31,20 @@
         on-end-reached (rn/use-callback
                         #(rf/dispatch
                           [:wallet/get-more-for-activities-filter-session]))]
-    (if (and (and (some? loading?) (false? loading?)) (empty? activity-list))
+    (cond
+      (and (empty? activity-list) loading?)
+      [quo/skeleton-list
+       {:content       :messages
+        :parent-height (:height (rn/get-window))
+        :animated?     false}]
+
+      (and (empty? activity-list) (false? loading?))
       [empty-tab/view
        {:title       (i18n/label :t/no-activity)
         :description (i18n/label :t/empty-tab-description)
         :image       (resources/get-themed-image :no-activity theme)}]
+
+      :else
       [rn/section-list
        {:sections                        activity-list
         :sticky-section-headers-enabled  false

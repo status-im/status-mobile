@@ -64,7 +64,7 @@
    [button (assoc params :word (second options))]])
 
 (defn- complete-backup-sheet
-  [on-success]
+  [on-success on-try-again]
   (let [customization-color    (rf/sub [:profile/customization-color])
         [checked? set-checked] (rn/use-state false)]
     [:<>
@@ -88,7 +88,10 @@
        :button-two-label (i18n/label :t/cancel)
        :button-two-props {:type     :grey
                           :on-press (fn []
-                                      (rf/dispatch [:hide-bottom-sheet]))}}]]))
+                                      (rf/dispatch [:hide-bottom-sheet])
+                                      (when on-try-again
+                                        (rf/dispatch [:navigate-back])
+                                        (on-try-again)))}}]]))
 
 (defn view
   []
@@ -123,7 +126,8 @@
                                                                   {:theme   theme
                                                                    :shell?  shell?
                                                                    :content (fn [] [complete-backup-sheet
-                                                                                    on-success])}])))
+                                                                                    on-success
+                                                                                    on-try-again])}])))
                                                 (do
                                                   (when (> @incorrect-count 0)
                                                     (rf/dispatch [:show-bottom-sheet

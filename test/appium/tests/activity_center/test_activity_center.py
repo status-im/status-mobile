@@ -1,4 +1,5 @@
 import pytest
+from appium.webdriver.connectiontype import ConnectionType
 from selenium.common.exceptions import TimeoutException
 
 from tests import marks, run_in_parallel
@@ -493,3 +494,23 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
             self.errors.append(
                 self.home_2, "Community is not appeared in the list after accepting admin request from activity centre")
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(741809)
+    def test_activity_centre_contact_request_receiver_offline(self):
+        self.device_2.navigate_back_to_home_view()
+
+        self.device_1.just_fyi("Device 1: Create a new user")
+        self.device_1.reopen_app(sign_in=False)
+        self.device_1.create_user(first_user=False)
+        new_username_1 = self.home_1.get_username()
+        self.device_1.chats_tab.click()
+
+        self.device_2.just_fyi("Device 2: Turn off network connection")
+        self.device_2.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
+
+        self.device_1.just_fyi("Device 1: Send a contact request")
+        self.home_1.add_contact(self.public_key_2)
+
+        self.device_2.just_fyi("Device 2: Turn on network connection and check that the contact request is received")
+        self.device_2.driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
+        self.home_2.handle_contact_request(username=new_username_1, notifications_count=3)

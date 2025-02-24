@@ -154,3 +154,15 @@
   {:db (update-in db [:wallet :ui] dissoc :saved-address)})
 
 (rf/reg-event-fx :wallet/clear-address-to-save clear-address-to-save)
+
+(defn check-remaining-capacity-for-saved-addresses
+  [{:keys [db]} [{:keys [on-success on-error]}]]
+  (let [test-networks-enabled? (boolean (get-in db [:profile/profile :test-networks-enabled?]))]
+    {:fx [[:json-rpc/call
+           [{:method     "wakuext_remainingCapacityForSavedAddresses"
+             :params     [test-networks-enabled?]
+             :on-success on-success
+             :on-error   on-error}]]]}))
+
+(rf/reg-event-fx :wallet/check-remaining-capacity-for-saved-addresses
+ check-remaining-capacity-for-saved-addresses)

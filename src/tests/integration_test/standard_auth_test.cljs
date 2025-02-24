@@ -17,6 +17,8 @@
 
 (defn auth-success-fixtures
   []
+  (rf/reg-fx :effects.standard-auth/on-auth-success
+   (fn [on-auth-success] (on-auth-success)))
   (rf/reg-fx :effects.biometric/check-if-available
    (fn [{:keys [on-success]}] (on-success)))
   (rf/reg-event-fx :biometric/authenticate
@@ -32,7 +34,7 @@
      (let [on-success-called? (atom false)
            args               (assoc default-args :on-auth-success #(reset! on-success-called? true))]
        (rf/dispatch [:standard-auth/authorize args])
-       (rf-test/wait-for [:standard-auth/on-biometric-success]
+       (rf-test/wait-for [:standard-auth/migrate-partially-operable-accounts]
          (is @on-success-called?))))))
 
 (defn auth-cancel-fixtures

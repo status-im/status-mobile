@@ -10,6 +10,7 @@ let
 
   pname = "aapt2";
   # Warning: This must be the same as gradlePluginVersion android/gradle.properties
+  # also referenced in nix/deps/gradle/deps_hack.sh
   version = "8.1.1-10154469";
 
   pkgPath = "com/android/tools/build/aapt2";

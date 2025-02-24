@@ -120,9 +120,9 @@
                    :approval-required        true
                    :approval-amount-required "0x10000"
                    :gas-amount               "25000"
-                   :gas-fees                 {:max-fee-per-gas-medium "4"
-                                              :eip-1559-enabled       true
-                                              :l-1-gas-fee            "0"}}
+                   :gas-fees                 {:tx-max-fees-per-gas "4"
+                                              :eip-1559-enabled    true
+                                              :l-1-gas-fee         "0"}}
    :error-response "Error"
    :loading-swap-proposal? false
    :max-slippage 0.5})

@@ -49,14 +49,14 @@ def get_lambda_test_capabilities_real_device():
     return options
 
 
-def get_lambda_test_capabilities_emulator():
+def get_lambda_test_capabilities_emulator(platform_version: int = 14, device_name: str = "Pixel 6"):
     capabilities = {
         "lt:options": {
             "w3c": True,
             "platformName": "android",
-            "deviceName": "Pixel 6",
+            "deviceName": device_name,
             "appiumVersion": "2.1.3",
-            "platformVersion": "14",
+            "platformVersion": str(platform_version),
             "app": pytest_config_global['lt_apk_url'],
             "devicelog": True,
             "visual": True,
@@ -179,18 +179,19 @@ class Errors:
             pytest.fail('\n '.join([self.errors.pop(0) for _ in range(len(self.errors))]))
 
 
-def create_shared_drivers(quantity):
+def create_shared_drivers(quantity: int, platform_version: int = 14, device_name: str = "Pixel 6"):
     drivers = dict()
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     print('LT Executor: %s' % executor_lambda_test)
     try:
-        drivers = loop.run_until_complete(start_threads(test_suite_data.current_test.name,
-                                                        quantity,
-                                                        Driver,
-                                                        drivers,
-                                                        command_executor=executor_lambda_test,
-                                                        options=get_lambda_test_capabilities_emulator()))
+        drivers = loop.run_until_complete(
+            start_threads(test_suite_data.current_test.name,
+                          quantity,
+                          Driver,
+                          drivers,
+                          command_executor=executor_lambda_test,
+                          options=get_lambda_test_capabilities_emulator(platform_version, device_name)))
         if len(drivers) < quantity:
             test_suite_data.current_test.testruns[-1].error = "Not all %s drivers are created" % quantity
 

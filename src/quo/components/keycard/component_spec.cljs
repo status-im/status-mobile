@@ -4,11 +4,7 @@
     [test-helpers.component :as h]))
 
 (h/describe "keycard component"
-  (h/test "Render of keycard component when: holder-name prop is not set"
-    (h/render [keycard/keycard])
-    (h/is-truthy (h/get-by-translation-text :t/empty-keycard)))
-
-  (h/test "Render of keycard component when: holder-name prop is set"
-    (let [holder-name "Alisha"]
+  (let [holder-name "Alisha"]
+    (h/test "Render of keycard component when: holder-name prop is set"
       (h/render [keycard/keycard {:holder-name holder-name}])
       (h/is-truthy (h/get-by-translation-text :t/user-keycard {:name holder-name})))))

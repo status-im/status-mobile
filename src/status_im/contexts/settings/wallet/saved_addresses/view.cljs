@@ -103,7 +103,13 @@
 
 (defn- add-address-to-save
   []
-  (rf/dispatch [:open-modal :screen/settings.add-address-to-save]))
+  (rf/dispatch [:wallet/check-remaining-capacity-for-saved-addresses
+                {:on-success #(rf/dispatch [:open-modal :screen/settings.add-address-to-save])
+                 :on-error   #(rf/dispatch [:toasts/upsert
+                                            {:type  :negative
+                                             :theme :dark
+                                             :text  (i18n/label
+                                                     :t/saved-addresses-limit-reached-toast)}])}]))
 
 (defn view
   []
