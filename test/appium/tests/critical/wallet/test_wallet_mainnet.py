@@ -99,28 +99,32 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
                 self.wallet_view.confirm_button.click()
                 self.wallet_view.just_fyi("Checking Review Send page for %s on %s" % (asset, network))
 
-                expected_amount = "%s %s" % (data['amount'], 'ETH' if asset == 'Ether' else 'SNT')
                 sender_short_address = self.sender['wallet_address'].replace(self.sender['wallet_address'][6:-3],
                                                                              '…').lower()
                 receiver_short_address = self.receiver['wallet_address'].replace(self.receiver['wallet_address'][6:-3],
                                                                                  '…').lower()
-                for text in [self.account_name, sender_short_address, expected_amount]:
+                for text in [self.account_name, sender_short_address]:
                     if not self.wallet_view.from_data_container.get_child_element_by_text(text).is_element_displayed():
                         self.errors.append(
                             self.wallet_view,
                             "%s on %s: text %s is not shown in 'From' container on the Review Send page" % (
                                 asset, network, text))
-                for text in [receiver_short_address, expected_amount]:
-                    if not self.wallet_view.to_data_container.get_child_element_by_text(text).is_element_displayed():
-                        self.errors.append(
-                            self.wallet_view,
-                            "%s on %s: text %s is not shown in 'To' container on the Review Send page" % (
-                                asset, network, text))
+                if not self.wallet_view.to_data_container.get_child_element_by_text(
+                        receiver_short_address).is_element_displayed():
+                    self.errors.append(
+                        self.wallet_view,
+                        "%s on %s: text %s is not shown in 'To' container on the Review Send page" % (
+                            asset, network, text))
+                if not self.wallet_view.on_data_container.get_child_element_by_text(network).is_element_displayed():
+                    self.errors.append(
+                        self.wallet_view,
+                        "%s on %s: network %s is not shown in 'On' container on the Review Send page" % (
+                            asset, network, text))
 
                 data_to_check = {
                     'Est. time': ' min',
                     'Max fees': r"[$]\d+.\d+",
-                    'Recipient gets': expected_amount
+                    'Recipient gets': "%s %s" % (data['amount'], 'ETH' if asset == 'Ether' else 'SNT')
                 }
                 for key, expected_value in data_to_check.items():
                     try:
@@ -305,17 +309,6 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
                                 self.wallet_view,
                                 "%s to %s: Text %s is not shown in the '%s' data container on the Review Bridge screen"
                                 % (network_from, network_to, text, name))
-                    amount_text = container.amount_text
-                    if name == 'from' and amount_text != amount + ' ETH':
-                        self.errors.append(
-                            self.wallet_view,
-                            "%s to %s: amount %s in the 'from' data container doesn't match expected %s ETH"
-                            % (network_from, network_to, amount_text, amount))
-                    if name == 'to' and not re.findall(r"0.000\d+ ETH", amount_text):
-                        self.errors.append(
-                            self.wallet_view,
-                            "%s to %s: amount %s in the 'to' data container is not a number"
-                            % (network_from, network_to, amount_text))
                 except TimeoutException:
                     self.errors.append(self.wallet_view, "%s to %s: data '%s' is not shown in Review Bridge screen" %
                                        (network_from, network_to, name))
