@@ -30,7 +30,7 @@
 
 (def ^:private default-token-symbols
   {:ethereum "ETH"
-   :optimism "OETH"
+   :optimism "OP"
    :arbitrum "ARB"
    :base     "ETH"})
 

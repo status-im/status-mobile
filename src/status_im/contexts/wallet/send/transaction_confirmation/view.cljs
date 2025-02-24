@@ -129,7 +129,8 @@
 
 (defn- user-summary
   [{:keys [account-props theme label accessibility-label summary-type recipient bridge-tx? account-to?]}]
-  (let [summary-info-type (case (:recipient-type recipient)
+  (let [network-values    (rf/sub [:wallet/network-values account-to?])
+        summary-info-type (case (:recipient-type recipient)
                             :saved-address :saved-account
                             :account       :status-account
                             summary-type)]
@@ -141,15 +142,17 @@
        :accessibility-label accessibility-label}
       label]
      [quo/summary-info
-      {:type          summary-info-type
-       :account-props (cond-> account-props
-                        (and account-to? (not bridge-tx?))
-                        (assoc
-                         :size                32
-                         :name                (:label recipient)
-                         :full-name           (:label recipient)
-                         :emoji               (:emoji recipient)
-                         :customization-color (:customization-color recipient)))}]]))
+      {:type             summary-info-type
+       :networks-to-show (when bridge-tx?
+                           (send-utils/network-values-for-ui network-values))
+       :account-props    (cond-> account-props
+                           (and account-to? (not bridge-tx?))
+                           (assoc
+                            :size                32
+                            :name                (:label recipient)
+                            :full-name           (:label recipient)
+                            :emoji               (:emoji recipient)
+                            :customization-color (:customization-color recipient)))}]]))
 
 (defn- network-summary
   [{:keys [theme label accessibility-label]}]
@@ -333,6 +336,7 @@
          :accessibility-label :summary-from-label
          :label               (i18n/label :t/from-capitalized)
          :account-props       from-account-props
+         :bridge-tx?          (= transaction-type :tx/bridge)
          :theme               theme}]
        [user-summary
         {:summary-type        (if (= transaction-type :tx/bridge)
@@ -347,6 +351,7 @@
          :bridge-tx?          (= transaction-type :tx/bridge)
          :account-to?         true
          :theme               theme}]
-       [network-summary
-        {:label (i18n/label :t/on-capitalized)
-         :theme theme}]]]]))
+       (when-not (= transaction-type :tx/bridge)
+         [network-summary
+          {:label (i18n/label :t/on-capitalized)
+           :theme theme}])]]]))
