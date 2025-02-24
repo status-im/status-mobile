@@ -62,10 +62,7 @@
 ;;
 ;; During development, do not use the production app ID and token.
 (def mixpanel-app-id MIXPANEL_APP_ID)
-(def mixpanel-token
-  "MixPanel token is not supposed to be secret, but we still want to avoid
-  committing it to source."
-  MIXPANEL_APP_TOKEN)
+(def mixpanel-token MIXPANEL_APP_TOKEN)
 
 (def opensea-api-key OPENSEA_API_KEY)
 (def status-proxy-enabled? true)
