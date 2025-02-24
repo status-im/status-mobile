@@ -147,4 +147,5 @@
 ;;;; Sentry
 ;; Documentation: status-go/internal/sentry/README.md
 (goog-define SENTRY_DSN_STATUS_GO "")
+(def sentry-enabled? (enabled? (get-config :SENTRY_ENABLED "0")))
 (def sentry-dsn-status-go SENTRY_DSN_STATUS_GO)
