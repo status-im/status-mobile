@@ -14,7 +14,9 @@
     {:icon-name :i/close
      :on-press  events-helper/navigate-back}]
    [quo/page-top
-    {:title (i18n/label :t/keycard-unblocked)}]
+    {:title            (i18n/label :t/keycard-unblocked)
+     :description      :text
+     :description-text (i18n/label :t/keycard-unblocked-description)}]
    [rn/image
     {:resize-mode :contain
      :style       {:flex 1 :width (:width (rn/get-window))}
