@@ -99,12 +99,15 @@
 
 (defn- navigate-back
   []
-  (rf/dispatch [:navigate-back]))
+  (rf/dispatch [:app/finish-use-case :uc-view-saved-addresses])
+  #_(rf/dispatch [:navigate-back]))
 
 (defn- add-address-to-save
   []
   (rf/dispatch [:wallet/check-remaining-capacity-for-saved-addresses
-                {:on-success #(rf/dispatch [:open-modal :screen/settings.add-address-to-save])
+                {:on-success (fn []
+                               (rf/dispatch [:app/start-use-case :uc-add-saved-addresses])
+                               #_(rf/dispatch [:open-modal :screen/settings.add-address-to-save]))
                  :on-error   #(rf/dispatch [:toasts/upsert
                                             {:type  :negative
                                              :theme :dark
@@ -151,6 +154,10 @@
                                                          :on-clear            on-clear-input
                                                          :customization-color customization-color}))
                                        [has-saved-addresses? customization-color search-text])]
+    #_(rn/use-effect (fn []
+                       (when (rf/sub [:app/use-case-active? :uc-view-saved-addresses])
+                         (rf/dispatch [:navigate-back])))
+                     [(rf/sub [:app/use-case-active? :uc-view-saved-addresses])])
     [quo/overlay
      {:type       :shell
       :top-inset? true}

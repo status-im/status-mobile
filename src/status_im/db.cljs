@@ -42,4 +42,5 @@
    :settings/change-password           {}
    :keycard                            {}
    :theme                              :dark
-   :app                                {:last-user-notification {}}})
+   :app                                {:use-cases-stack        '()
+                                        :last-user-notification {}}})

@@ -15,7 +15,8 @@
 
 (defn- navigate-back
   []
-  (rf/dispatch [:navigate-back]))
+  (rf/dispatch [:app/finish-use-case :uc-add-saved-addresses])
+  #_(rf/dispatch [:navigate-back]))
 
 (defn- validate-input
   [account-addresses saved-addresses user-input]
@@ -170,6 +171,10 @@
                                                   :ens?    ens-name?}]))
                                              [address ens-name? address-or-ens])]
     (rn/use-unmount #(rf/dispatch [:wallet/clean-scanned-address]))
+    #_(rn/use-effect (fn []
+                       (when (rf/sub [:app/use-case-active? :uc-add-saved-addresses])
+                         (rf/dispatch [:navigate-back])))
+                     [(rf/sub [:app/use-case-active? :uc-add-saved-addresses])])
     [quo/overlay {:type :shell}
      [floating-button-page/view
       {:footer-container-padding     0

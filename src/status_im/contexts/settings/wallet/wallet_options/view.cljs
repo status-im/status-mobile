@@ -7,7 +7,8 @@
 
 (defn open-saved-addresses-settings-modal
   []
-  (rf/dispatch [:open-modal :screen/settings.saved-addresses]))
+  (rf/dispatch [:app/start-use-case :uc-view-saved-addresses])
+  #_(rf/dispatch [:open-modal :screen/settings.saved-addresses]))
 
 (defn open-keypairs-and-accounts-settings-modal
   []
