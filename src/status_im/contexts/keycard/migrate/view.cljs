@@ -23,10 +23,10 @@
        :context-tag {:full-name           profile-name
                      :profile-picture     profile-picture
                      :customization-color customization-color}}]
-     [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-      [rn/image
-       {:resize-mode :contain
-        :source      (resources/get-image :keycard-migration)}]]
+     [rn/image
+      {:resize-mode :contain
+       :style       {:flex 1 :width (:width (rn/get-window))}
+       :source      (resources/get-image :keycard-migration)}]
      [common.view/tips]
      [quo/bottom-actions
       {:actions          :one-action

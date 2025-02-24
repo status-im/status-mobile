@@ -21,7 +21,7 @@
        :container-style {:margin-top constants/page-nav-height}}]
      [quo/text {:style {:padding-horizontal 20}}
       (i18n/label :t/do-not-quit)]
-     [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-      [rn/image
-       {:resize-mode :contain
-        :source      (resources/get-image :keycard-migration)}]]]))
+     [rn/image
+      {:resize-mode :contain
+       :style       {:flex 1 :width (:width (rn/get-window))}
+       :source      (resources/get-image :keycard-migration)}]]))

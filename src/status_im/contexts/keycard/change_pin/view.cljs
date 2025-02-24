@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
+            [status-im.common.resources :as resources]
             [status-im.contexts.keycard.common.view :as common.view]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -32,9 +33,10 @@
      :on-press  events-helper/navigate-back}]
    [quo/page-top
     {:title (i18n/label :t/ready-to-change-pin)}]
-   [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-    [rn/image
-     {:resize-mode :contain}]]
+   [rn/image
+    {:resize-mode :contain
+     :style       {:flex 1 :width (:width (rn/get-window))}
+     :source      (resources/get-image :keycard-change-pin)}]
    [common.view/tips]
    [quo/bottom-actions
     {:actions          :one-action
@@ -52,9 +54,10 @@
     {:title            (i18n/label :t/keycard-pin-changed)
      :description      :text
      :description-text (i18n/label :t/keycard-pin-changed-description)}]
-   [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-    [rn/image
-     {:resize-mode :contain}]]
+   [rn/image
+    {:resize-mode :contain
+     :style       {:flex 1 :width (:width (rn/get-window))}
+     :source      (resources/get-image :keycard-change-pin-positive)}]
    [quo/bottom-actions
     {:actions          :one-action
      :button-one-label (i18n/label :t/done)
@@ -70,9 +73,10 @@
     {:title            (i18n/label :t/keycard-pin-change-failed)
      :description      :text
      :description-text (i18n/label :t/keycard-pin-change-failed-description)}]
-   [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-    [rn/image
-     {:resize-mode :contain}]]
+   [rn/image
+    {:resize-mode :contain
+     :style       {:flex 1 :width (:width (rn/get-window))}
+     :source      (resources/get-image :keycard-change-pin-negative)}]
    [common.view/tips]
    [quo/bottom-actions
     {:actions          :one-action

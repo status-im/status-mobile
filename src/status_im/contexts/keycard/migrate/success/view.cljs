@@ -21,11 +21,11 @@
        :container-style {:margin-top constants/page-nav-height}}]
      [quo/text {:style {:padding-horizontal 20}}
       (i18n/label :t/use-keycard-for-status)]
-     [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-      [rn/image
-       {:resize-mode :contain
-        :source      (resources/get-image :keycard-migration-succeeded)}]]
+     [rn/image
+      {:resize-mode :contain
+       :style       {:flex 1 :width (:width (rn/get-window))}
+       :source      (resources/get-image :keycard-migration-succeeded)}]
      [quo/button
       {:on-press        #(rf/dispatch [:profile/logout])
-       :container-style {:margin-horizontal 20}}
+       :container-style {:margin-horizontal 20 :margin-vertical 12}}
       (i18n/label :t/logout)]]))

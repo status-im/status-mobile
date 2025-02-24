@@ -42,10 +42,10 @@
       {:title            (i18n/label :t/check-keycard)
        :description      :text
        :description-text (i18n/label :t/see-keycard-ready)}]
-     [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-      [rn/image
-       {:resize-mode :contain
-        :source      (resources/get-image :check-your-keycard)}]]
+     [rn/image
+      {:resize-mode :contain
+       :style       {:flex 1 :width (:width (rn/get-window))}
+       :source      (resources/get-image :check-your-keycard)}]
      [common.view/tips]
      [quo/bottom-actions
       {:actions          :one-action

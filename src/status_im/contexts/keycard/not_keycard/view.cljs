@@ -15,10 +15,10 @@
     {:title            (i18n/label :t/oops-not-keycard)
      :description      :text
      :description-text (i18n/label :t/make-sure-keycard)}]
-   [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-    [rn/image
-     {:resize-mode :contain
-      :source      (resources/get-image :not-keycard)}]]
-   [rn/view {:style {:padding-horizontal 20}}
+   [rn/image
+    {:resize-mode :contain
+     :style       {:flex 1 :width (:width (rn/get-window))}
+     :source      (resources/get-image :not-keycard)}]
+   [rn/view {:style {:padding-horizontal 20 :padding-vertical 12}}
     [quo/button {:on-press events-helper/navigate-back}
      (i18n/label :t/try-again)]]])
