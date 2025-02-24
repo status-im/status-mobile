@@ -135,7 +135,9 @@
                                                   pay-input-num-value])
         available-crypto-limit           (rf/sub [:wallet/swap-available-crypto-limit])
         display-decimals                 (min pay-token-decimals
-                                              constants/min-token-decimals-to-display)
+                                              (if eth-proposal?
+                                                constants/eth-send-amount-decimal
+                                                constants/min-token-decimals-to-display))
         available-crypto-limit-display   (utils/sanitized-token-amount-to-display
                                           available-crypto-limit
                                           display-decimals)
