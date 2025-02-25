@@ -522,7 +522,8 @@
   "Calculates the max ETH that can be sent while reserving enough for gas fees.
 
   - Ensures a minimum of 0.0001 ETH and a max of 0.01 ETH for gas.
-  - Uses 10% of the value as an estimated fee, clamped within this range.
+  - Uses 20% of the value as an estimated fee, clamped within this range.
+  - In Desktop it's 10% but after some more test, we found 20% is better option.
   - Prevents sending the full balance to avoid transaction failures.
 
   Aligned with the desktop logic for consistency.
@@ -530,10 +531,10 @@
   [value]
   (if (or (nil? value) (zero? value))
     "0"
-    (let [est-fee (money/maximum (money/bignumber 0.0001)
-                                 (money/minimum 0.01
-                                                (money/mul (money/bignumber value) 0.1)))
-          result  (money/sub (money/bignumber value) est-fee)]
+    (let [raw-fee     (money/mul (money/bignumber value) 0.2)
+          clamped-fee (money/maximum (money/bignumber 0.0001)
+                                     (money/minimum (money/bignumber 0.01) raw-fee))
+          result      (money/sub (money/bignumber value) clamped-fee)]
       (-> result
           (money/maximum 0)
           (number/format-decimal-fixed constants/eth-send-amount-decimal)
