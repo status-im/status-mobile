@@ -202,7 +202,7 @@
     (is (= (utils/sanitized-token-amount-to-display 0.0001 3) "<0.001"))
     (is (= (utils/sanitized-token-amount-to-display 0.00001 3) "<0.001"))
     (is (= (utils/sanitized-token-amount-to-display 0 2) "0"))
-    (is (= (utils/sanitized-token-amount-to-display 123.456789 4) "123.4568"))
+    (is (= (utils/sanitized-token-amount-to-display 123.456789 4) "123.4567"))
     (is (= (utils/sanitized-token-amount-to-display 0.00000123 6) "0.000001"))
     (is (= (utils/sanitized-token-amount-to-display nil 2) "0"))
     (is (= (utils/sanitized-token-amount-to-display "invalid" 2) "0"))))

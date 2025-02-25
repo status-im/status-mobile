@@ -193,7 +193,9 @@
   [amount display-decimals]
   (let [number                (or (money/bignumber amount)
                                   (money/bignumber 0))
-        amount-fixed-decimals (number/to-fixed number display-decimals)]
+        amount-fixed-decimals (-> number
+                                  (number/format-decimal-fixed display-decimals)
+                                  (number/remove-trailing-zeroes))]
     (if (and (= amount-fixed-decimals "0")
              (money/above-zero? amount))
       (number/small-number-threshold display-decimals)

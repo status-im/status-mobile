@@ -182,7 +182,8 @@
                                                                available-crypto-limit
                                                                constants/eth-send-amount-decimal)
                                                               (money/to-string available-crypto-limit))]
-                                              (on-max-press max-value)))
+                                              (when (money/greater-than max-value 0)
+                                                (on-max-press max-value))))
                                           [available-crypto-limit eth-proposal?])]
     (rn/use-unmount #(rf/dispatch [:wallet/clean-swap]))
     (rn/use-effect
