@@ -9,7 +9,7 @@
     [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [name address customization-color] :as opts}]
+  [{:keys [name address customization-color] :as address-details}]
   (let [open-send-flow                 (rn/use-callback
                                         (fn []
                                           (rf/dispatch [:wallet/init-send-flow-for-address
@@ -62,19 +62,20 @@
                                            {:theme   :dark
                                             :shell?  true
                                             :content (fn []
-                                                       [remove-address/view opts])}])
-                                        [opts])
+                                                       [remove-address/view address-details])}])
+                                        [address-details])
         open-show-address-qr           (rn/use-callback
                                         #(rf/dispatch [:open-modal
-                                                       :screen/settings.share-saved-address opts])
-                                        [opts])
+                                                       :screen/settings.share-saved-address
+                                                       address-details])
+                                        [address-details])
         open-edit-saved-address        (rn/use-callback
                                         (fn []
-                                          (rf/dispatch [:wallet/set-address-to-save opts])
                                           (rf/dispatch [:open-modal
                                                         :screen/settings.edit-saved-address
-                                                        {:edit? true}]))
-                                        [opts])]
+                                                        (merge {:edit? true}
+                                                               address-details)]))
+                                        [address-details])]
     [quo/action-drawer
      [[{:icon                :i/arrow-up
         :label               (i18n/label :t/send-to-user {:user name})

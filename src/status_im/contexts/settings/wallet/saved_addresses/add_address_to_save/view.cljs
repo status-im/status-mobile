@@ -165,15 +165,12 @@
         on-press-continue                   (rn/use-callback
                                              (fn []
                                                (rf/dispatch
-                                                [:wallet/set-address-to-save
+                                                [:open-modal :screen/settings.save-address
                                                  {:address address
                                                   :ens     (when ens-name? address-or-ens)
-                                                  :ens?    ens-name?}])
-                                               (rf/dispatch
-                                                [:open-modal :screen/settings.save-address]))
+                                                  :ens?    ens-name?}]))
                                              [address ens-name? address-or-ens])]
     (rn/use-unmount #(rf/dispatch [:wallet/clean-scanned-address]))
-    (rn/use-mount #(rf/dispatch [:wallet/clear-address-to-save]))
     [quo/overlay {:type :shell}
      [floating-button-page/view
       {:footer-container-padding     0
