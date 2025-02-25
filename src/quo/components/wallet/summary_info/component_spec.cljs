@@ -38,7 +38,7 @@
     (h/is-truthy (h/get-by-text "Mark Libot"))
     (h/is-truthy (h/get-by-text "Collectibles vault")))
 
-  (h/test "Networks true render"
+  (h/test "Networks specified render"
     (h/render-with-theme-provider [summary-info/view
                                    {:type             :status-account
                                     :networks-to-show {:ethereum 150
@@ -46,15 +46,6 @@
                                                        :arbitrum 25}
                                     :account-props    status-account-props}])
     (h/is-truthy (h/get-by-label-text :networks)))
-
-  (h/test "Networks false render"
-    (h/render-with-theme-provider [summary-info/view
-                                   {:type             :status-account
-                                    :networks-to-show {:ethereum 150
-                                                       :optimism 50
-                                                       :arbitrum 25}
-                                    :account-props    status-account-props}])
-    (h/is-null (h/query-by-label-text :networks))))
 
 (h/describe "Wallet: network summary info"
   (h/test "Type of `network` title renders"
