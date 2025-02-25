@@ -88,7 +88,7 @@
         account-owns-token? (rf/sub [:wallet/current-account-owns-token token-symbol])
         network-details     (rf/sub [:wallet/network-details])
         token-owned?        (if selected-account account-owns-token? (seq token-owners))
-        asset-to-receive    (rf/sub [:wallet/token-by-symbol
+        asset-to-receive    (rf/sub [:wallet/token-by-symbol-from-first-available-account-with-balance
                                      (swap-utils/default-asset-to-receive token-symbol)])
         unique-owner?       (= (count token-owners) 1)
         params              (cond-> {:start-flow?   true
