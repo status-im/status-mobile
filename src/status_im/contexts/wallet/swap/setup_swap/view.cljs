@@ -138,8 +138,10 @@
                                               (if eth-proposal?
                                                 constants/eth-send-amount-decimal
                                                 constants/min-token-decimals-to-display))
-        available-crypto-limit-display   (utils/sanitized-token-amount-to-display
-                                          available-crypto-limit
+        total-crypto-limit               (money/bignumber
+                                          pay-token-balance-selected-chain)
+        total-crypto-limit-display       (utils/sanitized-token-amount-to-display
+                                          total-crypto-limit
                                           display-decimals)
         approval-amount-required-num     (when approval-amount-required
                                            (number/to-fixed (number/hex->whole
@@ -228,7 +230,7 @@
       :value                pay-input-amount
       :fiat-value           pay-token-fiat-value
       :network-tag-props    {:title    (i18n/label :t/max-token
-                                                   {:number       available-crypto-limit-display
+                                                   {:number       total-crypto-limit-display
                                                     :token-symbol pay-token-symbol})
                              :networks [{:source (:source network)}]}
       :approval-label-props {:status              (case approval-transaction-status
