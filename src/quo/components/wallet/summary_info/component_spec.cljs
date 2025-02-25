@@ -45,7 +45,7 @@
                                                        :optimism 50
                                                        :arbitrum 25}
                                     :account-props    status-account-props}])
-    (h/is-truthy (h/get-by-label-text :networks)))
+    (h/is-truthy (h/get-by-label-text :networks))))
 
 (h/describe "Wallet: network summary info"
   (h/test "Type of `network` title renders"
