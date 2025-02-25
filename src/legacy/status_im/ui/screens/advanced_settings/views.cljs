@@ -1,10 +1,13 @@
 (ns legacy.status-im.ui.screens.advanced-settings.views
   (:require
+    [clojure.string :as string]
     [legacy.status-im.ui.components.core :as components]
     [legacy.status-im.ui.components.list.item :as list.item]
     [legacy.status-im.ui.components.list.views :as list]
     [quo.core :as quo]
     [re-frame.core :as re-frame]
+    [status-im.config :as config]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])
   (:require-macros [legacy.status-im.utils.views :as views]))
@@ -17,7 +20,16 @@
            peer-syncing-enabled?]}]
   (keep
    identity
-   [{:size :small
+   [(when (ff/enabled? ::ff/app-monitoring.intentional-crash)
+      {:size                :small
+       :title               (str "Force crash immediately"
+                                 (when (string/blank? config/sentry-dsn-status-go)
+                                   " (Sentry DSN is not set)"))
+       :accessibility-label :intended-panic
+       :on-press            (fn []
+                              (re-frame/dispatch [:app-monitoring/intended-panic
+                                                  "status-mobile intentional panic"]))})
+    {:size :small
      :title (i18n/label :t/log-level)
      :accessibility-label :log-level-settings-button
      :on-press

@@ -77,6 +77,11 @@
      #shadow/env "STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX"
      status-im.config/STATUS_BACKEND_SERVER_ROOT_DATA_DIR #shadow/env
                                                            "STATUS_BACKEND_SERVER_ROOT_DATA_DIR"
+
+     ;; Uncomment this line during development if you want to test the integration with Sentry.
+     ;;
+     ;; status-im.config/SENTRY_DSN_STATUS_GO #shadow/env "SENTRY_DSN_STATUS_GO"
+
      status-im.config/MIXPANEL_APP_ID #shadow/env "MIXPANEL_APP_ID"
      status-im.config/MIXPANEL_APP_TOKEN #shadow/env "MIXPANEL_APP_TOKEN"
      status-im.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"
@@ -119,6 +124,7 @@
      status-im.config/INFURA_TOKEN                        #shadow/env "INFURA_TOKEN"
      status-im.config/STATUS_BUILD_PROXY_USER             #shadow/env "STATUS_BUILD_PROXY_USER"
      status-im.config/STATUS_BUILD_PROXY_PASSWORD         #shadow/env "STATUS_BUILD_PROXY_PASSWORD"
+     status-im.config/SENTRY_DSN_STATUS_GO                #shadow/env "SENTRY_DSN_STATUS_GO"
      status-im.config/OPENSEA_API_KEY                     #shadow/env "OPENSEA_API_KEY"
      status-im.config/MIXPANEL_APP_ID                     #shadow/env "MIXPANEL_APP_ID"
      status-im.config/MIXPANEL_APP_TOKEN                  #shadow/env "MIXPANEL_APP_TOKEN"

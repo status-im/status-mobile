@@ -134,4 +134,3 @@ def updateBucketJSON(urls, fileName) {
   writeFile(file: filePath, text: contentJson)
   return s5cmd.upload(filePath)
 }
-

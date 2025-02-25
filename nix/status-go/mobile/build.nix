@@ -48,6 +48,10 @@ in buildGoPackage rec {
   # TODO: try removing when go is upgraded to 1.22
   GODEBUG = "netdns=cgo+2";
 
+  # Sentry for status-go
+  SENTRY_CONTEXT_NAME = "status-mobile";
+  SENTRY_CONTEXT_VERSION = version;
+
   preBuild = ''
     echo 'Generate static files'
     pushd go/src/$goPackagePath
