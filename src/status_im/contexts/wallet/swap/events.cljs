@@ -29,6 +29,15 @@
                                     :account                account
                                     :test-networks-enabled? test-networks-enabled?
                                     :token-symbol           (get-in data [:asset-to-pay :symbol])}))
+         received-asset         (if-not (nil? asset-to-receive)
+                                  asset-to-receive
+                                  (swap-utils/select-asset-to-pay-by-symbol
+                                   {:wallet                 wallet
+                                    :account                account
+                                    :test-networks-enabled? test-networks-enabled?
+                                    :token-symbol           (if (= (:symbol asset-to-pay) "SNT")
+                                                              "ETH"
+                                                              "SNT")}))
          multi-account-balance? (-> available-accounts
                                     (count)
                                     (> 1))
@@ -37,7 +46,7 @@
          start-point            (if open-new-screen? :action-menu :swap-button)]
      {:db (-> db
               (assoc-in [:wallet :ui :swap :asset-to-pay] asset-to-pay)
-              (assoc-in [:wallet :ui :swap :asset-to-receive] asset-to-receive)
+              (assoc-in [:wallet :ui :swap :asset-to-receive] received-asset)
               (assoc-in [:wallet :ui :swap :network] network')
               (assoc-in [:wallet :ui :swap :launch-screen] view-id)
               (assoc-in [:wallet :ui :swap :start-point] start-point))
@@ -54,7 +63,7 @@
                 [:centralized-metrics/track :metric/swap-start
                  {:network       (:chain-id network)
                   :pay_token     (:symbol asset-to-pay)
-                  :receive_token (:symbol asset-to-receive)
+                  :receive_token (:symbol received-asset)
                   :start_point   start-point
                   :launch_screen view-id}]]
                [:dispatch [:wallet.swap/set-default-slippage]]]
@@ -68,7 +77,7 @@
                                                     (rf/dispatch
                                                      [:wallet.swap/start
                                                       {:asset-to-pay asset-to-pay
-                                                       :asset-to-receive asset-to-receive
+                                                       :asset-to-receive received-asset
                                                        :network network
                                                        :open-new-screen?
                                                        open-new-screen?
