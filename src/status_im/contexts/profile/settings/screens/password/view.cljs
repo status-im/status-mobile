@@ -19,7 +19,7 @@
          :hide-biometrics-button? true
          :theme                   theme
          :auth-button-label       (i18n/label :t/biometric-enable-button {:bio-type-label button-label})
-         :on-success              (fn [password]
+         :on-auth-success         (fn [password]
                                     (rf/dispatch [:hide-bottom-sheet])
                                     (rf/dispatch
                                      [:biometric/authenticate

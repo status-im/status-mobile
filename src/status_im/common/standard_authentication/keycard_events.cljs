@@ -39,7 +39,9 @@
         [:dispatch
          [:standard-auth/finish-auth
           {:on-auth-success on-auth-success
-           :masked-password (security/mask-data (:encryption-key key-data))}]]]})
+           :masked-password (-> key-data
+                                :encryption-public-key
+                                security/mask-data)}]]]})
 (rf/reg-event-fx :standard-auth/on-keycard-key-success on-keycard-key-success)
 
 (defn on-keycard-key-fail

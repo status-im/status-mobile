@@ -48,7 +48,7 @@
         :image-props       :i/derivated-path
         :action            (if (ff/enabled? ::ff/wallet.edit-derivation-path) :button :none)
         :action-props      {:on-press    #(rf/dispatch [:standard-auth/authorize
-                                                        {:on-success        on-auth-success
+                                                        {:on-auth-success   on-auth-success
                                                          :auth-button-label (i18n/label :t/continue)}])
                             :button-text (i18n/label :t/edit)
                             :icon-left   :i/face-id
