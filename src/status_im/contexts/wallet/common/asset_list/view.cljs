@@ -6,16 +6,17 @@
     [utils.re-frame :as rf]))
 
 (defn- asset-component
-  [{token-symbol  :symbol
-    token-name    :name
-    total-balance :total-balance
-    disabled?     :bridge-disabled?
-    fiat-value    :fiat-value
-    :as           token}
+  [{token-symbol     :symbol
+    token-name       :name
+    total-balance    :total-balance
+    bridge-disabled? :bridge-disabled?
+    fiat-value       :fiat-value
+    :as              token}
    _ _
-   {:keys [currency-symbol on-token-press preselected-token-symbol prices-per-token]}]
+   {:keys [currency-symbol on-token-press preselected-token-symbol prices-per-token list-type]}]
   (let [crypto-formatted (utils/get-standard-crypto-format token total-balance prices-per-token)
-        fiat-formatted   (utils/fiat-formatted-for-ui currency-symbol fiat-value)]
+        fiat-formatted   (utils/fiat-formatted-for-ui currency-symbol fiat-value)
+        disabled?        (and bridge-disabled? (= list-type :bridge))]
     [quo/token-network
      {:token       token-symbol
       :label       token-name
@@ -29,7 +30,8 @@
                      :selected)}]))
 
 (defn view
-  [{:keys [content-container-style search-text on-token-press preselected-token-symbol chain-ids]
+  [{:keys [content-container-style search-text on-token-press preselected-token-symbol chain-ids
+           list-type]
     :or   {content-container-style {:padding-horizontal 8}}}]
   (let [filtered-tokens  (rf/sub [:wallet/current-viewing-account-tokens-filtered
                                   {:query     search-text
@@ -41,7 +43,8 @@
       :render-data                  {:currency-symbol          currency-symbol
                                      :on-token-press           on-token-press
                                      :preselected-token-symbol preselected-token-symbol
-                                     :prices-per-token         prices-per-token}
+                                     :prices-per-token         prices-per-token
+                                     :list-type                list-type}
       :style                        {:flex 1}
       :content-container-style      content-container-style
       :keyboard-should-persist-taps :handled

@@ -27,7 +27,8 @@
          :on-change-text  #(reset! search-text %)
          :placeholder     (i18n/label :t/search-assets)}]
        [asset-list/view
-        {:search-text    @search-text
+        {:list-type      :bridge
+         :search-text    @search-text
          :on-token-press (fn [token]
                            (rf/dispatch [:wallet/bridge-select-token
                                          {:token    token
