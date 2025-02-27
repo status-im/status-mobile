@@ -569,3 +569,7 @@
    (.createAccountFromPrivateKey ^js (account-manager)
                                  (types/clj->json {:privateKey private-key})
                                  callback)))
+
+(defn intended-panic
+  [message]
+  (.intendedPanic ^js (status) message))

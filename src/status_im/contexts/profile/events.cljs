@@ -37,6 +37,7 @@
     {:dataDir              (native-module/backup-disabled-data-dir)
      :mixpanelAppId        config/mixpanel-app-id
      :mixpanelToken        config/mixpanel-token
+     :sentryDSN            (if config/sentry-enabled? config/sentry-dsn-status-go "")
      :mediaServerEnableTLS (config/enabled? config/STATUS_BACKEND_SERVER_MEDIA_SERVER_ENABLE_TLS)
      :logEnabled           (not (string/blank? config/log-level))
      :logLevel             config/log-level

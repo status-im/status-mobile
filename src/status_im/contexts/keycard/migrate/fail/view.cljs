@@ -19,10 +19,10 @@
                          :profile-picture     profile-picture
                          :customization-color customization-color}
        :container-style {:margin-top constants/page-nav-height}}]
-     [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-      [rn/image
-       {:resize-mode :contain
-        :source      (resources/get-image :keycard-migration-failed)}]]
+     [rn/image
+      {:resize-mode :contain
+       :style       {:flex 1 :width (:width (rn/get-window))}
+       :source      (resources/get-image :keycard-migration-failed)}]
      [quo/divider-label (i18n/label :t/what-you-can-do)]
      [quo/markdown-list {:description (i18n/label :t/keycard-migration-failed-instruction-1)}]
      [quo/markdown-list {:description (i18n/label :t/keycard-migration-failed-instruction-2)}]

@@ -14,48 +14,43 @@
 (h/describe "Wallet: Summary Info"
   (h/test "Type of `status-account` title renders"
     (h/render-with-theme-provider [summary-info/view
-                                   {:type          :status-account
-                                    :networks?     true
-                                    :values        {:ethereum 150
-                                                    :optimism 50
-                                                    :arbitrum 25}
-                                    :account-props status-account-props}])
+                                   {:type             :status-account
+                                    :networks-to-show {:ethereum 150
+                                                       :optimism 50
+                                                       :arbitrum 25}
+                                    :account-props    status-account-props}])
     (h/is-truthy (h/get-by-text "Collectibles vault")))
 
   (h/test "Type of `user` title renders"
     (h/render-with-theme-provider [summary-info/view
-                                   {:type          :user
-                                    :networks?     true
-                                    :values        {:ethereum 150
-                                                    :optimism 50
-                                                    :arbitrum 25}
-                                    :account-props {:full-name           "M L"
-                                                    :status-indicator?   false
-                                                    :size                :small
-                                                    :customization-color :blue
-                                                    :name                "Mark Libot"
-                                                    :address             "0x0ah...78b"
-                                                    :status-account      (merge status-account-props
-                                                                                {:size 16})}}])
+                                   {:type             :user
+                                    :networks-to-show {:ethereum 150
+                                                       :optimism 50
+                                                       :arbitrum 25}
+                                    :account-props    {:full-name           "M L"
+                                                       :status-indicator?   false
+                                                       :size                :small
+                                                       :customization-color :blue
+                                                       :name                "Mark Libot"
+                                                       :address             "0x0ah...78b"
+                                                       :status-account      (merge status-account-props
+                                                                                   {:size 16})}}])
     (h/is-truthy (h/get-by-text "Mark Libot"))
     (h/is-truthy (h/get-by-text "Collectibles vault")))
 
-  (h/test "Networks true render"
+  (h/test "Networks specified render"
     (h/render-with-theme-provider [summary-info/view
-                                   {:type          :status-account
-                                    :networks?     true
-                                    :values        {:ethereum 150
-                                                    :optimism 50
-                                                    :arbitrum 25}
-                                    :account-props status-account-props}])
-    (h/is-truthy (h/get-by-label-text :networks)))
+                                   {:type             :status-account
+                                    :networks-to-show {:ethereum 150
+                                                       :optimism 50
+                                                       :arbitrum 25}
+                                    :account-props    status-account-props}])
+    (h/is-truthy (h/get-by-label-text :networks))))
 
-  (h/test "Networks false render"
+(h/describe "Wallet: network summary info"
+  (h/test "Type of `network` title renders"
     (h/render-with-theme-provider [summary-info/view
-                                   {:type          :status-account
-                                    :networks?     false
-                                    :values        {:ethereum 150
-                                                    :optimism 50
-                                                    :arbitrum 25}
-                                    :account-props status-account-props}])
-    (h/is-null (h/query-by-label-text :networks))))
+                                   {:type          :network
+                                    :network-props {:full-name    "Ethereum"
+                                                    :network-name :ethereum}}])
+    (h/is-truthy (h/get-by-text "Ethereum"))))

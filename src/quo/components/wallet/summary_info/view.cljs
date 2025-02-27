@@ -28,50 +28,35 @@
      [rn/view
       {:style (style/dot-divider theme)}])])
 
+(def ^:private default-token-symbols
+  {:ethereum "ETH"
+   :optimism "OP"
+   :arbitrum "ARB"
+   :base     "ETH"})
+
 (defn networks
-  [values theme]
-  (let [{:keys [ethereum optimism arbitrum base]} values
-        show-optimism?                            (and optimism
-                                                       (or (pos? (:amount optimism))
-                                                           (= (:amount optimism) "<0.01")))
-        show-arbitrum?                            (and arbitrum
-                                                       (or (pos? (:amount arbitrum))
-                                                           (= (:amount arbitrum) "<0.01")))
-        show-base?                                (and base
-                                                       (or (pos? (:amount base))
-                                                           (= (:amount base) "<0.01")))]
-    [rn/view
-     {:style               style/networks-container
-      :accessibility-label :networks}
-     (when (and ethereum (pos? (:amount ethereum)))
-       [network-amount
-        {:network  :ethereum
-         :amount   (str (:amount ethereum) " " (or (:token-symbol ethereum) "ETH"))
-         :divider? (or show-arbitrum? show-optimism?)
-         :theme    theme}])
-     (when show-optimism?
-       [network-amount
-        {:network  :optimism
-         :amount   (str (:amount optimism) " " (or (:token-symbol optimism) "OETH"))
-         :divider? show-arbitrum?
-         :theme    theme}])
-     (when show-arbitrum?
-       [network-amount
-        {:network :arbitrum
-         :amount  (str (:amount arbitrum) " " (or (:token-symbol arbitrum) "ARB"))
-         :theme   theme}])
-     (when show-base?
-       [network-amount
-        {:network :base
-         :amount  (str (:amount base) " " (or (:token-symbol base) "ETH"))
-         :theme   theme}])]))
+  [networks-to-show theme]
+  (->> networks-to-show
+       (map-indexed
+        (fn [i [k {:keys [amount token-symbol]}]]
+          (when (or (pos? amount)
+                    (= amount "<0.01"))
+            [network-amount
+             {:network  k
+              :amount   (str amount " " (or token-symbol (get default-token-symbols k)))
+              :divider? (not= (dec i) (-> networks-to-show keys count))
+              :theme    theme}])))
+       (remove nil?)
+       (into [rn/view
+              {:style               style/networks-container
+               :accessibility-label :networks}])))
 
 (defn- view-internal
-  [{:keys [type account-props token-props networks? values]}]
+  [{:keys [type account-props network-props token-props networks-to-show]}]
   (let [theme   (quo.theme/use-theme)
         address (or (:address account-props) (:address token-props))]
     [rn/view
-     {:style (style/container networks? theme)}
+     {:style (style/container (seq? networks-to-show) theme)}
      [rn/view
       {:style style/info-container}
       (case type
@@ -82,16 +67,26 @@
                          (assoc account-props
                                 :size     :size-32
                                 :neutral? true)]
+        :network        [rn/image
+                         {:source (resources/get-network (:network-name network-props))
+                          :style  style/network-icon}]
         [user-avatar/user-avatar account-props])
       [rn/view {:style {:margin-left 8}}
-       (when (not= type :account)
-         [text/text {:weight :semi-bold} (or (:name account-props) (:label token-props))])
+       (when (not (some #{type} [:account :network]))
+         [text/text
+          {:weight :semi-bold}
+          (or (:name account-props) (:label token-props))])
+       (when (= type :network)
+         [text/text
+          {:weight :semi-bold}
+          (:full-name network-props)])
        [rn/view
         {:style {:flex-direction :row
                  :align-items    :center}}
         (when (= type :user)
           [:<>
-           [rn/view {:style {:margin-right 4}} [account-avatar/view (:status-account account-props)]]
+           [rn/view {:style {:margin-right 4}}
+            [account-avatar/view (:status-account account-props)]]
            [text/text
             {:size  :paragraph-2
              :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
@@ -105,10 +100,10 @@
             :style  {:color (when (not= type :account)
                               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
            address])]]]
-     (when networks?
+     (when networks-to-show
        [:<>
         [rn/view
          {:style (style/line-divider theme)}]
-        [networks values theme]])]))
+        [networks networks-to-show theme]])]))
 
 (def view (schema/instrument #'view-internal summary-info-schema/?schema))

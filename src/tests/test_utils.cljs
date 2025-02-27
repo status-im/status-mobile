@@ -123,12 +123,9 @@
 
 (def status
   (clj->js
-   {:getNodeConfig
-    (fn [] (types/clj->json {:WakuV2Config ""}))
-    :addCentralizedMetric
-    (fn [_ callback]
-      (callback))
-    :fleets
-    (fn [] (.fleets native-status))
-    :startLocalNotifications
-    identity}))
+   {:intendedPanic           identity
+    :getNodeConfig           (fn [] (types/clj->json {:WakuV2Config ""}))
+    :addCentralizedMetric    (fn [_ callback]
+                               (callback))
+    :fleets                  (fn [] (.fleets native-status))
+    :startLocalNotifications identity}))

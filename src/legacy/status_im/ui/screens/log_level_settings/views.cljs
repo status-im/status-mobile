@@ -33,6 +33,9 @@
         name]]]]))
 
 (def log-levels
+  "The status-go log library (zap) doesn't support the trace level, so we remove
+  the trace option from the UI. When trace is enabled an error will happen while
+  trying to login (user will see the error 'wrong password')."
   [{:name  "DISABLED"
     :value ""}
    {:name  "ERROR"
@@ -42,9 +45,7 @@
    {:name  "INFO"
     :value "INFO"}
    {:name  "DEBUG"
-    :value "DEBUG"}
-   {:name  "TRACE"
-    :value "TRACE"}])
+    :value "DEBUG"}])
 
 (views/defview log-level-settings
   []

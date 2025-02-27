@@ -71,3 +71,12 @@
                  {:amount amount-fixed :token-symbol token-symbol})))
       {}
       network-values))))
+
+(re-frame/reg-sub
+ :wallet/send-selected-network
+ :<- [:wallet/wallet-send]
+ (fn [{:keys [to-values-by-chain]}]
+   (-> to-values-by-chain
+       keys
+       first
+       network-utils/get-network-details)))

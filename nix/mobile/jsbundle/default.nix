@@ -38,7 +38,7 @@ stdenv.mkDerivation {
           ];
         };
     };
-  buildInputs = with pkgs; [ clojure nodejs bash git openjdk];
+  buildInputs = with pkgs; [ clojure nodejs bash git openjdk_headless ];
   phases = [
     "unpackPhase" "secretsPhase" "patchPhase"
     "configurePhase" "buildPhase" "installPhase"

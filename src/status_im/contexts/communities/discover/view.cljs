@@ -34,8 +34,7 @@
 
 (defn screen-title
   []
-  [rn/view
-   {:style (style/screen-title-container (safe-area/get-top))}
+  [rn/view {:style (style/screen-title-container (safe-area/get-top))}
    [quo/text
     {:accessibility-label :communities-screen-title
      :weight              :semi-bold
@@ -95,14 +94,14 @@
 
 (defn featured-list
   [communities view-type]
-  (let [view-size (reagent/atom 0)
-        loaded?   (and communities (pos? (count communities)))]
+  (let [view-size     (reagent/atom 0)
+        set-view-size (fn [e]
+                        (reset! view-size (- (oops/oget e "nativeEvent.layout.width") 40)))
+        loaded?       (and communities (pos? (count communities)))]
     (fn []
       [rn/view
        {:style     style/featured-list-container
-        :on-layout #(swap! view-size
-                      (fn [_]
-                        (- (oops/oget % "nativeEvent.layout.width") 40)))}
+        :on-layout set-view-size}
        (when-not (= @view-size 0)
          [rn/flat-list
           {:key-fn                            :id
@@ -132,32 +131,29 @@
    [discover-communities-segments selected-tab false]])
 
 (defn other-communities-list
-  [{:keys [communities communities-ids view-type]}]
+  [{:keys [communities view-type]}]
   [rn/view {:style style/other-communities-container}
-   (if (and communities (pos? (count communities)))
-     (map-indexed
-      (fn [inner-index item]
-        (let [community-id (when communities-ids item)
-              community    (if communities
-                             item
-                             (rf/sub [:communities/home-item community-id]))
-              cover        {:uri (get-in (:images item) [:banner :uri])}]
-          [rn/view
-           {:key           (str inner-index (:id community))
-            :margin-bottom 16}
-           (if (= view-type :card-view)
-             [quo/community-card-view-item
-              {:community (assoc community :cover cover)
-               :on-press  #(rf/dispatch [:communities/navigate-to-community-overview (:id community)])}]
-
-             [quo/community-list
-              {:on-press      (fn []
-                                (rf/dispatch [:dismiss-keyboard])
-                                (rf/dispatch [:communities/navigate-to-community-overview
-                                              (:id community)]))
-               :on-long-press #(js/alert "TODO: to be implemented")}
-              community])]))
-      (if communities communities communities-ids))
+   (if (seq communities)
+     (map-indexed (fn [inner-index {community-id :id :as community}]
+                    (let [cover {:uri (-> community :images :banner :uri)}]
+                      [rn/view
+                       {:key   (str inner-index community-id)
+                        :style {:margin-bottom 16}}
+                       (if (= view-type :card-view)
+                         [quo/community-card-view-item
+                          {:community (assoc community
+                                             :cover         cover
+                                             :members-count (count (:members community)))
+                           :on-press  #(rf/dispatch [:communities/navigate-to-community-overview
+                                                     community-id])}]
+                         [quo/community-list
+                          {:on-press      (fn []
+                                            (rf/dispatch [:dismiss-keyboard])
+                                            (rf/dispatch [:communities/navigate-to-community-overview
+                                                          community-id]))
+                           :on-long-press #(js/alert "TODO: to be implemented")}
+                          community])]))
+                  communities)
      [:<>
       [rn/view {:margin-bottom 16} [quo/community-card-view-item {:loading? true}]]
       [rn/view {:margin-bottom 16} [quo/community-card-view-item {:loading? true}]]
@@ -168,8 +164,9 @@
   [rn/view {:style {:flex 1}}
    (case @selected-tab
      :all
-     (other-communities-list {:communities (rf/sub [:communities/other-contract-communities])
-                              :view-type   view-type})
+     [other-communities-list
+      {:communities (rf/sub [:communities/other-contract-communities])
+       :view-type   view-type}]
 
      :open
      [:<>]
@@ -183,60 +180,55 @@
       (i18n/label :t/error)])])
 
 (defn render-communities
-  [selected-tab
-   featured-communities-count
-   featured-communities
-   view-type]
-  (fn []
-    [rn/view
-     [discover-communities-header
-      {:selected-tab               selected-tab
-       :view-type                  view-type
-       :featured-communities-count featured-communities-count
-       :featured-communities       featured-communities}]
-     [communities-lists selected-tab view-type]]))
+  [{:keys [selected-tab featured-communities-count featured-communities view-type]}]
+  [rn/view
+   [discover-communities-header
+    {:selected-tab               selected-tab
+     :view-type                  view-type
+     :featured-communities-count featured-communities-count
+     :featured-communities       featured-communities}]
+   [communities-lists selected-tab view-type]])
 
 (defn render-sticky-header
   [{:keys [selected-tab scroll-height]}]
-  (fn []
-    (when (> @scroll-height 360)
-      [rn/view
-       {:style (style/blur-tabs-header (safe-area/get-top))}
-       [discover-communities-segments selected-tab true]])))
+  (when (> @scroll-height 360)
+    [rn/view
+     {:style (style/blur-tabs-header (safe-area/get-top))}
+     [discover-communities-segments selected-tab true]]))
 
 (defn discover-screen-content
-  [featured-communities theme]
-  (let [view-type                  (reagent/atom :card-view)
-        selected-tab               (reagent/atom :all)
-        scroll-height              (reagent/atom 0)
-        featured-communities-count (count featured-communities)]
+  []
+  (let [view-type     (reagent/atom :card-view)
+        selected-tab  (reagent/atom :all)
+        scroll-height (reagent/atom 0)]
     (fn []
-      [scroll-page/scroll-page
-       {:on-scroll        #(reset! scroll-height %)
-        :page-nav-props   {:background :blur}
-        :navigate-back?   :true
-        :height           (if (> @scroll-height 360)
-                            208
-                            148)
-        :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
-        :sticky-header    [render-sticky-header
-                           {:selected-tab  selected-tab
-                            :scroll-height scroll-height}]}
-
-       [render-communities
-        selected-tab
-        featured-communities-count
-        featured-communities
-        @view-type]])))
+      (let [theme                      (quo.theme/use-theme)
+            featured-communities       (rf/sub [:communities/featured-contract-communities])
+            featured-communities-count (count featured-communities)]
+        [scroll-page/scroll-page
+         {:on-scroll        #(reset! scroll-height %)
+          :page-nav-props   {:background :blur}
+          :navigate-back?   :true
+          :height           (if (> @scroll-height 360)
+                              208
+                              148)
+          :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
+          :sticky-header    [render-sticky-header
+                             {:selected-tab  selected-tab
+                              :scroll-height scroll-height}]}
+         [render-communities
+          {:selected-tab               selected-tab
+           :featured-communities-count featured-communities-count
+           :featured-communities       featured-communities
+           :view-type                  @view-type}]]))))
 
 (defn view
   []
-  (let [theme                (quo.theme/use-theme)
-        featured-communities (rf/sub [:communities/featured-contract-communities])]
+  (let [theme (quo.theme/use-theme)]
     (rn/use-mount #(rf/dispatch [:fetch-contract-communities]))
     [rn/view
      {:style (style/discover-screen-container (colors/theme-colors
                                                colors/white
                                                colors/neutral-95
                                                theme))}
-     [discover-screen-content featured-communities theme]]))
+     [discover-screen-content]]))

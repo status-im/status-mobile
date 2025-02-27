@@ -15,10 +15,10 @@
      :on-press  events-helper/navigate-back}]
    [quo/page-top
     {:title (i18n/label :t/ready-add-keypair-keycard)}]
-   [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-    [rn/image
-     {:resize-mode :contain
-      :source      (resources/get-image :keycard-migration)}]]
+   [rn/image
+    {:resize-mode :contain
+     :style       {:flex 1 :width (:width (rn/get-window))}
+     :source      (resources/get-image :keycard-migration)}]
    [common.view/tips]
    [quo/bottom-actions
     {:actions          :one-action
@@ -33,8 +33,11 @@
      :on-press  events-helper/navigate-back}]
    [quo/page-top
     {:title (i18n/label :t/backup-keycard-created)}]
-   [rn/view {:style {:flex 1}}]
-   [rn/view {:style {:padding-horizontal 20}}
+   [rn/image
+    {:resize-mode :contain
+     :style       {:flex 1 :width (:width (rn/get-window))}
+     :source      (resources/get-image :keycard-backup-positive)}]
+   [rn/view {:style {:padding-horizontal 20 :padding-vertical 12}}
     [quo/button {:on-press events-helper/navigate-back}
      (i18n/label :t/done)]]])
 
@@ -49,7 +52,10 @@
       {:title            (i18n/label :t/keycard-not-empty)
        :description      :text
        :description-text (i18n/label :t/scan-empty-keycard)}]
-     [rn/view {:style {:flex 1}}]
+     [rn/image
+      {:resize-mode :contain
+       :style       {:flex 1 :width (:width (rn/get-window))}
+       :source      (resources/get-image :keycard-not-empty)}]
      [common.view/tips]
      [rn/view {:style {:padding-horizontal 20}}
       [quo/button {:on-press on-press}
@@ -65,10 +71,10 @@
     {:title            (i18n/label :t/scan-empty-keycard)
      :description      :text
      :description-text (i18n/label :t/backup-empty-keycard-only)}]
-   [rn/view {:style {:flex 1 :align-items :center :justify-content :center}}
-    [rn/image
-     {:resize-mode :contain
-      :source      (resources/get-image :check-your-keycard)}]]
+   [rn/image
+    {:resize-mode :contain
+     :style       {:flex 1 :width (:width (rn/get-window))}
+     :source      (resources/get-image :check-your-keycard)}]
    [common.view/tips]
    [quo/bottom-actions
     {:actions          :one-action

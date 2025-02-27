@@ -26,11 +26,11 @@
 (goog-define ALCHEMY_BASE_MAINNET_TOKEN "")
 (goog-define ALCHEMY_BASE_SEPOLIA_TOKEN "")
 (goog-define WALLET_CONNECT_PROJECT_ID "87815d72a81d739d2a7ce15c2cfdefb3")
-(goog-define MIXPANEL_APP_ID "3350627")
-(goog-define MIXPANEL_TOKEN "5c73bda2d36a9f688a5ee45641fb6775")
 (goog-define STATUS_BUILD_ETH_RPC_PROXY_USER "")
 (goog-define STATUS_BUILD_ETH_RPC_PROXY_PASSWORD "")
 (goog-define STATUS_BUILD_ETH_RPC_PROXY_URL "")
+(goog-define MIXPANEL_APP_ID "")
+(goog-define MIXPANEL_APP_TOKEN "")
 
 (def mainnet-rpc-url (str "https://eth-archival.rpc.grove.city/v1/" POKT_TOKEN))
 (def sepolia-rpc-url (str "https://sepolia-archival.rpc.grove.city/v1/" POKT_TOKEN))
@@ -53,8 +53,16 @@
 (def opensea-link "https://opensea.io")
 (def opensea-tesnet-link "https://testnets.opensea.io")
 
+;; These MixPanel values should be injected via the CI since they vary depending
+;; on the environment, as we want to keep production and test/development
+;; metrics separate.
+;;
+;; We primarily use two MixPanel projects: the production project is named
+;; `status-im`, and the test project is `test.status-im`.
+;;
+;; During development, do not use the production app ID and token.
 (def mixpanel-app-id MIXPANEL_APP_ID)
-(def mixpanel-token MIXPANEL_TOKEN)
+(def mixpanel-token MIXPANEL_APP_TOKEN)
 
 (def opensea-api-key OPENSEA_API_KEY)
 (def status-proxy-enabled? true)
@@ -135,3 +143,8 @@
 
 (def re-frisk-host (get-config :RE_FRISK_HOST "localhost"))
 (def re-frisk-port (get-config :RE_FRISK_PORT "4567"))
+;;;; Sentry
+;; Documentation: status-go/internal/sentry/README.md
+(goog-define SENTRY_DSN_STATUS_GO "")
+(def sentry-enabled? (enabled? (get-config :SENTRY_ENABLED "0")))
+(def sentry-dsn-status-go SENTRY_DSN_STATUS_GO)

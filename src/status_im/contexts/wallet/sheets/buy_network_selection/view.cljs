@@ -24,7 +24,7 @@
     {:size   :paragraph-2
      :weight :medium
      :style  style/on}
-    (i18n/label :t/on-uppercase)]
+    (i18n/label :t/on-capitalized)]
    [quo/context-tag
     {:type            :network
      :network-logo    (:logo-url provider)

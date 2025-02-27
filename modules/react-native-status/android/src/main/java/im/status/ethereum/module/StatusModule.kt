@@ -109,6 +109,15 @@ class StatusModule(private val reactContext: ReactApplicationContext, private va
     }
 
     @ReactMethod
+    fun intendedPanic(message: String) {
+        StatusBackendClient.executeStatusGoRequest(
+            endpoint = "IntendedPanic",
+            requestBody = message,
+            statusgoFunction = { Statusgo.intendedPanic(message) },
+        )
+    }
+
+    @ReactMethod
     fun addCentralizedMetric(request: String, callback: Callback) {
         StatusBackendClient.executeStatusGoRequestWithCallback(
             endpoint = "AddCentralizedMetric",

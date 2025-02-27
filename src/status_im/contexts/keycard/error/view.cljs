@@ -23,6 +23,7 @@
 (defn view
   []
   (let [error                       (rf/sub [:keycard/application-info-error])
+        logged-in?                  (rf/sub [:multiaccount/logged-in?])
         {:keys [title description]} (get titles error)]
     [:<>
      [quo/page-nav
@@ -37,21 +38,31 @@
       [quo/section-label
        {:section (i18n/label :t/what-you-can-do) :container-style {:padding-vertical 8}}]
       (if (= error :keycard/error.keycard-empty)
-        [quo/settings-item
-         {:title             (i18n/label :t/use-backup-keycard)
-          :image             :icon
-          :image-props       :i/placeholder
-          :action            :arrow
-          :description       :text
-          :description-props {:text (i18n/label :t/create-backup-profile-keycard)}
-          :on-press          (fn []
-                               (rf/dispatch [:show-bottom-sheet
-                                             {:content
-                                              (fn []
-                                                [backup.view/sheet
-                                                 {:on-continue
-                                                  (rf/dispatch
-                                                   [:keycard/backup.create-or-enter-pin])}])}]))}]
+        (if logged-in?
+          [quo/settings-item
+           {:title             (i18n/label :t/use-backup-keycard)
+            :image             :icon
+            :image-props       :i/placeholder
+            :action            :arrow
+            :description       :text
+            :description-props {:text (i18n/label :t/create-backup-profile-keycard)}
+            :on-press          (fn []
+                                 (rf/dispatch [:show-bottom-sheet
+                                               {:content
+                                                (fn []
+                                                  [backup.view/sheet
+                                                   {:on-continue
+                                                    (rf/dispatch
+                                                     [:keycard/backup.create-or-enter-pin])}])}]))}]
+          [quo/settings-item
+           {:title             (i18n/label :t/create-new-profile)
+            :image             :icon
+            :image-props       :i/profile
+            :action            :arrow
+            :description       :text
+            :description-props {:text (i18n/label :t/new-key-pair-keycard)}
+            :on-press          (fn []
+                                 (rf/dispatch [:keycard/create.get-phrase]))}])
         [:<>
          (when (or (= error :keycard/error.keycard-frozen)
                    (= error :keycard/error.keycard-locked))

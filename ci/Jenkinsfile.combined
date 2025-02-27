@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.9.18'
+library 'status-jenkins-lib@v1.9.20'
 
 import groovy.json.JsonBuilder
 
@@ -134,4 +134,3 @@ def updateBucketJSON(urls, fileName) {
   writeFile(file: filePath, text: contentJson)
   return s5cmd.upload(filePath)
 }
-

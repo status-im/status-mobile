@@ -55,7 +55,7 @@
         [rn/view (style/card-view-chat-icon 48 theme)
          [icon/community-icon {:images images} 48]]
         (when (= status :gated)
-          [rn/view (style/permission-tag-styles)
+          [rn/view style/permission-tag-styles
            [community-view/permission-tag-container
             {:locked? locked?
              :status  status
@@ -63,10 +63,12 @@
         [community-view/community-title
          {:title       name
           :description description}]
-        [rn/view {:style (style/card-stats-position)}
+        [rn/view {:style style/card-stats-position}
          [community-view/community-stats-column
-          {:type :card-view}]]
-        [rn/view {:style (style/community-tags-position)}
+          {:type                 :card-view
+           :members-count        (:members-count community)
+           :active-members-count (:active-members-count community)}]]
+        [rn/view {:style style/community-tags-position}
          [community-view/community-tags {:tags tags}]]]]]]))
 
 (defn view

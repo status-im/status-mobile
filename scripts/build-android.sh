@@ -45,8 +45,9 @@ SECRETS_ENV_VARS=(
     'INFURA_TOKEN_SECRET'
     'OPENSEA_API_KEY'
     'MIXPANEL_APP_ID'
-    'MIXPANEL_TOKEN'
+    'MIXPANEL_APP_TOKEN'
     'POKT_TOKEN'
+    'SENTRY_DSN_STATUS_GO'
 )
 
 # Secrets like this can't be passed via args or they end up in derivation.

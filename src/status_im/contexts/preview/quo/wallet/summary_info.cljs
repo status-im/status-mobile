@@ -12,17 +12,15 @@
     :options [{:key :status-account}
               {:key :user}
               {:key :saved-account}
-              {:key :account}]}
-   {:key :networks? :type :boolean}])
+              {:key :account}]}])
 
 
 (defn view
   []
-  (let [state                (reagent/atom {:type      :status-account
-                                            :networks? true
-                                            :values    {:ethereum {:amount 150}
-                                                        :optimism {:amount 50}
-                                                        :arbitrum {:amount 25}}})
+  (let [state                (reagent/atom {:type             :status-account
+                                            :networks-to-show {:ethereum {:amount 150}
+                                                               :optimism {:amount 50}
+                                                               :arbitrum {:amount 25}}})
         status-account-props {:customization-color :purple
                               :size                32
                               :emoji               "🍑"

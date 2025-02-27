@@ -81,7 +81,7 @@ class ActivityElement(BaseElement):
 class ConfirmationViewInfoContainer(BaseElement):
 
     def __init__(self, driver, label_name: str):
-        self.locator = "//*[@content-desc='summary-%s-label']/following-sibling::android.view.ViewGroup[1]" % label_name
+        self.locator = "//*[@text='%s']/following-sibling::android.view.ViewGroup[1]" % label_name
         super().__init__(driver, xpath=self.locator)
 
     @property
@@ -139,8 +139,9 @@ class WalletView(BaseView):
         self.amount_input_increase_button = Button(self.driver, accessibility_id='amount-input-inc-button')
 
         # Review Send and Review Bridge screens
-        self.from_data_container = ConfirmationViewInfoContainer(self.driver, label_name='from')
-        self.to_data_container = ConfirmationViewInfoContainer(self.driver, label_name='to')
+        self.from_data_container = ConfirmationViewInfoContainer(self.driver, label_name='From')
+        self.to_data_container = ConfirmationViewInfoContainer(self.driver, label_name='To')
+        self.on_data_container = ConfirmationViewInfoContainer(self.driver, label_name='On')
 
         # Swap flow
         self.approve_swap_button = Button(self.driver, accessibility_id='Approve')
