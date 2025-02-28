@@ -9,21 +9,22 @@
 
 (defn ready-to-add
   []
-  [:<>
-   [quo/page-nav
-    {:icon-name :i/close
-     :on-press  events-helper/navigate-back}]
-   [quo/page-top
-    {:title (i18n/label :t/ready-add-keypair-keycard)}]
-   [rn/image
-    {:resize-mode :contain
-     :style       {:flex 1 :width (:width (rn/get-window))}
-     :source      (resources/get-image :keycard-migration)}]
-   [common.view/tips]
-   [quo/bottom-actions
-    {:actions          :one-action
-     :button-one-label (i18n/label :t/scan-keycard)
-     :button-one-props {:on-press #(rf/dispatch [:keycard/backup.ready-to-add-connect])}}]])
+  (let [{:keys [on-press]} (rf/sub [:get-screen-params])]
+    [:<>
+     [quo/page-nav
+      {:icon-name :i/close
+       :on-press  events-helper/navigate-back}]
+     [quo/page-top
+      {:title (i18n/label :t/ready-add-keypair-keycard)}]
+     [rn/image
+      {:resize-mode :contain
+       :style       {:flex 1 :width (:width (rn/get-window))}
+       :source      (resources/get-image :keycard-migration)}]
+     [common.view/tips]
+     [quo/bottom-actions
+      {:actions          :one-action
+       :button-one-label (i18n/label :t/scan-keycard)
+       :button-one-props {:on-press on-press}}]]))
 
 (defn success-view
   []

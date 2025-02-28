@@ -35,6 +35,8 @@
    :keycard-migration-succeeded   (js/require "../resources/images/ui2/keycard-migration-succeeded.png")
    :keycard-not-same              (js/require "../resources/images/ui2/keycard-not-same.png")
    :keycard-not-empty             (js/require "../resources/images/ui2/keycard-not-empty.png")
+   :keycard-profile-already-added (js/require
+                                   "../resources/images/ui2/keycard-profile-already-added.png")
    :keycard-reset-positive        (js/require "../resources/images/ui2/keycard-reset-positive.png")
    :keycard-reset-negative        (js/require "../resources/images/ui2/keycard-reset-negative.png")
    :keycard-unblock               (js/require "../resources/images/ui2/keycard-unblock.png")

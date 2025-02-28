@@ -35,10 +35,11 @@
     [status-im.contexts.keycard.check.view :as keycard.check]
     [status-im.contexts.keycard.create.view :as keycard.create]
     [status-im.contexts.keycard.different-card.view :as keycard.different-card]
-    [status-im.contexts.keycard.empty.view :as keycard.empty]
     [status-im.contexts.keycard.error.view :as keycard.error]
     [status-im.contexts.keycard.factory-reset.view :as keycard.factory-reset]
+    [status-im.contexts.keycard.login.view :as keycard.login]
     [status-im.contexts.keycard.manage.profile-keys.view :as keycard.manage.profile-keys]
+    [status-im.contexts.keycard.manage.view :as keycard.manage]
     [status-im.contexts.keycard.migrate.fail.view :as keycard.migrate.fail]
     [status-im.contexts.keycard.migrate.profile-keys.view :as keycard.migrate.profile-keys]
     [status-im.contexts.keycard.migrate.re-encrypting.view :as keycard.re-encrypting]
@@ -909,19 +910,54 @@
                 :insets                 {:top? true :bottom? true}}
     :component keycard.check/view}
 
-   {:name      :screen/keycard.empty
+   {:name      :screen/keycard.manage.empty-import
     :metrics   {:track? true}
     :options   {:theme                  :dark
                 :modalPresentationStyle :fullScreen
                 :insets                 {:top? true :bottom? true}}
-    :component keycard.empty/view}
+    :component keycard.manage/empty-import-view}
 
-   {:name      :screen/keycard.empty-create
+   {:name      :screen/keycard.manage.empty-backup
+    :metrics   {:track? true}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
+    :component keycard.manage/empty-backup-view}
+
+   {:name      :screen/keycard.manage.not-empty-logout
+    :metrics   {:track? true}
+    :options   {:theme                  :dark
+                :modalPresentationStyle :fullScreen
+                :insets                 {:top? true :bottom? true}}
+    :component keycard.manage/not-empty-logout-view}
+
+   {:name      :screen/keycard.login.empty
     :metrics   {:track? true}
     :options   {:insets                 {:top? true :bottom? true}
                 :theme                  :dark
                 :modalPresentationStyle :fullScreen}
-    :component keycard.empty/create}
+    :component keycard.login/empty-view}
+
+   {:name      :screen/keycard.login.already-added
+    :metrics   {:track? true}
+    :options   {:insets                 {:top? true :bottom? true}
+                :theme                  :dark
+                :modalPresentationStyle :fullScreen}
+    :component keycard.login/already-added-view}
+
+   {:name      :screen/keycard.create.empty
+    :metrics   {:track? true}
+    :options   {:insets                 {:top? true :bottom? true}
+                :theme                  :dark
+                :modalPresentationStyle :fullScreen}
+    :component keycard.create/empty-view}
+
+   {:name      :screen/keycard.create.not-empty
+    :metrics   {:track? true}
+    :options   {:insets                 {:top? true :bottom? true}
+                :theme                  :dark
+                :modalPresentationStyle :fullScreen}
+    :component keycard.create/not-empty-view}
 
    {:name      :screen/keycard.error
     :metrics   {:track? true}
@@ -1029,6 +1065,13 @@
                 :theme                  :dark
                 :modalPresentationStyle :fullScreen}
     :component keycard.create/ready-to-add}
+
+   {:name      :screen/keycard.create.ready-to-generate
+    :metrics   {:track? true}
+    :options   {:insets                 {:top? true :bottom? true}
+                :theme                  :dark
+                :modalPresentationStyle :fullScreen}
+    :component keycard.create/ready-to-generate}
 
    {:name      :screen/keycard.ready-to-change-pin
     :metrics   {:track? true}

@@ -22,4 +22,3 @@
    [rn/view {:style {:padding-horizontal 20 :padding-vertical 12}}
     [quo/button {:on-press events-helper/navigate-back}
      (i18n/label :t/try-again)]]])
-
