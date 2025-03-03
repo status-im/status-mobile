@@ -199,7 +199,7 @@ def create_shared_drivers(quantity: int, platform_version: int = 14, device_name
             test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
             drivers[i].implicitly_wait(implicit_wait)
             drivers[i].update_settings({"enforceXPath1": True})
-            drivers[i].set_network_connection(ConnectionType.WIFI_ONLY)
+            drivers[i].set_network_connection(ConnectionType.ALL_NETWORK_ON)
         return drivers, loop
     except (MaxRetryError, AttributeError) as e:
         test_suite_data.current_test.testruns[-1].error = str(e)
