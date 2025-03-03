@@ -64,3 +64,20 @@
   {:margin-top    7
    :margin-bottom 2
    :margin-left   -1})
+
+(def new-feature-tag-container
+  {:margin-left     6
+   :border-radius   12
+   :justify-content :center})
+
+(def new-feature-tag-gradient
+  {:border-radius 12
+   :position      :absolute
+   :left          0
+   :right         0
+   :top           0
+   :bottom        0})
+
+(def new-feature-tag-text
+  {:color             colors/white
+   :margin-horizontal 5})

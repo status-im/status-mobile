@@ -200,12 +200,15 @@
       shown-name]]))
 
 (defn- wallet-networks-center
-  [{:keys [networks networks-on-press background center-content-container-style]}]
+  [{:keys [networks networks-on-press show-new-chain-indicator? background
+           center-content-container-style]}]
   [reanimated/view {:style center-content-container-style}
    [network-dropdown/view
-    {:state    :default
-     :on-press networks-on-press
-     :blur?    (= background :blur)} networks]])
+    {:state                     :default
+     :on-press                  networks-on-press
+     :blur?                     (= background :blur)
+     :show-new-chain-indicator? show-new-chain-indicator?}
+    networks]])
 
 (defn page-nav
   "Props:

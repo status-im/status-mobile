@@ -41,7 +41,7 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
     @marks.testrail_id(741839)
     def test_wallet_collectibles_balance(self):
         self.wallet_view.collectibles_tab.click()
-        self.wallet_view.set_network_in_wallet(self.network_name)
+        self.wallet_view.set_network_in_wallet(self.network_name + ', NEW')
         collectibles = {
             "BVL": {"quantity": 2,
                     "info": {"Account": "Account 1",

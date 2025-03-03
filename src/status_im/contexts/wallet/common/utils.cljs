@@ -324,20 +324,19 @@
 
 (defn make-network-item
   "This function generates props for quo/category component item"
-  [{:keys [network-name color on-change networks state label-props type blur?]}]
-  (cond-> {:title        (string/capitalize (name network-name))
-           :image        :icon-avatar
-           :image-props  {:icon (resources/get-network network-name)
-                          :size :size-20}
-           :action       :selector
-           :action-props {:type                (or type
-                                                   (if (= :default state)
-                                                     :filled-checkbox
-                                                     :checkbox))
-                          :blur?               blur?
-                          :customization-color color
-                          :checked?            (contains? networks network-name)
-                          :on-change           on-change}}
+  [{:keys [network-name color on-change networks label-props type blur?]}]
+  (cond-> {:title                 (string/capitalize (name network-name))
+           :image                 :icon-avatar
+           :image-props           {:icon (resources/get-network network-name)
+                                   :size :size-20}
+           ;; Remove the following line for v2.35
+           :show-new-feature-tag? (= network-name constants/base-network-name)
+           :action                :selector
+           :action-props          {:type                (or type :checkbox)
+                                   :blur?               blur?
+                                   :customization-color color
+                                   :checked?            (contains? networks network-name)
+                                   :on-change           on-change}}
 
     label-props
     (assoc :label       :text
