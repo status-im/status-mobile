@@ -20,8 +20,7 @@
 (defn handle-community
   [{:keys [db]} [community-js]]
   (when community-js
-    (let [{:keys [clock
-                  token-permissions-check id last-opened-at]
+    (let [{:keys [clock token-permissions-check id last-opened-at]
            :as   community}       (data-store.communities/<-rpc community-js)
           previous-last-opened-at (get-in db [:communities id :last-opened-at])]
       (when (and id (>= clock (get-in db [:communities id :clock])))
@@ -348,16 +347,16 @@
 
 (defn navigate-to-community-chat
   [{:keys [db]} [chat-id pop-to-root? community-id]]
-  (let [community-id (or community-id (get-in db [:chats chat-id :community-id]))]
-    (merge
-     {:fx [(when community-id
-             [:dispatch [:communities/fetch-community {:community-id community-id}]])
-           (if pop-to-root?
-             [:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]]
-             [:dispatch
-              [:chat/navigate-to-chat chat-id transitions/stack-slide-transition]])]}
-     (when-not (get-in db [:chats chat-id :community-id])
-       {:db (assoc-in db [:chats chat-id :community-id] community-id)}))))
+  (let [community-id-in-chats (get-in db [:chats chat-id :community-id])
+        community-id          (or community-id community-id-in-chats)]
+    (cond-> {:fx [(when community-id
+                    [:dispatch [:communities/fetch-community {:community-id community-id}]])
+                  (if pop-to-root?
+                    [:dispatch [:chat/pop-to-root-and-navigate-to-chat chat-id]]
+                    [:dispatch
+                     [:chat/navigate-to-chat chat-id transitions/stack-slide-transition]])]}
+      (not community-id-in-chats)
+      (assoc :db (assoc-in db [:chats chat-id :community-id] community-id)))))
 
 (rf/reg-event-fx :communities/navigate-to-community-chat navigate-to-community-chat)
 

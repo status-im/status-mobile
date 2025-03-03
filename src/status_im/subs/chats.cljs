@@ -1,6 +1,7 @@
 (ns status-im.subs.chats
   (:require
     [clojure.string :as string]
+    [legacy.status-im.data-store.chats :as data-store.chats]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
     [status-im.contexts.chat.events :as chat.events]
@@ -123,35 +124,40 @@
  :<- [:contacts/blocked-set]
  :<- [:contacts/contacts-raw]
  :<- [:chat/inputs]
- (fn [[{:keys [group-chat chat-id chat-name name] :as current-chat} my-public-key community
+ (fn [[{:keys [group-chat chat-id chat-name name] :as current-chat}
+       my-public-key
+       community
        blocked-users-set contacts
        inputs]]
    (when current-chat
-     (cond-> current-chat
+     ;; 68 Is the length of the community-id prefix in the `chat-id`
+     (let [relative-chat-id (some-> current-chat
+                                    :chat-id
+                                    data-store.chats/community-chat-id->channel-id)]
+       (cond-> current-chat
 
-       (and (chat.events/community-chat? current-chat)
-            (get-in community [:chats (subs (:chat-id current-chat) 68) :can-post?]))
-       (assoc :able-to-send-message? true)
+         (and (chat.events/community-chat? current-chat)
+              (get-in community [:chats relative-chat-id :can-post?]))
+         (assoc :able-to-send-message? true)
 
 
-       (and (chat.events/group-chat? current-chat)
-            (member? my-public-key current-chat))
-       (assoc :able-to-send-message? true
-              :member?               true)
+         (and (chat.events/group-chat? current-chat)
+              (member? my-public-key current-chat))
+         (assoc :able-to-send-message? true
+                :member?               true)
 
-       (not chat-name)
-       (assoc :chat-name name)
+         (not chat-name)
+         (assoc :chat-name name)
 
-       (not group-chat)
-       (assoc
-        :contact-request-state (get-in contacts [chat-id :contact-request-state])
-        :able-to-send-message?
-        (and
-         (or
-          (get-in inputs [chat-id :metadata :sending-contact-request])
-          (= constants/contact-request-state-mutual
-             (get-in contacts [chat-id :contact-request-state])))
-         (not (contains? blocked-users-set chat-id))))))))
+         (not group-chat)
+         (assoc
+          :contact-request-state (get-in contacts [chat-id :contact-request-state])
+          :able-to-send-message?
+          (and
+           (or (get-in inputs [chat-id :metadata :sending-contact-request])
+               (= constants/contact-request-state-mutual
+                  (get-in contacts [chat-id :contact-request-state])))
+           (not (contains? blocked-users-set chat-id)))))))))
 
 (re-frame/reg-sub
  :chats/able-to-send-message?
