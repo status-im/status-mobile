@@ -275,7 +275,8 @@
   {:events [:chat/unmute-chat-community]}
   [{:keys [db]} chat-id]
   (let [{:keys [community-id]} (get-in db [:chats chat-id])]
-    {:db (assoc-in db [:communities community-id :muted] false)}))
+    (when community-id
+      {:db (assoc-in db [:communities community-id :muted] false)})))
 
 (rf/defn mute-chat-failed
   {:events [:chat/mute-failed]}
