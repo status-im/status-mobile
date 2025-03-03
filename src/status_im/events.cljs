@@ -78,4 +78,6 @@
     ;;app starting flow continues in get-profiles-overview
     :profile/get-profiles-overview #(rf/dispatch [:profile/get-profiles-overview-success %])
     :effects.font/get-font-file-for-initials-avatar
-    #(rf/dispatch [:font/init-font-file-for-initials-avatar %])}))
+    #(rf/dispatch [:font/init-font-file-for-initials-avatar %])
+    ;; show new chain indicator to highlight base chain. This will be be removed in v2.35.
+    :effects.wallet/retrieve-base-chain-indicator-shown nil}))

@@ -4,6 +4,7 @@
     [quo.components.avatars.icon-avatar :as icon-avatar]
     [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.buttons.button.view :as button]
+    [quo.components.common.new-feature-gradient :as new-feature-gradient]
     [quo.components.icon :as icon]
     [quo.components.list-items.preview-list.view :as preview-list]
     [quo.components.markdown.text :as text]
@@ -115,7 +116,9 @@
      nil)])
 
 (defn view
-  [{:keys [title on-press action-props accessibility-label blur? container-style content] :as props}]
+  [{:keys [title show-new-feature-tag? on-press action-props accessibility-label blur? container-style
+           content]
+    :as   props}]
   [rn/pressable
    {:style               (merge style/container container-style)
     :on-press            (or on-press (:on-change action-props))
@@ -126,10 +129,19 @@
     [rn/view {:style (style/left-sub-container props)}
      [image-component props]
      [rn/view {:style (style/left-container (:image props))}
-      [text/text
-       {:weight :medium
-        :style  {:color (when blur? colors/white)}}
-       title]
+      [rn/view {:flex-direction :row}
+       [text/text
+        {:weight :medium
+         :style  {:color (when blur? colors/white)}}
+        title]
+       (when show-new-feature-tag?
+         [rn/view {:style style/new-feature-tag-container}
+          [new-feature-gradient/view {:style style/new-feature-tag-gradient}]
+          [text/text
+           {:weight :semi-bold
+            :size   :label
+            :style  style/new-feature-tag-text}
+           (string/upper-case (i18n/label :t/new))]])]
       [description-component props]
       [tag-component props]]]
     [rn/view {:style (style/sub-container (:alignment action-props))}

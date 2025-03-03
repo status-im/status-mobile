@@ -200,6 +200,7 @@
   "bad-fees-description": "Your priority fee is below our suggested parameters.",
   "balance": "Balance",
   "base": "Base",
+  "base-chain-available-info": "Base chain is now on Status  - view your assets, interact with dApps and swap tokens",
   "be-safe-with-secure-cold-wallet": "Be safe with secure cold wallet",
   "begin-set-up": "Begin setup",
   "below-base-fee": "max fee below base fee",

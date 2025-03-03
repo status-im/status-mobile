@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [promesa.core :as promesa]
+    [react-native.async-storage :as async-storage]
     [status-im.common.json-rpc.events :as json-rpc]
     [status-im.contexts.profile.recover.effects :as profile.recover.effects]
     [status-im.contexts.wallet.rpc :as wallet-rpc]
@@ -130,3 +131,14 @@
    (-> (wallet-rpc/sign-message message address (security/safe-unmask-data password))
        (promesa/then on-success)
        (promesa/catch on-error))))
+
+(rf/reg-fx
+ :effects.wallet/retrieve-base-chain-indicator-shown
+ (fn []
+   (async-storage/get-item :base-chain-indicator-shown
+                           #(rf/dispatch [:wallet/retrieve-new-chain-indicator (not %)]))))
+
+(rf/reg-fx
+ :effects.wallet/set-base-chain-indicator-shown
+ (fn [flag]
+   (async-storage/set-item! :base-chain-indicator-shown flag)))
