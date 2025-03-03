@@ -36,7 +36,7 @@
    {:db (assoc-in db [:keycard :change-pin :new-pin] (security/mask-data pin))}))
 
 (defn- change-pin-and-continue
-  [current-pin new-pin]
+  [change-pin-data]
   (rf/dispatch [:keycard/change-pin
                 {:on-success  (fn []
                                 (rf/dispatch [:navigate-back])
@@ -46,15 +46,18 @@
                                 (rf/dispatch [:navigate-back])
                                 (rf/dispatch [:keycard/disconnect])
                                 (rf/dispatch [:open-modal :screen/keycard.pin-change-failed]))
-                 :current-pin current-pin
-                 :new-pin     new-pin}]))
+                 :current-pin (security/safe-unmask-data (:current-pin change-pin-data))
+                 :new-pin     (security/safe-unmask-data (:new-pin change-pin-data))}]))
 
 (defn- verify-pin-and-continue
-  [current-pin new-pin]
+  [change-pin-data]
   (rf/dispatch
    [:keycard/verify-pin
-    {:pin        current-pin
-     :on-success #(change-pin-and-continue current-pin new-pin)
+    {:pin        (security/safe-unmask-data (:current-pin change-pin-data))
+     :on-success (fn []
+                   (rf/dispatch [:keycard/connect.next-stage
+                                 {:key-uid    (:key-uid change-pin-data)
+                                  :on-success #(change-pin-and-continue change-pin-data)}]))
      :on-failure (fn [error]
                    (when-not (utils/tag-lost? (:error error))
                      (rf/dispatch [:keycard/disconnect])
@@ -63,11 +66,10 @@
 
 (rf/reg-event-fx :keycard/change-pin.verify-current-pin-and-continue
  (fn [{:keys [db]}]
-   (let [{:keys [current-pin new-pin]} (get-in db [:keycard :change-pin])
-         unmasked-current-pin          (security/safe-unmask-data current-pin)
-         unmasked-new-pin              (security/safe-unmask-data new-pin)]
+   (let [key-uid         (get-in db [:profile/profile :key-uid])
+         change-pin-data (assoc (get-in db [:keycard :change-pin]) :key-uid key-uid)]
      {:fx [[:dispatch
             [:keycard/connect
              {:theme      :dark
-              :key-uid    (get-in db [:profile/profile :key-uid])
-              :on-success #(verify-pin-and-continue unmasked-current-pin unmasked-new-pin)}]]]})))
+              :key-uid    key-uid
+              :on-success #(verify-pin-and-continue change-pin-data)}]]]})))
