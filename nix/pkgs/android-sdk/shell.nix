@@ -1,8 +1,8 @@
-{ mkShell, openjdk, androidPkgs }:
+{ mkShell, openjdk_headless, androidPkgs }:
 
 mkShell {
   name = "android-sdk-shell";
-  buildInputs = [ openjdk ];
+  buildInputs = [ openjdk_headless ];
 
   shellHook = ''
     export ANDROID_HOME="${androidPkgs.sdk}"

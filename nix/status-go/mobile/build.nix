@@ -1,5 +1,5 @@
 { callPackage, lib, buildGoPackage, pkgs
-, androidPkgs, openjdk, gomobile, xcodeWrapper, removeReferencesTo
+, androidPkgs, openjdk_headless, gomobile, xcodeWrapper, removeReferencesTo
 , go-bindata, mockgen, protobuf3_20, protoc-gen-go
 , meta
 , source
@@ -32,7 +32,7 @@ in buildGoPackage rec {
   extraSrcPaths = [ gomobile ];
   nativeBuildInputs = [
     gomobile removeReferencesTo go-bindata mockgen protoc-gen-go protobuf3_20 fakeGit
-  ] ++ optional isAndroid openjdk
+  ] ++ optional isAndroid openjdk_headless
     ++ optional isIOS xcodeWrapper;
 
   ldflags = goBuildLdFlags;

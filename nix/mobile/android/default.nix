@@ -8,7 +8,7 @@ rec {
 
   shell = mkShell {
     buildInputs = with pkgs; [
-      openjdk
+      openjdk_headless
       gradle
       lsof  # used in start-react-native.sh
       flock # used in nix/scripts/node_modules.sh

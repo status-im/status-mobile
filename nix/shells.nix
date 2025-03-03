@@ -19,7 +19,7 @@ let
     # for calling clojure targets in CI or Makefile
     clojure = mkShell {
       buildInputs = with pkgs; [
-        clojure flock maven openjdk
+        clojure flock maven openjdk_headless
         # lint specific utilities
         babashka clj-kondo clojure-lsp ripgrep zprint
       ];
@@ -61,7 +61,7 @@ let
 
     # for 'scripts/generate-keystore.sh'
     keytool = mkShell {
-      buildInputs = with pkgs; [ openjdk apksigner ];
+      buildInputs = with pkgs; [ openjdk_headless apksigner ];
     };
 
     # for targets needing 'adb', 'apkanalyzer' and other SDK/NDK tools

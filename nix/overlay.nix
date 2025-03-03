@@ -49,7 +49,7 @@ in {
   nodejs = super.nodejs_20;
   ruby = super.ruby_3_1;
   yarn = super.yarn.override { nodejs = super.nodejs_20; };
-  openjdk = super.openjdk17_headless;
+  openjdk_headless = super.openjdk17_headless;
   xcodeWrapper = callPackage ./pkgs/xcodeenv/compose-xcodewrapper.nix { } {
     versions = ["16.0" "16.1" "16.2"];
   };
