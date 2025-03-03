@@ -48,6 +48,11 @@
  :-> :last-updates-per-address)
 
 (rf/reg-sub
+ :wallet/show-new-chain-indicator?
+ :<- [:wallet/ui]
+ :-> :show-new-chain-indicator?)
+
+(rf/reg-sub
  :wallet/latest-update
  :<- [:wallet/last-updates-per-address]
  (fn [last-updates-per-address]

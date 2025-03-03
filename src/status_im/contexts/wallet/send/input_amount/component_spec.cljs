@@ -18,6 +18,7 @@
                                                    :network-name     :mainnet
                                                    :chain-id         1
                                                    :related-chain-id 5}]
+   :wallet/show-new-chain-indicator?             false
    :wallet/current-viewing-account-address       "0x1"
    :wallet/current-viewing-account               {:path "m/44'/60'/0'/0/1"
                                                   :emoji "💎"

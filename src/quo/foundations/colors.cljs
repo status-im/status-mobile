@@ -315,6 +315,8 @@
          networks-short-name
          socials))
 
+(def new-feature-gradient-pink "#FF33A3")
+
 (defn hex-string?
   [s]
   (and (string? s) (string/starts-with? s "#")))
