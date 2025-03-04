@@ -4,6 +4,7 @@
             [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
+            [utils.address]
             [utils.money :as money]
             [utils.number :as number]
             [utils.string]))
@@ -479,3 +480,11 @@
       (filter (fn [{:keys [tokens]}]
                 (some positive-balance-in-any-chain? tokens))
               operable-account))))
+
+(defn on-paste-address-or-ens
+  "Check if the clipboard has any valid address and extract the address without any chain info.
+  If it does not contain an valid address or it is ENS, return the clipboard text as it is"
+  [clipboard-text]
+  (if (utils.address/supported-address? clipboard-text)
+    (utils.address/extract-address-without-chains-info clipboard-text)
+    clipboard-text))
