@@ -480,3 +480,13 @@
       (filter (fn [{:keys [tokens]}]
                 (some positive-balance-in-any-chain? tokens))
               operable-account))))
+
+(defn token-exchange-rate
+  "Returns the exchange rate based on the token prices.
+   i.e. how many 'divisor' tokens is one 'divident' token."
+  ([divident-price divisor-price]
+   (token-exchange-rate divident-price divisor-price constants/min-token-decimals-to-display))
+  ([divident-price divisor-price divisor-token-decimals]
+   (-> (money/bignumber divident-price)
+       (money/div (money/bignumber divisor-price))
+       (number/to-fixed (min divisor-token-decimals constants/min-token-decimals-to-display)))))
