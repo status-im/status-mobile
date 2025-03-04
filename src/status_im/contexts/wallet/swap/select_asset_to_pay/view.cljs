@@ -32,8 +32,7 @@
     [:<>
      [search-input search-text on-change-text]
      [asset-list/view
-      {:list-type      :swap
-       :search-text    search-text
+      {:search-text    search-text
        :on-token-press on-token-press}]]))
 
 (defn view

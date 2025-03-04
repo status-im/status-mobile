@@ -55,8 +55,7 @@
        [search-input search-text on-change-text])
      (case selected-tab
        :tab/assets       [asset-list/view
-                          {:list-type      :send
-                           :search-text    search-text
+                          {:search-text    search-text
                            :on-token-press on-token-press}]
        :tab/collectibles [collectibles-grid search-text])]))
 

@@ -532,9 +532,9 @@
                                                     token
                                                     chain-ids)]
                                  (assoc token
-                                        :bridge-disabled? (and (= tx-type :tx/bridge)
-                                                               (send-utils/bridge-disabled? (:symbol
-                                                                                             token)))
+                                        :disabled? (and (= tx-type :tx/bridge)
+                                                        (send-utils/bridge-disabled? (:symbol
+                                                                                      token)))
                                         :networks (cond->>
                                                     (network-utils/network-list-with-positive-balance
                                                      token
