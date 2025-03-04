@@ -75,14 +75,15 @@
 (rf/reg-event-fx
  :profile/get-profiles-overview-success
  (fn [{:keys [db]}
-      [{accounts                        :accounts
-        {:keys [userConfirmed enabled]} :centralizedMetricsInfo}]]
+      [{accounts                               :accounts
+        {:keys [userConfirmed enabled userID]} :centralizedMetricsInfo}]]
    (let [profiles          (reduce-profiles accounts)
          profiles-key-uids (keys profiles)
          new-db            (cond-> db
                              :always
                              (assoc :centralized-metrics/user-confirmed? userConfirmed
-                                    :centralized-metrics/enabled?        enabled)
+                                    :centralized-metrics/enabled?        enabled
+                                    :centralized-metrics/user-id         userID)
 
                              (seq profiles)
                              (assoc :profile/profiles-overview profiles))]

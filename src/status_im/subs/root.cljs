@@ -190,6 +190,7 @@
 ;; centralized-metrics
 (reg-root-key-sub :centralized-metrics/enabled? :centralized-metrics/enabled?)
 (reg-root-key-sub :centralized-metrics/user-confirmed? :centralized-metrics/user-confirmed?)
+(reg-root-key-sub :centralized-metrics/user-id :centralized-metrics/user-id)
 
 ;;keycard
 (reg-root-key-sub :keycard :keycard)

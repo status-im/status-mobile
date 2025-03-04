@@ -6,6 +6,7 @@
     [legacy.status-im.ui.components.list.views :as list]
     [quo.core :as quo]
     [re-frame.core :as re-frame]
+    [react-native.clipboard :as clipboard]
     [status-im.config :as config]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
@@ -17,7 +18,8 @@
            light-client-enabled?
            store-confirmations-enabled?
            current-fleet
-           peer-syncing-enabled?]}]
+           peer-syncing-enabled?
+           analytics-user-id]}]
   (keep
    identity
    [(when (ff/enabled? ::ff/app-monitoring.intentional-crash)
@@ -29,6 +31,12 @@
        :on-press            (fn []
                               (re-frame/dispatch [:app-monitoring/intended-panic
                                                   "status-mobile intentional panic"]))})
+    (when (ff/enabled? ::ff/analytics.copy-user-id)
+      {:size                :small
+       :title               "Copy analytics user ID"
+       :accessibility-label :copy-analytics-user-id
+       :on-press            (fn []
+                              (clipboard/set-string analytics-user-id))})
     {:size :small
      :title (i18n/label :t/log-level)
      :accessibility-label :log-level-settings-button
@@ -108,7 +116,8 @@
                   store-confirmations-enabled? [:profile/store-confirmations-enabled?]
                   current-log-level            [:log-level/current-log-level]
                   current-fleet                [:fleets/current-fleet]
-                  peer-syncing-enabled?        [:profile/peer-syncing-enabled?]]
+                  peer-syncing-enabled?        [:profile/peer-syncing-enabled?]
+                  analytics-user-id            [:centralized-metrics/user-id]]
     [:<>
      [quo/page-nav
       {:type       :title
@@ -123,6 +132,7 @@
                     :store-confirmations-enabled? store-confirmations-enabled?
                     :current-fleet                current-fleet
                     :dev-mode?                    false
-                    :peer-syncing-enabled?        peer-syncing-enabled?})
+                    :peer-syncing-enabled?        peer-syncing-enabled?
+                    :analytics-user-id            analytics-user-id})
        :key-fn    (fn [_ i] (str i))
        :render-fn render-item}]]))
