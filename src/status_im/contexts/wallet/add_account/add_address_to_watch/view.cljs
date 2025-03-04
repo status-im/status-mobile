@@ -7,6 +7,7 @@
     [reagent.core :as reagent]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.add-account.add-address-to-watch.style :as style]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.validation :as validation]
     [status-im.subs.wallet.add-account.address-to-watch]
     [utils.address :as utils-address]
@@ -42,7 +43,7 @@
         paste-on-input  #(clipboard/get-string
                           (fn [clipboard-text]
                             (-> clipboard-text
-                                utils.address/extract-address-without-chains-info
+                                utils/on-paste-address-or-ens
                                 on-change-text)))]
     (rn/use-effect (fn []
                      (when-not (string/blank? scanned-address)
