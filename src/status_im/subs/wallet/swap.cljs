@@ -4,7 +4,6 @@
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.send.utils :as send-utils]
-            [status-im.contexts.wallet.swap.utils :as swap-utils]
             [utils.money :as money]
             [utils.number :as number]))
 
@@ -62,11 +61,6 @@
  :wallet/swap-asset-to-pay-token-symbol
  :<- [:wallet/swap-asset-to-pay]
  :-> :symbol)
-
-(rf/reg-sub
- :wallet/swap-updated-token-prices
- :<- [:wallet/swap]
- :-> :updated-token-prices)
 
 (rf/reg-sub
  :wallet/swap-asset-to-pay-networks
@@ -342,23 +336,40 @@
 
 (rf/reg-sub
  :wallet/swap-exchange-rate-crypto
+ :<- [:wallet/swap-proposal-amount-in]
  :<- [:wallet/swap-asset-to-pay]
+ :<- [:wallet/swap-proposal-amount-out]
  :<- [:wallet/swap-asset-to-receive]
- :<- [:wallet/swap-updated-token-prices]
- (fn [[asset-to-pay asset-to-receive token-prices]]
-   (when (and token-prices asset-to-pay asset-to-receive)
-     (let [pay-price          (swap-utils/updated-token-price asset-to-pay token-prices)
-           receive-price      (swap-utils/updated-token-price asset-to-receive token-prices)
-           pay-token-decimals (:decimals asset-to-pay)]
-       (utils/token-exchange-rate receive-price pay-price pay-token-decimals)))))
+ (fn [[amount-in asset-to-pay amount-out asset-to-receive]]
+   (let [pay-token-decimals     (:decimals asset-to-pay)
+         receive-token-decimals (:decimals asset-to-receive)
+         amount-in-num          (some-> amount-in
+                                        (number/hex->whole pay-token-decimals)
+                                        (number/to-fixed pay-token-decimals)
+                                        (money/->bignumber))
+         amount-out-num         (some-> amount-out
+                                        (number/hex->whole receive-token-decimals)
+                                        (number/to-fixed receive-token-decimals)
+                                        (money/->bignumber))
+         exchange-rate          (when (and amount-in-num amount-out-num)
+                                  (money/div amount-in-num amount-out-num))
+         display-decimals       (min pay-token-decimals
+                                     constants/min-token-decimals-to-display)]
+     (when exchange-rate
+       (number/to-fixed exchange-rate display-decimals)))))
 
 (rf/reg-sub
  :wallet/swap-exchange-rate-fiat
- :<- [:wallet/swap-asset-to-receive]
- :<- [:wallet/swap-updated-token-prices]
+ :<- [:wallet/swap-exchange-rate-crypto]
+ :<- [:wallet/swap-asset-to-pay]
+ :<- [:profile/currency]
  :<- [:profile/currency-symbol]
- (fn [[asset-to-receive token-prices currency-symbol]]
-   (when (and asset-to-receive token-prices)
-     (->> token-prices
-          (swap-utils/updated-token-price asset-to-receive)
-          (utils/fiat-formatted-for-ui currency-symbol)))))
+ :<- [:wallet/prices-per-token]
+ (fn [[swap-exchange-rate asset-to-pay currency currency-symbol prices-per-token]]
+   (when swap-exchange-rate
+     (let [fiat-value (utils/calculate-token-fiat-value
+                       {:currency         currency
+                        :balance          swap-exchange-rate
+                        :token            asset-to-pay
+                        :prices-per-token prices-per-token})]
+       (utils/fiat-formatted-for-ui currency-symbol fiat-value)))))

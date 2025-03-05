@@ -186,17 +186,16 @@
 
 (rf/reg-event-fx :wallet/swap-proposal-success
  (fn [{:keys [db]} [swap-proposal]]
-   (let [last-request-uuid    (get-in db [:wallet :ui :swap :last-request-uuid])
-         amount-hex           (get-in db [:wallet :ui :swap :amount-hex])
-         asset-to-pay         (get-in db [:wallet :ui :swap :asset-to-pay])
-         asset-to-receive     (get-in db [:wallet :ui :swap :asset-to-receive])
-         network              (get-in db [:wallet :ui :swap :network])
-         initial-response?    (get-in db [:wallet :ui :swap :initial-response?])
-         view-id              (:view-id db)
-         request-uuid         (:uuid swap-proposal)
-         best-routes          (:best swap-proposal)
-         updated-token-prices (:updated-prices swap-proposal)
-         error-response       (:error-response swap-proposal)]
+   (let [last-request-uuid (get-in db [:wallet :ui :swap :last-request-uuid])
+         amount-hex        (get-in db [:wallet :ui :swap :amount-hex])
+         asset-to-pay      (get-in db [:wallet :ui :swap :asset-to-pay])
+         asset-to-receive  (get-in db [:wallet :ui :swap :asset-to-receive])
+         network           (get-in db [:wallet :ui :swap :network])
+         initial-response? (get-in db [:wallet :ui :swap :initial-response?])
+         view-id           (:view-id db)
+         request-uuid      (:uuid swap-proposal)
+         best-routes       (:best swap-proposal)
+         error-response    (:error-response swap-proposal)]
      (when (and (= request-uuid last-request-uuid)
                 (or (and (empty? best-routes) error-response)
                     (and
@@ -208,7 +207,6 @@
                                :swap-proposal          (when-not (empty? best-routes)
                                                          (assoc (first best-routes) :uuid request-uuid))
                                :error-response         error-response
-                               :updated-token-prices   updated-token-prices
                                :loading-swap-proposal? false
                                :initial-response?      false)}
          (and initial-response? (seq best-routes))
