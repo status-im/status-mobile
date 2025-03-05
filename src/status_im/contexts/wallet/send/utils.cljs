@@ -241,9 +241,11 @@
   (not (constants/bridge-assets token-symbol)))
 
 (defn path-identity
-  [path]
-  {:routerInputParamsUuid (:router-input-params-uuid path)
-   :pathName              (:bridge-name path)
-   :chainID               (get-in path [:from :chain-id])
-   :isApprovalTx          (:approval-required path)
-   :communityID           nil})
+  ([path]
+   (path-identity path (:approval-required path)))
+  ([path is-approval-tx?]
+   {:routerInputParamsUuid (:router-input-params-uuid path)
+    :pathName              (:bridge-name path)
+    :chainID               (get-in path [:from :chain-id])
+    :isApprovalTx          is-approval-tx?
+    :communityID           nil}))
