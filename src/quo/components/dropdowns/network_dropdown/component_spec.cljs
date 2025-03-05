@@ -33,4 +33,12 @@
                  networks-list])
       (h/is-truthy (h/query-by-label-text :network-dropdown))
       (h/fire-event :press (h/query-by-label-text :network-dropdown))
-      (h/was-not-called on-press))))
+      (h/was-not-called on-press)))
+
+  (h/test "Should display new chain indicator"
+    (h/render [network-dropdown/view
+               {:state                     :default
+                :show-new-chain-indicator? true}
+               networks-list])
+    (h/is-truthy (h/query-by-label-text :network-dropdown))
+    (h/is-truthy (h/query-by-label-text :new-chain-indicator))))

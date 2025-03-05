@@ -135,7 +135,13 @@
         cards                          (conj account-cards-data (new-account-card-data))
         [init-loaded? set-init-loaded] (rn/use-state false)
         {:keys [formatted-balance]}    (rf/sub [:wallet/aggregated-token-values-and-balance])
-        theme                          (quo.theme/use-theme)]
+        theme                          (quo.theme/use-theme)
+        show-new-chain-indicator?      (rf/sub [:wallet/show-new-chain-indicator?])
+        on-press-network-selector      (rn/use-callback
+                                        (fn []
+                                          (rf/dispatch [:wallet/hide-new-chain-indicator])
+                                          (rf/dispatch [:show-bottom-sheet
+                                                        {:content network-filter/view}])))]
     (rn/use-effect (fn []
                      (when (and @account-list-ref (pos? (count cards)))
                        (.scrollToOffset ^js @account-list-ref
@@ -157,13 +163,14 @@
                                   :on-refresh #(rf/dispatch [:wallet/get-accounts])}]
        :header                  [rn/view {:style (style/header-container theme)}
                                  [quo/wallet-overview
-                                  {:state             (if tokens-loading? :loading :default)
-                                   :time-frame        :none
-                                   :metrics           :none
-                                   :balance           formatted-balance
-                                   :networks          networks
-                                   :dropdown-on-press #(rf/dispatch [:show-bottom-sheet
-                                                                     {:content network-filter/view}])}]
+                                  {:state                     (if tokens-loading? :loading :default)
+                                   :time-frame                :none
+                                   :metrics                   :none
+                                   :balance                   formatted-balance
+                                   :networks                  networks
+                                   :dropdown-on-press         on-press-network-selector
+                                   :show-new-chain-indicator? (when (not-empty networks)
+                                                                show-new-chain-indicator?)}]
                                  (when (ff/enabled? ::ff/wallet.graph)
                                    [quo/wallet-graph {:time-frame :empty}])
                                  [render-cards cards account-list-ref]

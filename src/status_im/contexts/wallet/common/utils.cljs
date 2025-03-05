@@ -4,6 +4,7 @@
             [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
+            [utils.address]
             [utils.money :as money]
             [utils.number :as number]
             [utils.string]))
@@ -324,20 +325,19 @@
 
 (defn make-network-item
   "This function generates props for quo/category component item"
-  [{:keys [network-name color on-change networks state label-props type blur?]}]
-  (cond-> {:title        (string/capitalize (name network-name))
-           :image        :icon-avatar
-           :image-props  {:icon (resources/get-network network-name)
-                          :size :size-20}
-           :action       :selector
-           :action-props {:type                (or type
-                                                   (if (= :default state)
-                                                     :filled-checkbox
-                                                     :checkbox))
-                          :blur?               blur?
-                          :customization-color color
-                          :checked?            (contains? networks network-name)
-                          :on-change           on-change}}
+  [{:keys [network-name color on-change networks label-props type blur?]}]
+  (cond-> {:title                 (string/capitalize (name network-name))
+           :image                 :icon-avatar
+           :image-props           {:icon (resources/get-network network-name)
+                                   :size :size-20}
+           ;; Remove the following line for v2.35
+           :show-new-feature-tag? (= network-name constants/base-network-name)
+           :action                :selector
+           :action-props          {:type                (or type :checkbox)
+                                   :blur?               blur?
+                                   :customization-color color
+                                   :checked?            (contains? networks network-name)
+                                   :on-change           on-change}}
 
     label-props
     (assoc :label       :text
@@ -490,3 +490,11 @@
    (-> (money/bignumber divident-price)
        (money/div (money/bignumber divisor-price))
        (number/to-fixed (min divisor-token-decimals constants/min-token-decimals-to-display)))))
+
+(defn on-paste-address-or-ens
+  "Check if the clipboard has any valid address and extract the address without any chain info.
+  If it does not contain an valid address or it is ENS, return the clipboard text as it is"
+  [clipboard-text]
+  (if (utils.address/supported-address? clipboard-text)
+    (utils.address/extract-address-without-chains-info clipboard-text)
+    clipboard-text))

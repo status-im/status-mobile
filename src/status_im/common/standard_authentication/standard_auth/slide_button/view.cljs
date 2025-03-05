@@ -26,8 +26,7 @@
                                                :auth-button-label     auth-button-label}]))
                               (vec (conj dependencies on-auth-success on-auth-fail)))
         on-slider-complete   (rn/use-callback
-                              (fn [reset-slider-fn]
-                                (js/setTimeout #(reset-slider-fn false) 500)
+                              (fn []
                                 (if (fn? on-complete)
                                   (on-complete)
                                   (on-complete-callback)))
