@@ -4,6 +4,7 @@
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.send.utils :as send-utils]
+            [status-im.contexts.wallet.swap.utils :as swap-utils]
             [utils.money :as money]
             [utils.number :as number]))
 
@@ -61,6 +62,11 @@
  :wallet/swap-asset-to-pay-token-symbol
  :<- [:wallet/swap-asset-to-pay]
  :-> :symbol)
+
+(rf/reg-sub
+ :wallet/swap-updated-token-prices-usd
+ :<- [:wallet/swap]
+ :-> :updated-token-prices)
 
 (rf/reg-sub
  :wallet/swap-asset-to-pay-networks
@@ -334,42 +340,45 @@
                           :prices-per-token prices-per-token})]
      fee-in-fiat)))
 
+;; NOTE: updated route prices come only in USD (for now). When the router will
+;; allow to define the currency, we should use only the updated prices, but till
+;; then we fallback to `prices-per-token`
+(rf/reg-sub :wallet/swap-pay-token-price
+ :<- [:wallet/swap-asset-to-pay]
+ :<- [:profile/currency]
+ :<- [:wallet/swap-updated-token-prices-usd]
+ :<- [:wallet/prices-per-token]
+ (fn [[asset-to-pay currency updated-token-prices prices-per-token]]
+   (if (= currency constants/profile-default-currency)
+     (swap-utils/updated-token-price asset-to-pay updated-token-prices)
+     (utils/token-price-by-symbol prices-per-token (:symbol asset-to-pay) currency))))
+
+(rf/reg-sub :wallet/swap-receive-token-price
+ :<- [:wallet/swap-asset-to-receive]
+ :<- [:profile/currency]
+ :<- [:wallet/swap-updated-token-prices-usd]
+ :<- [:wallet/prices-per-token]
+ (fn [[asset-to-receive currency updated-token-prices prices-per-token]]
+   (if (= currency constants/profile-default-currency)
+     (swap-utils/updated-token-price asset-to-receive updated-token-prices)
+     (utils/token-price-by-symbol prices-per-token (:symbol asset-to-receive) currency))))
+
 (rf/reg-sub
  :wallet/swap-exchange-rate-crypto
- :<- [:wallet/swap-proposal-amount-in]
+ :<- [:wallet/swap-pay-token-price]
+ :<- [:wallet/swap-receive-token-price]
  :<- [:wallet/swap-asset-to-pay]
- :<- [:wallet/swap-proposal-amount-out]
- :<- [:wallet/swap-asset-to-receive]
- (fn [[amount-in asset-to-pay amount-out asset-to-receive]]
-   (let [pay-token-decimals     (:decimals asset-to-pay)
-         receive-token-decimals (:decimals asset-to-receive)
-         amount-in-num          (some-> amount-in
-                                        (number/hex->whole pay-token-decimals)
-                                        (number/to-fixed pay-token-decimals)
-                                        (money/->bignumber))
-         amount-out-num         (some-> amount-out
-                                        (number/hex->whole receive-token-decimals)
-                                        (number/to-fixed receive-token-decimals)
-                                        (money/->bignumber))
-         exchange-rate          (when (and amount-in-num amount-out-num)
-                                  (money/div amount-in-num amount-out-num))
-         display-decimals       (min pay-token-decimals
-                                     constants/min-token-decimals-to-display)]
-     (when exchange-rate
-       (number/to-fixed exchange-rate display-decimals)))))
+ :<- [:wallet/swap-updated-token-prices-usd]
+ (fn [[pay-token-price receive-token-price asset-to-pay token-prices]]
+   (when (and token-prices asset-to-pay)
+     (->> asset-to-pay
+          :decimals
+          (utils/token-exchange-rate receive-token-price pay-token-price)))))
 
 (rf/reg-sub
  :wallet/swap-exchange-rate-fiat
- :<- [:wallet/swap-exchange-rate-crypto]
- :<- [:wallet/swap-asset-to-pay]
- :<- [:profile/currency]
+ :<- [:wallet/swap-receive-token-price]
  :<- [:profile/currency-symbol]
- :<- [:wallet/prices-per-token]
- (fn [[swap-exchange-rate asset-to-pay currency currency-symbol prices-per-token]]
-   (when swap-exchange-rate
-     (let [fiat-value (utils/calculate-token-fiat-value
-                       {:currency         currency
-                        :balance          swap-exchange-rate
-                        :token            asset-to-pay
-                        :prices-per-token prices-per-token})]
-       (utils/fiat-formatted-for-ui currency-symbol fiat-value)))))
+ (fn [[receive-token-price currency-symbol]]
+   (when receive-token-price
+     (utils/fiat-formatted-for-ui currency-symbol receive-token-price))))

@@ -488,3 +488,13 @@
   (if (utils.address/supported-address? clipboard-text)
     (utils.address/extract-address-without-chains-info clipboard-text)
     clipboard-text))
+
+(defn token-exchange-rate
+  "Returns the exchange rate based on the token prices.
+   i.e. how many 'divisor' tokens is one 'divident' token."
+  ([divident-price divisor-price]
+   (token-exchange-rate divident-price divisor-price constants/min-token-decimals-to-display))
+  ([divident-price divisor-price divisor-token-decimals]
+   (-> (money/bignumber divident-price)
+       (money/div (money/bignumber divisor-price))
+       (number/to-fixed (min divisor-token-decimals constants/min-token-decimals-to-display)))))
