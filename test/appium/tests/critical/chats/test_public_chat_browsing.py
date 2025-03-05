@@ -710,10 +710,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         if not self.chat_1.chat_element_by_text(message_to_disappear).is_element_disappeared(30):
             self.errors.append(self.chat_1, "Messages from blocked user is not cleared in public chat ")
         self.chat_1.navigate_back_to_home_view()
-        # ToDo: enable when https://github.com/status-im/status-mobile/issues/19334 is fixed
-        # self.home_1.chats_tab.click()
-        # if not self.home_1.element_by_translation_id("no-messages").is_element_displayed():
-        #     self.errors.append("1-1 chat from blocked user is not removed and messages home is not empty!")
+        self.home_1.chats_tab.click()
+        if not self.home_1.element_by_translation_id("no-messages").is_element_displayed():
+            self.errors.append("1-1 chat from blocked user is not removed and messages home is not empty!")
         self.chat_1.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
 
         self.home_2.just_fyi('Send message to public chat while device 1 is offline')
@@ -1243,5 +1242,203 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             chat_element.click()
         else:
             self.errors.append(self.home_2, "%s is not listed inside Joined communities tab" % community_name)
+
+        self.errors.verify_no_errors()
+
+
+@pytest.mark.xdist_group(name="new_three_2")
+@marks.nightly
+class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
+
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user,),
+                                                      (self.device_2.create_user,))))
+        self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
+        self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
+        self.public_key_2 = self.home_2.get_public_key()
+        self.profile_1 = self.home_1.get_profile_view()
+        [home.navigate_back_to_home_view() for home in self.homes]
+        [home.chats_tab.click() for home in self.homes]
+        self.home_1.add_contact(self.public_key_2)
+        self.home_2.handle_contact_request(self.username_1)
+        self.text_message = 'hello'
+
+        self.chat_1 = self.home_1.get_chat(self.username_2).click()
+        self.chat_1.send_message('hey')
+        self.chat_2 = self.home_2.get_chat(self.username_1).click()
+        self.home_1.navigate_back_to_home_view()
+
+        self.home_1.just_fyi("Open community to message")
+        self.home_1.communities_tab.click()
+        self.community_name = "open community"
+        self.channel_name = 'general'
+        self.home_1.create_community(community_type="open")
+
+        self.community_1, self.community_2 = self.home_1.get_community_view(), self.home_2.get_community_view()
+        self.community_1.invite_to_community(self.community_name, self.username_2)
+        self.channel_1 = self.home_1.get_to_community_channel_from_home(self.community_name)
+
+        self.community_2.join_community()
+        self.channel_2 = self.community_2.get_channel(self.channel_name).click()
+
+    @marks.testrail_id(741924)
+    def test_community_mobile_data_and_wi_fi_only_fetching(self):
+        self.device_2.just_fyi("Receiver turns wi-fi off")
+        self.device_2.navigate_back_to_home_view()
+        self.device_2.driver.set_network_connection(ConnectionType.DATA_ONLY)
+        # ToDo: pop up is not shown on LT emulators, needs more investigation
+        # self.device_2.turn_wi_fi_off()
+        #
+        # for translation in ['which-connection-to-use', 'mobile-and-wifi', 'wifi-only']:
+        #     if not self.device_2.element_by_translation_id(translation).is_element_displayed():
+        #         self.errors.append(self.device_2,
+        #                            "Element with text '%s' is not shown when switching to mobile data" % translation)
+        profile_2 = self.device_2.profile_button.click()
+        profile_2.syncing_button.scroll_and_click()
+        profile_2.sync_and_backup_button.click()
+        profile_2.wi_fi_only_button.click()
+        self.device_2.click_system_back_button(times=2)
+        self.home_2.communities_tab.click()
+        self.home_2.discover_communities_button.click()
+        if self.home_2.community_card_item.is_element_displayed(10):
+            self.errors.append(self.home_2,
+                               "Community can be fetched while using mobile data with wi-fi only syncing settings")
+
+        message_1 = 'message text 1'
+        self.channel_1.just_fyi("Sender sends a message in the community channel when receiver is using mobile data")
+        self.channel_1.send_message(message_1)
+        self.home_2.click_system_back_button()
+        self.home_2.get_to_community_channel_from_home(self.community_name)
+        if not self.channel_2.chat_element_by_text(message_1).is_element_displayed(120):
+            self.errors.append(self.device_2,
+                               "Can't receive the message '%s' in community when using mobile data" % message_1)
+
+        self.device_2.just_fyi("Receiver turns internet off")
+        self.device_2.driver.set_network_connection(ConnectionType.NO_CONNECTION)
+        message_2 = 'message text 2'
+        self.channel_1.just_fyi("Sender sends messages in the community channel and 1-1 chat when receiver is offline")
+        self.channel_1.send_message(message_2)
+        self.channel_1.chat_element_by_text(message_2).wait_for_sent_state()
+        self.device_1.navigate_back_to_home_view()
+        self.device_1.chats_tab.click()
+        self.home_1.get_chat(self.username_2).click()
+        message_3 = 'message text 3'
+        self.chat_1.send_message(message_3)
+        self.chat_1.chat_element_by_text(message_3).wait_for_sent_state()
+
+        self.device_2.just_fyi("Receiver turns mobile data on")
+        self.device_2.driver.set_network_connection(ConnectionType.DATA_ONLY)
+        if self.channel_2.chat_element_by_text(message_2).is_element_displayed(120):
+            self.errors.append(
+                self.device_2,
+                "Message '%s' in community, which is sent when receiver was offline, is received using mobile data" % message_2)
+        self.device_2.navigate_back_to_home_view()
+        self.device_2.chats_tab.click()
+        self.home_2.get_chat(self.username_1).click()
+        if not self.chat_2.chat_element_by_text(message_3).is_element_displayed(120):
+            self.errors.append(
+                self.device_2,
+                "Message '%s' in 1-1 chat, which is sent when receiver was offline, is missed" % message_3)
+
+        self.device_2.just_fyi("Receiver turns wi-fi on")
+        self.device_2.driver.set_network_connection(ConnectionType.WIFI_ONLY)
+        self.home_2.navigate_back_to_home_view()
+        self.home_2.communities_tab.click()
+        self.home_2.get_to_community_channel_from_home(self.community_name)
+        if not self.channel_2.chat_element_by_text(message_2).is_element_displayed(120):
+            self.errors.append(
+                self.device_2,
+                "Message '%s' in community channel, which is sent when receiver was offline, is missed after turning wi-fi on" % message_2)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(741925)
+    def test_community_send_message_from_offline(self):
+        self.device_1.just_fyi("Device 1 goes offline and send a message in 1-1 chat")
+        self.device_1.driver.set_network_connection(ConnectionType.NO_CONNECTION)
+
+        message_1_1 = 'message in 1-1 chat'
+
+        def _send_message_1_1():
+            self.device_1.navigate_back_to_home_view()
+            self.device_1.chats_tab.click()
+            self.home_1.get_chat(self.username_2).click()
+            self.chat_1.send_message(message_1_1)
+
+        self.device_2.just_fyi("Device 2 goes offline and send a message in community")
+        self.device_2.driver.set_network_connection(ConnectionType.NO_CONNECTION)
+
+        message_community = 'message community'
+
+        def _send_message_community():
+            self.device_2.navigate_back_to_home_view()
+            self.device_2.communities_tab.click()
+            self.home_2.get_to_community_channel_from_home(self.community_name)
+            self.channel_2.send_message(message_community)
+
+        self.loop.run_until_complete(run_in_parallel(((_send_message_1_1,), (_send_message_community,))))
+
+        self.device_1.just_fyi("Device 1 goes back online and checks a message in community channel")
+        self.device_1.driver.set_network_connection(ConnectionType.WIFI_ONLY)
+
+        def _check_message_community():
+            self.device_1.navigate_back_to_home_view()
+            self.device_1.communities_tab.click()
+            self.home_1.get_to_community_channel_from_home(self.community_name)
+            if not self.channel_1.chat_element_by_text(message_community).is_element_displayed(120):
+                self.errors.append(
+                    self.device_1,
+                    "Can't receive the message '%s' in community if it's sent from offline" % message_community)
+
+        self.device_2.just_fyi("Device 2 goes back online and checks a message in 1-1 chat")
+        self.device_2.driver.set_network_connection(ConnectionType.WIFI_ONLY)
+
+        def _check_message_1_1():
+            self.device_2.navigate_back_to_home_view()
+            self.device_2.chats_tab.click()
+            self.home_2.get_chat(self.username_1).click()
+            if not self.chat_2.chat_element_by_text(message_1_1).is_element_displayed(120):
+                self.errors.append(
+                    self.device_1,
+                    "Can't receive the message '%s' in 1-1 chat if it's sent from offline" % message_1_1)
+
+        self.loop.run_until_complete(run_in_parallel(((_check_message_community,), (_check_message_1_1,))))
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(741926)
+    def test_community_messaging_on_mobile_data(self):
+        self.device_1.just_fyi("Device 1 turns mobile data on and send a message in community channel")
+        self.device_1.driver.set_network_connection(ConnectionType.DATA_ONLY)
+        self.device_2.just_fyi("Device 2 turns mobile data on and checks receiving a message in community channel")
+        self.device_2.driver.set_network_connection(ConnectionType.DATA_ONLY)
+
+        self.device_1.navigate_back_to_home_view()
+        self.device_1.communities_tab.click()
+        self.home_1.get_to_community_channel_from_home(self.community_name)
+        message_community = 'message community'
+        self.channel_1.send_message(message_community)
+        self.device_2.navigate_back_to_home_view()
+        self.device_2.communities_tab.click()
+        self.home_2.get_to_community_channel_from_home(self.community_name)
+        if not self.channel_2.chat_element_by_text(message_community).is_element_displayed(60):
+            self.errors.append(self.channel_2,
+                               "Message with text '%s' was not received in community" % message_community)
+
+        self.device_2.just_fyi("Device 2 sends a message in 1-1 chat")
+        self.device_2.navigate_back_to_home_view()
+        self.device_2.chats_tab.click()
+        self.home_2.get_chat(self.username_1).click()
+        message_1_1 = "message 1-1 chat"
+        self.chat_2.send_message(message_1_1)
+
+        self.device_1.just_fyi("Device 1 checks a message receiving in 1-1 chat")
+        self.device_1.navigate_back_to_home_view()
+        self.device_1.chats_tab.click()
+        self.home_1.get_chat(self.username_2).click()
+        if not self.chat_1.chat_element_by_text(message_1_1).is_element_displayed(60):
+            self.errors.append(self.chat_1,
+                               "Message with text '%s' was not received in 1-1 chat" % message_1_1)
 
         self.errors.verify_no_errors()
