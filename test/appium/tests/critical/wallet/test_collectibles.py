@@ -43,7 +43,7 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
         self.wallet_view.collectibles_tab.click()
         self.wallet_view.set_network_in_wallet(self.network_name + ', NEW')
         collectibles = {
-            "BVL": {"quantity": 1,
+            "BVL": {"quantity": 2,
                     "info": {"Account": "Account 1",
                              "Network": "Base",
                              "category": "Football Player",
@@ -102,8 +102,8 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
         self.wallet_view.collectibles_tab_on_select_token_view.click()
         time.sleep(5)
         self.wallet_view.get_collectible_element('BVL').click()
-        # self.wallet_view.amount_input_increase_button.click()
-        # self.wallet_view.confirm_button.click()
+        self.wallet_view.amount_input_increase_button.click()
+        self.wallet_view.confirm_button.click()
         for text in [self.account_name, self.sender_short_address]:
             if not self.wallet_view.from_data_container.get_child_element_by_text(text).is_element_displayed():
                 self.errors.append(self.wallet_view,
@@ -118,7 +118,7 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
         data_to_check = {
             'Est. time': ' min',
             'Max fees': r"[$]\d+.\d+",
-            'Recipient gets': '1 '
+            'Recipient gets': '2 '
         }
         for key, expected_value in data_to_check.items():
             try:

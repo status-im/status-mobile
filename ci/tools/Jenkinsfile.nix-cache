@@ -109,19 +109,10 @@ pipeline {
     stage('Upload') {
       steps { script {
         sshagent(credentials: ['nix-cache-ssh']) {
-          nix.shell(
-            """
+          nix.shell("""
               find /nix/store/ -mindepth 1 -maxdepth 1 -type d \
-                -not -name "*.links" -and -not -name "*-status-mobile-*" \
-                -and -not -name "tmp-*" \
-                -print0 | xargs -0 nix-store -qR | sort -u > "${WORKSPACE_TMP}"/store-paths.txt
-            """,
-            pure: false
-          )
-          nix.shell(
-            """
-              nix-store --export < "${WORKSPACE_TMP}"/store-paths.txt | \\
-                ssh ${env.NIX_SSHOPTS} ${params.NIX_CACHE_USER}@${params.NIX_CACHE_HOST} ${env.NIX_STORE_CMD} --import
+                -not -name '*.links' -and -not -name '*-status-mobile-*' \
+                | xargs nix copy --to ${NIX_SSH_REMOTE}
             """,
             pure: false
           )

@@ -381,10 +381,3 @@ class BaseView(object):
         Button(self.driver,
                xpath="//*[@resource-id='android:id/resolver_list']//*[@text='%s']" % text_to_click).click_if_shown()
         Button(self.driver, xpath="//*[@resource-id='android:id/button_once']").click()
-
-    def turn_wi_fi_off(self):
-        self.driver.swipe(900, 0, 900, 1000)
-        self.element_by_text('Internet').click()
-        Button(self.driver, accessibility_id='Wi‑Fi').click()
-        self.element_by_text('Done').click()
-        self.click_system_back_button_until_presence_of_element(self.chats_tab)

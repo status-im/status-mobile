@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.swap.utils
-  (:require [clojure.string :as string]
-            [status-im.constants :as constants]
+  (:require [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [utils.i18n :as i18n]))
 
@@ -63,12 +62,3 @@
   [{:keys [networks]}]
   (when (= (count networks) 1)
     (first networks)))
-
-(defn updated-token-price
-  "Returns the updated token price (number) from the routes."
-  [token updated-prices]
-  (->> token
-       :symbol
-       string/lower-case
-       keyword
-       (get updated-prices)))

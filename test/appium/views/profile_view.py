@@ -120,6 +120,7 @@ class ProfileView(BaseView):
         self.recovery_phrase_next_button = Button(self.driver, accessibility_id="Next, icon")
         self.recovery_phrase_word_input = EditBox(self.driver, xpath="//android.widget.EditText")
 
+
         # Notifications
         self.profile_notifications_button = Button(self.driver,
                                                    accessibility_id="icon, Notifications, label-component, icon")
@@ -141,8 +142,6 @@ class ProfileView(BaseView):
         self.sync_plus_button = Button(
             self.driver,
             xpath="//*[@text='Paired devices']/following-sibling::android.view.ViewGroup[@content-desc='icon']")
-        self.sync_and_backup_button = Button(self.driver, xpath="//*[@text='Sync and backup']")
-        self.wi_fi_only_button = Button(self.driver, accessibility_id='wifi-only-action')
 
         # Advanced
         self.advanced_button = AdvancedButton(self.driver)
