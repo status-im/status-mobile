@@ -37,6 +37,7 @@
     :align-items     :center
     :left            0
     :top             0
+    :transform       [{:translate-x 0}]
     :flex-direction  :row
     :justify-content :space-around}])
 
