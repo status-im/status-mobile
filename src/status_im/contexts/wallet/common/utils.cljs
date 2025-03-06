@@ -455,7 +455,7 @@
        tokens))
 
 (defn estimated-time-format
-  "Formats the estimated time for a transaction"
+  "Formats the estimated time in minute intervals for a transaction"
   [estimated-time]
   (condp = estimated-time
     (:unknown constants/wallet-transaction-estimation)                 ">5"
@@ -463,6 +463,14 @@
     (:less-than-three-minutes constants/wallet-transaction-estimation) "1-3"
     (:less-than-five-minutes constants/wallet-transaction-estimation)  "3-5"
     ">5"))
+
+(defn estimated-time-v2-format
+  "Formats the estimated time (v2) in seconds for a transaction"
+  [estimated-time]
+  (cond
+    (or (= estimated-time 0)
+        (> estimated-time 60)) ">60"
+    :else                      (str "~" estimated-time)))
 
 (defn transactions->hash-to-transaction-map
   [transactions]

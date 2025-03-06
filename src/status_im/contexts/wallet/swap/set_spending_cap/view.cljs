@@ -209,7 +209,7 @@
       (when estimated-time
         [data-item
          {:title    (i18n/label :t/est-time)
-          :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time)})
+          :subtitle (i18n/label :t/time-in-sec {:seconds (str estimated-time)})
           :loading? loading-swap-proposal?
           :size     :small}])]]))
 

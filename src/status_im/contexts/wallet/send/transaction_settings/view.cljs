@@ -7,7 +7,8 @@
     [status-im.common.controlled-input.utils :as controlled-input]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im.contexts.wallet.common.utils :as utils]))
 
 
 (defn custom-settings-sheet
@@ -68,9 +69,18 @@
                           :customization-color account-color}
        :button-one-label (i18n/label :t/confirm)}]]))
 
+(defn- estimated-time-by-fee-mode
+  [estimated-time-by-mode fee-mode]
+  (-> (get estimated-time-by-mode fee-mode)
+      utils/estimated-time-v2-format
+      (str "s")))
+
 (defn settings-sheet
   []
   (let [current-transaction-setting                   (rf/sub [:wallet/tx-fee-mode])
+        estimated-time                                (partial estimated-time-by-fee-mode
+                                                               (rf/sub
+                                                                [:wallet/estimated-time-by-fee-mode]))
         account-color                                 (rf/sub [:wallet/current-viewing-account-color])
         [transaction-setting set-transaction-setting] (rn/use-state current-transaction-setting)
         set-normal                                    #(set-transaction-setting :tx-fee-mode/normal)
@@ -81,7 +91,7 @@
       {:title (i18n/label :t/transaction-settings)}]
      [quo/category
       {:list-type :settings
-       :data [{:title             (str (i18n/label :t/normal) "~60s")
+       :data [{:title             (str (i18n/label :t/normal) (estimated-time :tx-fee-mode/normal))
                :image-props       "🍿"
                :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
                                                   :tx-fee-mode/normal])}
@@ -101,7 +111,7 @@
                :on-press          set-normal
                :label             :text
                :preview-size      :size-32}
-              {:title             (str (i18n/label :t/fast) "~40s")
+              {:title             (str (i18n/label :t/fast) (estimated-time :tx-fee-mode/fast))
                :image-props       "🚗"
                :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
                                                   :tx-fee-mode/fast])}
@@ -115,7 +125,7 @@
                :on-press          set-fast
                :label             :text
                :preview-size      :size-32}
-              {:title             (str (i18n/label :t/urgent) "~15s")
+              {:title             (str (i18n/label :t/urgent) (estimated-time :tx-fee-mode/urgent))
                :image-props       "🚀"
                :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
                                                   :tx-fee-mode/urgent])}
