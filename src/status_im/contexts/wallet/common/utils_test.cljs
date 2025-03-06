@@ -375,3 +375,11 @@
                     {:symbol "DAI"}
                     {:symbol "ETH"}]]
       (is (= (utils/sort-tokens-by-name tokens) expected)))))
+
+(deftest calculate-token-fiat-change-test
+  (testing "Calculate token fiat change"
+    (is (= (utils/calculate-token-fiat-change 100 10) 10.0))
+    (is (= (utils/calculate-token-fiat-change 200 -5) 10.0))
+    (is (= (utils/calculate-token-fiat-change 50 0) 0.0))
+    (is (= (utils/calculate-token-fiat-change 100 -100) 100.0))
+    (is (= (utils/calculate-token-fiat-change 0.001 0.1) 0.000001))))

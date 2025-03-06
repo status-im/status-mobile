@@ -177,6 +177,15 @@
   (let [price (get-market-value currency token prices-per-token)]
     (money/crypto->fiat balance price)))
 
+(defn calculate-token-fiat-change
+  "Returns the fiat value change for a token based on the percentage change"
+  [fiat-value change-pct-24h]
+  (let [fiat-change (-> (money/bignumber change-pct-24h)
+                        (money/div (money/bignumber 100))
+                        (money/mul fiat-value)
+                        (money/absolute-value))]
+    fiat-change))
+
 (defn sanitized-token-amount-to-display
   "Formats a token amount to a specified number of decimals.
   Returns a threshold value if the formatted amount is less than the minimum value represented by the decimals."
@@ -287,15 +296,14 @@
                                    :balance          balance
                                    :token            token
                                    :prices-per-token prices-per-token})
-        currency                 (or currency constants/profile-default-currency)
         market-values            (get market-values-per-token (keyword (:symbol token)))
         {:keys [change-pct-24h]} market-values
-        price                    (token-price-by-symbol prices-per-token (:symbol token) currency)
-        formatted-token-price    (prettify-balance currency-symbol price)
         percentage-change        (prettify-percentage-change change-pct-24h)
         crypto-value             (get-standard-crypto-format token balance prices-per-token)
         fiat-value               (fiat-formatted-for-ui currency-symbol
-                                                        fiat-unformatted-value)]
+                                                        fiat-unformatted-value)
+        fiat-change              (calculate-token-fiat-change fiat-unformatted-value change-pct-24h)
+        formatted-fiat-change    (prettify-balance currency-symbol fiat-change)]
     {:token               (:symbol token)
      :token-name          (:name token)
      :state               :default
@@ -308,7 +316,7 @@
      :values              {:crypto-value           crypto-value
                            :fiat-value             fiat-value
                            :fiat-unformatted-value fiat-unformatted-value
-                           :fiat-change            formatted-token-price
+                           :fiat-change            formatted-fiat-change
                            :percentage-change      percentage-change}}))
 
 (defn get-multichain-address
