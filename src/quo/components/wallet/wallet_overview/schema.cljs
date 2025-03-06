@@ -18,5 +18,6 @@
       [:dropdown-on-press {:optional true} [:maybe fn?]]
       [:networks {:optional true}
        [:maybe [:sequential [:map [:source [:maybe :schema.common/image-source]]]]]]
-      [:dropdown-state {:optional true} [:maybe [:enum :default :disabled]]]]]]
+      [:dropdown-state {:optional true} [:maybe [:enum :default :disabled]]]
+      [:show-new-chain-indicator? {:optional true} [:maybe :boolean]]]]]
    :any])

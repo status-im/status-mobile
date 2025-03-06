@@ -182,7 +182,7 @@ class WalletView(BaseView):
 
     def set_network_in_wallet(self, network_name: str):
         self.network_drop_down.click()
-        Button(self.driver, accessibility_id="%s, label-component" % network_name.capitalize()).click()
+        Button(self.driver, accessibility_id="%s, label-component" % network_name).click()
         self.network_drop_down.click()
 
     def get_account_element(self, account_name: str = 'Account 1'):

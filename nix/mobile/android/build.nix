@@ -71,7 +71,7 @@ in stdenv.mkDerivation rec {
     };
   };
 
-  buildInputs = with pkgs; [ nodejs openjdk ];
+  buildInputs = with pkgs; [ nodejs openjdk_headless ];
   nativeBuildInputs = with pkgs; [ bash gradle unzip ]
     ++ lib.optionals stdenv.isDarwin [ file gnumake ];
 

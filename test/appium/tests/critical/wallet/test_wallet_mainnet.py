@@ -52,7 +52,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
             'Mainnet': self.mainnet_balance,
             'Arbitrum': self.arb_balance,
             'Optimism': self.optimism_balance,
-            'Base': self.base_balance
+            'Base, NEW': self.base_balance
         }
 
         for network in expected_balances:

@@ -797,3 +797,14 @@
                  :wallet.swap/transaction-success
                  :wallet/transaction-success)
                sent-transactions])]]})))
+
+(rf/reg-event-fx
+ :wallet/retrieve-new-chain-indicator
+ (fn [{:keys [db]} [flag]]
+   {:db (assoc-in db [:wallet :ui :show-new-chain-indicator?] flag)}))
+
+(rf/reg-event-fx
+ :wallet/hide-new-chain-indicator
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :show-new-chain-indicator?] false)
+    :fx [[:effects.wallet/set-base-chain-indicator-shown true]]}))

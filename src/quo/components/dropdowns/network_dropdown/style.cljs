@@ -23,3 +23,7 @@
    :opacity            (if (= state :disabled) 0.3 1)
    :border-color       (container-border-color props)
    :align-items        :center})
+
+(def new-chain-indicator
+  {:position :absolute
+   :right    0})

@@ -26,8 +26,8 @@
                              (reanimated/set-shared-value x-pos clamped-x)
                              (when (and reached-end? (not sliding-complete?))
                                (set-sliding-complete true)
-                               (js/setTimeout reset-fn 500)
                                (when on-complete
+                                 (js/setTimeout reset-fn constants/reset-timeout-ms)
                                  (on-complete))))))
       (gesture/on-end (fn [event]
                         (let [x-translation (oops/oget event "translationX")

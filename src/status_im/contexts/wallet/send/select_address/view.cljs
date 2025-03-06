@@ -61,7 +61,7 @@
                                   (fn [clipboard]
                                     (when-not (empty? clipboard)
                                       (-> clipboard
-                                          utils-address/extract-address-without-chains-info
+                                          utils/on-paste-address-or-ens
                                           on-change)))))
         :ens-regex             constants/regx-ens
         :scanned-value         (or (when recipient-plain-address? send-address) scanned-address)
