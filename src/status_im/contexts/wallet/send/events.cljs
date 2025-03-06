@@ -910,8 +910,6 @@
      {:db (assoc-in db [:wallet :ui :send :custom-tx-settings :tx-fee-mode] fee-mode)
       :fx (conj set-fee-effects
                 [:dispatch [:wallet/mark-user-tx-settings-for-deletion]])})))
-(comment
-  (send-utils/path-identity {:bridge-name "hello"} false))
 
 ;; There is a delay between the moment when user selected
 ;; custom settings and the moment when new route arrived
