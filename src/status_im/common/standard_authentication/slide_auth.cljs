@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn view
@@ -19,7 +20,8 @@
                                              :blur?                 blur?
                                              :on-auth-success       on-success
                                              :on-auth-fail          on-fail
-                                             :auth-button-label     auth-button-label
+                                             :auth-button-label     (or auth-button-label
+                                                                        (i18n/label :t/continue))
                                              :auth-button-icon-left auth-button-icon-left}]))
                             (vec (conj dependencies
                                        on-success

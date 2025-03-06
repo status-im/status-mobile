@@ -203,6 +203,7 @@
                          :disabled?           (empty? @account-name)
                          :dependencies        [new-account-data]
                          :size                :size-48
+                         :auth-button-label   (i18n/label :t/continue)
                          :track-text          (i18n/label :t/slide-to-create-account)
                          :customization-color @account-color
                          :container-style     style/slide-button-container}]}
