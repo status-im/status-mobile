@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "ab/issue-22203-only-increase-timeout",
+    "commit-sha1": "5b6643ffbece33883e4ac31922fa93fb9993801d",
+    "src-sha256": "03p7w9mss2gqxwx20m2870rsgjg0nc83vly2p2x832pbz7crfxr6"
+}
