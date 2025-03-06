@@ -67,8 +67,9 @@
 (defn updated-token-price
   "Returns the updated token price (number) from the routes."
   [token updated-prices]
-  (->> token
-       :symbol
-       string/lower-case
-       keyword
-       (get updated-prices)))
+  (some->> token
+           :symbol
+           string/lower-case
+           keyword
+           (get updated-prices)
+           (or 0)))
