@@ -6,8 +6,7 @@
     [status-im.contexts.wallet.common.utils :as common-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.money :as money]
-    [utils.number :as number]
-    [status-im.contexts.wallet.common.utils :as utils]))
+    [utils.number :as number]))
 
 (rf/reg-sub
  :wallet/send-tab
@@ -245,20 +244,10 @@
    (or value-set-by-user (:tx-fee-mode (first route)))))
 
 (rf/reg-sub
- :wallet/estimated-time-by-fee-mode
- :<- [:wallet/send-route]
+ :wallet/send-estimated-time
+ :<- [:wallet/send-best-route]
  (fn [route]
    (when route
-     (-> route first :suggested-estimated-time-for-setting))))
-
-(rf/reg-sub
- :wallet/send-estimated-time
- :<- [:wallet/send-route]
- :<- [:wallet/estimated-time-by-fee-mode]
- :<- [:wallet/tx-fee-mode]
- (fn [[route estimated-time-by-fee-mode fee-mode]]
-   (let [route-estimated-time (reduce + (map :estimated-time route))
-         estimated-time       (if (zero? route-estimated-time)
-                                (get estimated-time-by-fee-mode fee-mode)
-                                route-estimated-time)]
-     (utils/estimated-time-v2-format estimated-time))))
+     (-> route
+         :estimated-time
+         common-utils/estimated-time-v2-format))))
