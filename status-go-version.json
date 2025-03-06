@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v10.8.0",
-    "commit-sha1": "ba8fd51958686aea45e34e684ac925a4e65927f8",
-    "src-sha256": "0kqn5rkfsn7aqc2n2flqvkm6cc53ssk0mc1l84f4czg0paci0717"
+    "version": "ab/issue-22203-only-increase-timeout",
+    "commit-sha1": "5b6643ffbece33883e4ac31922fa93fb9993801d",
+    "src-sha256": "03p7w9mss2gqxwx20m2870rsgjg0nc83vly2p2x832pbz7crfxr6"
 }
