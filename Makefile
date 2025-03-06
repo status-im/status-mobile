@@ -330,6 +330,9 @@ lint-fix: ##@test Run code style checks and fix issues
 	sh scripts/lint/trailing-newline.sh --fix && \
 	node_modules/.bin/prettier --write .
 
+lint-commits:
+	@sh scripts/lint/donotmerge-git-commits.sh
+
 shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
 	yarn shadow-cljs server
