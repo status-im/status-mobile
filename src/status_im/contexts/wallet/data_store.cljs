@@ -135,6 +135,12 @@
         :nativeCurrencySymbol   :native-currency-symbol
         :nativeCurrencyName     :native-currency-symbol})))
 
+(defn partially-operable-accounts?
+  [accounts]
+  (->> accounts
+       (some #(= :partially (:operable %)))
+       boolean))
+
 (defn get-keypair-lowest-operability
   [{:keys [accounts]}]
   (cond

@@ -118,12 +118,12 @@
               (i18n/label :t/copy-qr)]])
           (when-not (sync-utils/valid-connection-string? @code)
             [rn/view {:style style/standard-auth}
-             [standard-auth/slide-button
+             [standard-auth/slide-auth
               {:blur?                 true
                :size                  :size-40
                :track-text            (i18n/label :t/slide-to-reveal-code)
                :customization-color   customization-color
-               :on-auth-success       on-auth-success
+               :on-success            on-auth-success
                :auth-button-label     (i18n/label :t/reveal-sync-code)
                :auth-button-icon-left :i/reveal}]])]]
         [rn/view {:style style/sync-code}

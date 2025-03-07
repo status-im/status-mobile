@@ -25,7 +25,6 @@
     [status-im.contexts.communities.actions.channel-view-details.view :as
      channel-view-channel-members-and-details]
     [status-im.contexts.communities.actions.invite-contacts.view :as communities.invite]
-    [status-im.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im.contexts.communities.actions.share-community-channel.view :as share-community-channel]
     [status-im.contexts.communities.actions.share-community.view :as share-community]
     [status-im.contexts.communities.discover.view :as communities.discover]
@@ -231,12 +230,6 @@
                 :alias-id :community.select-addresses-for-community}
     :options   {:insets {:top? true}}
     :component communities.accounts-selection/view}
-
-   {:name      :community-requests-to-join
-    :metrics   {:track?   true
-                :alias-id :community.request-to-join}
-    :options   {:sheet? true}
-    :component join-menu/view}
 
    {:name      :screen/share-community
     :metrics   {:track?   true

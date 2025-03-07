@@ -6,20 +6,44 @@
             [status-im.common.standard-authentication.core :as standard-authentication]
             [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
             [status-im.contexts.wallet.wallet-connect.modals.common.footer.style :as style]
+            [utils.hex :as hex]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn- on-auth-success
-  [password]
-  (rf/dispatch [:hide-bottom-sheet])
-  (rf/dispatch [:wallet-connect/authorized-signing password]))
+  [signatures]
+  (let [signature (-> signatures
+                      first
+                      :signature
+                      hex/prefix-hex)]
+    (rf/dispatch [:hide-bottom-sheet])
+    (rf/dispatch [:wallet-connect/respond signature])))
+
+(defn- on-auth-fail
+  [error]
+  (rf/dispatch [:wallet-connect/on-sign-error error]))
+
+(defn- slide-button
+  [{:keys [disabled? slide-button-text]}]
+  (let [{:keys [customization-color]} (rf/sub [:wallet-connect/current-request-account-details])
+        address                       (rf/sub [:wallet-connect/current-request-address])
+        prepared-hash                 (rf/sub [:wallet-connect/prepared-hash])]
+    [rn/view {:style style/auth-container}
+     [standard-authentication/slide-sign
+      {:sign-payload        [{:address address
+                              :message prepared-hash}]
+       :size                :size-48
+       :track-text          slide-button-text
+       :disabled?           (and (not prepared-hash) disabled?)
+       :customization-color customization-color
+       :on-success          on-auth-success
+       :on-fail             on-auth-fail
+       :auth-button-label   (i18n/label :t/confirm)}]]))
 
 (defn view
   [{:keys [warning-label slide-button-text error-state]} & children]
-  (let [{:keys [customization-color]} (rf/sub [:wallet-connect/current-request-account-details])
-        offline?                      (rf/sub [:network/offline?])
-        theme                         (quo.theme/use-theme)
-        sign-on-keycard?              (rf/sub [:wallet-connect/sign-on-keycard?])]
+  (let [offline? (rf/sub [:network/offline?])
+        theme    (quo.theme/use-theme)]
     [:<>
      (when (or offline? error-state)
        [quo/alert-banner
@@ -42,16 +66,9 @@
       (into [rn/view
              {:style style/data-items-container}]
             children)
-      [rn/view {:style style/auth-container}
-       [standard-authentication/slide-button
-        {:size                :size-48
-         :track-text          slide-button-text
-         :disabled?           (or offline? error-state)
-         :customization-color customization-color
-         :on-auth-success     on-auth-success
-         :on-complete         (when sign-on-keycard?
-                                #(on-auth-success ""))
-         :auth-button-label   (i18n/label :t/confirm)}]]
+      [slide-button
+       {:disabled?         (or offline? error-state)
+        :slide-button-text slide-button-text}]
       [rn/view {:style style/warning-container}
        [quo/text
         {:size   :paragraph-2

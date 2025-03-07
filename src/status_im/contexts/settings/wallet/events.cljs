@@ -145,16 +145,17 @@
   [_ [connection-string keypairs-key-uids]]
   {:fx [[:dispatch
          [:standard-auth/authorize-with-password
-          {:blur?             true
-           :theme             :dark
-           :auth-button-label (i18n/label :t/confirm)
-           :on-auth-success   (fn [password]
-                                (rf/dispatch [:hide-bottom-sheet])
-                                (rf/dispatch
-                                 [:wallet/connection-string-for-import-keypairs
-                                  {:connection-string connection-string
-                                   :keypairs-key-uids keypairs-key-uids
-                                   :sha3-pwd          password}]))}]]]})
+          {:blur?                   true
+           :hide-biometrics-button? true
+           :theme                   :dark
+           :auth-button-label       (i18n/label :t/confirm)
+           :on-auth-success         (fn [password]
+                                      (rf/dispatch [:hide-bottom-sheet])
+                                      (rf/dispatch
+                                       [:wallet/connection-string-for-import-keypairs
+                                        {:connection-string connection-string
+                                         :keypairs-key-uids keypairs-key-uids
+                                         :sha3-pwd          password}]))}]]]})
 
 (rf/reg-event-fx :wallet/success-keypair-qr-scan success-keypair-qr-scan)
 

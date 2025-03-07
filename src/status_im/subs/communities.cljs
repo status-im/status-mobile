@@ -479,3 +479,9 @@
  (fn [[permissions] _]
    (let [all-tokens (apply concat (map :tokens permissions))]
      (boolean (some seq all-tokens)))))
+
+(re-frame/reg-sub
+ :communities/join-requests-for-signing-by-id
+ :<- [:communities/join-requests-for-signing]
+ (fn [sign-requests [_ id]]
+   (get sign-requests id)))

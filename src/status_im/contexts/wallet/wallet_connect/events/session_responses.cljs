@@ -2,43 +2,12 @@
   (:require [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
-            [status-im.contexts.keycard.utils :as keycard]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
             [status-im.contexts.wallet.wallet-connect.utils.uri :as uri]
             [taoensso.timbre :as log]
-            [utils.hex :as hex]
             [utils.i18n :as i18n]
             [utils.transforms :as transforms]))
-
-(rf/reg-event-fx
- :wallet-connect/authorized-signing
- (fn [{:keys [db]} [password]]
-   (let [prepared-hash (get-in db [:wallet-connect/current-request :prepared-hash])
-         address       (get-in db [:wallet-connect/current-request :address])
-         keycard-sign? (-> (get-in db [:wallet :keypairs])
-                           (keycard/keycard-address? address))
-         on-success    #(rf/dispatch [:wallet-connect/respond (hex/prefix-hex %)])
-         on-fail       #(rf/dispatch [:wallet-connect/on-sign-error %])]
-     (if keycard-sign?
-       {:fx [[:dispatch
-              [:standard-auth/authorize-with-keycard
-               {:on-complete (fn [pin]
-                               (rf/dispatch [:keycard/connect-and-sign-hashes
-                                             {:keycard-pin pin
-                                              :address     address
-                                              :hashes      [prepared-hash]
-                                              :on-success  (fn [signatures]
-                                                             (rf/dispatch [:hide-bottom-sheet])
-                                                             (on-success (:signature (first
-                                                                                      signatures))))
-                                              :on-failure  on-fail}]))}]]]}
-       {:fx [[:effects.wallet/sign-message
-              {:message    prepared-hash
-               :address    address
-               :password   password
-               :on-success on-success
-               :on-error   on-fail}]]}))))
 
 (rf/reg-event-fx
  :wallet-connect/respond

@@ -24,10 +24,10 @@
                      :customization-color customization-color}}]
      [rn/view {:style {:flex 1 :padding-horizontal 20 :justify-content :space-between}}
       [quo/text (i18n/label :t/migrate-key-pair-authorise)]
-      [standard-auth/slide-button
+      [standard-auth/slide-auth
        {:size                :size-48
         :container-style     {}
         :customization-color customization-color
         :track-text          (i18n/label :t/slide-to-authorise)
-        :on-auth-success     #(when on-success (on-success %))
+        :on-success          #(when on-success (on-success %))
         :auth-button-label   (i18n/label :t/confirm)}]]]))
