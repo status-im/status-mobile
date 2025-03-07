@@ -225,11 +225,12 @@
                               [:show-bottom-sheet
                                {:content transaction-settings/settings-sheet}])}
       :i/advanced]
-     [data-item
-      {:title    (i18n/label :t/est-time)
-       :loading? loading?
-       :subtitle (i18n/label :t/time-in-mins
-                             {:minutes (utils/estimated-time-format estimated-time-min)})}]
+     (when estimated-time-min
+       [data-item
+        {:title    (i18n/label :t/est-time)
+         :loading? loading?
+         :subtitle (i18n/label :t/time-in-mins
+                               {:minutes estimated-time-min})}])
      [data-item
       {:title          (i18n/label :t/max-fees)
        :loading?       loading?
