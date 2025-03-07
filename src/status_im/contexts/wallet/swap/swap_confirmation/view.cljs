@@ -4,7 +4,6 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [status-im.common.biometric.utils :as biometric]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
@@ -165,17 +164,14 @@
   (let [loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
         swap-proposal          (rf/sub [:wallet/swap-proposal-without-fees])
         account                (rf/sub [:wallet/current-viewing-account])
-        biometric-auth?        (= (rf/sub [:auth-method]) constants/auth-method-biometric)
-        biometric-type         (rf/sub [:biometrics/supported-type])
+        auth-icon              (rf/sub [:standard-auth/slider-icon])
         account-color          (:color account)]
     [quo/slide-button
      {:size                :size-48
       :track-text          (i18n/label :t/slide-to-swap)
       :container-style     {:z-index 2}
       :customization-color account-color
-      :track-icon          (if biometric-auth?
-                             (biometric/get-icon-by-type biometric-type)
-                             :password)
+      :track-icon          auth-icon
       :disabled?           (or loading-swap-proposal?
                                (not swap-proposal))
       :on-complete         #(rf/dispatch [:wallet/prepare-signatures-for-swap-transactions])}]))

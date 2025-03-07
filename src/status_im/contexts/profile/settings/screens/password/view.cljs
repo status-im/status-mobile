@@ -15,16 +15,17 @@
                      :feature-name :settings.enable-biometrics}])
       (rf/dispatch
        [:standard-auth/authorize-with-password
-        {:blur?             true
-         :theme             theme
-         :auth-button-label (i18n/label :t/biometric-enable-button {:bio-type-label button-label})
-         :on-auth-success   (fn [password]
-                              (rf/dispatch [:hide-bottom-sheet])
-                              (rf/dispatch
-                               [:biometric/authenticate
-                                {:on-success #(rf/dispatch [:biometric/enable password])
-                                 :on-fail    #(rf/dispatch [:biometric/show-message
-                                                            (ex-cause %)])}]))}]))))
+        {:blur?                   true
+         :hide-biometrics-button? true
+         :theme                   theme
+         :auth-button-label       (i18n/label :t/biometric-enable-button {:bio-type-label button-label})
+         :on-auth-success         (fn [password]
+                                    (rf/dispatch [:hide-bottom-sheet])
+                                    (rf/dispatch
+                                     [:biometric/authenticate
+                                      {:on-success #(rf/dispatch [:biometric/enable password])
+                                       :on-fail    #(rf/dispatch [:biometric/show-message
+                                                                  (ex-cause %)])}]))}]))))
 
 (defn- get-biometric-item
   [theme]

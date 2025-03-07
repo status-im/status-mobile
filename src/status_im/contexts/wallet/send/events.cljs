@@ -15,7 +15,8 @@
     [utils.money :as utils.money]
     [utils.number]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.security.core :as security]
+    [utils.signatures :as signatures]))
 
 (rf/reg-event-fx :wallet/clean-send-data
  (fn [{:keys [db]}]
@@ -429,7 +430,7 @@
          signatures-map          (reduce (fn [acc {:keys [message signature]}]
                                            (assoc acc
                                                   message
-                                                  (send-utils/signature-rsv signature)))
+                                                  (signatures/signature->rsv signature)))
                                          {}
                                          signatures)]
      {:json-rpc/call [{:method     "wallet_sendRouterTransactionsWithSignatures"
@@ -446,30 +447,32 @@
                                                     :type :negative
                                                     :text (:message error)}]))}]})))
 
+(defn- transaction-sign-payload
+  [transaction-for-signing]
+  (let [signing-details (:signingDetails transaction-for-signing)
+        address         (:address signing-details)
+        messages        (:hashes signing-details)]
+    (reduce (fn [acc message]
+              (conj acc
+                    {:address address
+                     :message message}))
+            []
+            messages)))
+
 (rf/reg-event-fx
  :wallet/prepare-signatures-for-transactions
  (fn [{:keys [db]} [tx-type]]
-   (let [transaction-for-signing                (get-in db
-                                                        [:wallet :ui tx-type :transaction-for-signing])
-         signing-details                        (:signingDetails transaction-for-signing)
-         {:keys [hashes address signOnKeycard]} signing-details
-         send-tx-fn                             (partial send-transactions-with-signatures tx-type)]
-     (if signOnKeycard
-       {:fx [[:dispatch
-              [:standard-auth/authorize-with-keycard
-               {:on-complete (fn [pin]
-                               (rf/dispatch [:keycard/connect-and-sign-hashes
-                                             {:keycard-pin pin
-                                              :address     address
-                                              :hashes      hashes
-                                              :on-success  send-tx-fn
-                                              :on-failure  log-transaction-signature-error}]))}]]]}
-       {:fx [[:dispatch
-              [:standard-auth/authorize
-               {:on-auth-success   (fn [sha3-pwd]
-                                     (rf/dispatch [:wallet/standard-auth-autorization-success hashes
-                                                   address sha3-pwd send-tx-fn]))
-                :auth-button-label (i18n/label :t/confirm)}]]]}))))
+   (let [sign-payload (-> db
+                          (get-in [:wallet :ui tx-type :transaction-for-signing])
+                          transaction-sign-payload)
+         send-tx-fn   (partial send-transactions-with-signatures tx-type)]
+     {:fx [[:dispatch
+            [:standard-auth/authorize-and-sign
+             {:sign-payload      sign-payload
+              :auth-button-label (i18n/label :t/confirm)
+              :on-sign-success   (fn [signatures]
+                                   (send-tx-fn signatures))
+              :on-sign-error     log-transaction-signature-error}]]]})))
 
 (rf/reg-event-fx
  :wallet/standard-auth-autorization-success

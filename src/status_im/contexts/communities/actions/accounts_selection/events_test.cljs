@@ -89,68 +89,90 @@
                 addresses-to-reveal]]]}
         (sut/do-init-permission-addresses cofx [community-id revealed-accounts true]))))))
 
+(deftest sign-shared-addresses-test
+  (testing
+    "when addresses to reveal is not passed, fallback to all wallet addresses"
+    (let [pub-key                 "abcdef"
+          revealed-addresses      #{"0xB" "0xC"}
+          share-future-addresses? true
+          cofx                    {:db {:profile/profile                     {:public-key pub-key}
+                                        :communities/all-addresses-to-reveal {community-id
+                                                                              revealed-addresses}}}
+          airdrop-address         "0xB"
+          actual                  (sut/sign-shared-addresses
+                                   cofx
+                                   [{:community-id            community-id
+                                     :airdrop-address         airdrop-address
+                                     :share-future-addresses? share-future-addresses?
+                                     :on-success              identity}])]
+      (is (match?
+           {:fx [[:effects.community/generate-requests-for-signing
+                  {:community-id        community-id
+                   :pub-key             pub-key
+                   :addresses-to-reveal revealed-addresses
+                   :on-success          fn?
+                   :on-error            fn?}]]}
+           actual)))))
+
 (deftest edit-shared-addresses-test
   (testing
-    "when airdrop address is passed, but addresses to reveal is not, then
-    fallback to all wallet addresses"
+    "signatures and addresses should be derived from signature-data and if airdrop address is not passed,
+     should fallback to first operable wallet address."
     (let [pub-key "abcdef"
-          revealed-addresses #{"0xB" "0xC"}
-          share-future-addresses? true
-          cofx {:db {:profile/profile                     {:public-key pub-key}
-                     :communities/all-addresses-to-reveal {community-id revealed-addresses}}}
-          airdrop-address "0xB"
+          cofx    {:db {:profile/profile                     {:public-key pub-key}
+                        :wallet                              {:accounts wallet-accounts}
+                        ;; 0xA is watch-only
+                        :communities/all-addresses-to-reveal {community-id #{"0xA" "0xB" "0xC"}}}}
 
-          actual
-          (sut/edit-shared-addresses
-           cofx
-           [{:community-id            community-id
-             :password                password
-             :airdrop-address         airdrop-address
-             :share-future-addresses? share-future-addresses?
-             :on-success              (fn [new-addresses-to-reveal]
-                                        (is (match? revealed-addresses new-addresses-to-reveal)))}])
-
-          on-success-wrapper (-> actual :fx first second :on-success)]
+          actual  (sut/edit-shared-addresses
+                   cofx
+                   [{:community-id            community-id
+                     :share-future-addresses? true
+                     :signature-data          [{:address   "0xB"
+                                                :signature "sigB"
+                                                :message   "mesB"}
+                                               {:address   "0xC"
+                                                :signature "sigC"
+                                                :message   "mesC"}]
+                     :on-success              identity}])]
       (is (match?
            {:fx [[:effects.community/edit-shared-addresses
                   {:community-id            community-id
-                   :password                password
+                   :signatures              '("0xsigB" "0xsigC")
                    :pub-key                 pub-key
-                   :addresses-to-reveal     revealed-addresses
-                   :share-future-addresses? share-future-addresses?
-                   :airdrop-address         airdrop-address
+                   :addresses-to-reveal     #{"0xB" "0xC"}
+                   :share-future-addresses? true
+                   :airdrop-address         "0xB"
                    :on-success              fn?
-                   :on-error                [:communities/edit-shared-addresses-failure community-id]}]]}
-           actual))
+                   :on-error                fn?}]]}
+           actual))))
 
-      (on-success-wrapper)))
-
-  (testing "when addresses to reveal are passed, but airdrop address is not"
+  (testing "if share-future-addresses flag is not passed, should use the db value"
     (let [pub-key "abcdef"
-          cofx {:db {:profile/profile                     {:public-key pub-key}
-                     :wallet                              {:accounts wallet-accounts}
-                     :communities/all-addresses-to-reveal {community-id #{"0xB" "0xC"}}}}
+          cofx    {:db {:profile/profile                          {:public-key pub-key}
+                        :wallet                                   {:accounts wallet-accounts}
+                        :communities/selected-share-all-addresses {community-id false}
+                        :communities/all-addresses-to-reveal      {community-id #{"0xA" "0xB"}}}}
 
-          actual (sut/edit-shared-addresses
-                  cofx
-                  [{:community-id community-id
-                    :password     password
-                    :addresses    ["0xC"]
-                    :on-success   (fn [new-addresses-to-reveal new-airdrop-address]
-                                    (is (= #{"0xC"} new-addresses-to-reveal))
-                                    (is (= "0xC" new-airdrop-address)))}])
-
-          on-success-wrapper
-          (-> actual :fx first second :on-success)]
+          actual  (sut/edit-shared-addresses
+                   cofx
+                   [{:community-id    community-id
+                     :airdrop-address "0xB"
+                     :signature-data  [{:address   "0xA"
+                                        :signature "sigA"
+                                        :message   "mesA"}
+                                       {:address   "0xB"
+                                        :signature "sigB"
+                                        :message   "mesB"}]
+                     :on-success      identity}])]
       (is (match?
            {:fx [[:effects.community/edit-shared-addresses
-                  {:community-id        community-id
-                   :password            password
-                   :pub-key             pub-key
-                   :addresses-to-reveal #{"0xC"}
-                   :airdrop-address     "0xC"
-                   :on-success          fn?
-                   :on-error            [:communities/edit-shared-addresses-failure community-id]}]]}
-           actual))
-
-      (on-success-wrapper))))
+                  {:community-id            community-id
+                   :signatures              '("0xsigA" "0xsigB")
+                   :pub-key                 pub-key
+                   :addresses-to-reveal     #{"0xA" "0xB"}
+                   :share-future-addresses? false
+                   :airdrop-address         "0xB"
+                   :on-success              fn?
+                   :on-error                fn?}]]}
+           actual)))))

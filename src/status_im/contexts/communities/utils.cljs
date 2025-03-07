@@ -1,6 +1,8 @@
 (ns status-im.contexts.communities.utils
   (:require
-    [status-im.constants :as constants]))
+    [schema.core :as schema]
+    [status-im.constants :as constants]
+    [utils.hex :as hex]))
 
 (defn role->translation-key
   ([role] (role->translation-key role nil))
@@ -19,3 +21,19 @@
        (remove :watch-only?)
        (filter :operable?)
        (sort-by :position)))
+
+(defn extract-join-request-signatures
+  [signature-data]
+  (->> signature-data
+       (map :signature)
+       (map hex/prefix-hex)))
+
+(schema/=> extract-join-request-signatures
+  [:=>
+   [:cat
+    [:sequential
+     [:map {:closed true}
+      [:signature string?]
+      [:address string?]
+      [:message string?]]]]
+   [:sequential string?]])

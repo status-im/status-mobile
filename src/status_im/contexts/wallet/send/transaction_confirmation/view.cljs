@@ -5,10 +5,8 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
-    [status-im.common.biometric.utils :as biometric]
     [status-im.common.events-helper :as events-helper]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
     [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
@@ -256,8 +254,7 @@
         user-props                {:full-name to-address
                                    :address   (utils/get-shortened-address
                                                to-address)}
-        biometric-auth?           (= (rf/sub [:auth-method]) constants/auth-method-biometric)
-        biometric-type            (rf/sub [:biometrics/supported-type])]
+        auth-icon                 (rf/sub [:standard-auth/slider-icon])]
     (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clean-route-data-for-collectible-tx]))
     (rn/use-mount
      (fn []
@@ -289,9 +286,7 @@
                                                              (i18n/label :t/slide-to-send))
                                       :container-style     {:z-index 2}
                                       :customization-color account-color
-                                      :track-icon          (if biometric-auth?
-                                                             (biometric/get-icon-by-type biometric-type)
-                                                             :password)
+                                      :track-icon          auth-icon
                                       :on-complete         #(rf/dispatch
                                                              [:wallet.send/auth-slider-completed])}])]
        :gradient-cover?          true

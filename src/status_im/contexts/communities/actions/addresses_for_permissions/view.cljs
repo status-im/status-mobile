@@ -190,19 +190,12 @@
         (fn []
           (if can-edit-addresses?
             (do
-              (rf/dispatch
-               [:standard-auth/authorize
-                {:auth-button-label (i18n/label :t/confirm-changes)
-                 :on-auth-success   (fn [password]
-                                      (rf/dispatch
-                                       [:communities/edit-shared-addresses
-                                        {:community-id id
-                                         :password     password
-                                         :addresses    addresses-to-reveal
-                                         :on-success   (fn []
-                                                         (rf/dispatch [:dismiss-modal
-                                                                       :addresses-for-permissions])
-                                                         (rf/dispatch [:hide-bottom-sheet]))}]))}])
+              (rf/dispatch [:communities/sign-shared-addresses
+                            {:community-id id
+                             :addresses    addresses-to-reveal
+                             :on-success   (fn []
+                                             (rf/dispatch [:dismiss-modal :addresses-for-permissions])
+                                             (rf/dispatch [:hide-bottom-sheet]))}])
               (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses]))
             (do
               (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses])

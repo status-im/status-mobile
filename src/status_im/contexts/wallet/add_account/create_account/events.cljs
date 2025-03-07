@@ -6,6 +6,7 @@
             [status-im.contexts.wallet.data-store :as data-store]
             [taoensso.timbre :as log]
             [utils.collection]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [utils.security.core :as security]
             [utils.transforms :as transforms]))
@@ -261,3 +262,32 @@
                             (rf/dispatch [:wallet/store-account-generated-with-private-key
                                           {:keypair-name     keypair-name
                                            :new-account-data new-account-data}]))}]]})))
+
+(rf/reg-event-fx
+ :wallet/authorize-derive-address
+ (fn [{:keys [db]} [{:keys [key-uid account-preferences derivation-path]}]]
+   (let [{:keys [keycards derived-from]} (get-in db [:wallet :keypairs key-uid])
+         keycard-keypair?                (boolean (seq keycards))]
+     {:fx [(if keycard-keypair?
+             [:dispatch
+              [:standard-auth/authorize-with-keycard
+               {:on-complete
+                (fn [pin]
+                  (rf/dispatch
+                   [:keycard/connect-derive-address-and-add-account
+                    {:pin                  pin
+                     :derived-from-address derived-from
+                     :key-uid              key-uid
+                     :derivation-path      (create-account.utils/normalize-path derivation-path)
+                     :account-preferences  account-preferences}]))}]]
+             [:dispatch
+              [:standard-auth/authorize
+               {:auth-button-label (i18n/label :t/continue)
+                :on-auth-success   (fn [password]
+                                     (rf/dispatch
+                                      [:wallet/derive-address-and-add-account
+                                       {:password             password
+                                        :derived-from-address derived-from
+                                        :key-uid              key-uid
+                                        :derivation-path      derivation-path
+                                        :account-preferences  account-preferences}]))}]])]})))

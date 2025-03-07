@@ -14,6 +14,12 @@
  :-> :address)
 
 (rf/reg-sub
+ :wallet-connect/prepared-hash
+ :<- [:wallet-connect/current-request]
+ (fn [request]
+   (:prepared-hash request)))
+
+(rf/reg-sub
  :wallet-connect/current-request-display-data
  :<- [:wallet-connect/current-request]
  :-> :display-data)

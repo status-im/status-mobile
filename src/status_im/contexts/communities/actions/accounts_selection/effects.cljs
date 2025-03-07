@@ -1,108 +1,103 @@
 (ns status-im.contexts.communities.actions.accounts-selection.effects
   (:require
+    [clojure.string :as string]
     [promesa.core :as promesa]
     [schema.core :as schema]
     [status-im.common.json-rpc.events :as rpc]
+    [status-im.contexts.wallet.rpc :as wallet-rpc]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.signatures :as signatures]))
+
+(def ^:private ?addresses-to-reveal
+  [:or [:set string?]
+   [:sequential string?]])
 
 (defn- generate-requests-for-signing
   [pub-key community-id addresses-to-reveal]
-  (promesa/create
-   (fn [p-resolve p-reject]
-     (rpc/call
-      {:method     :wakuext_generateJoiningCommunityRequestsForSigning
-       :params     [pub-key community-id addresses-to-reveal]
-       :on-success p-resolve
-       :on-error   #(p-reject (str "failed to generate requests for signing\n" %))}))))
+  (rpc/call-async "wakuext_generateJoiningCommunityRequestsForSigning"
+                  false
+                  pub-key
+                  community-id
+                  (or addresses-to-reveal [])))
 
-(defn- sign-data
-  [sign-params password]
-  (promesa/create
-   (fn [p-resolve p-reject]
-     (rpc/call
-      {:method     :wakuext_signData
-       :params     [(map #(assoc % :password (security/safe-unmask-data password)) sign-params)]
-       :on-success p-resolve
-       :on-error   #(p-reject (str "failed to sign data\n" %))}))))
+(schema/=> generate-requests-for-signing
+  [:=>
+   [:catn
+    [:community-id string?]
+    [:pub-key string?]
+    [:addresses-to-reveal ?addresses-to-reveal]]
+   :any])
+
+(rf/reg-fx
+ :effects.community/generate-requests-for-signing
+ (fn [{:keys [pub-key community-id addresses-to-reveal on-success on-error]}]
+   (-> (generate-requests-for-signing pub-key community-id addresses-to-reveal)
+       (promesa/then (fn [requests]
+                       (promesa/all
+                        (for [{:keys [data account]} requests]
+                          (promesa/let [hashed-data (wallet-rpc/hash-message-eip-191 data)]
+                            {:message hashed-data
+                             :address (string/lower-case account)})))))
+       (promesa/then on-success)
+       (promesa/catch on-error))))
 
 (defn- edit-shared-addresses-for-community
   [community-id signatures addresses-to-reveal airdrop-address _share-future-addresses?]
-  (promesa/create
-   (fn [p-resolve p-reject]
-     (rpc/call
-      {:method      :wakuext_editSharedAddressesForCommunity
-       :params      [{:communityId       community-id
-                      :signatures        signatures
-                      :addressesToReveal addresses-to-reveal
-                      :airdropAddress    airdrop-address}]
-       :js-response true
-       :on-success  p-resolve
-       :on-error    p-reject}))))
+  (rpc/call-async "wakuext_editSharedAddressesForCommunity"
+                  true
+                  {:communityId       community-id
+                   :signatures        (map signatures/adjust-legacy-ecdsa-signature signatures)
+                   :addressesToReveal addresses-to-reveal
+                   :airdropAddress    airdrop-address}))
 
-(defn- request-to-join
-  [community-id signatures addresses-to-reveal airdrop-address share-future-addresses?]
-  (promesa/create
-   (fn [p-resolve p-reject]
-     (rpc/call
-      {:method      :wakuext_requestToJoinCommunity
-       :params      [{:communityId          community-id
-                      :signatures           signatures
-                      :addressesToReveal    addresses-to-reveal
-                      :airdropAddress       airdrop-address
-                      :shareFutureAddresses share-future-addresses?}]
-       :js-response true
-       :on-success  p-resolve
-       :on-error    p-reject}))))
-
-(defn- run-callback-or-event
-  [callback-or-event result]
-  (cond (fn? callback-or-event)
-        (callback-or-event result)
-
-        (vector? callback-or-event)
-        (rf/dispatch (conj callback-or-event result))))
-
-(defn- sign-and-call-endpoint
-  [{:keys [community-id password pub-key
-           addresses-to-reveal airdrop-address share-future-addresses?
-           on-success on-error
-           callback]}]
-  (-> (promesa/let [sign-params (generate-requests-for-signing pub-key
-                                                               community-id
-                                                               addresses-to-reveal)
-                    signatures  (sign-data sign-params password)
-                    result      (callback community-id
-                                          signatures
-                                          addresses-to-reveal
-                                          airdrop-address
-                                          share-future-addresses?)]
-        (run-callback-or-event on-success result))
-      (promesa/catch #(run-callback-or-event on-error %))))
-
-(schema/=> sign-and-call-endpoint
+(schema/=> edit-shared-addresses-for-community
   [:=>
-   [:cat
-    [:map {:closed true}
-     [:community-id string?]
-     [:password [:maybe [:or string? security/?masked-password]]]
-     [:pub-key string?]
-     [:addresses-to-reveal
-      [:or [:set string?]
-       [:sequential string?]]]
-     [:airdrop-address string?]
-     [:share-future-addresses? boolean?]
-     [:on-success [:or fn? :schema.re-frame/event]]
-     [:on-error [:or fn? :schema.re-frame/event]]
-     [:callback fn?]]]
+   [:catn
+    [:community-id string?]
+    [:signatures [:sequential string?]]
+    [:addresses-to-reveal ?addresses-to-reveal]
+    [:airdrop-address string?]
+    [:_share-future-addresses? [:maybe boolean?]]]
    :any])
 
 (rf/reg-fx :effects.community/edit-shared-addresses
- (fn [opts]
-   (sign-and-call-endpoint
-    (assoc opts :callback edit-shared-addresses-for-community))))
+ (fn [{:keys [on-success on-error community-id signatures addresses-to-reveal airdrop-address
+              share-future-addresses?]}]
+   (-> (edit-shared-addresses-for-community community-id
+                                            signatures
+                                            addresses-to-reveal
+                                            airdrop-address
+                                            share-future-addresses?)
+       (promesa/then on-success)
+       (promesa/catch on-error))))
+
+(defn- request-to-join
+  [community-id signatures addresses-to-reveal airdrop-address share-future-addresses?]
+  (rpc/call-async "wakuext_requestToJoinCommunity"
+                  true
+                  {:communityId          community-id
+                   :signatures           (map signatures/adjust-legacy-ecdsa-signature signatures)
+                   :addressesToReveal    addresses-to-reveal
+                   :airdropAddress       airdrop-address
+                   :shareFutureAddresses share-future-addresses?}))
+
+(schema/=> request-to-join
+  [:=>
+   [:catn
+    [:community-id string?]
+    [:signatures [:sequential string?]]
+    [:addresses-to-reveal ?addresses-to-reveal]
+    [:airdrop-address string?]
+    [:share-future-addresses? [:maybe boolean?]]]
+   :any])
 
 (rf/reg-fx :effects.community/request-to-join
- (fn [opts]
-   (sign-and-call-endpoint
-    (assoc opts :callback request-to-join))))
+ (fn [{:keys [on-success on-error community-id signatures addresses-to-reveal airdrop-address
+              share-future-addresses?]}]
+   (-> (request-to-join community-id
+                        signatures
+                        addresses-to-reveal
+                        airdrop-address
+                        share-future-addresses?)
+       (promesa/then on-success)
+       (promesa/catch on-error))))

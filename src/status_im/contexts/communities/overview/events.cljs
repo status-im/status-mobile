@@ -3,8 +3,7 @@
     [status-im.contexts.communities.utils :as utils]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :communities/check-permissions-to-join-community-success
  (fn [{:keys [db]} [community-id based-on-client-selection? result]]
@@ -70,32 +69,6 @@
                                     community-id
                                     err))}]})))
 
-(defn request-to-join
-  [{:keys [db]}
-   [{:keys [community-id password]}]]
-  (let [pub-key (get-in db [:profile/profile :public-key])]
-    {:fx [[:json-rpc/call
-           [{:method     "wakuext_generateJoiningCommunityRequestsForSigning"
-             :params     [pub-key community-id []]
-             :on-success [:communities/sign-data community-id password]
-             :on-error   [:communities/requested-to-join-error community-id]}]]]}))
-
-;; Event to be called to request to join a community.
-;; This event will generate the data to be signed and then call the sign-data event.
-;; This is the only event that should be called from the UI.
-(rf/reg-event-fx :communities/request-to-join request-to-join)
-
-(defn sign-data
-  [_ [community-id password sign-params]]
-  (let [addresses-to-reveal (map :account sign-params)]
-    {:fx [[:json-rpc/call
-           [{:method     "wakuext_signData"
-             :params     [(map #(assoc % :password (security/safe-unmask-data password)) sign-params)]
-             :on-success [:communities/request-to-join-with-signatures community-id addresses-to-reveal]
-             :on-error   [:communities/requested-to-join-error community-id]}]]]}))
-
-(rf/reg-event-fx :communities/sign-data sign-data)
-
 (rf/reg-event-fx :communities/requested-to-join-error
  (fn [{:keys [db]} [community-id error]]
    (log/error "failed to request to join community"
@@ -115,21 +88,6 @@
               :text (i18n/label
                      :t/requested-to-join-community
                      {:community community-name})}]]]})))
-
-(defn request-to-join-with-signatures
-  [_ [community-id addresses-to-reveal signatures share-future-addresses?]]
-  {:fx [[:json-rpc/call
-         [{:method      "wakuext_requestToJoinCommunity"
-           :params      [{:communityId          community-id
-                          :signatures           signatures
-                          :addressesToReveal    addresses-to-reveal
-                          :shareFutureAddresses share-future-addresses?
-                          :airdropAddress       (first addresses-to-reveal)}]
-           :js-response true
-           :on-success  [:communities/requested-to-join]
-           :on-error    [:communities/requested-to-join-error community-id]}]]]})
-
-(rf/reg-event-fx :communities/request-to-join-with-signatures request-to-join-with-signatures)
 
 (rf/reg-event-fx :communities/toggled-collapsed-category-success
  (fn [{:keys [db]} [community-id category-id collapsed?]]
@@ -151,21 +109,42 @@
                                :category-id  category-id
                                :collapse?    collapse?})}]}))
 
-(defn request-to-join-with-addresses
-  [{:keys [db]}
-   [{:keys [community-id password]}]]
-  (let [pub-key                 (get-in db [:profile/profile :public-key])
-        addresses-to-reveal     (get-in db [:communities/all-addresses-to-reveal community-id])
-        share-future-addresses? (get-in db [:communities/selected-share-all-addresses community-id])
-        airdrop-address         (get-in db [:communities/all-airdrop-addresses community-id])]
+(defn generate-requests-for-signing
+  [{:keys [db]} [community-id]]
+  (let [pub-key             (get-in db [:profile/profile :public-key])
+        addresses-to-reveal (get-in db [:communities/all-addresses-to-reveal community-id])]
+    {:fx [[:effects.community/generate-requests-for-signing
+           {:pub-key             pub-key
+            :community-id        community-id
+            :addresses-to-reveal addresses-to-reveal
+            :on-success          #(rf/dispatch [:communities/on-join-requests-prepared
+                                                community-id
+                                                %])}]]}))
+
+(rf/reg-event-fx :communities/generate-requests-for-signing generate-requests-for-signing)
+
+(defn on-join-requests-prepared
+  [{:keys [db]} [community-id signing-requests]]
+  {:db (assoc-in db
+        [:communities/join-requests-for-signing community-id]
+        signing-requests)})
+
+(rf/reg-event-fx :communities/on-join-requests-prepared on-join-requests-prepared)
+
+(defn request-to-join
+  [{:keys [db]} [{:keys [community-id signature-data]}]]
+  (let [share-future-addresses? (get-in db [:communities/selected-share-all-addresses community-id])
+        airdrop-address         (get-in db [:communities/all-airdrop-addresses community-id])
+        addresses-to-reveal     (map :address signature-data)
+        signatures              (utils/extract-join-request-signatures signature-data)]
     {:fx [[:effects.community/request-to-join
            {:community-id            community-id
-            :password                password
-            :pub-key                 pub-key
+            :signatures              signatures
             :addresses-to-reveal     addresses-to-reveal
             :airdrop-address         airdrop-address
             :share-future-addresses? share-future-addresses?
-            :on-success              [:communities/requested-to-join]
-            :on-error                [:communities/requested-to-join-error community-id]}]]}))
+            :on-success              #(rf/dispatch [:communities/requested-to-join %])
+            :on-error                #(rf/dispatch [:communities/requested-to-join-error community-id
+                                                    %])}]]}))
 
-(rf/reg-event-fx :communities/request-to-join-with-addresses request-to-join-with-addresses)
+(rf/reg-event-fx :communities/request-to-join request-to-join)

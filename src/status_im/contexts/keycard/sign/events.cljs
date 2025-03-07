@@ -2,23 +2,38 @@
   (:require [utils.address]
             [utils.re-frame :as rf]))
 
-(rf/reg-event-fx :keycard/sign-hashes
- (fn [_ [data]]
-   {:effects.keycard/sign-hashes data}))
+(defn- append-account-path
+  [db payload]
+  (let [accounts (get-in db [:wallet :accounts])]
+    (->> (:address payload)
+         (get accounts)
+         :path
+         (assoc payload :path))))
 
-(rf/reg-event-fx :keycard/connect-and-sign-hashes
- (fn [{:keys [db]} [{:keys [keycard-pin address hashes on-success on-failure]}]]
-   (let [{:keys [path key-uid]} (get-in db [:wallet :accounts address])]
+(defn- add-paths-to-payloads
+  [db payloads]
+  (reduce (fn [acc message-data]
+            (conj acc (append-account-path db message-data)))
+          []
+          payloads))
+
+(rf/reg-event-fx :keycard/sign-payloads
+ (fn [_ [data]]
+   {:effects.keycard/sign-payloads data}))
+
+(rf/reg-event-fx
+ :keycard/connect-and-sign-payloads
+ (fn [{:keys [db]} [{:keys [keycard-pin payloads on-success on-failure]}]]
+   (let [key-uid (get-in db [:profile/profile :key-uid])]
      {:fx [[:dispatch
             [:keycard/connect
              {:key-uid key-uid
               :on-success
               (fn []
                 (rf/dispatch
-                 [:keycard/sign-hashes
+                 [:keycard/sign-payloads
                   {:pin        keycard-pin
-                   :path       path
-                   :hashes     hashes
+                   :payloads   (add-paths-to-payloads db payloads)
                    :on-success (fn [signatures]
                                  (rf/dispatch [:keycard/disconnect])
                                  (when on-success (on-success signatures)))

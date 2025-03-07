@@ -12,7 +12,6 @@
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.add-account.create-account.style :as style]
-    [status-im.contexts.wallet.add-account.create-account.utils :as create-account.utils]
     [status-im.contexts.wallet.common.utils :as common.utils]
     [status-im.contexts.wallet.sheets.account-origin.view :as account-origin]
     [status-im.feature-flags :as ff]
@@ -145,7 +144,6 @@
 (defn- floating-button
   [_ & _]
   (let [top    (safe-area/get-top)
-        bottom (safe-area/get-bottom)
         header [quo/page-nav
                 {:type       :no-title
                  :background :blur
@@ -154,7 +152,7 @@
                                                          {:content account-origin/view}])}]
                  :icon-name  :i/close
                  :on-press   #(rf/dispatch [:navigate-back])}]]
-    (fn [{:keys [slide-button-props account-color]} & children]
+    (fn [{:keys [footer account-color]} & children]
       (into
        [floating-button-page/view
         {:gradient-cover?          true
@@ -162,13 +160,7 @@
          :header-container-style   {:padding-top top}
          :customization-color      account-color
          :header                   header
-         :footer                   [standard-auth/slide-button
-                                    (assoc slide-button-props
-                                           :size                :size-48
-                                           :track-text          (i18n/label :t/slide-to-create-account)
-                                           :customization-color account-color
-                                           :auth-button-label   (i18n/label :t/confirm)
-                                           :container-style     (style/slide-button-container bottom))]}]
+         :footer                   footer}]
        children))))
 
 (defn- on-auth-success-mnemonic
@@ -193,11 +185,13 @@
                                                           :workflow/new-keypair.import-private-key)
                                                 constants/path-default-wallet)]
       [floating-button
-       {:account-color      @account-color
-        :slide-button-props {:on-auth-success (fn on-auth-success [password]
-                                                (let [account-preferences {:account-name @account-name
-                                                                           :color        @account-color
-                                                                           :emoji        @emoji}]
+       {:account-color @account-color
+        :footer        [standard-auth/slide-auth
+                        {:on-success          (fn [password]
+                                                (let [account-preferences {:account-name
+                                                                           @account-name
+                                                                           :color @account-color
+                                                                           :emoji @emoji}]
                                                   (if (= workflow
                                                          :workflow/new-keypair.import-private-key)
                                                     (on-auth-success-import-private-key
@@ -206,8 +200,13 @@
                                                     (on-auth-success-mnemonic
                                                      password
                                                      account-preferences))))
-                             :disabled?       (empty? @account-name)
-                             :dependencies    [new-account-data]}}
+                         :disabled?           (empty? @account-name)
+                         :dependencies        [new-account-data]
+                         :size                :size-48
+                         :auth-button-label   (i18n/label :t/continue)
+                         :track-text          (i18n/label :t/slide-to-create-account)
+                         :customization-color @account-color
+                         :container-style     style/slide-button-container}]}
        [avatar
         {:account-color   @account-color
          :emoji           @emoji
@@ -230,39 +229,19 @@
   (let [derivation-path     (reagent/atom "")
         set-derivation-path #(reset! derivation-path %)]
     (fn [{:keys [on-change-text set-account-color set-emoji customization-color error]}]
-      (let [{:keys [derived-from
-                    key-uid keycards]} (rf/sub [:wallet/selected-keypair])
+      (let [{:keys [key-uid keycards]} (rf/sub [:wallet/selected-keypair])
             keycard?                   (boolean (seq keycards))
-            on-auth-success            (rn/use-callback
-                                        (fn [password]
-                                          (let [preferences {:account-name @account-name
-                                                             :color        @account-color
-                                                             :emoji        @emoji}]
-                                            (rf/dispatch
-                                             [:wallet/derive-address-and-add-account
-                                              {:password             password
-                                               :derived-from-address derived-from
-                                               :key-uid              key-uid
-                                               :derivation-path      @derivation-path
-                                               :account-preferences  preferences}])))
-                                        [derived-from])
-            on-complete                (rn/use-callback
+            slider-icon                (rf/sub [:standard-auth/slider-icon])
+            on-slide-complete          (rn/use-callback
                                         (fn []
-                                          (let [preferences {:account-name @account-name
-                                                             :color        @account-color
-                                                             :emoji        @emoji}]
-                                            (rf/dispatch
-                                             [:standard-auth/authorize-with-keycard
-                                              {:on-complete
-                                               #(rf/dispatch
-                                                 [:keycard/connect-derive-address-and-add-account
-                                                  {:pin %
-                                                   :derived-from-address derived-from
-                                                   :key-uid key-uid
-                                                   :derivation-path (create-account.utils/normalize-path
-                                                                     @derivation-path)
-                                                   :account-preferences preferences}])}])))
-                                        [derived-from])]
+                                          (rf/dispatch
+                                           [:wallet/authorize-derive-address
+                                            {:key-uid             key-uid
+                                             :derivation-path     @derivation-path
+                                             :account-preferences {:account-name @account-name
+                                                                   :color        @account-color
+                                                                   :emoji        @emoji}}]))
+                                        [key-uid])]
         (rn/use-effect
          #(rf/dispatch
            [:wallet/next-derivation-path
@@ -271,14 +250,17 @@
          [key-uid])
 
         [floating-button
-         {:account-color      @account-color
-          :slide-button-props {:on-auth-success (when-not keycard? on-auth-success)
-                               :on-complete
-                               (when keycard? on-complete)
-                               :disabled?
-                               (or (empty? @account-name)
-                                   (string/blank? @derivation-path)
-                                   (some? error))}}
+         {:account-color @account-color
+          :footer        [quo/slide-button
+                          {:on-complete         on-slide-complete
+                           :disabled?           (or (empty? @account-name)
+                                                    (string/blank? @derivation-path)
+                                                    (some? error))
+                           :size                :size-48
+                           :track-text          (i18n/label :t/slide-to-create-account)
+                           :track-icon          slider-icon
+                           :customization-color @account-color
+                           :container-style     style/slide-button-container}]}
          [avatar
           {:account-color   @account-color
            :emoji           @emoji
@@ -347,7 +329,6 @@
             :on-change-text      on-change-text
             :set-account-color   set-account-color
             :set-emoji           set-emoji
-
             :keypair-name        keypair-name
             :error               error
             :workflow            workflow}]

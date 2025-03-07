@@ -15,12 +15,28 @@
    :blur?                 false
    :theme                 :light})
 
+(defn wait-for-biometric-login
+  "Sets the biometric :auth-method in the db during login"
+  [on-done]
+  (rf/reg-fx :effects.biometric/check-if-available
+   (fn [{:keys [on-success]}] (on-success "biometric")))
+  (rf/reg-fx :keychain/password-hash-migration
+   (fn [{:keys [callback]}] (callback)))
+  (rf/reg-event-fx :biometric/authenticate
+   (fn [_ [{:keys [on-success]}]] (on-success)))
+  (rf/reg-event-fx :profile.login/biometric-success (fn [_]))
+  (rf/dispatch [:profile.login/login-with-biometric-if-available :key-uid-1])
+  (rf-test/wait-for [:profile.login/biometric-success]
+    (on-done)))
+
 (defn auth-success-fixtures
   []
   (rf/reg-fx :effects.standard-auth/on-auth-success
    (fn [on-auth-success] (on-auth-success)))
   (rf/reg-fx :effects.biometric/check-if-available
-   (fn [{:keys [on-success]}] (on-success)))
+   (fn [{:keys [on-success]}] (on-success "biometric")))
+  (rf/reg-fx :keychain/password-hash-migration
+   (fn [{:keys [callback]}] (callback)))
   (rf/reg-event-fx :biometric/authenticate
    (fn [_ [{:keys [on-success]}]] (on-success)))
   (rf/reg-fx :keychain/get-user-password
@@ -30,17 +46,22 @@
   (testing "calling success callback when completing biometric authentication"
     (h/log-headline :standard-auth-authorize-success)
     (rf-test/run-test-async
-     (auth-success-fixtures)
-     (let [on-success-called? (atom false)
-           args               (assoc default-args :on-auth-success #(reset! on-success-called? true))]
-       (rf/dispatch [:standard-auth/authorize args])
-       (rf-test/wait-for [:standard-auth/migrate-partially-operable-accounts]
-         (is @on-success-called?))))))
+     (wait-for-biometric-login
+      (fn []
+        (auth-success-fixtures)
+        (let [on-success-called? (atom false)
+              args               (assoc default-args :on-auth-success #(reset! on-success-called? true))]
+          (rf/dispatch [:standard-auth/authorize args])
+          (rf-test/wait-for [:standard-auth/on-biometric-success]
+            (rf-test/wait-for [:standard-auth/finish-auth]
+              (is @on-success-called?)))))))))
 
 (defn auth-cancel-fixtures
   []
   (rf/reg-fx :effects.biometric/check-if-available
-   (fn [{:keys [on-success]}] (on-success)))
+   (fn [{:keys [on-success]}] (on-success "biometric")))
+  (rf/reg-fx :keychain/password-hash-migration
+   (fn [{:keys [callback]}] (callback)))
   (rf/reg-event-fx :biometric/authenticate
    (fn [_ [{:keys [on-cancel]}]] (on-cancel)))
   (rf/reg-event-fx :show-bottom-sheet identity))
@@ -49,15 +70,19 @@
   (testing "falling back to password authorization when biometrics canceled"
     (h/log-headline :standard-auth-authorize-cancel)
     (rf-test/run-test-async
-     (auth-cancel-fixtures)
-     (rf/dispatch [:standard-auth/authorize default-args])
-     (rf-test/wait-for [:show-bottom-sheet]
-       (is true)))))
+     (wait-for-biometric-login
+      (fn []
+        (auth-cancel-fixtures)
+        (rf/dispatch [:standard-auth/authorize default-args])
+        (rf-test/wait-for [:show-bottom-sheet]
+          (is true)))))))
 
 (defn auth-fail-fixtures
   [expected-error-cause]
   (rf/reg-fx :effects.biometric/check-if-available
-   (fn [{:keys [on-success]}] (on-success)))
+   (fn [{:keys [on-success]}] (on-success "biometric")))
+  (rf/reg-fx :keychain/password-hash-migration
+   (fn [{:keys [callback]}] (callback)))
   (rf/reg-event-fx :biometric/authenticate
    (fn [_ [{:keys [on-fail]}]] (on-fail (ex-info "error" {} expected-error-cause))))
   (rf/reg-event-fx :biometric/show-message identity))
@@ -74,11 +99,13 @@
                                        (fn [err]
                                          (reset! on-fail-called? true)
                                          (reset! error err)))]
-       (auth-fail-fixtures expected-error-cause)
-       (rf/dispatch [:standard-auth/authorize args])
-       (rf-test/wait-for [:biometric/show-message]
-         (is @on-fail-called?)
-         (is (= expected-error-cause (ex-cause @error))))))))
+       (wait-for-biometric-login
+        (fn []
+          (auth-fail-fixtures expected-error-cause)
+          (rf/dispatch [:standard-auth/authorize args])
+          (rf-test/wait-for [:biometric/show-message]
+            (is @on-fail-called?)
+            (is (= expected-error-cause (ex-cause @error))))))))))
 
 (defn auth-password-fallback-fixtures
   []

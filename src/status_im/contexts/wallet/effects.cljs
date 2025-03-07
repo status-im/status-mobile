@@ -106,22 +106,23 @@
        (promesa/then (partial rf/call-continuation on-success))
        (promesa/catch (partial rf/call-continuation on-error)))))
 
-(defn sign-transaction-hashes
-  [hashes address password]
+(defn sign-payloads
+  [payloads password]
   (-> (promesa/all
-       (for [h hashes]
-         (promesa/let [signature (wallet-rpc/sign-message h address password)]
-           {:message   h
+       (for [{:keys [message address]} payloads]
+         (promesa/let [signature (wallet-rpc/sign-message message address password)]
+           {:message   message
+            :address   address
             :signature signature})))
       (promesa/catch (fn [err]
-                       (throw (ex-info "Failed to sign transaction hashes"
+                       (throw (ex-info "Failed to sign payloads"
                                        {:error err
-                                        :code  :error/sign-transaction-hashes}))))))
+                                        :code  :error/sign-payloads}))))))
 
 (rf/reg-fx
- :effects.wallet/sign-transaction-hashes
- (fn [{:keys [hashes address password on-success on-error]}]
-   (-> (sign-transaction-hashes hashes address password)
+ :effects.wallet/sign-payloads
+ (fn [{:keys [payloads password on-success on-error]}]
+   (-> (sign-payloads payloads (security/safe-unmask-data password))
        (promesa/then on-success)
        (promesa/catch on-error))))
 

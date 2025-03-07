@@ -42,12 +42,12 @@
                                               :on-success      on-import-success
                                               :on-error        on-import-error}]))
                              [keypair seed-phrase on-import-success on-import-error])]
-    [standard-auth/slide-button
+    [standard-auth/slide-auth
      {:blur?                 true
       :size                  :size-48
       :customization-color   customization-color
       :track-text            (i18n/label :t/slide-to-import)
-      :on-auth-success       on-auth-success
+      :on-success            on-auth-success
       :auth-button-label     (i18n/label :t/import-key-pair)
       :auth-button-icon-left :i/seed
       :container-style       container-style
