@@ -371,9 +371,10 @@
  :<- [:wallet/swap-updated-token-prices-usd]
  (fn [[pay-token-price receive-token-price asset-to-pay token-prices]]
    (when (and token-prices asset-to-pay)
-     (->> asset-to-pay
-          :decimals
-          (utils/token-exchange-rate receive-token-price pay-token-price)))))
+     (let [exchange-rate (some->> asset-to-pay
+                                  :decimals
+                                  (utils/token-exchange-rate receive-token-price pay-token-price))]
+       (or exchange-rate 0)))))
 
 (rf/reg-sub
  :wallet/swap-exchange-rate-fiat
