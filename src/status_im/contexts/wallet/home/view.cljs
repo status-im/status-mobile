@@ -105,6 +105,7 @@
                                [multiple-accounts? first-account-address])
         on-swap-press         (rn/use-callback
                                (fn []
+                                 (rf/dispatch [:wallet/clean-send-data])
                                  (rf/dispatch [:wallet.tokens/get-token-list])
                                  (when-not multiple-accounts?
                                    (rf/dispatch [:wallet/switch-current-viewing-account

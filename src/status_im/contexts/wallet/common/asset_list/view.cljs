@@ -9,7 +9,7 @@
   [{token-symbol  :symbol
     token-name    :name
     total-balance :total-balance
-    disabled?     :bridge-disabled?
+    disabled?     :disabled?
     fiat-value    :fiat-value
     :as           token}
    _ _
