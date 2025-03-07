@@ -284,7 +284,49 @@
             {:symbols    symbols
              :currencies [constants/profile-default-currency profile-currency]
              :on-success [:wallet.tokens/store-prices]
-             :on-error   [:wallet.tokens/fetch-prices-failed]}]]})))
+             :on-error   [:wallet.tokens/fetch-prices-failed]}]
+           [:dispatch
+            [:wallet/get-balance-history-for-all-tokens
+             {:addresses     addresses
+              :symbols       symbols
+              :time-interval constants/time-interval-1-year}]]]})))
+
+(rf/reg-event-fx
+ :wallet/get-balance-history-for-all-tokens
+ (fn [_ {:keys [addresses symbols time-interval]}]
+   {:fx [(map (fn [token-symbol]
+                [:dispatch
+                 [:wallet/get-balance-history-for-token
+                  {:addresses     addresses
+                   :token-symbol  token-symbol
+                   :time-interval time-interval}]])
+              symbols)]}))
+
+(rf/reg-event-fx
+ :wallet/get-balance-history-for-token
+ (fn [{:keys [db]} {:keys [addresses token-symbol time-interval]}]
+   (let [testnet-mode?   (get-in db [:profile/profile :test-networks-enabled?])
+         currency-symbol (get-in db [:profile/profile :currency-symbol])
+         chain-ids       (vec
+                          (if testnet-mode? constants/sepolia-chain-ids constants/mainnet-chain-ids))]
+     {:fx [[:json-rpc/call
+            [{:method     "wallet_getBalanceHistory"
+              :params     [chain-ids addresses token-symbol currency-symbol time-interval]
+              :on-success [:wallet/store-balance-history-for-token addresses token-symbol time-interval]
+              :on-error   [:wallet/log-rpc-error
+                           {:event :wallet/get-balance-history-for-token}]}]]]})))
+
+(rf/reg-event-fx
+ :wallet/store-balance-history-for-token
+ (fn [{:keys [db]} [addresses token-symbol time-interval balances]]
+   {:db (-> db
+            ((fn [db]
+               (reduce (fn [db address]
+                         (assoc-in db
+                          [:wallet :accounts address :historical-balances token-symbol time-interval]
+                          balances))
+                       db
+                       addresses))))}))
 
 (rf/reg-event-fx
  :wallet/get-last-wallet-token-update-if-needed

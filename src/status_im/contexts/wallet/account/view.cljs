@@ -44,6 +44,9 @@
        :current-value       formatted-balance
        :account-name        name
        :account             (if watch-only? :watched-address :default)
+       :time-frame          :one-year
+       :percentage-change   "2.5%"
+       :metrics             :positive
        :customization-color color}]
      (when (ff/enabled? ::ff/wallet.graph)
        [quo/wallet-graph {:time-frame :empty}])

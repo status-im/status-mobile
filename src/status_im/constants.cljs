@@ -494,3 +494,5 @@
 
 (def ^:const pre-login-log-level-key "pre-login-log-level")
 (def ^:const report-email "error-reports@status.im")
+
+(def ^:const time-interval-1-year 3)
