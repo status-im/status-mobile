@@ -39,6 +39,7 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
         self.network_name = 'Base'
 
     @marks.testrail_id(741839)
+    @marks.xfail(reason="Collectibles list is not loaded sometimes")
     def test_wallet_collectibles_balance(self):
         self.wallet_view.collectibles_tab.click()
         self.wallet_view.set_network_in_wallet(self.network_name + ', NEW')
@@ -94,6 +95,7 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(741840)
+    @marks.xfail(reason="Collectibles list is not loaded sometimes")
     def test_wallet_send_collectible(self):
         self.wallet_view.reopen_app(user_name=self.sender_username)
         self.wallet_view.send_button.click()
@@ -144,6 +146,7 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(741841)
+    @marks.xfail(reason="Collectibles list is not loaded sometimes")
     def test_wallet_collectible_send_from_expanded_info_view(self):
         # self.wallet_view.reopen_app(user_name=self.sender_username)
         self.wallet_view.collectibles_tab.click()

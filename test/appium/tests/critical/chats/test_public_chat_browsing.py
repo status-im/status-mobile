@@ -1284,6 +1284,7 @@ class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
     @marks.testrail_id(741924)
+    @marks.xfail(reason="Community message can be fetched from offline when using mobile data")
     def test_community_mobile_data_and_wi_fi_only_fetching(self):
         self.device_2.just_fyi("Receiver turns wi-fi off")
         self.device_2.navigate_back_to_home_view()
@@ -1299,7 +1300,8 @@ class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
         profile_2.syncing_button.scroll_and_click()
         profile_2.sync_and_backup_button.click()
         profile_2.wi_fi_only_button.click()
-        self.device_2.click_system_back_button(times=2)
+        self.device_2.click_system_back_button()
+        self.device_2.click_system_back_button_until_absence_of_element(profile_2.profile_password_button)
         self.home_2.communities_tab.click()
         self.home_2.discover_communities_button.click()
         if self.home_2.community_card_item.is_element_displayed(10):

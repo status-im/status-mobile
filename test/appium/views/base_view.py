@@ -213,6 +213,14 @@ class BaseView(object):
         else:
             self.driver.info("Could not reach %s by pressing system back button" % element.name)
 
+    def click_system_back_button_until_absence_of_element(self, element, attempts=3):
+        for _ in range(attempts):
+            try:
+                element.wait_for_invisibility_of_element(3)
+                return
+            except TimeoutException:
+                self.driver.press_keycode(4)
+
     def navigate_back_to_home_view(self):
         while not self.chat_floating_screen.is_element_disappeared(1) \
                 or not self.community_floating_screen.is_element_disappeared(1) \
