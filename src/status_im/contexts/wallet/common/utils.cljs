@@ -112,7 +112,8 @@
       zero-value?                    "0"
       (< token-units usd-cent-value) "0"
       :else                          (number/remove-trailing-zeroes
-                                      (.toFixed token-units standardized-decimals-count)))))
+                                      (number/format-decimal-fixed token-units
+                                                                   standardized-decimals-count)))))
 
 (defn add-token-symbol-to-crypto-balance
   [crypto-balance token-symbol]

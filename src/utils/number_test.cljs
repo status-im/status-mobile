@@ -88,3 +88,19 @@
 
     (is (true? (utils.number/valid-decimal-count? 1234567890.12 2)))
     (is (false? (utils.number/valid-decimal-count? 1234567890.12345 3)))))
+
+(deftest format-decimal-fixed-test
+  (testing "Format decimal numbers correctly without rounding"
+    (is (= "123.45" (utils.number/format-decimal-fixed "123.456" 2)))
+    (is (= "123.456" (utils.number/format-decimal-fixed "123.456" 3)))
+
+    (is (= "123.45600" (utils.number/format-decimal-fixed "123.456" 5)))
+    (is (= "123.000" (utils.number/format-decimal-fixed "123.000" 3)))
+
+    (is (= "123" (utils.number/format-decimal-fixed "123.999" 0)))
+
+    (is (= "-123.4" (utils.number/format-decimal-fixed "-123.456" 1)))
+    (is (= "-123.45" (utils.number/format-decimal-fixed "-123.456" 2)))
+
+    (is (= "0.0006" (utils.number/format-decimal-fixed "0.000650462672354754" 4)))
+    (is (= "999999999.999" (utils.number/format-decimal-fixed "999999999.999999" 3)))))

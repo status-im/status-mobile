@@ -97,3 +97,18 @@
   [num decimal-count]
   (let [decimal-part (second (string/split (str num) #"\."))]
     (or (nil? decimal-part) (<= (count decimal-part) decimal-count))))
+
+(defn format-decimal-fixed
+  "Formats a number `n` to `decimal-places` without rounding.
+   - Ensures the exact number of decimal places (including trailing zeros).
+   - Does not round up or down, just trims excess decimals."
+  [n decimal-places]
+  (let [bn        (money/bignumber n)
+        scale     (money/bignumber (money/from-decimal decimal-places))
+        truncated (if (money/less-than bn 0)
+                    (Math/ceil (money/mul bn scale))
+                    (Math/floor (money/mul bn scale)))]
+    (-> truncated
+        (money/bignumber)
+        (money/div scale)
+        (money/to-fixed decimal-places))))
