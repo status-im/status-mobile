@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.common.activity-tab.events
   (:require [camel-snake-kebab.extras :as cske]
+            [status-im.contexts.wallet.common.activity-tab.constants :as constants]
             [utils.collection :as collection]
             [utils.ethereum.chain :as chain]
             [utils.re-frame :as rf]
@@ -92,21 +93,25 @@
  :wallet/activity-filtering-for-current-account-done
  (fn [{:keys [db]} [{:keys [message]}]]
    (let [{:keys [address
-                 remove-all-existing-activities?]} (get-in db [:wallet :ui :activity-tab :request])
-         {:keys [activities offset hasMore]}       (transforms/json->clj message)
-         new-activities                            (->> activities
-                                                        (cske/transform-keys
-                                                         transforms/->kebab-case-keyword)
-                                                        (collection/index-by :key))
-         existing-activities                       (get-in db [:wallet :activities address])
-         updated-activities                        (if remove-all-existing-activities?
-                                                     new-activities
-                                                     (nested-merge existing-activities new-activities))]
-     {:db (-> db
-              (assoc-in [:wallet :activities address] updated-activities)
-              (assoc-in [:wallet :ui :activity-tab :request :offset] offset)
-              (assoc-in [:wallet :ui :activity-tab :request :has-more?] hasMore)
-              (assoc-in [:wallet :ui :activity-tab :request :loading?] false))})))
+                 remove-all-existing-activities?]}     (get-in db [:wallet :ui :activity-tab :request])
+         message-clj                                   (transforms/json->clj message)
+         {:keys [activities offset hasMore errorCode]} message-clj]
+     (if (= errorCode constants/activity-request-success)
+       (let [new-activities      (->> activities
+                                      (cske/transform-keys
+                                       transforms/->kebab-case-keyword)
+                                      (collection/index-by :key))
+             existing-activities (get-in db [:wallet :activities address])
+             updated-activities  (if remove-all-existing-activities?
+                                   new-activities
+                                   (nested-merge existing-activities
+                                                 new-activities))]
+         {:db (-> db
+                  (assoc-in [:wallet :activities address] updated-activities)
+                  (assoc-in [:wallet :ui :activity-tab :request :offset] offset)
+                  (assoc-in [:wallet :ui :activity-tab :request :has-more?] hasMore)
+                  (assoc-in [:wallet :ui :activity-tab :request :loading?] false))})
+       {:db (assoc-in db [:wallet :ui :activity-tab :request :loading?] false)}))))
 
 (rf/reg-event-fx
  :wallet/activities-filtering-entries-updated
