@@ -97,8 +97,12 @@
    (keycard/generate-mnemonic (keycard.utils/wrap-handlers args))))
 
 (rf/reg-fx :effects.keycard/generate-and-load-key
- (fn [args]
-   (keycard/generate-and-load-key (keycard.utils/wrap-handlers args))))
+ (fn [{:keys [mnemonic on-failure] :as args}]
+   (-> mnemonic
+       (native-module/validate-mnemonic)
+       (promesa/then #(keycard/generate-and-load-key
+                       (keycard.utils/wrap-handlers args)))
+       (promesa/catch on-failure))))
 
 (rf/reg-fx :effects.keycard/login-with-keycard
  (fn [{:keys [key-uid password whisper-private-key]}]

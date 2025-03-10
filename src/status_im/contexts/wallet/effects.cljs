@@ -24,10 +24,11 @@
                   string? mnemonic-phrase
                   coll?   (string/join " " mnemonic-phrase)
                   (log/error "Unexpected value " mnemonic-phrase))]
-     (native-module/create-account-from-mnemonic
-      {:MnemonicPhrase phrase
-       :paths          paths}
-      on-success))))
+     (-> phrase
+         (native-module/validate-mnemonic)
+         (promesa/then #(native-module/create-account-from-mnemonic
+                         {:MnemonicPhrase phrase :paths paths}
+                         on-success))))))
 
 (defn create-account-from-private-key
   [private-key]
