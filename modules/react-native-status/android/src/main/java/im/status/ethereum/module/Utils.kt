@@ -39,14 +39,7 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
     }
 
     fun getPublicStorageDirectory(): File? {
-        StatusBackendClient.getInstance()?.let { client ->
-            if (client.serverEnabled && client.rootDataDir != null) {
-                return File(client.rootDataDir!!)
-            }
-        }
-        // Environment.getExternalStoragePublicDirectory doesn't work as expected on Android Q
-        // https://developer.android.com/reference/android/os/Environment#getExternalStoragePublicDirectory(java.lang.String)
-        return reactContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+        return File(getNoBackupDirectory(), "logs")
     }
 
     fun getKeyUID(json: String): String {
