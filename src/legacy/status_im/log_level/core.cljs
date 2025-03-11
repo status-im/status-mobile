@@ -1,9 +1,8 @@
 (ns legacy.status-im.log-level.core
   (:require
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
-    [re-frame.core :as re-frame]
-    [taoensso.timbre :as log]
     [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -16,7 +15,7 @@
             log-enabled?          (boolean (seq log-level))]
         (when log-enabled?
           (native-module/set-log-level log-level))
-        
+
         (when need-set-log-enabled?
           (native-module/set-log-enabled log-enabled?))
 
