@@ -143,18 +143,6 @@
 
 (rf/reg-event-fx :wallet/add-saved-address-failed add-saved-address-failed)
 
-(defn set-address-to-save
-  [{:keys [db]} [args]]
-  {:db (assoc-in db [:wallet :ui :saved-address] args)})
-
-(rf/reg-event-fx :wallet/set-address-to-save set-address-to-save)
-
-(defn clear-address-to-save
-  [{:keys [db]}]
-  {:db (update-in db [:wallet :ui] dissoc :saved-address)})
-
-(rf/reg-event-fx :wallet/clear-address-to-save clear-address-to-save)
-
 (defn check-remaining-capacity-for-saved-addresses
   [{:keys [db]} [{:keys [on-success on-error]}]]
   (let [test-networks-enabled? (boolean (get-in db [:profile/profile :test-networks-enabled?]))]
