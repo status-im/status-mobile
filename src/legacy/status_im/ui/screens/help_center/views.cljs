@@ -4,9 +4,9 @@
     [legacy.status-im.ui.components.list.views :as list]
     [quo.core :as quo]
     [re-frame.core :as re-frame]
+    [status-im.constants :as const]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im.constants :as const]))
+    [utils.re-frame :as rf]))
 
 (def data
   [{:size                :small
