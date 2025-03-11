@@ -6,7 +6,10 @@ BASE_BRANCH="${CHANGE_TARGET:-$DEFAULT_BASE_BRANCH}"
 FEATURE_BRANCH="${CHANGE_BRANCH:-$(git branch --show-current)}"
 
 if [[ -n "$CI" && "$CI" == "true" ]]; then
-    COMMITS=$(git log HEAD --oneline)
+    # Configuring remote origin for CI to resolve origin branches when comparing commits
+    git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+    git fetch origin "${BASE_BRANCH}:${BASE_BRANCH}"
+    COMMITS=$(git log "${BASE_BRANCH}"..HEAD --oneline)
 else
     COMMITS=$(git log "${BASE_BRANCH}".."${FEATURE_BRANCH}" --oneline)
 fi
