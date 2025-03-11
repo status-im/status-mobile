@@ -190,7 +190,6 @@
     "category": "Kategoria",
     "category-title": "Tytuł kategorii",
     "change-fleet": "Zmień fleet na {{fleet}}",
-    "change-log-level": "Potwierdź i uruchom ponownie aplikację, aby zmienić poziom log na {{log-level}}",
     "change-logging-enabled": "Czy na pewno chcesz {{enable}} logowanie?",
     "change-pairing": "Zmień kod parowania",
     "change-pairing-description": "Zmiana kodu parowania nie wpływa na bieżące sparowania. Jednak każde nowe parowanie będzie wymagać nowego kodu.",

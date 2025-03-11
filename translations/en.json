@@ -318,7 +318,6 @@
   "category-title": "Category title",
   "change-fleet": "Change fleet to {{fleet}}",
   "change-group-privacy": "Change group privacy",
-  "change-log-level": "Confirm and restart the app to change log level to {{log-level}}",
   "change-logging-enabled": "Are you sure you want to {{enable}} logging?",
   "change-pairing": "Change pairing code",
   "change-pairing-description": "Changing the pairing code does not affect the current pairings. However, any new pairing will require the new code.",

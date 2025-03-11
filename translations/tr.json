@@ -183,7 +183,6 @@
     "category": "Kategori",
     "category-title": "Kategori başlığı",
     "change-fleet": "Fleet'i {{fleet}} olarak değiştir.",
-    "change-log-level": "Günlük düzeyini {{log-level}} olarak değiştirmek için onaylayın ve uygulamayı yeniden başlatın.",
     "change-logging-enabled": "Günlüğü {{enable}} günlüğe kaydetmek istediğinizden emin misiniz?",
     "change-pairing": "Eşleştirme kodunu değiştir",
     "change-pairing-description": "Eşleştirme kodunun değiştirilmesi mevcut eşleştirmeleri etkilemez. Ancak, herhangi bir yeni eşleştirme için yeni kod gerektirir.",

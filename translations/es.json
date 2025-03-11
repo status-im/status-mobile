@@ -161,7 +161,6 @@
     "card-reseted": "La tarjeta ha sido restablecida",
     "card-unpaired": "La tarjeta se ha desvinculado del dispositivo actual",
     "change-fleet": "Cambiar fleet a {{fleet}}",
-    "change-log-level": "Confirma y reinicia la aplicación para cambiar el nivel de registro a {{log-level}}",
     "change-logging-enabled": "¿Está seguro\/a de que deseas {{enable}} iniciar sesión?",
     "change-passcode": "Cambiar código de acceso",
     "change-password": "Cambiar contraseña",

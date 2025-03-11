@@ -157,7 +157,6 @@
     "card-reseted": "O cartão foi redefinido",
     "card-unpaired": "Cartão foi desemparelhado do dispositivo atual",
     "change-fleet": "Mude a frota para {{fleet}}",
-    "change-log-level": "Confirmar e reiniciar o aplicativo para alterar o nível de log para {{log-level}}",
     "change-logging-enabled": "Tem certeza de que deseja {{enable}} logs?",
     "change-passcode": "Alterar código de acesso",
     "change-password": "Alterar senha",

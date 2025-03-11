@@ -206,7 +206,6 @@
     "category-title": "類別標題",
     "change-fleet": "將其更改為{{fleet}}",
     "change-group-privacy": "更改群组隐私",
-    "change-log-level": "確認並重新啟動應用，以將日誌級別更改為{{log-level}}",
     "change-logging-enabled": "您確定要{{enable}}登入嗎？",
     "change-pairing": "更改配對碼",
     "change-pairing-description": "更改配對代碼不會影響當前的配對。但是，往後任何新增配對都將需要新的代碼。",

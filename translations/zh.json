@@ -207,7 +207,6 @@
     "category-title": "类别标题",
     "change-fleet": "变更组别到{{fleet}}",
     "change-group-privacy": "更改群组隐私",
-    "change-log-level": "确认并重新启动应用，将日志级别更改为{{log-level}}",
     "change-logging-enabled": "确定要{{enable}}日志记录吗？",
     "change-pairing": "更改配对码",
     "change-pairing-description": "更改配对码不会影响当前的配对。但是，任何新的配对都将需要新的配对码。",

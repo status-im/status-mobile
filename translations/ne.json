@@ -42,7 +42,6 @@
     "camera-access-error": "कृपया क्यामेरा उपयोग गर्न आवश्यक अनुमति प्रदान गर्न, सिस्टम सेटिङ्ग भित्र गएर स्टेटस > क्यमेरा चयन भएको स्थिति निश्चित गर्नुहोस् ।",
     "cancel": "रद्द गर्नुहोस्",
     "change-fleet": "Tukar fleet ke {{fleet}}",
-    "change-log-level": "Tukar tahap log ke {{log-level}}",
     "changed-amount-warning": "Amaun telah ditukar daripada {{old}} kepada {{new}}",
     "changed-asset-warning": "सम्पत्ति {{old}} बाट {{new}} मा परिवर्तन भएको थियो।",
     "chat": "च्याट",

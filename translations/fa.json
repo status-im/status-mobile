@@ -162,7 +162,6 @@
     "category-title": "عنوان دسته بندی",
     "change-fleet": "تغییر Fleet به {{fleet}}",
     "change-group-privacy": "تغییر حریم خصوصی گروه",
-    "change-log-level": "تغییر سطح ذخیره سازی به {{log-level}}",
     "change-logging-enabled": "آیا یقین دارید که میخواهید ثبت سیاهه را {{enable}} کنید؟",
     "change-pairing": "تغییر کد جفت سازی",
     "change-pairing-description": "تغییر کد جفت سازی تاثیری بر جفت های کنونی ندارد. اما هر جفت سازی جدید نیاز به این کد جدید خواهد داشت.",

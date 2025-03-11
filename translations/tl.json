@@ -157,7 +157,6 @@
     "card-reseted": "Natapos na ang card",
     "card-unpaired": "Ang card ay walang bayad mula sa kasalukuyang aparato",
     "change-fleet": "Baguhin ang fleet sa{{fleet}}",
-    "change-log-level": "Kumpirmahin at i-restart ang app upang baguhin ang antas ng log sa {{log-level}}",
     "change-logging-enabled": "Sigurado ka bang gusto mo{{enable}}logging?",
     "change-passcode": "Baguhin ang Passcode",
     "change-password": "Palitan ang password",

@@ -172,7 +172,6 @@
     "category": "Kategori",
     "category-title": "Tajuk kategori",
     "change-fleet": "Tukar armada menjadi {{fleet}}",
-    "change-log-level": "Sahkan dan mulakan semula aplikasi untuk menukar tahap log menjadi {{log-level}}",
     "change-logging-enabled": "Adakah anda pasti mahu {{enable}} log?",
     "change-pairing": "Tukar kod berpasangan",
     "change-pairing-description": "Mengubah kod pasangan tidak menjejaskan pasangan semasa. Walau bagaimanapun, sebarang pasangan baru akan memerlukan kod baru.",

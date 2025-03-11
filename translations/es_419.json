@@ -205,7 +205,6 @@
     "category": "Categoría",
     "category-title": "Título de la categoría",
     "change-fleet": "Cambiar fleet a {{fleet}}",
-    "change-log-level": "Confirme y reinicie la aplicación para cambiar el nivel de registro a {{log-level}}",
     "change-logging-enabled": "¿Está seguro\/a de que deseas {{enable}} iniciar sesión?",
     "change-pairing": "Cambiar el código de emparejamiento",
     "change-pairing-description": "Cambiar el código de emparejamiento no afecta a los emparejamientos actuales. Sin embargo, cualquier nuevo emparejamiento requerirá el nuevo código.",

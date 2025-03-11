@@ -158,7 +158,6 @@
     "card-reseted": "Kartu telah diatur ulang",
     "card-unpaired": "Kartu tidak berpasangan dari perangkat saat ini",
     "change-fleet": "Ubah armada ke {{fleet}}",
-    "change-log-level": "Konfirmasi dan mulai ulang aplikasi untuk mengubah level log ke {{log-level}}",
     "change-logging-enabled": "Anda yakin ingin {{enable}} masuk?",
     "change-pairing": "Ubah kode pasangan",
     "change-pairing-description": "Mengubah kode pemasangan tidak memengaruhi pemasangan saat ini. Namun, setiap pasangan baru akan membutuhkan kode baru.",
