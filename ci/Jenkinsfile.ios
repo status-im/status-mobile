@@ -5,7 +5,8 @@ library 'status-jenkins-lib@v1.9.20'
 def isPRBuild = utils.isPRBuild()
 
 pipeline {
-  agent { label 'macos && arm64 && nix-2.24 && xcode-16.2' }
+  /* xcode-16.2-debug-archive only exists on macm2-02 and is created to debug and fix archive issues on this host */
+  agent { label 'macos && arm64 && nix-2.24 && xcode-16.2-debug-archive' }
 
   parameters {
     string(
