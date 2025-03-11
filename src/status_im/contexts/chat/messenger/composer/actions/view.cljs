@@ -30,7 +30,11 @@
         contact-customization-color (when (= chat-type constants/one-to-one-chat-type)
                                       (rf/sub [:contacts/contact-customization-color-by-address
                                                chat-id]))
-        on-press                    (rn/use-callback #(send-message input-ref edit btn-opacity) [edit])]
+        on-press                    (rn/use-callback
+                                     (fn []
+                                       (js/requestAnimationFrame
+                                        #(send-message input-ref edit btn-opacity)))
+                                     [edit])]
     (rn/use-effect (fn []
                      ;; Handle send button opacity animation and z-index when input content changes
                      (if (or (seq input-text) images?)
