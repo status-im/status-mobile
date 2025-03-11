@@ -1,5 +1,5 @@
 (ns status-im.common.standard-authentication.events-test
-  (:require [cljs.test :refer [deftest is are testing]]
+  (:require [cljs.test :refer [are deftest is testing]]
             matcher-combinators.test
             [status-im.common.standard-authentication.events :as sut]))
 
