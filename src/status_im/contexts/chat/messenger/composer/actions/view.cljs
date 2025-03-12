@@ -3,13 +3,14 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.composer.actions.image.view :as actions.image]
     [status-im.contexts.chat.messenger.composer.actions.style :as style]
     [utils.re-frame :as rf]))
 
 (defn send-message
-  [input-ref edit btn-opacity]
+  [{:keys [input-ref edit btn-opacity]}]
   (when @input-ref
     (.clear ^js @input-ref))
   (reanimated/animate btn-opacity 0)
@@ -17,6 +18,19 @@
   (rf/dispatch [:chat.ui/set-chat-input-text nil])
   (when-not (some? edit)
     (rf/dispatch [:chat.ui/scroll-to-bottom])))
+
+(defn send-message-next-tick
+  "This function uses `reagent/next-tick` to call the `send-message` function.
+   
+   The usage `reagent/next-tick` will effectively schedule the `send-message`
+   function to run after any final modifications have been to the text-input.
+
+   For example on iOS, tools like auto-correct will attempt to modify the
+   text-input when pressing the send button. Using `reagent/next-tick` allows
+   for that modification to happen and the related event dispatches to resolve
+   before call the `send-message` function."
+  [params]
+  (reagent/next-tick #(send-message params)))
 
 (defn send-button
   [input-ref edit]
@@ -31,9 +45,9 @@
                                       (rf/sub [:contacts/contact-customization-color-by-address
                                                chat-id]))
         on-press                    (rn/use-callback
-                                     (fn []
-                                       (js/requestAnimationFrame
-                                        #(send-message input-ref edit btn-opacity)))
+                                     #(send-message-next-tick {:edit        edit
+                                                               :input-ref   input-ref
+                                                               :btn-opacity btn-opacity})
                                      [edit])]
     (rn/use-effect (fn []
                      ;; Handle send button opacity animation and z-index when input content changes
