@@ -19,20 +19,22 @@
 (defn setup
   [level]
   (log/merge-config! {:ns-filter {:allow #{"*"} :deny #{"taoensso.sente"}}})
-  (when-not (string/blank? level)
-    (log/set-min-level! (-> level
-                            string/lower-case
-                            keyword))
-    (log/merge-config!
-     {:output-fn  (fn [& data]
-                    (let [res (apply log/default-output-fn data)]
-                      (add-log-entry res)
-                      res))
-      :middleware [(fn [data]
-                     (update data
-                             :vargs
-                             (partial mapv
-                                      #(if (string? %) % (with-out-str (pprint/pprint %))))))]})))
+  (if (string/blank? level)
+    (log/set-min-level! :report)
+    (do
+      (log/set-min-level! (-> level
+                              string/lower-case
+                              keyword))
+      (log/merge-config!
+       {:output-fn  (fn [& data]
+                      (let [res (apply log/default-output-fn data)]
+                        (add-log-entry res)
+                        res))
+        :middleware [(fn [data]
+                       (update data
+                               :vargs
+                               (partial mapv
+                                        #(if (string? %) % (with-out-str (pprint/pprint %))))))]}))))
 
 (re-frame/reg-fx
  :logs/set-level
