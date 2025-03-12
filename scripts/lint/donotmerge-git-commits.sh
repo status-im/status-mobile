@@ -6,12 +6,12 @@ BASE_BRANCH="${CHANGE_TARGET:-$DEFAULT_BASE_BRANCH}"
 FEATURE_BRANCH="${CHANGE_BRANCH:-$(git branch --show-current)}"
 
 if [[ -n "$CI" && "$CI" == "true" ]]; then
-    # Configuring remote origin for CI to resolve origin branches when comparing commits
+    # The default Jenkins refspec does not accept branches other than the one from PR.
     git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
     git fetch origin "${BASE_BRANCH}:${BASE_BRANCH}"
-    COMMITS=$(git log "${BASE_BRANCH}"..HEAD --oneline)
+    COMMITS=$(git log "${BASE_BRANCH}..HEAD" --oneline)
 else
-    COMMITS=$(git log "${BASE_BRANCH}".."${FEATURE_BRANCH}" --oneline)
+    COMMITS=$(git log "${BASE_BRANCH}..${FEATURE_BRANCH}" --oneline)
 fi
 
 echo "checking for ${DO_NOT_MERGE_KEYWORD} commits"
