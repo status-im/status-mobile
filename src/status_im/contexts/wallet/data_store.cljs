@@ -256,7 +256,6 @@
                                  :l-1-gas-fee (from-wei (:tx-l-1-fee new-path))
                                  :eip-1559-enabled true
                                  :tx-max-fees-per-gas (from-wei (:tx-max-fees-per-gas new-path))
-                                 :current-base-fee (from-wei (:current-base-fee new-path))
                                  :suggested-min-priority-fee (from-wei (:suggested-min-priority-fee
                                                                         new-path))
                                  :suggested-max-priority-fee (from-wei (:suggested-max-priority-fee
