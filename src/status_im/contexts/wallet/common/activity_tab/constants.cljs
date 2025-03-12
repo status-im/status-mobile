@@ -14,6 +14,10 @@
 (def ^:const wallet-activity-token-type-erc-721 2)
 (def ^:const wallet-activity-token-type-erc-1155 3)
 
+(def ^:const activity-request-success 1)
+(def ^:const activity-request-task-cancelled 2)
+(def ^:const activity-request-failed 3)
+
 (def ^:const wallet-activity-status->name
   {wallet-activity-status-failed    :failed
    wallet-activity-status-pending   :pending
