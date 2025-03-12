@@ -256,10 +256,6 @@
                                                to-address)}
         auth-icon                 (rf/sub [:standard-auth/slider-icon])]
     (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clean-route-data-for-collectible-tx]))
-    (rn/use-mount
-     (fn []
-       (when (ff/enabled? ::ff/wallet.transaction-params)
-         (rf/dispatch [:wallet/init-tx-settings]))))
     [rn/view {:style {:flex 1}}
      [floating-button-page/view
       {:footer-container-padding 0

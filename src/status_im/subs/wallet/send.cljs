@@ -6,7 +6,8 @@
     [status-im.contexts.wallet.common.utils :as common-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.money :as money]
-    [utils.number :as number]))
+    [utils.number :as number]
+    [status-im.contexts.chat.contacts.drawers.nickname-drawer.view :as nickname-drawer]))
 
 (rf/reg-sub
  :wallet/send-tab
@@ -167,6 +168,7 @@
              (when
                (= (:chain-id network) bridge-to-chain-id)
                network))
+
            networks))))
 
 (rf/reg-sub
@@ -205,40 +207,129 @@
      {:crypto (str crypto-formatted " " (:symbol token))
       :fiat   fiat-formatted})))
 
+(comment
+
+
+  (first nil)
+  {:wallet
+   {:send
+    :user-fee-mode
+    nil
+    {:user-tx-settings
+     {:max-base-fee             nil
+      :priority-fee             nil
+      :nonce                    nil
+      :gas-amount               nil
+      :delete-on-routes-update? nil}
+    }}}
+  (rf/dispatch [:navigate-back])
+)
+
+;;;;;
 
 (rf/reg-sub
- :wallet/custom-tx-settings
+ :wallet/user-fee-mode-settings
  :<- [:wallet/wallet-send]
- :-> :custom-tx-settings)
+ :-> :user-fee-mode)
 
 (rf/reg-sub
- :wallet/tx-settings-fee-mode-user
- :<- [:wallet/custom-tx-settings]
- :-> :tx-fee-mode)
+ :wallet/user-tx-settings
+ :<- [:wallet/wallet-send]
+ :-> :user-tx-settings)
 
 (rf/reg-sub
- :wallet/tx-settings-max-base-fee
- :<- [:wallet/custom-tx-settings]
+ :wallet/tx-settings-max-base-fee-user
+ :<- [:wallet/user-tx-settings]
  :-> :max-base-fee)
 
 (rf/reg-sub
- :wallet/tx-settings-priority-fee
- :<- [:wallet/custom-tx-settings]
+ :wallet/tx-settings-priority-fee-user
+ :<- [:wallet/user-tx-settings]
  :-> :priority-fee)
 
 (rf/reg-sub
- :wallet/tx-settings-max-gas-amount
- :<- [:wallet/custom-tx-settings]
- :-> :max-gas-amount)
-
-(rf/reg-sub
- :wallet/tx-settings-nonce
- :<- [:wallet/custom-tx-settings]
+ :wallet/tx-settings-nonce-user
+ :<- [:wallet/user-tx-settings]
  :-> :nonce)
 
 (rf/reg-sub
- :wallet/tx-fee-mode
+ :wallet/tx-settings-gas-amount-user
+ :<- [:wallet/user-tx-settings]
+ :-> :gas-amount)
+
+;;;;;
+
+(rf/reg-sub
+ :wallet/tx-settings-gas-fees
  :<- [:wallet/send-route]
- :<- [:wallet/tx-settings-fee-mode-user]
+ (fn [route]
+   (:gas-fees (first route))))
+
+
+(rf/reg-sub
+ :wallet/tx-settings-max-base-fee-route
+ :<- [:wallet/tx-settings-gas-fees]
+ (fn [gas-fees]
+   (:base-fee gas-fees)))
+
+(rf/reg-sub
+ :wallet/tx-settings-gas-amount-route
+ :<- [:wallet/send-route]
+ (fn [route]
+   (:gas-amount (first route))))
+
+;;;;; 
+
+(rf/reg-sub
+ :wallet/tx-settings-fee-mode
+ :<- [:wallet/send-route]
+ :<- [:wallet/user-fee-mode-settings]
  (fn [[route value-set-by-user]]
    (or value-set-by-user (:tx-fee-mode (first route)))))
+
+(rf/reg-sub
+ :wallet/tx-settings-max-base-fee
+ :<- [:wallet/tx-settings-max-base-fee-route]
+ :<- [:wallet/tx-settings-max-base-fee-user]
+ (fn [[value-from-routes value-set-by-user]]
+   (or value-set-by-user value-from-routes)))
+
+(rf/reg-sub
+ :wallet/tx-settings-priority-fee
+ :<- [:wallet/tx-settings-gas-fees]
+ :<- [:wallet/tx-settings-priority-fee-user]
+ (fn [[gas-fees value-set-by-user]]
+   (or value-set-by-user (:tx-priority-fee gas-fees))))
+
+(rf/reg-sub
+ :wallet/tx-settings-gas-amount
+ :<- [:wallet/tx-settings-gas-amount-route]
+ :<- [:wallet/tx-settings-gas-amount-user]
+ (fn [[value-from-routes value-set-by-user]]
+   (or value-set-by-user value-from-routes)))
+
+(rf/reg-sub
+ :wallet/tx-settings-nonce
+ :<- [:wallet/send-route]
+ :<- [:wallet/tx-settings-nonce-user]
+ (fn [[route value-set-by-user]]
+   (or value-set-by-user (:nonce (first route)))))
+
+(rf/reg-sub
+ :wallet/tx-settings-suggested-nonce
+ :<- [:wallet/send-route]
+ (fn [route]
+   (:suggested-tx-nonce (first route))))
+
+(rf/reg-sub
+ :wallet/tx-settings-suggested-max-priority-fee
+ :<- [:wallet/tx-settings-gas-fees]
+ :<- [:wallet/tx-settings-max-base-fee]
+ (fn [[gas-fees max-base-fee]]
+   (min max-base-fee (:suggested-max-priority-fee gas-fees))))
+
+(rf/reg-sub
+ :wallet/tx-settings-suggested-min-priority-fee
+ :<- [:wallet/tx-settings-gas-fees]
+ (fn [gas-fees]
+   (:suggested-min-priority-fee gas-fees)))
