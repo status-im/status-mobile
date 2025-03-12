@@ -128,46 +128,64 @@
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :swap :loading-swap-proposal?] true)}))
 
+(defn- get-swap-proposal-params
+  [{:keys [db amount-in amount-out request-uuid]}]
+  (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
+        {:keys [asset-to-pay asset-to-receive
+                network]}       (get-in db [:wallet :ui :swap])
+        test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
+        networks                ((if test-networks-enabled? :test :prod)
+                                 (get-in db [:wallet :networks]))
+        network-chain-ids       (map :chain-id networks)
+        pay-token-decimal       (:decimals asset-to-pay)
+        pay-token-id            (:symbol asset-to-pay)
+        receive-token-id        (:symbol asset-to-receive)
+        gas-rates               constants/gas-rate-medium
+        receive-token-decimals  (:decimals asset-to-receive)
+        amount-in-hex           (if amount-in
+                                  (send-utils/amount-in-hex amount-in pay-token-decimal)
+                                  0)
+        amount-out-hex          (when amount-out
+                                  (send-utils/amount-in-hex amount-out receive-token-decimals))
+        to-address              wallet-address
+        from-address            wallet-address
+        swap-chain-id           (:chain-id network)
+        disabled-to-chain-ids   (filter #(not= % swap-chain-id) network-chain-ids)
+        disabled-from-chain-ids (filter #(not= % swap-chain-id) network-chain-ids)
+        from-locked-amount      {}
+        send-type               constants/send-type-swap
+        params                  [(cond->
+                                   {:uuid                 request-uuid
+                                    :sendType             send-type
+                                    :addrFrom             from-address
+                                    :addrTo               to-address
+                                    :tokenID              pay-token-id
+                                    :toTokenID            receive-token-id
+                                    :disabledFromChainIDs disabled-from-chain-ids
+                                    :disabledToChainIDs   disabled-to-chain-ids
+                                    :gasFeeMode           gas-rates
+                                    :fromLockedAmount     from-locked-amount
+                                    :amountOut            (or amount-out-hex "0x0")}
+                                   amount-in (assoc :amountIn amount-in-hex))]]
+    params))
+
 (rf/reg-event-fx :wallet/start-get-swap-proposal
  (fn [{:keys [db]} [{:keys [amount-in amount-out clean-approval-transaction?]}]]
-   (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
-         {:keys [asset-to-pay asset-to-receive
-                 network]}       (get-in db [:wallet :ui :swap])
-         test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
-         networks                ((if test-networks-enabled? :test :prod)
-                                  (get-in db [:wallet :networks]))
-         network-chain-ids       (map :chain-id networks)
-         pay-token-decimal       (:decimals asset-to-pay)
-         pay-token-id            (:symbol asset-to-pay)
-         receive-token-id        (:symbol asset-to-receive)
-         receive-token-decimals  (:decimals asset-to-receive)
-         gas-rates               constants/gas-rate-medium
-         amount-in-hex           (if amount-in
-                                   (send-utils/amount-in-hex amount-in pay-token-decimal)
-                                   0)
-         amount-out-hex          (when amount-out
-                                   (send-utils/amount-in-hex amount-out receive-token-decimals))
-         to-address              wallet-address
-         from-address            wallet-address
-         swap-chain-id           (:chain-id network)
-         disabled-to-chain-ids   (filter #(not= % swap-chain-id) network-chain-ids)
-         disabled-from-chain-ids (filter #(not= % swap-chain-id) network-chain-ids)
-         from-locked-amount      {}
-         send-type               constants/send-type-swap
-         request-uuid            (str (random-uuid))
-         params                  [(cond->
-                                    {:uuid                 request-uuid
-                                     :sendType             send-type
-                                     :addrFrom             from-address
-                                     :addrTo               to-address
-                                     :tokenID              pay-token-id
-                                     :toTokenID            receive-token-id
-                                     :disabledFromChainIDs disabled-from-chain-ids
-                                     :disabledToChainIDs   disabled-to-chain-ids
-                                     :gasFeeMode           gas-rates
-                                     :fromLockedAmount     from-locked-amount
-                                     :amountOut            (or amount-out-hex "0x0")}
-                                    amount-in (assoc :amountIn amount-in-hex))]]
+   (let [{:keys [asset-to-pay asset-to-receive
+                 network]} (get-in db [:wallet :ui :swap])
+         pay-token-decimal (:decimals asset-to-pay)
+         pay-token-id      (:symbol asset-to-pay)
+         receive-token-id  (:symbol asset-to-receive)
+         amount-in-hex     (if amount-in
+                             (send-utils/amount-in-hex amount-in pay-token-decimal)
+                             0)
+         swap-chain-id     (:chain-id network)
+         request-uuid      (str (random-uuid))
+         params            (get-swap-proposal-params
+                            {:db           db
+                             :amount-in    amount-in
+                             :amount-out   amount-out
+                             :request-uuid request-uuid})]
      (when-let [amount (or amount-in amount-out)]
        {:db            (update-in db
                                   [:wallet :ui :swap]
@@ -590,44 +608,12 @@
 
 (rf/reg-event-fx :wallet/get-swap-proposal-fee
  (fn [{:keys [db]} [{:keys [amount-in amount-out]}]]
-   (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
-         {:keys [asset-to-pay asset-to-receive
-                 network]}       (get-in db [:wallet :ui :swap])
-         test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
-         networks                ((if test-networks-enabled? :test :prod)
-                                  (get-in db [:wallet :networks]))
-         network-chain-ids       (map :chain-id networks)
-         pay-token-decimal       (:decimals asset-to-pay)
-         pay-token-id            (:symbol asset-to-pay)
-         receive-token-id        (:symbol asset-to-receive)
-         receive-token-decimals  (:decimals asset-to-receive)
-         gas-rates               constants/gas-rate-medium
-         amount-in-hex           (if amount-in
-                                   (send-utils/amount-in-hex amount-in pay-token-decimal)
-                                   0)
-         amount-out-hex          (when amount-out
-                                   (send-utils/amount-in-hex amount-out receive-token-decimals))
-         to-address              wallet-address
-         from-address            wallet-address
-         swap-chain-id           (:chain-id network)
-         disabled-to-chain-ids   (filter #(not= % swap-chain-id) network-chain-ids)
-         disabled-from-chain-ids (filter #(not= % swap-chain-id) network-chain-ids)
-         from-locked-amount      {}
-         send-type               constants/send-type-swap
-         request-uuid            (str (random-uuid))
-         params                  [(cond->
-                                    {:uuid                 request-uuid
-                                     :sendType             send-type
-                                     :addrFrom             from-address
-                                     :addrTo               to-address
-                                     :tokenID              pay-token-id
-                                     :toTokenID            receive-token-id
-                                     :disabledFromChainIDs disabled-from-chain-ids
-                                     :disabledToChainIDs   disabled-to-chain-ids
-                                     :gasFeeMode           gas-rates
-                                     :fromLockedAmount     from-locked-amount
-                                     :amountOut            (or amount-out-hex "0x0")}
-                                    amount-in (assoc :amountIn amount-in-hex))]]
+   (let [request-uuid (str (random-uuid))
+         params       (get-swap-proposal-params
+                       {:db           db
+                        :amount-in    amount-in
+                        :amount-out   amount-out
+                        :request-uuid request-uuid})]
      {:db            (assoc-in db [:wallet :ui :swap :loading-swap-proposal-fee?] true)
       :json-rpc/call [{:method     "wallet_getSuggestedRoutes"
                        :params     params
