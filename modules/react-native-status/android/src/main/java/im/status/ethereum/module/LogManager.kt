@@ -213,7 +213,7 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
     fun setLogLevel(setLogLevelRequest: String): String {
         Log.d(TAG, "setLogLevel: $setLogLevelRequest")
 
-        StatusBackendClient.executeStatusGoRequestWithResult(
+        return StatusBackendClient.executeStatusGoRequestWithResult(
             endpoint = "SetLogLevel",
             requestBody = setLogLevelRequest,
             statusgoFunction = { Statusgo.setLogLevel(setLogLevelRequest) }
@@ -224,7 +224,7 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
     fun setLogEnabled(setLogEnabledRequest: String): String {
         Log.d(TAG, "setLogEnabled: $setLogEnabledRequest")
 
-        StatusBackendClient.executeStatusGoRequestWithResult(
+        return StatusBackendClient.executeStatusGoRequestWithResult(
             endpoint = "SetLogEnabled",
             requestBody = setLogEnabledRequest,
             statusgoFunction = { Statusgo.setLogEnabled(setLogEnabledRequest) }

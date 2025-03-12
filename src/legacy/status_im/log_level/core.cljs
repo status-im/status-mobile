@@ -2,8 +2,6 @@
   (:require
     [legacy.status-im.multiaccounts.update.core :as multiaccounts.update]
     [native-module.core :as native-module]
-    [re-frame.core :as re-frame]
-    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (rf/defn save-log-level
@@ -24,15 +22,3 @@
          :log-level
          log-level
          {:on-success #()})))))
-
-(rf/defn show-change-log-level-confirmation
-  {:events [:log-level.ui/log-level-selected]}
-  [_ {:keys [name value]}]
-  {:ui/show-confirmation
-   {:title               (i18n/label :t/close-app-title)
-    :content             (i18n/label :t/change-log-level
-                                     {:log-level name})
-    :confirm-button-text (i18n/label :t/close-app-button)
-    :on-accept           #(re-frame/dispatch
-                           [:log-level.ui/change-log-level-confirmed value])
-    :on-cancel           nil}})
