@@ -883,23 +883,33 @@
  (fn [{db :db} [value]]
    {:db (assoc-in db [:wallet :ui :send :tx-settings :nonce :current] value)}))
 
-(rf/reg-event-fx :wallet/quick-fee-mode-confirmed
- (fn [{db :db} [fee-mode]]
-   (let [gas-rate         (transaction-settings/tx-fee-mode->gas-rate fee-mode)
-         route            (first (get-in db [:wallet :ui :send :route]))
-         path-tx-identity (send-utils/path-identity route)
-         params           [path-tx-identity gas-rate]]
-     {:db (assoc-in db [:wallet :ui :send :custom-tx-settings :tx-fee-mode] fee-mode)
-      :fx [[:json-rpc/call
-            [{:method   "wallet_setFeeMode"
-              :params   params
-              :on-error (fn [error]
-                          (log/error "failed to set quick transaction settings"
-                                     {:event  :wallet/quick-fee-mode-confirmed
-                                      :error  (:message error)
-                                      :params params}))}]]
-           [:dispatch [:wallet/mark-user-tx-settings-for-deletion]]]})))
+(defn set-fee-mode-effect
+  [path-tx-identity gas-rate]
+  (let [params [path-tx-identity gas-rate]]
+    [:json-rpc/call
+     [{:method   "wallet_setFeeMode"
+       :params   params
+       :on-error (fn [error]
+                   (log/error "failed to set quick transaction settings"
+                              {:event  :wallet/quick-fee-mode-confirmed
+                               :error  (:message error)
+                               :params params}))}]]))
 
+(rf/reg-event-fx
+ :wallet/quick-fee-mode-confirmed
+ (fn [{db :db} [fee-mode]]
+   (let [gas-rate        (transaction-settings/tx-fee-mode->gas-rate fee-mode)
+         tx-type         (get-in db [:wallet :ui :send :tx-type])
+         route           (first (get-in db [:wallet :ui :send :route]))
+         ;; bridge consist from 2 transactions - approval and send, so we need to apply
+         ;; setting to both of them by making 2 calls
+         set-fee-effects (if (= tx-type :tx/bridge)
+                           [(set-fee-mode-effect (send-utils/path-identity route true) gas-rate)
+                            (set-fee-mode-effect (send-utils/path-identity route false) gas-rate)]
+                           [(set-fee-mode-effect (send-utils/path-identity route) gas-rate)])]
+     {:db (assoc-in db [:wallet :ui :send :custom-tx-settings :tx-fee-mode] fee-mode)
+      :fx (conj set-fee-effects
+                [:dispatch [:wallet/mark-user-tx-settings-for-deletion]])})))
 
 ;; There is a delay between the moment when user selected
 ;; custom settings and the moment when new route arrived
