@@ -92,6 +92,6 @@
 (defn button-loader
   [theme]
   {:width            100
-   :height           22
+   :height           24
    :border-radius    6
    :background-color (loader-color theme)})
