@@ -17,7 +17,9 @@
                      SlideInUp
                      SlideOutUp
                      LinearTransition
-                     useAnimatedScrollHandler)]
+                     useAnimatedScrollHandler
+                     scrollTo
+                     useAnimatedRef)]
     ["react-native-redash" :refer (withPause)]
     [react-native.flat-list :as rn-flat-list]
     [react-native.platform :as platform]
@@ -49,11 +51,12 @@
 (def fast-image (create-animated-component FastImage))
 (def blur-view (if platform/ios? (create-animated-component (.-BlurView blur)) view))
 
+(def scroll-to scrollTo)
 ;; Hooks
 (def use-shared-value useSharedValue)
 (def use-animated-style useAnimatedStyle)
 (def use-animated-scroll-handler useAnimatedScrollHandler)
-
+(def use-animated-ref useAnimatedRef)
 ;; Animations
 (def with-timing withTiming)
 (def with-delay withDelay)

@@ -1,96 +1,37 @@
 (ns status-im.contexts.communities.overview.view
   (:require
     [oops.core :as oops]
-    [quo.context]
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
+    [status-im.common.events-helper :as events.helper]
     [status-im.common.home.actions.view :as actions]
     [status-im.common.resources :as resources]
-    [status-im.common.scroll-page.style :as scroll-page.style]
-    [status-im.common.scroll-page.view :as scroll-page]
     [status-im.constants :as constants]
-    [status-im.contexts.communities.actions.chat.view :as chat-actions]
     [status-im.contexts.communities.actions.community-options.view :as options]
     [status-im.contexts.communities.overview.style :as style]
     [status-im.contexts.communities.utils :as communities.utils]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.worklets.communities :as worklets]))
 
-(defn- add-category-height
-  [categories-heights category height]
-  (swap! categories-heights assoc category height))
+;; NOTE: values compared against `scroll-amount` to trigger animations.
+(def expand-header-threshold 150)
+(def sheet-displacement-threshold (+ expand-header-threshold 20))
+(def text-movement-threshold (* expand-header-threshold 0.7))
+(def info-opacity-threshold (* expand-header-threshold 0.5))
+(def expand-header-limit (+ sheet-displacement-threshold 56))
+(def snap-header-threshold (* expand-header-threshold 0.75))
 
 (defn- collapse-category
   [community-id category-id collapsed?]
-  (rf/dispatch [:communities/toggle-collapsed-category community-id category-id (not collapsed?)]))
-
-(defn- layout-y
-  [event]
-  (oops/oget event "nativeEvent.layout.y"))
-
-(defn- channel-chat-item
-  [community-id
-   {:keys [name emoji muted? id mentions-count unread-messages? on-press locked? color] :as chat}
-   last-item?]
-  (let [sheet-content      [actions/chat-actions
-                            (assoc chat
-                                   :community-id community-id
-                                   :chat-type    constants/community-chat-type
-                                   :chat-id      (str community-id id))
-                            false]
-        notification       (cond
-                             muted?               :mute
-                             (> mentions-count 0) :mention
-                             unread-messages?     :notification
-                             :else                nil)
-        channel-options    {:name                name
-                            :emoji               emoji
-                            :customization-color color
-                            :mentions-count      mentions-count
-                            ;; NOTE: this is a troolean, nil/true/false have different meaning
-                            :locked?             locked?
-                            :notification        notification}
-        channel-sheet-data {:selected-item (fn [] [quo/channel channel-options])
-                            :content       (fn [] sheet-content)}]
-    [rn/view {:key id :style (when last-item? {:margin-bottom 8})}
-     [quo/channel
-      (assoc channel-options
-             :on-press      on-press
-             :on-long-press #(rf/dispatch [:show-bottom-sheet channel-sheet-data]))]]))
-
-(defn- channel-list-component
-  [{:keys [on-category-layout community-id on-first-channel-height-changed]}
-   channels-list]
-  [rn/view
-   {:on-layout #(on-first-channel-height-changed
-                 (+ 38 (int (Math/ceil (layout-y %))))
-                 (into #{} (map (comp :name second) channels-list)))
-    :style     (style/channel-list-component)}
-   (for [[category-id {:keys [chats name collapsed?]}] channels-list]
-     (when (seq chats)
-       [rn/view
-        {:key       category-id
-         ;; on-layout fires only when the component re-renders, so
-         ;; in case the category hasn't changed, it will not be fired
-         :on-layout #(on-category-layout name category-id (int (layout-y %)))}
-        (when-not (= constants/empty-category-id category-id)
-          [quo/divider-label
-           {:on-press     #(collapse-category community-id category-id collapsed?)
-            :chevron-icon (if collapsed? :i/chevron-right :i/chevron-down)
-            :chevron      :left}
-           name])
-        (when-not collapsed?
-          [rn/view {:style {:padding-horizontal 8}}
-           (let [last-item-index (dec (count chats))]
-             (map-indexed
-              (fn [index chat]
-                ^{:key (:id chat)}
-                [channel-chat-item community-id chat (= index last-item-index)])
-              chats))])]))])
+  (rf/dispatch
+   [:communities/toggle-collapsed-category community-id category-id (not collapsed?)]))
 
 (defn- get-access-type
   [access]
@@ -100,20 +41,11 @@
     constants/community-on-request-access      :request-access
     :unknown-access))
 
-(defn- network-not-supported
-  []
-  [quo/text (i18n/label :t/network-not-supported)])
-
-(defn- request-access-button
-  [id color]
-  [quo/button
-   {:on-press            #(rf/dispatch [:open-modal :community-account-selection-sheet
-                                        {:community-id id}])
-    :accessibility-label :show-request-to-join-screen-button
-    :customization-color color
-    :container-style     {:margin-bottom 12}
-    :icon-left           :i/communities}
-   (i18n/label :t/request-to-join)])
+(defn- show-join-modal
+  [community-id]
+  (fn []
+    (rf/dispatch [:open-modal :community-account-selection-sheet
+                  {:community-id community-id}])))
 
 (defn token-gated-communities-info
   []
@@ -121,218 +53,412 @@
    [quo/text {:size :paragraph-2}
     (i18n/label :t/token-gated-communities-info)]])
 
-(defn- token-requirements
-  [{:keys [id color role-permissions?]}]
-  (let
-    [{:keys [can-request-access? no-member-permission? networks-not-supported?
-             highest-permission-role
-             tokens]}  (rf/sub [:community/token-gated-overview id])
-     highest-role-text (i18n/label
-                        (communities.utils/role->translation-key highest-permission-role
-                                                                 :t/member))
-     on-press          (rn/use-callback
-                        (fn []
-                          (rf/dispatch [:open-modal :community-account-selection-sheet
-                                        {:community-id id}]))
-                        [id])
-     on-press-info     #(rf/dispatch
-                         [:show-bottom-sheet {:content token-gated-communities-info}])]
+(defn- on-join-info-press
+  []
+  (rf/dispatch [:show-bottom-sheet {:content token-gated-communities-info}]))
 
+(defn- token-requirements
+  [community-id role-permissions? color tags?]
+  (let [{:keys [can-request-access? no-member-permission? networks-not-supported?
+                highest-permission-role
+                tokens]}        (rf/sub [:community/token-gated-overview community-id])
+        on-request-access-press (show-join-modal community-id)]
     (cond
       networks-not-supported?
-      [network-not-supported]
+      [rn/view {:style (style/request-to-join-button tags?)}
+       [quo/text (i18n/label :t/network-not-supported)]]
 
       (or (not role-permissions?) no-member-permission?)
-      [request-access-button id color]
+      [rn/view {:style (style/request-to-join-button tags?)}
+       [quo/button
+        {:on-press            on-request-access-press
+         :accessibility-label :show-request-to-join-screen-button
+         :customization-color color
+         :icon-left           :i/communities}
+        (i18n/label :t/request-to-join)]]
 
       :else
-      [quo/community-token-gating
-       {:role            highest-role-text
-        :tokens          tokens
-        :community-color color
-        :satisfied?      can-request-access?
-        :on-press        on-press
-        :on-press-info   on-press-info}])))
+      (let [highest-role-text (i18n/label
+                               (communities.utils/role->translation-key
+                                highest-permission-role
+                                :t/member))]
+        [rn/view {:style style/request-to-join-as}
+         [quo/community-token-gating
+          {:role            highest-role-text
+           :tokens          tokens
+           :community-color color
+           :satisfied?      can-request-access?
+           :on-press        on-request-access-press
+           :on-press-info   on-join-info-press}]]))))
 
 (defn- join-community
-  [{:keys [id joined permissions] :as community}]
-  (let [pending?        (rf/sub [:communities/my-pending-request-to-join id])
-        access-type     (get-access-type (:access permissions))
-        unknown-access? (= access-type :unknown-access)
-        invite-only?    (= access-type :invite-only)]
-    (when-not (or joined pending? invite-only? unknown-access?)
-      [token-requirements community])))
+  [{:keys [community-id joined? permissions role-permissions? color tags?]}]
+  (let [pending?    (rf/sub [:communities/my-pending-request-to-join community-id])
+        access-type (get-access-type (:access permissions))]
+    (when-not (or joined? pending? (#{:unknown-access :invite-only} access-type))
+      [token-requirements community-id role-permissions? color tags?])))
 
 (defn- status-tag
-  [community-id joined]
+  [{:keys [community-id joined? info-styles]}]
   (let [pending? (rf/sub [:communities/my-pending-request-to-join community-id])]
-    (when (or pending? joined)
-      [rn/view {:style {:position :absolute :top 12 :right 12}}
+    (when (or pending? joined?)
+      [reanimated/view {:style [style/status-tag-position info-styles]}
        [quo/status-tag
-        {:status {:type (if joined :positive :pending)}
-         :label  (if joined
-                   (i18n/label :t/joined)
-                   (i18n/label :t/pending))}]])))
+        {:status {:type (if joined? :positive :pending)}
+         :label  (if joined? (i18n/label :t/joined) (i18n/label :t/pending))}]])))
 
-(defn- add-handlers
+(defn- category-divider
   [community-id
-   joined-or-spectated
-   {:keys [id locked?]
-    :or   {locked? false}
-    :as   chat}]
-  (cond-> chat
-    (and (not locked?) id)
-    (assoc :on-press      (when joined-or-spectated
-                            (fn []
-                              (rf/dispatch [:dismiss-keyboard])
-                              (debounce/throttle-and-dispatch
-                               [:communities/navigate-to-community-chat (str community-id id)]
-                               1000)))
-           :on-long-press #(rf/dispatch
-                            [:show-bottom-sheet
-                             {:content (fn []
-                                         [chat-actions/actions chat false])}])
-           :community-id  community-id)))
+   {collapsed?    :collapsed?
+    category-name :name
+    category-id   :id}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view
+     {:style         (style/category-divider theme)
+      :blur-amount   20
+      :blur-type     :transparent
+      :overlay-color :transparent}
+     [quo/divider-label
+      {:on-press     (fn [] (collapse-category community-id category-id collapsed?))
+       :chevron-icon (if collapsed? :i/chevron-right :i/chevron-down)
+       :chevron      :left
+       :blur?        true}
+      category-name]]))
 
-(defn- add-handlers-to-chats
-  [community-id joined-or-spectated chats]
-  (mapv (partial add-handlers community-id joined-or-spectated) chats))
+(defn- notification-type
+  [{:keys [muted? mentions-count unread-messages?] :as _chat}]
+  (cond
+    muted?               :mute
+    (> mentions-count 0) :mention
+    unread-messages?     :notification))
 
-(defn- add-handlers-to-categorized-chats
-  [community-id categorized-chats joined-or-spectated]
-  (let [add-on-press (partial add-handlers-to-chats community-id joined-or-spectated)]
-    (map (fn [[category v]]
-           [category (update v :chats add-on-press)])
-         categorized-chats)))
+(defn- navigate-to-chat
+  [chat-id]
+  (rf/dispatch [:dismiss-keyboard])
+  (debounce/throttle-and-dispatch
+   [:communities/navigate-to-community-chat chat-id]
+   1000))
 
-(defn- community-header
-  [title logo description]
-  [quo/text-combinations
-   {:container-style                 {:margin-top
-                                      (if logo
-                                        12
-                                        (+ scroll-page.style/picture-radius
-                                           scroll-page.style/picture-border-width
-                                           12))
-                                      :margin-bottom 12}
-    :avatar                          logo
-    :title                           title
-    :title-number-of-lines           2
-    :description                     description
-    :title-accessibility-label       :community-title
-    :description-accessibility-label :community-description}])
+(defn- show-chat-actions
+  [chat-data]
+  (rf/dispatch
+   [:show-bottom-sheet
+    {:selected-item (fn [] [quo/channel chat-data])
+     :content       (fn [] [actions/chat-actions chat-data false])}]))
 
-(defn- community-content
-  [id {:keys [on-category-layout collapsed? on-first-channel-height-changed]}]
-  (let [{:keys [name description joined spectated images tags id membership-permissions?]
-         :as   community}   (rf/sub [:communities/community id])
-        joined-or-spectated (or joined spectated)
-        chats-by-category   (rf/sub [:communities/categorized-channels id])]
+(defn channel-item
+  [{:keys      [color locked?]
+    channel-id :id
+    :as        chat}
+   {:keys [community-id joined-or-spectated?] :as _community-data}]
+  [rn/view {:style {:padding-horizontal 8}}
+   (let [chat-id       (str community-id channel-id)
+         chat-data     (assoc chat
+                              :community-id        community-id
+                              :chat-type           constants/community-chat-type
+                              :chat-id             chat-id
+                              :customization-color color
+                              :notification        (notification-type chat))
+         on-press      (rn/use-callback
+                        (fn []
+                          (when (and (not locked?) channel-id joined-or-spectated?)
+                            (navigate-to-chat chat-id)))
+                        [joined-or-spectated? locked? channel-id])
+         on-long-press (rn/use-callback
+                        (fn []
+                          (when (and (not locked?) channel-id)
+                            (show-chat-actions chat-data)))
+                        [locked? channel-id])]
+     [quo/channel
+      (assoc chat-data
+             :on-press      on-press
+             :on-long-press on-long-press)])])
+
+(defn channel-listing-item
+  [{:keys [community-id] :as community-data}]
+  (fn [{:keys [render-as] :as item-data} _ _ _]
+    (case render-as
+      :separator [rn/view {:style {:height 8}}]
+      :category  [category-divider community-id item-data]
+      :channel   [channel-item item-data community-data]
+      nil)))
+
+(def channel-component-heights
+  {:category  34
+   :channel   48
+   :separator 8})
+
+(defn- calc-scrollable-content
+  [scrollable-area]
+  (+ scrollable-area
+     (safe-area/get-top)
+     32
+     12 ;; top spacing
+     (safe-area/get-bottom)
+     (- (:height (rn/get-window)))))
+
+(defn- channel-listing
+  [{:keys [community-id scroll-amount header-height set-max-scroll]}]
+  (let [theme                  (quo.theme/use-theme)
+        channels-styles        (worklets/use-channels-styles
+                                #js {:scrollAmount               scroll-amount
+                                     :headerHeight               header-height
+                                     :expandHeaderThreshold      expand-header-threshold
+                                     :sheetDisplacementThreshold sheet-displacement-threshold
+                                     :expandHeaderLimit          expand-header-limit})
+        flat-list-ref          (reanimated/use-animated-ref)
+        _ (worklets/use-scroll-to
+           #js {:animatedRef       flat-list-ref
+                :scrollAmount      scroll-amount
+                :expandHeaderLimit expand-header-limit})
+        community              (rf/sub [:communities/community community-id])
+        joined-or-spectated?   (or (:joined community) (:spectated community))
+        render-fn              (rn/use-callback
+                                (channel-listing-item {:community-id         community-id
+                                                       :joined-or-spectated? joined-or-spectated?})
+                                [joined-or-spectated?])
+        flatten-channels       (rf/sub [:communities/flatten-channels-and-categories community-id])
+        categories-indexes     (keep-indexed (fn [idx {:keys [render-as]}]
+                                               (when (= render-as :category)
+                                                 idx))
+                                             flatten-channels)
+        scrollable-area-height (->> flatten-channels
+                                    (map (comp channel-component-heights :render-as))
+                                    (reduce +))]
+    (rn/use-effect
+     (fn []
+       (let [max-scroll-offset (calc-scrollable-content scrollable-area-height)]
+         (if (neg? max-scroll-offset)
+           (set-max-scroll 0)
+           (set-max-scroll max-scroll-offset))))
+     [scrollable-area-height])
+    [reanimated/flat-list
+     {:ref                     flat-list-ref
+      :style                   [(style/chanel-listing theme) channels-styles]
+      :data                    flatten-channels
+      :content-container-style (when platform/ios?
+                                 {:padding-bottom (safe-area/get-bottom)})
+      :sticky-header-indices   categories-indexes
+      :scroll-enabled          false
+      :render-fn               render-fn
+      :key-fn                  :id}]))
+
+
+(defn- header-cover-image
+  [{:keys [cover-image background-color header-opacity]}]
+  (let [theme (quo.theme/use-theme)]
+    [rn/view {:style (style/header-cover-image background-color)}
+     [reanimated/image {:style style/cover-image :source {:uri cover-image}}]
+     [reanimated/view {:style (style/cover-image-blur-container header-opacity)}
+      [rn/image
+       {:style       style/cover-image
+        :source      {:uri cover-image}
+        :blur-radius 20}]
+      [rn/view {:style (style/cover-image-blur-layer theme)}]]]))
+
+(defn- open-community-options
+  [community-id]
+  (fn []
+    (rf/dispatch
+     [:show-bottom-sheet
+      {:content (fn [] [options/community-options-bottom-sheet community-id])}])))
+
+(defn- page-nav
+  [{:keys [blur-version? nav-content-opacity community-name community-logo community-id]}]
+  (let [on-options-press (rn/use-callback (open-community-options community-id))
+        base-props       {:right-side          [{:icon-name           :i/options
+                                                 :accessibility-label :community-options-for-community
+                                                 :on-press            on-options-press}]
+                          :icon-name           :i/close
+                          :on-press            events.helper/navigate-back
+                          :accessibility-label :back-button}]
+    (if blur-version?
+      [quo/page-nav
+       (assoc base-props
+              :type           :community
+              :background     :blur
+              :center-opacity nav-content-opacity
+              :community-name community-name
+              :community-logo community-logo)]
+      [quo/page-nav
+       (assoc base-props
+              :type       :no-title
+              :background :photo)])))
+
+(defn- header
+  [community-id scroll-amount]
+  (let [header-opacity          (worklets/use-header-opacity
+                                 #js {:scrollAmount               scroll-amount
+                                      :expandHeaderThreshold      expand-header-threshold
+                                      :sheetDisplacementThreshold sheet-displacement-threshold})
+        opposite-header-opacity (worklets/use-opposite-header-opacity header-opacity)
+        nav-content-opacity     (worklets/use-nav-content-opacity
+                                 #js {:scrollAmount               scroll-amount
+                                      :sheetDisplacementThreshold sheet-displacement-threshold
+                                      :expandHeaderLimit          expand-header-limit})
+        community               (rf/sub [:communities/community community-id])]
     [:<>
-     [rn/view {:style style/community-content-container}
-      (when-not collapsed?
-        [status-tag id joined])
-      [community-header name (when collapsed? (get-in images [:thumbnail :uri]))
-       (when-not collapsed? description)]
-      (when (and (seq tags) (not collapsed?))
-        [quo/community-tags
-         {:tags            tags
-          :last-item-style style/last-community-tag
-          :container-style style/community-tag-container}])
-      [join-community community]]
-     (when (or joined (not membership-permissions?))
-       [channel-list-component
-        {:on-category-layout              on-category-layout
-         :community-id                    id
-         :on-first-channel-height-changed on-first-channel-height-changed}
-        (add-handlers-to-categorized-chats id chats-by-category joined-or-spectated)])]))
+     [header-cover-image
+      {:cover-image      (-> community :images :banner :uri)
+       :background-color (:color community)
+       :header-opacity   header-opacity}]
+     [reanimated/view {:style (style/page-nav-container opposite-header-opacity)}
+      [page-nav
+       {:blur-version? false
+        :community-id  community-id}]]
+     [reanimated/view {:style (style/page-nav-container-blur header-opacity)}
+      [page-nav
+       {:blur-version?       true
+        :community-id        community-id
+        :nav-content-opacity nav-content-opacity
+        :community-name      (:name community)
+        :community-logo      (-> community :images :large :uri)}]]]))
 
-(defn- sticky-category-header
-  [_]
-  (fn [{:keys [enabled label]}]
-    (when enabled
-      [quo/blur
-       {:style         style/blur-channel-header
-        :blur-amount   20
-        :blur-type     :transparent
-        :overlay-color :transparent}
-       [quo/divider-label
-        {:chevron :left}
-        label]])))
+(defn- community-logo
+  [{:keys [scroll-amount community-id]}]
+  (let [theme       (quo.theme/use-theme)
+        logo-styles (worklets/use-logo-styles
+                     #js {:scrollAmount               scroll-amount
+                          :expandHeaderThreshold      expand-header-threshold
+                          :sheetDisplacementThreshold sheet-displacement-threshold
+                          :textMovementThreshold      text-movement-threshold})
+        logo        (-> (rf/sub [:communities/community community-id]) :images :large :uri)]
+    [reanimated/view
+     {:style [style/community-logo
+              (style/community-logo-bg-color theme)
+              logo-styles]}
+     [rn/image {:style style/community-logo-image :source logo}]]))
 
-(defn- page-nav-right-section-buttons
-  [id]
-  [{:icon-name           :i/options
-    :accessibility-label :community-options-for-community
-    :on-press            #(rf/dispatch
-                           [:show-bottom-sheet
-                            {:content (fn [] [options/community-options-bottom-sheet id])}])}])
+(defn- name-and-description
+  [{:keys [scroll-amount community-name community-description info-styles]}]
+  (let [name-styles (worklets/use-name-styles
+                     #js {:scrollAmount          scroll-amount
+                          :expandHeaderThreshold expand-header-threshold
+                          :textMovementThreshold text-movement-threshold})]
+    [rn/view {:style style/community-name-and-description}
+     [reanimated/view {:style name-styles}
+      [quo/text {:weight :semi-bold :size :heading-1 :number-of-lines 1}
+       community-name]]
+     [reanimated/view {:style [{:opacity 0} info-styles]}
+      [quo/text {:weight :regular :size :paragraph-1}
+       community-description]]]))
 
-(defn- pick-first-category-by-height
-  [scroll-height first-channel-height categories-heights]
-  (->> categories-heights
-       (sort-by (comp - second))
-       (some (fn [[category height]]
-               (and (>= scroll-height (+ height first-channel-height))
-                    category)))))
+(defn- community-info-tags
+  [community-tags info-styles]
+  (when (seq community-tags)
+    [reanimated/view {:style info-styles}
+     [quo/community-tags
+      {:tags            community-tags
+       :last-item-style style/community-tags-last-item
+       :container-style style/community-tags}]]))
 
-        ;; We track the initial value of joined
-        ;; as we open the page to avoid switching
-        ;; from not collapsed to collapsed if the
-        ;; user is on this page
+(defn- community-info-stats
+  [{:keys [members-count active-members-count info-styles]}]
+  [reanimated/view {:style [style/community-stats info-styles]}
+   [rn/view {:style {:flex-direction :row :column-gap 12}}
+    [quo/community-stat
+     {:accessibility-label :stats-members-count
+      :icon                :i/group
+      :value               members-count}]
+    [quo/community-stat
+     {:accessibility-label :stats-active-count
+      :icon                :i/active-members
+      :value               active-members-count}]]])
 
-(defn- community-scroll-page
-  [_ initial-joined? _ _]
-  (let [scroll-height                   (reagent/atom 0)
-        categories-heights              (reagent/atom {})
-        first-channel-height            (reagent/atom 0)
-        on-category-layout              (partial add-category-height categories-heights)
-        on-first-channel-height-changed (fn [height categories]
-                                          (swap! categories-heights select-keys categories)
-                                          (reset! first-channel-height height))]
-    (fn [id joined name images]
-      (let [theme                 (quo.context/use-theme)
-            cover                 {:uri (get-in images [:banner :uri])}
-            logo                  {:uri (get-in images [:large :uri])}
-            collapsed?            (and initial-joined? joined)
-            first-category-height (->> @categories-heights
-                                       vals
-                                       (apply min)
-                                       (+ @first-channel-height))
-            overlay-shown?        (boolean (:sheets (rf/sub [:bottom-sheet])))]
-        [scroll-page/scroll-page
-         {:cover-image      cover
-          :collapsed?       collapsed?
-          :logo             logo
-          :name             name
-          :on-scroll        #(reset! scroll-height %)
-          :navigate-back?   true
-          :height           148
-          :overlay-shown?   overlay-shown?
-          :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
-          :page-nav-props   {:type           :community
-                             :right-side     (page-nav-right-section-buttons id)
-                             :community-name name
-                             :community-logo logo}
-          :sticky-header    [sticky-category-header
-                             {:enabled (> @scroll-height
-                                          first-category-height)
-                              :label   (pick-first-category-by-height
-                                        @scroll-height
-                                        @first-channel-height
-                                        @categories-heights)}]}
-         [community-content
-          id
-          {:on-category-layout              on-category-layout
-           :collapsed?                      collapsed?
-           :on-first-channel-height-changed
-           ;; Here we set the height of the component and we filter out the categories, as some
-           ;; might have been removed.
-           on-first-channel-height-changed}]]))))
+(defn- community-info
+  [{:keys [scroll-amount header-height community-id]}]
+  (let [theme             (quo.theme/use-theme)
+        sheet-styles      (worklets/use-sheet-styles
+                           #js {:scrollAmount               scroll-amount
+                                :expandHeaderThreshold      expand-header-threshold
+                                :sheetDisplacementThreshold sheet-displacement-threshold})
+        info-styles       (worklets/use-info-styles
+                           #js {:scrollAmount         scroll-amount
+                                :infoOpacityThreshold info-opacity-threshold})
+        set-header-height (rn/use-callback
+                           (fn [e]
+                             (let [height (oops/oget e "nativeEvent.layout.height")]
+                               (reanimated/set-shared-value header-height (or height 0)))))
+        community         (rf/sub [:communities/community community-id])
+        members-count     (count (js-keys (:members community)))]
+    [reanimated/view
+     {:style     [(style/community-info theme) sheet-styles]
+      :on-layout set-header-height}
+     [status-tag
+      {:community-id community-id
+       :joined?      (:joined community)
+       :info-styles  info-styles}]
+     [name-and-description
+      {:scroll-amount         scroll-amount
+       :community-name        (:name community)
+       :community-description (:description community)
+       :info-styles           info-styles}]
+     [community-info-stats
+      {:members-count        members-count
+       :active-members-count (:activeMembersCount community)
+       :info-styles          info-styles}]
+     [community-info-tags (:tags community) info-styles]
+     [join-community
+      {:community-id      community-id
+       :joined?           (:joined community)
+       :tags?             (seq (:tags community))
+       :permissions       (:permissions community)
+       :role-permissions? (:role-permissions? community)
+       :color             (:color community)}]]))
+
+(defn- community-sheet
+  [{:keys [community-id scroll-amount set-max-scroll]}]
+  (let [header-height (reanimated/use-shared-value 0)]
+    [rn/view {:style style/community-sheet-position}
+     [community-logo
+      {:community-id  community-id
+       :scroll-amount scroll-amount}]
+     [community-info
+      {:scroll-amount scroll-amount
+       :header-height header-height
+       :community-id  community-id}]
+     [channel-listing
+      {:community-id   community-id
+       :scroll-amount  scroll-amount
+       :header-height  header-height
+       :set-max-scroll set-max-scroll}]]))
+
+(defn- community-overview
+  [community-id expanded?]
+  (let [max-scroll     (reanimated/use-shared-value 0)
+        set-max-scroll (rn/use-callback
+                        (fn [max-scroll-amount]
+                          (reanimated/set-shared-value max-scroll max-scroll-amount)))
+        scroll-start   (reanimated/use-shared-value (if expanded? 0 (- expand-header-threshold)))
+        scroll-amount  (reanimated/use-shared-value (if expanded? 0 expand-header-threshold))
+        on-pan-start   (worklets/on-pan-start scroll-start scroll-amount)
+        on-pan-update  (worklets/on-pan-update
+                        #js {:scrollStart       scroll-start
+                             :scrollAmount      scroll-amount
+                             :maxScroll         max-scroll
+                             :expandHeaderLimit expand-header-limit})
+        on-pan-end     (worklets/on-pan-end
+                        #js {:scrollStart           scroll-start
+                             :scrollAmount          scroll-amount
+                             :maxScroll             max-scroll
+                             :expandHeaderLimit     expand-header-limit
+                             :expandHeaderThreshold expand-header-threshold
+                             :snapHeaderThreshold   snap-header-threshold})
+        pan-gesture    (-> (gesture/gesture-pan)
+                           (gesture/on-start on-pan-start)
+                           (gesture/on-update on-pan-update)
+                           (gesture/on-end on-pan-end))]
+    [gesture/gesture-detector {:gesture pan-gesture}
+     [rn/view {:style {:flex 1}}
+      [header community-id scroll-amount]
+      [community-sheet
+       {:community-id   community-id
+        :scroll-amount  scroll-amount
+        :set-max-scroll set-max-scroll}]]]))
 
 (defn- community-fetching-placeholder
   [id]
-  (let [theme     (quo.context/use-theme)
+  (let [theme     (quo.theme/use-theme)
         top-inset (safe-area/get-top)
         fetching? (rf/sub [:communities/fetching-community id])]
     [rn/view
@@ -354,16 +480,12 @@
                           (i18n/label :t/failed-to-fetch-community))
        :container-style {:flex 1 :justify-content :center}}]]))
 
-(defn- community-card-page-view
-  [id]
-  (let [{:keys [joined name images]
-         :as   community} (rf/sub [:communities/community id])]
-    (if community
-      [community-scroll-page id joined name images]
-      [community-fetching-placeholder id])))
-
 (defn view
   [id]
-  (let [id (or id (quo.context/use-screen-params))]
+  (let [community-id    (or id (rf/sub [:get-screen-params :community-overview]))
+        community       (rf/sub [:communities/community community-id])
+        start-expanded? (not (:joined community))]
     [rn/view {:style style/community-overview-container}
-     [community-card-page-view id]]))
+     (if community
+       [community-overview community-id start-expanded?]
+       [community-fetching-placeholder community-id])]))

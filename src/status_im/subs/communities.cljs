@@ -364,6 +364,45 @@
                                            %)))])))]
      categories-and-chats)))
 
+(def ^:private channel-separator {:render-as :separator})
+
+(defn- mark-as-category
+  ([category]
+   (assoc (dissoc category :chats) :render-as :category))
+  ([category category-id]
+   (let [render-as (if (= category-id :communities/not-categorized) :nothing :category)]
+     (assoc (dissoc category :chats)
+            :render-as
+            render-as))))
+
+(defn- mark-as-channel
+  [channel]
+  (assoc channel :render-as :channel))
+
+(re-frame/reg-sub
+ :communities/flatten-channels-and-categories
+ (fn [[_ community-id]]
+   (re-frame/subscribe [:communities/categorized-channels community-id]))
+ (fn [categorized-channels [_ _community-id]]
+   (mapcat (fn [[category-id category]]
+             (when (seq (:chats category))
+               (if (:collapsed? category)
+                 [(mark-as-category category)]
+                 (concat [(mark-as-category category category-id)]
+                         (map mark-as-channel (:chats category))
+                         [channel-separator]))))
+    categorized-channels)))
+
+(re-frame/reg-sub
+ :communities
+ (fn [[_ community-id]]
+   (re-frame/subscribe [:communities/flatten-channels-and-categories community-id]))
+ (fn [flatten-channels-and-categories [_ _community-id]]
+   (keep-indexed (fn [idx {:keys [render-as]}]
+                   (when (= render-as :category)
+                     idx))
+                 flatten-channels-and-categories)))
+
 (re-frame/reg-sub
  :communities/collapsed-categories-for-community
  :<- [:communities/collapsed-categories]

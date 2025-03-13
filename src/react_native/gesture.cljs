@@ -3,6 +3,7 @@
     ["react-native-gesture-handler" :refer
      (Gesture
       GestureDetector
+      Directions
       RectButton
       Swipeable
       TouchableWithoutFeedback
@@ -13,6 +14,8 @@
     [react-native.flat-list :as rn-flat-list]
     [reagent.core :as reagent]))
 
+(def directions (js->clj Directions :keywordize-keys true))
+
 (def gesture-detector (reagent/adapt-react-class GestureDetector))
 
 (def gesture-handler-root-hoc gestureHandlerRootHOC)
@@ -21,9 +24,13 @@
 
 (defn gesture-pan [] (.Pan ^js Gesture))
 
+(defn gesture-native [] (.Native ^js Gesture))
+
 (defn gesture-long-press [] (.LongPress ^js Gesture))
 
 (defn gesture-pinch [] (.Pinch ^js Gesture))
+
+(defn gesture-fling [] (.Fling ^js Gesture))
 
 (defn on-begin [gesture handler] (.onBegin ^js gesture handler))
 
