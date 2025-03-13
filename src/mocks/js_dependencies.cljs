@@ -429,6 +429,7 @@
                                                         (slurp
                                                          "./resources/data/emojis/en.json"))
     "../src/js/worklets/core.js"                       worklet-factory
+    "../src/js/worklets/communities.js"                #js {}
     "../src/js/worklets/shell/bottom_tabs.js"          #js {}
     "../src/js/worklets/shell/home_stack.js"           #js {}
     "../src/js/worklets/bottom_sheet.js"               #js {}
