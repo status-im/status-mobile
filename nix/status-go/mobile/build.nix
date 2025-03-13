@@ -48,6 +48,9 @@ in buildGoPackage rec {
   # TODO: try removing when go is upgraded to 1.22
   GODEBUG = "netdns=cgo+2";
 
+  # https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html#index-Ofast
+  CGO_CFLAGS = "-Ofast";
+
   # Sentry for status-go
   SENTRY_CONTEXT_NAME = "status-mobile";
   SENTRY_CONTEXT_VERSION = version;
