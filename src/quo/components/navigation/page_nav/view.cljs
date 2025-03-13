@@ -87,9 +87,10 @@
 
 (defn- right-content
   [{:keys [background content max-actions min-size? support-account-switcher?
-           behind-overlay?]
-    :or   {support-account-switcher? true}}]
-  [rn/view (style/right-content min-size?)
+           behind-overlay? centered-content?]
+    :or   {support-account-switcher? true
+           centered-content?         true}}]
+  [rn/view (style/right-content min-size? centered-content?)
    (when (coll? content)
      (into [rn/view {:style style/right-actions-container}]
            (add-right-buttons-xf max-actions background behind-overlay? support-account-switcher?)
@@ -260,15 +261,15 @@
            right-side :none
            background :white}
     :as   props}]
-  (let [center-content-container-style (reanimated/apply-animations-to-style
+  (let [centered-content?              (case type
+                                         :title                       (= text-align :center)
+                                         (:dropdown :wallet-networks) true
+                                         false)
+        center-content-container-style (reanimated/apply-animations-to-style
                                         (if center-opacity
                                           {:opacity center-opacity}
                                           nil)
-                                        (style/center-content-container
-                                         (case type
-                                           :title                       (= text-align :center)
-                                           (:dropdown :wallet-networks) true
-                                           false)))
+                                        (style/center-content-container centered-content?))
         props-with-style               (assoc props
                                               :center-content-container-style
                                               center-content-container-style)]
@@ -342,6 +343,7 @@
         {:background                background
          :content                   right-side
          :max-actions               3
-         :support-account-switcher? false}]]
+         :support-account-switcher? false
+         :centered-content?         centered-content?}]]
 
       nil)))
