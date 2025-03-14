@@ -40,6 +40,7 @@
       [:on-input-focus {:optional true} [:maybe fn?]]
       [:on-token-press {:optional true} [:maybe fn?]]
       [:on-max-press {:optional true} [:maybe fn?]]
+      [:max-loading? {:optional true} [:maybe :boolean]]
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:container-style {:optional true} [:maybe :map]]]]]
    :any])
@@ -52,7 +53,7 @@
   [{:keys [type status token value fiat-value show-approval-label? error? network-tag-props
            approval-label-props default-value auto-focus? input-disabled? enable-swap?
            currency-symbol on-change-text show-keyboard? get-ref
-           container-style on-swap-press on-token-press on-max-press on-input-focus]}]
+           container-style on-swap-press on-token-press on-max-press max-loading? on-input-focus]}]
   (let [theme                        (quo.theme/use-theme)
         pay?                         (= type :pay)
         disabled?                    (= status :disabled)
@@ -172,11 +173,13 @@
        (when-not loading?
          [:<>
           (when pay?
-            [rn/pressable {:on-press on-max-press}
-             [network-tag/view
-              (assoc network-tag-props
-                     :status
-                     (if error? :error :default))]])
+            (if max-loading?
+              [rn/view {:style (style/button-loader theme)}]
+              [rn/pressable {:on-press on-max-press}
+               [network-tag/view
+                (assoc network-tag-props
+                       :status
+                       (if error? :error :default))]]))
           (when fiat-value
             [text/text
              {:size   :paragraph-2
