@@ -1,9 +1,10 @@
 (ns status-im.contexts.keycard.events
   (:require [re-frame.core :as rf]
             status-im.contexts.keycard.backup.events
-            status-im.contexts.keycard.check.events
             status-im.contexts.keycard.create.events
+            status-im.contexts.keycard.init.events
             status-im.contexts.keycard.login.events
+            status-im.contexts.keycard.manage.events
             status-im.contexts.keycard.migrate.events
             status-im.contexts.keycard.migrate.re-encrypting.events
             status-im.contexts.keycard.nfc.events
@@ -132,8 +133,9 @@
     :fx [[:dispatch [:keycard/disconnect]]
          [:dispatch
           [:open-modal
-           (if (= :keycard/error.not-keycard error)
-             :screen/keycard.not-keycard
+           (case error
+             :keycard/error.not-keycard       :screen/keycard.not-keycard
+             :keycard/error.keycard-different :screen/keycard.different-card
              :screen/keycard.error)]]]}))
 
 (rf/reg-event-fx :keycard/update-application-info
@@ -145,13 +147,15 @@
                      (dissoc :application-info-error)))}))
 
 (rf/reg-event-fx :keycard/get-application-info
- (fn [_ [{:keys [key-uid on-success on-error]}]]
+ (fn [_ [{:keys [on-success on-error instance-uid key-uid]}]]
    {:effects.keycard/get-application-info
     {:on-success (fn [app-info]
                    (rf/dispatch [:keycard/update-application-info app-info])
-                   (if-let [error (keycard.utils/validate-application-info key-uid app-info)]
+                   (if-let [error (keycard.utils/validate-application-info app-info
+                                                                           instance-uid
+                                                                           key-uid)]
                      (if on-error
-                       (on-error error)
+                       (on-error error app-info)
                        (rf/dispatch [:keycard/on-application-info-error error]))
                      (when on-success (on-success app-info))))
      :on-failure (fn [error]
@@ -161,26 +165,20 @@
                        (rf/dispatch [:keycard/on-application-info-error
                                      :keycard/error.not-keycard]))))}}))
 
-(rf/reg-event-fx :keycard/connect.next-stage
- (fn [{:keys [db]} [{:keys [key-uid on-success on-error]}]]
-   (let [event-vector [:keycard/get-application-info
-                       {:key-uid    key-uid
-                        :on-success on-success
-                        :on-error   on-error}]]
-     {:db (assoc-in db [:keycard :on-card-connected-event-vector] event-vector)
-      :fx [(when (get-in db [:keycard :card-connected?])
-             [:dispatch event-vector])]})))
-
+;; instance-uid is used if we need to know if it's the same card flow was started with
+;; key-uid is used if we want to make sure it's card with the specific profile (on login for example)
 (rf/reg-event-fx :keycard/connect
- (fn [{:keys [db]} [{:keys [key-uid on-success on-error theme]}]]
+ (fn [{:keys [db]} [{:keys [on-success on-error theme next-stage? instance-uid key-uid]}]]
    (let [event-vector [:keycard/get-application-info
-                       {:key-uid    key-uid
-                        :on-success on-success
-                        :on-error   on-error}]]
+                       {:instance-uid instance-uid
+                        :key-uid      key-uid
+                        :on-success   on-success
+                        :on-error     on-error}]]
      {:db (assoc-in db [:keycard :on-card-connected-event-vector] event-vector)
-      :fx [[:dispatch
-            [:keycard/show-connection-sheet
-             {:on-cancel-event-vector [:keycard/cancel-connection]
-              :theme                  theme}]]
+      :fx [(when-not next-stage?
+             [:dispatch
+              [:keycard/show-connection-sheet
+               {:on-cancel-event-vector [:keycard/cancel-connection]
+                :theme                  theme}]])
            (when (get-in db [:keycard :card-connected?])
              [:dispatch event-vector])]})))

@@ -92,6 +92,10 @@
  (fn [args]
    (keycard/init-card (keycard.utils/wrap-handlers args))))
 
+(rf/reg-fx :effects.keycard/generate-mnemonic
+ (fn [args]
+   (keycard/generate-mnemonic (keycard.utils/wrap-handlers args))))
+
 (rf/reg-fx :effects.keycard/generate-and-load-key
  (fn [args]
    (keycard/generate-and-load-key (keycard.utils/wrap-handlers args))))

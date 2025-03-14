@@ -88,3 +88,10 @@
 
 (def gradient-end
   (assoc gradient-common :right 0))
+
+(defn button-loader
+  [theme]
+  {:width            100
+   :height           24
+   :border-radius    6
+   :background-color (loader-color theme)})

@@ -1,22 +1,62 @@
 (ns status-im.contexts.keycard.create.events
   (:require [clojure.string :as string]
-            [status-im.common.resources :as resources]
-            [utils.i18n :as i18n]
+            [legacy.status-im.ethereum.mnemonic :as mnemonic]
             [utils.re-frame :as rf]
             [utils.security.core :as security]))
 
-(rf/reg-event-fx :keycard/create.check-empty-card
- (fn [_]
-   {:fx [[:dispatch
-          [:keycard/connect
-           {:theme :dark
-            :on-error
-            (fn [error]
-              (if (= error :keycard/error.keycard-empty)
-                (do
-                  (rf/dispatch [:keycard/disconnect])
-                  (rf/dispatch [:open-modal :screen/keycard.empty-create]))
-                (rf/dispatch [:keycard/on-application-info-error error])))}]]]}))
+(rf/reg-event-fx :keycard/create.generate-and-load-keys
+ (fn [{:keys [db]} [{:keys [has-master-key?]}]]
+   (let [{:keys [masked-phrase masked-pin
+                 instance-uid]} (get-in db [:keycard :create])
+         pin                    (security/safe-unmask-data masked-pin)]
+     (if has-master-key?
+       {:fx [[:effects.keycard/get-more-keys
+              {:pin        pin
+               :on-success #(rf/dispatch [:keycard.login/recover-profile-and-login %])
+               :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error %])}]]}
+       {:fx [[:effects.keycard/generate-and-load-key
+              {:mnemonic   (security/safe-unmask-data masked-phrase)
+               :pin        pin
+               :on-success (fn []
+                             (rf/dispatch [:keycard/connect
+                                           {:next-stage?  true
+                                            :instance-uid instance-uid
+                                            :on-success   #(rf/dispatch
+                                                            [:keycard/create.generate-and-load-keys
+                                                             %])}]))
+               :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error %])}]]}))))
+
+;; STEP 3: connect and load keys
+(rf/reg-event-fx :keycard/create.connect-and-load-keys
+ (fn [{:keys [db]}]
+   (let [{:keys [instance-uid]} (get-in db [:keycard :create])]
+     {:fx [[:dispatch
+            [:keycard/connect
+             {:theme :dark
+              :instance-uid instance-uid
+              :on-success
+              #(rf/dispatch [:keycard/create.generate-and-load-keys %])}]]]})))
+
+(rf/reg-event-fx :keycard/create.seed-phrase-entered
+ (fn [{:keys [db]} [masked-seed-phrase]]
+   {:db (assoc-in db [:keycard :create :masked-phrase] masked-seed-phrase)
+    :fx [[:dispatch [:navigate-back]]
+         [:dispatch
+          [:open-modal :screen/keycard.create.ready-to-add
+           {:on-continue #(rf/dispatch [:keycard/create.connect-and-load-keys])}]]]}))
+
+(rf/reg-event-fx :keycard/create.phrase-backed-up
+ (fn [{:keys [db]} [masked-phrase-vector]]
+   {:db (assoc-in db
+         [:keycard :create :masked-phrase]
+         (->> masked-phrase-vector
+              security/safe-unmask-data
+              (string/join " ")
+              security/mask-data))
+    :fx [[:dispatch [:navigate-back]]
+         [:dispatch
+          [:open-modal :screen/keycard.create.ready-to-add
+           {:on-continue #(rf/dispatch [:keycard/create.connect-and-load-keys])}]]]}))
 
 (defn- backup-recovery-phrase-success
   [masked-seed-phrase]
@@ -35,102 +75,81 @@
                  :on-success         #(rf/dispatch [:keycard/create.phrase-backed-up
                                                     masked-seed-phrase])}]))
 
-(rf/reg-event-fx :keycard/create.get-phrase
+(rf/reg-event-fx :keycard/create.generate-phrase
+ (fn []
+   {:effects.keycard/generate-mnemonic
+    {:words      (string/join "\n" mnemonic/dictionary)
+     :on-success (fn [phrase]
+                   (rf/dispatch [:keycard/disconnect])
+                   (rf/dispatch [:navigate-back])
+                   (rf/dispatch [:open-modal :screen/backup-recovery-phrase-dark
+                                 {:on-success         backup-recovery-phrase-success
+                                  :masked-seed-phrase (security/mask-data phrase)}]))}}))
+
+;; STEP 2: connect and generate mnemonic
+(rf/reg-event-fx :keycard/create.connect-and-generate-phrase
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:keycard :create] nil)
-    :fx [[:dispatch [:navigate-back]]
-         [:dispatch
-          [:open-modal :screen/backup-recovery-phrase-dark
-           {:on-success backup-recovery-phrase-success}]]]}))
-
-(rf/reg-event-fx :keycard/create.phrase-backed-up
- (fn [{:keys [db]} [masked-phrase-vector]]
-   {:db (assoc-in db
-         [:keycard :create :masked-phrase]
-         (->> masked-phrase-vector
-              security/safe-unmask-data
-              (string/join " ")
-              security/mask-data))
-    :fx [[:dispatch
-          [:keycard/create.create-or-enter-pin
-           {:ready-to-add-screen-title (i18n/label :t/ready-add-keypair-keycard)
-            :ready-to-add-screen-image (resources/get-image :add-key-to-keycard)}]]]}))
-
-(rf/reg-event-fx :keycard/create.create-or-enter-pin
- (fn [{:keys [db]} [{:keys [ready-to-add-screen-title ready-to-add-screen-image]}]]
-   (let [{:keys [initialized?]} (get-in db [:keycard :application-info])]
-     {:fx [[:dispatch [:navigate-back]]
-           (if initialized?
-             [:dispatch
-              [:open-modal :screen/keycard.pin.enter
-               {:on-complete (fn [new-pin]
-                               (rf/dispatch [:keycard/create.save-pin new-pin])
-                               (rf/dispatch [:keycard/create.start]))}]]
-             [:dispatch
-              [:open-modal :screen/keycard.pin.create
-               {:on-complete (fn [new-pin]
-                               (rf/dispatch [:navigate-back])
-                               (rf/dispatch [:keycard/create.save-pin new-pin])
-                               (rf/dispatch [:open-modal :screen/keycard.create.ready-to-add
-                                             {:title ready-to-add-screen-title
-                                              :image ready-to-add-screen-image}]))}]])]})))
-
-(rf/reg-event-fx :keycard/create.save-pin
- (fn [{:keys [db]} [pin]]
-   {:db (assoc-in db [:keycard :create :pin] pin)}))
-
-(rf/reg-event-fx :keycard/create.on-application-info-error
- (fn [{:keys [db]} [error]]
-   (if (or (= error :keycard/error.keycard-empty)
-           (and (get-in db [:keycard :application-info :initialized?])
-                (= error :keycard/error.keycard-wrong-profile)))
-     (rf/dispatch [:keycard/create.continue])
-     (rf/dispatch [:keycard/on-application-info-error error]))))
-
-(rf/reg-event-fx :keycard/create.start
- (fn [_]
    {:fx [[:dispatch
           [:keycard/connect
-           {:theme    :dark
-            :on-error #(rf/dispatch [:keycard/create.on-application-info-error %])}]]]}))
+           {:theme        :dark
+            :instance-uid (get-in db [:keycard :create :instance-uid])
+            :on-success   #(rf/dispatch [:keycard/create.generate-phrase])}]]]}))
 
-(defn get-application-info-and-continue
-  []
-  (rf/dispatch [:keycard/get-application-info
-                {:on-success #(rf/dispatch [:keycard/create.continue])
-                 :on-error   #(rf/dispatch [:keycard/create.on-application-info-error %])}]))
+(rf/reg-event-fx :keycard/create.save-instance-uid-and-pin
+ (fn [{:keys [db]} [masked-pin]]
+   {:db (-> db
+            (assoc-in [:keycard :create :masked-pin] masked-pin)
+            (assoc-in [:keycard :create :instance-uid]
+                      (get-in db [:keycard :application-info :instance-uid])))}))
 
-(rf/reg-event-fx :keycard/create.continue
+(defn- save-pin-and-navigate-to-phrase
+  [pin create?]
+  (rf/dispatch [:keycard/disconnect])
+  (rf/dispatch [:navigate-back])
+  (rf/dispatch [:keycard/create.save-instance-uid-and-pin (security/mask-data pin)])
+  (if create?
+    (rf/dispatch
+     [:open-modal :screen/keycard.create.ready-to-generate
+      {:on-continue #(rf/dispatch [:keycard/create.connect-and-generate-phrase])}])
+    (rf/dispatch
+     [:open-modal :screen/use-recovery-phrase-dark
+      {:on-success (fn [{:keys [phrase]}]
+                     (rf/dispatch [:keycard/create.seed-phrase-entered phrase]))}])))
+
+(rf/reg-event-fx :keycard/create.open-empty
+ (fn []
+   {:fx [[:dispatch
+          [:open-modal :screen/keycard.create.empty
+           {:on-create
+            (fn []
+              (rf/dispatch [:navigate-back])
+              (rf/dispatch [:keycard/init.create-or-enter-pin
+                            {:on-success #(save-pin-and-navigate-to-phrase % true)}]))
+            :on-import
+            (fn []
+              (rf/dispatch [:navigate-back])
+              (rf/dispatch [:keycard/init.create-or-enter-pin
+                            {:on-success #(save-pin-and-navigate-to-phrase % false)}]))}]]]}))
+
+(defn- on-login
+  [db key-uid]
+  (rf/dispatch [:navigate-back])
+  (if (contains? (:profile/profiles-overview db) key-uid)
+    (rf/dispatch [:open-modal :screen/keycard.login.already-added])
+    (rf/dispatch [:open-modal :screen/keycard.pin.enter
+                  {:on-complete
+                   #(rf/dispatch [:keycard.login/prepare-for-profile-recovery %])}])))
+
+;; STEP 1: connect empty keycard
+(rf/reg-event-fx :keycard/create.check-empty-card
  (fn [{:keys [db]}]
-   (let [{:keys [initialized? has-master-key?]} (get-in db [:keycard :application-info])
-         {:keys [masked-phrase pin]}            (get-in db [:keycard :create])]
-
-     (cond
-
-       (not initialized?)
-       {:fx [[:effects.keycard/init-card
-              {:pin        pin
-               :on-success get-application-info-and-continue}]]}
-
-       (not has-master-key?)
-       {:fx [[:effects.keycard/generate-and-load-key
-              {:mnemonic   (security/safe-unmask-data masked-phrase)
-               :pin        pin
-               :on-success get-application-info-and-continue
-               :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error %])}]]}
-
-       :else
-       {:fx [[:effects.keycard/get-more-keys
-              {:pin        pin
-               :on-success #(rf/dispatch [:keycard.login/recover-profile-and-login %])
-               :on-failure #(rf/dispatch [:keycard/on-action-with-pin-error %])}]]}))))
-
-(rf/reg-event-fx :keycard/create.seed-phrase-entered
- (fn [{:keys [db]} [key-uid masked-seed-phrase]]
-   (if (contains? (:profile/profiles-overview db) key-uid)
-     {:fx [[:dispatch [:onboarding/multiaccount-already-exists key-uid]]]}
-     {:db (assoc-in db [:keycard :create :masked-phrase] masked-seed-phrase)
-      :fx [[:dispatch
-            [:keycard/create.create-or-enter-pin
-             {:ready-to-add-screen-title (i18n/label :t/ready-to-import-keypair-keycard)
-              :ready-to-add-screen-image (resources/get-image :import-key-to-keycard)}]]]})))
+   {:fx [[:dispatch
+          [:keycard/connect
+           {:theme :dark
+            :on-success
+            (fn [{:keys [has-master-key? key-uid]}]
+              (rf/dispatch [:keycard/disconnect])
+              (if has-master-key?
+                (rf/dispatch [:open-modal :screen/keycard.create.not-empty
+                              {:on-login #(on-login db key-uid)}])
+                (rf/dispatch [:keycard/create.open-empty])))}]]]}))

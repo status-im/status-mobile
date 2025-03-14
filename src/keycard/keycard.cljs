@@ -145,6 +145,13 @@
         (then on-success)
         (catch on-failure))))
 
+(defn generate-mnemonic
+  [{:keys [words on-success on-failure]}]
+  (.. status-keycard
+      (generateMnemonic words)
+      (then on-success)
+      (catch on-failure)))
+
 (defn generate-and-load-key
   [{:keys [mnemonic pin on-success on-failure]}]
   (.. status-keycard

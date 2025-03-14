@@ -72,3 +72,9 @@
                              string/lower-case
                              keyword)]
     (get updated-prices token-symbol 0)))
+
+(defn default-asset-to-receive
+  [pay-token-symbol]
+  (cond (= pay-token-symbol "SNT") "ETH"
+        (= pay-token-symbol "ETH") "USDC"
+        :else                      "SNT"))

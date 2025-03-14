@@ -5,6 +5,7 @@
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.swap.select-asset-to-pay.style :as style]
+    [status-im.contexts.wallet.swap.utils :as swap-utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -20,11 +21,11 @@
 
 (defn- assets-view
   [search-text on-change-text]
-  (let [snt-token      (rf/sub [:wallet/token-by-symbol "SNT"])
-        eth-token      (rf/sub [:wallet/token-by-symbol "ETH"])
-        on-token-press (fn [token]
+  (let [on-token-press (fn [token]
                          (let [pay-token-symbol (:symbol token)
-                               asset-to-receive (if (= pay-token-symbol "SNT") eth-token snt-token)]
+                               asset-to-receive (rf/sub [:wallet/token-by-symbol
+                                                         (swap-utils/default-asset-to-receive
+                                                          pay-token-symbol)])]
                            (rf/dispatch [:wallet.swap/start
                                          {:asset-to-pay     {:symbol pay-token-symbol}
                                           :asset-to-receive asset-to-receive

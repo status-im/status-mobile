@@ -24,6 +24,8 @@
       :title               (i18n/label :t/get-keycard)
       :subtitle            (i18n/label :t/secure-wallet-card)
       :button-label        (i18n/label :t/buy-keycard)
+      :button-props        {:type       :primary
+                            :icon-right :i/external}
       :accessibility-label :get-keycard
       :image               (resources/get-image :keycard-buy)
       :on-press            #(rf/dispatch [:browser.ui/open-url constants/get-keycard-url])}]
@@ -43,4 +45,4 @@
       :on-press            (fn []
                              (rf/dispatch [:open-modal :screen/keycard.check
                                            {:on-press
-                                            #(rf/dispatch [:keycard/check-empty-card])}]))}]]])
+                                            #(rf/dispatch [:keycard/manage.check-card])}]))}]]])

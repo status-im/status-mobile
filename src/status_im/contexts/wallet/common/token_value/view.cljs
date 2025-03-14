@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
+            [status-im.contexts.wallet.swap.utils :as swap-utils]
             [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.money :as money]
@@ -78,34 +79,34 @@
 
 (defn token-value-drawer
   [token watch-only? entry-point]
-  (let [token-symbol         (:token token)
-        token-data           (rf/sub [:wallet/token-by-symbol-from-first-available-account-with-balance
-                                      token-symbol])
-        selected-account     (rf/sub [:wallet/current-viewing-account-address])
-        token-owners         (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
-        testnet-mode?        (rf/sub [:profile/test-networks-enabled?])
-        account-owns-token?  (rf/sub [:wallet/current-account-owns-token token-symbol])
-        network-details      (rf/sub [:wallet/network-details])
-        receive-token-symbol (if (= token-symbol "SNT") "ETH" "SNT")
-        token-owned?         (if selected-account account-owns-token? (seq token-owners))
-        asset-to-receive     (rf/sub [:wallet/token-by-symbol receive-token-symbol])
-        unique-owner?        (= (count token-owners) 1)
-        params               (cond-> {:start-flow?   true
-                                      :owners        token-owners
-                                      :testnet-mode? testnet-mode?}
-                               selected-account
-                               (assoc :token        token-data
-                                      :stack-id     :screen/wallet.accounts
-                                      :has-balance? (-> (get-in token [:values :fiat-unformatted-value])
-                                                        money/above-zero?))
-                               (and (not selected-account) unique-owner?)
-                               (assoc :token-symbol token-symbol
-                                      :token        token-data
-                                      :stack-id     :wallet-stack)
+  (let [token-symbol        (:token token)
+        token-data          (rf/sub [:wallet/token-by-symbol-from-first-available-account-with-balance
+                                     token-symbol])
+        selected-account    (rf/sub [:wallet/current-viewing-account-address])
+        token-owners        (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
+        testnet-mode?       (rf/sub [:profile/test-networks-enabled?])
+        account-owns-token? (rf/sub [:wallet/current-account-owns-token token-symbol])
+        network-details     (rf/sub [:wallet/network-details])
+        token-owned?        (if selected-account account-owns-token? (seq token-owners))
+        asset-to-receive    (rf/sub [:wallet/token-by-symbol-from-first-available-account-with-balance
+                                     (swap-utils/default-asset-to-receive token-symbol)])
+        unique-owner?       (= (count token-owners) 1)
+        params              (cond-> {:start-flow?   true
+                                     :owners        token-owners
+                                     :testnet-mode? testnet-mode?}
+                              selected-account
+                              (assoc :token        token-data
+                                     :stack-id     :screen/wallet.accounts
+                                     :has-balance? (-> (get-in token [:values :fiat-unformatted-value])
+                                                       money/above-zero?))
+                              (and (not selected-account) unique-owner?)
+                              (assoc :token-symbol token-symbol
+                                     :token        token-data
+                                     :stack-id     :wallet-stack)
 
-                               (and (not selected-account) (not unique-owner?))
-                               (assoc :token-symbol token-symbol
-                                      :stack-id     :wallet-stack))]
+                              (and (not selected-account) (not unique-owner?))
+                              (assoc :token-symbol token-symbol
+                                     :stack-id     :wallet-stack))]
     [quo/action-drawer
      [(cond->> [(when (ff/enabled? ::ff/wallet.assets-modal-manage-tokens)
                   (action-manage-tokens watch-only?))

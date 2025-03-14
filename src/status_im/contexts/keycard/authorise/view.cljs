@@ -2,6 +2,7 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
+            [status-im.common.resources :as resources]
             [status-im.common.standard-authentication.core :as standard-auth]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -22,8 +23,12 @@
        :context-tag {:full-name           profile-name
                      :profile-picture     profile-picture
                      :customization-color customization-color}}]
-     [rn/view {:style {:flex 1 :padding-horizontal 20 :justify-content :space-between}}
+     [rn/view {:style {:flex 1 :padding-horizontal 20}}
       [quo/text (i18n/label :t/migrate-key-pair-authorise)]
+      [rn/image
+       {:resize-mode :contain
+        :style       {:flex 1 :width (- (:width (rn/get-window)) 40)}
+        :source      (resources/get-image :keycard-migration)}]
       [standard-auth/slide-auth
        {:size                :size-48
         :container-style     {}

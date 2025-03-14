@@ -10,22 +10,28 @@
   []
   (rf/dispatch
    [:keycard/factory-reset
-    {:on-success (fn []
-                   (rf/dispatch [:navigate-back])
-                   (rf/dispatch [:keycard/disconnect])
-                   (rf/dispatch [:open-modal :screen/keycard.factory-reset.success]))
-     :on-failure (fn []
-                   (rf/dispatch [:navigate-back])
-                   (rf/dispatch [:keycard/disconnect])
-                   (rf/dispatch [:open-modal :screen/keycard.factory-reset.fail]))}]))
+    {:on-success
+     (fn []
+       (rf/dispatch [:navigate-back])
+       (rf/dispatch [:keycard/disconnect])
+       (rf/dispatch [:open-modal :screen/keycard.factory-reset.success]))
+     :on-failure
+     (fn []
+       (rf/dispatch [:navigate-back])
+       (rf/dispatch [:keycard/disconnect])
+       (rf/dispatch [:open-modal :screen/keycard.factory-reset.fail]))}]))
 
 (defn- connect-and-reset
   [key-uid]
   (rf/dispatch
    [:keycard/connect
     {:theme      :dark
-     :key-uid    key-uid
-     :on-success reset-card
+     :on-success (fn [{:keys [initialized?] :as app-info}]
+                   (if (and initialized? (= key-uid (:key-uid app-info)))
+                     (reset-card)
+                     (do
+                       (rf/dispatch [:keycard/disconnect])
+                       (rf/dispatch [:open-modal :screen/keycard.different-card]))))
      :on-error   (fn [error]
                    (if (or (= error :keycard/error.keycard-frozen)
                            (= error :keycard/error.keycard-locked)
@@ -33,11 +39,7 @@
                      (reset-card)
                      (do
                        (rf/dispatch [:navigate-back])
-                       (if (= error :keycard/error.keycard-wrong-profile)
-                         (do
-                           (rf/dispatch [:keycard/disconnect])
-                           (rf/dispatch [:open-modal :screen/keycard.different-card]))
-                         (rf/dispatch [:keycard/on-application-info-error error])))))}]))
+                       (rf/dispatch [:keycard/on-application-info-error error]))))}]))
 
 (defn success-view
   []
