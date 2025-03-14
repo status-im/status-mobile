@@ -4,6 +4,7 @@
             [status-im.common.events-helper :as events-helper]
             [status-im.contexts.keycard.backup.view :as backup.view]
             [status-im.contexts.keycard.change-pin.view :as change-pin.view]
+            [status-im.contexts.keycard.factory-reset.view :as factory-reset]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -13,8 +14,7 @@
    {:on-continue
     (fn []
       (rf/dispatch [:navigate-back])
-      (rf/dispatch
-       [:open-modal :screen/keycard.backup.scan-empty]))}])
+      (rf/dispatch [:open-modal :screen/keycard.backup.scan-empty]))}])
 
 (defn view
   []
@@ -44,13 +44,26 @@
                                             :shell?  true
                                             :content change-pin.view/change-pin-confirmation-sheet}]))}]
       [quo/settings-item
+       {:title             (i18n/label :t/factory-reset)
+        :image             :icon
+        :blur?             true
+        :image-props       :i/placeholder
+        :action            :arrow
+        :description       :text
+        :description-props {:text (i18n/label :t/remove-keycard-content)}
+        :on-press          (fn []
+                             (rf/dispatch [:show-bottom-sheet
+                                           {:theme   :dark
+                                            :shell?  true
+                                            :content factory-reset/sheet}]))}]
+      [quo/settings-item
        {:title             (i18n/label :t/backup-keycard)
         :image             :icon
         :blur?             true
         :image-props       :i/keycard
         :action            :arrow
         :description       :text
-        :description-props {:text (i18n/label :t/create-backup-profile-keycard)}
+        :description-props {:text (i18n/label :t/copy-keycard)}
         :on-press          (fn []
                              (rf/dispatch [:show-bottom-sheet
                                            {:theme   :dark

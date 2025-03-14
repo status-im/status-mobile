@@ -20,15 +20,16 @@
    (re-matches #".*NFCError:100.*" error)))
 
 (defn validate-application-info
-  [profile-key-uid
-   {:keys [key-uid has-master-key? paired? pin-retry-counter puk-retry-counter] :as application-info}]
+  [{:keys [has-master-key? paired? pin-retry-counter puk-retry-counter] :as application-info}
+   instance-uid key-uid]
 
   (cond
     (empty? application-info)
     :keycard/error.not-keycard
 
-    (not has-master-key?)
-    :keycard/error.keycard-empty
+    (or (and instance-uid (not= (:instance-uid application-info) instance-uid))
+        (and key-uid (not= (:key-uid application-info) key-uid)))
+    :keycard/error.keycard-different
 
     (and (zero? pin-retry-counter)
          (or (nil? puk-retry-counter)
@@ -38,11 +39,11 @@
     (zero? puk-retry-counter)
     :keycard/error.keycard-locked
 
+    (not has-master-key?)
+    nil
+
     (not paired?)
     :keycard/error.keycard-unpaired
-
-    (not= profile-key-uid key-uid)
-    :keycard/error.keycard-wrong-profile
 
     :else
     nil))

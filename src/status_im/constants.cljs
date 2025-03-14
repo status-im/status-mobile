@@ -493,10 +493,16 @@
 
 (def ^:const token-for-fees-symbol "ETH")
 
+;; The 15% buffer accounts for Ethereum's EIP-1559 fee mechanism, where the base fee can increase
+;; by up to 12.5% per block in periods of high congestion. The extra 2.5% provides additional
+;; safety to prevent failed transactions due to rapid gas price fluctuations.
+(def ^:const eth-max-fee-buffer-percent 15)
+
 (def ^:const transaction-status-success "Success")
 (def ^:const transaction-status-pending "Pending")
 (def ^:const transaction-status-failed "Failed")
 
+(def ^:const eth-send-amount-decimal 4)
 (def ^:const min-token-decimals-to-display 6)
 (def ^:const swap-proposal-refresh-interval-ms 15000)
 

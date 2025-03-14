@@ -40,19 +40,20 @@
                :key-uid             key-uid}]]}))))
 
 (rf/reg-event-fx :keycard.login/check-card
- (fn []
+ (fn [{:keys [db]}]
    {:fx [[:dispatch
           [:keycard/connect
            {:theme :dark
-            :on-error
-            (fn [error]
-              (if (= error :keycard/error.keycard-wrong-profile)
-                (do
-                  (rf/dispatch [:keycard/disconnect])
+            :on-success
+            (fn [{:keys [has-master-key? key-uid]}]
+              (rf/dispatch [:keycard/disconnect])
+              (if has-master-key?
+                (if (contains? (:profile/profiles-overview db) key-uid)
+                  (rf/dispatch [:open-modal :screen/keycard.login.already-added])
                   (rf/dispatch [:open-modal :screen/keycard.pin.enter
                                 {:on-complete #(rf/dispatch [:keycard.login/prepare-for-profile-recovery
                                                              %])}]))
-                (rf/dispatch [:keycard/on-application-info-error error])))}]]]}))
+                (rf/dispatch [:open-modal :screen/keycard.login.empty])))}]]]}))
 
 (rf/reg-event-fx :keycard.login/prepare-for-profile-recovery
  (fn [{:keys [db]} [pin]]
