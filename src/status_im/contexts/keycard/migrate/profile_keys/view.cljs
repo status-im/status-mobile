@@ -22,6 +22,7 @@
     [quo/settings-item
      {:title             (i18n/label :t/finalise-migration)
       :image             :icon
+      :blur?             true
       :image-props       :i/profile
       :action            :arrow
       :description       :text

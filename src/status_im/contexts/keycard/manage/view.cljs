@@ -58,6 +58,7 @@
     [quo/settings-item
      {:title             (i18n/label :t/use-backup-keycard)
       :image             :icon
+      :blur?             true
       :image-props       :i/placeholder
       :action            :arrow
       :description       :text
@@ -83,6 +84,7 @@
     [quo/settings-item
      {:title             (i18n/label :t/logout-login-keycard)
       :image             :icon
+      :blur?             true
       :image-props       :i/profile
       :action            :arrow
       :description       :text
@@ -93,6 +95,7 @@
     [quo/settings-item
      {:title             (i18n/label :t/factory-reset)
       :image             :icon
+      :blur?             true
       :image-props       :i/placeholder
       :action            :arrow
       :description       :text

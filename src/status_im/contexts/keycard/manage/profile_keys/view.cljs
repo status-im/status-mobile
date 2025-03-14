@@ -46,6 +46,7 @@
       [quo/settings-item
        {:title             (i18n/label :t/factory-reset)
         :image             :icon
+        :blur?             true
         :image-props       :i/placeholder
         :action            :arrow
         :description       :text
@@ -62,7 +63,7 @@
         :image-props       :i/keycard
         :action            :arrow
         :description       :text
-        :description-props {:text (i18n/label :t/create-backup-profile-keycard)}
+        :description-props {:text (i18n/label :t/copy-keycard)}
         :on-press          (fn []
                              (rf/dispatch [:show-bottom-sheet
                                            {:theme   :dark

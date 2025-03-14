@@ -38,6 +38,7 @@
           [quo/settings-item
            {:title             (i18n/label :t/unblock-keycard)
             :image             :icon
+            :blur?             true
             :image-props       :i/placeholder
             :action            :arrow
             :description       :text
@@ -48,6 +49,7 @@
         [quo/settings-item
          {:title             (i18n/label :t/factory-reset)
           :image             :icon
+          :blur?             true
           :image-props       :i/placeholder
           :action            :arrow
           :description       :text

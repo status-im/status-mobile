@@ -23,6 +23,7 @@
     [quo/settings-item
      {:title             (i18n/label :t/create-new-profile)
       :image             :icon
+      :blur?             true
       :image-props       :i/placeholder
       :action            :arrow
       :description       :text
