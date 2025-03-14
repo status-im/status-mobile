@@ -247,9 +247,23 @@
    :v (subs signature 128 130)})
 
 (defn path-identity
-  [path]
-  {:routerInputParamsUuid (:router-input-params-uuid path)
-   :pathName              (:bridge-name path)
-   :chainID               (get-in path [:from :chain-id])
-   :isApprovalTx          (:approval-required path)
-   :communityID           nil})
+  ([path]
+   (path-identity path (:approval-required path)))
+  ([path is-approval-tx?]
+   {:routerInputParamsUuid (:router-input-params-uuid path)
+    :pathName              (:bridge-name path)
+    :chainID               (get-in path [:from :chain-id])
+    :isApprovalTx          is-approval-tx?
+    :communityID           nil}))
+
+(defn path-tx-custom-params
+  [user-tx-settings route]
+  (let [nonce        (or (:nonce user-tx-settings) (:nonce route))
+        gas-amount   (or (:gas-amount user-tx-settings) (:gas-amount route))
+        priority-fee (or (:priority-fee user-tx-settings) (get-in route [:gas-fees :tx-priority-fee]))
+        max-base-fee (or (:max-base-fee user-tx-settings) (get-in route [:gas-fees :base-fee]))]
+    {:gasFeeMode    constants/gas-rate-custom
+     :nonce         nonce
+     :gasAmount     gas-amount
+     :maxFeesPerGas (money/to-hex (money/->wei :gwei (money/add max-base-fee priority-fee)))
+     :priorityFee   (money/to-hex (money/->wei :gwei priority-fee))}))

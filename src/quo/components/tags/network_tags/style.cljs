@@ -6,16 +6,27 @@
   [{:keys [status theme blur?]}]
   {:flex-direction   :row
    :align-self       :flex-start
-   :background-color (when (= status :error)
-                       (colors/theme-colors
-                        (colors/override-color :danger 10 50)
-                        (colors/override-color :danger 10 60)
-                        theme))
+   :background-color (cond (= status :error)
+                           (colors/theme-colors
+                            (colors/override-color :danger 10 50)
+                            (colors/override-color :danger 10 60)
+                            theme)
+                           (= status :warning)
+                           (colors/theme-colors
+                            (colors/override-color :warning 10 50)
+                            (colors/override-color :warning 10 60)
+                            theme))
    :border-width     1
    :border-color     (cond (= status :error)
                            (colors/theme-colors
                             (colors/override-color :danger 20 50)
                             (colors/override-color :danger 20 60)
+                            theme)
+
+                           (= status :warning)
+                           (colors/theme-colors
+                            (colors/override-color :warning 20 50)
+                            (colors/override-color :warning 20 60)
                             theme)
                            (and blur? (= status :default)) (colors/theme-colors
                                                             colors/neutral-80-opa-5
@@ -35,5 +46,7 @@
   [{:keys [status theme networks-shown?]}]
   {:padding-left (if networks-shown? 4 0)
    :margin-top   -1
-   :color        (when (= status :error)
-                   (colors/resolve-color :danger theme))})
+   :color        (cond (= status :error)
+                       (colors/resolve-color :danger theme)
+                       (= status :warning)
+                       (colors/resolve-color :warning theme))})
