@@ -6,8 +6,7 @@
     [status-im.contexts.wallet.common.utils :as common-utils]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.money :as money]
-    [utils.number :as number]
-    [status-im.contexts.chat.contacts.drawers.nickname-drawer.view :as nickname-drawer]))
+    [utils.number :as number]))
 
 (rf/reg-sub
  :wallet/send-tab
@@ -168,7 +167,6 @@
              (when
                (= (:chain-id network) bridge-to-chain-id)
                network))
-
            networks))))
 
 (rf/reg-sub
@@ -207,26 +205,6 @@
      {:crypto (str crypto-formatted " " (:symbol token))
       :fiat   fiat-formatted})))
 
-(comment
-
-
-  (first nil)
-  {:wallet
-   {:send
-    :user-fee-mode
-    nil
-    {:user-tx-settings
-     {:max-base-fee             nil
-      :priority-fee             nil
-      :nonce                    nil
-      :gas-amount               nil
-      :delete-on-routes-update? nil}
-    }}}
-  (rf/dispatch [:navigate-back])
-)
-
-;;;;;
-
 (rf/reg-sub
  :wallet/user-fee-mode-settings
  :<- [:wallet/wallet-send]
@@ -257,8 +235,6 @@
  :<- [:wallet/user-tx-settings]
  :-> :gas-amount)
 
-;;;;;
-
 (rf/reg-sub
  :wallet/tx-settings-gas-fees
  :<- [:wallet/send-route]
@@ -277,8 +253,6 @@
  :<- [:wallet/send-route]
  (fn [route]
    (:gas-amount (first route))))
-
-;;;;; 
 
 (rf/reg-sub
  :wallet/tx-settings-fee-mode

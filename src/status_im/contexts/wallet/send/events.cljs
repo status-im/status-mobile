@@ -92,8 +92,8 @@
                        :receiver-network-values   receiver-network-values
                        :network-links             network-links
                        :loading-suggested-routes? false
-                       :enough-assets?            true)
-        :fx [#_[:dispatch [:wallet/clear-user-tx-settings]]]}))))
+                       :enough-assets?            true)}))))
+
 
 (rf/reg-event-fx
  :wallet/suggested-routes-error
@@ -844,11 +844,6 @@
             :always             (update-in [:wallet :ui :send] dissoc :amount :route)
             (not keep-tx-data?) (update-in [:wallet :ui :send] dissoc :tx-type))
       :fx [[:dispatch [:navigate-back]]]})))
-
-(rf/reg-event-fx
- :wallet/clear-user-tx-settings
- (fn [{db :db}]
-   {:db (update-in db [:wallet :ui :send] dissoc :user-tx-settings)}))
 
 (rf/reg-event-fx
  :wallet/set-max-base-fee
