@@ -1,9 +1,7 @@
-(ns react-native.utils-test
+(ns reagent.config-test
   (:require
     [cljs.test :refer [deftest is testing]]
-    [utils.reagent :as sut]))
-
-(sut/set-convert-props-in-vectors! #{:foo :bar :foo-bar-qux})
+    [reagent.config :as sut]))
 
 (deftest convert-prop-value-test
   ;; `test-fn` transforms the result to be easily compared during testing

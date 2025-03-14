@@ -1,8 +1,9 @@
-(ns utils.reagent
-  (:require [reagent.impl.template :as template]
+(ns reagent.config
+  (:require [goog.object :as gobj]
+            [reagent.core]
+            [reagent.impl.template :as template]
             [reagent.impl.util :as reagent.util]
-            [utils.transforms :as transforms]
-            [goog.object :as gobj]))
+            [utils.transforms :as transforms]))
 
 (def ^:dynamic ^js *keys-to-convert* #js{})
 
@@ -46,3 +47,8 @@
                                   #js{}
                                   keys-to-convert))
   (set! template/convert-prop-value convert-prop-value))
+
+;; Config applied for all the app
+(def functional-compiler (reagent.core/create-compiler {:function-components true}))
+(reagent.core/set-default-compiler! functional-compiler)
+(set-convert-props-in-vectors! #{:style :holes})
