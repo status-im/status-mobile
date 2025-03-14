@@ -3,6 +3,8 @@
     [cljs.test :refer [deftest is testing]]
     [reagent.config :as sut]))
 
+(sut/set-convert-props-in-vectors! #{:foo :bar :foo-bar-qux})
+
 (deftest convert-prop-value-test
   ;; `test-fn` transforms the result to be easily compared during testing
   (let [test-fn (comp js->clj sut/convert-prop-value)]
