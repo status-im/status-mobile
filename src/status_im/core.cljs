@@ -36,7 +36,7 @@
 (set! batching/fake-raf #(js/setTimeout % 0))
 (def functional-compiler (reagent.core/create-compiler {:function-components true}))
 (reagent.core/set-default-compiler! functional-compiler)
-(utils.reagent/set-convert-props-in-vectors!)
+(utils.reagent/set-convert-props-in-vectors! #{:style :holes})
 
 (def adjust-resize 16)
 
