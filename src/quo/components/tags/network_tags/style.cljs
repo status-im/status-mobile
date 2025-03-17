@@ -2,8 +2,17 @@
   (:require
     [quo.foundations.colors :as colors]))
 
+(defn default-border-colors
+  [theme]
+  (colors/theme-colors
+   colors/neutral-20
+   colors/neutral-80
+   theme))
+
 (defn container
   [{:keys [status theme blur?]}]
+  (tap> {:in     :container
+         :status status})
   {:flex-direction   :row
    :align-self       :flex-start
    :background-color (condp = status
@@ -14,7 +23,8 @@
                        :warning (colors/theme-colors
                                  (colors/override-color :warning 10 50)
                                  (colors/override-color :warning 10 60)
-                                 theme))
+                                 theme)
+                       nil)
    :border-width     1
    :border-color     (condp = status
                        :error   (colors/theme-colors
@@ -32,10 +42,8 @@
                                    colors/neutral-80-opa-5
                                    colors/white-opa-5
                                    theme)
-                                  (colors/theme-colors
-                                   colors/neutral-20
-                                   colors/neutral-80
-                                   theme)))
+                                  (default-border-colors theme))
+                       (default-border-colors theme))
    :border-radius    8
    :padding-left     5
    :padding-right    5
@@ -48,4 +56,5 @@
    :margin-top   -1
    :color        (condp = status
                    :error   (colors/resolve-color :danger theme)
-                   :warning (colors/resolve-color :warning theme))})
+                   :warning (colors/resolve-color :warning theme)
+                   nil)})
