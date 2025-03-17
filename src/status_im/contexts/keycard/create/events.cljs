@@ -39,10 +39,10 @@
               #(rf/dispatch [:keycard/create.generate-and-load-keys %])}]]]})))
 
 (rf/reg-event-fx :keycard/create.seed-phrase-entered
- (fn [{:keys [db]} [key-uid masked-seed-phrase]]
+ (fn [{:keys [db]} [{:keys [key-uid seed-phrase]}]]
    (if (contains? (:profile/profiles-overview db) key-uid)
      {:fx [[:dispatch [:enter-seed-phrase/set-error (i18n/label :t/account-already-exist-error)]]]}
-     {:db (assoc-in db [:keycard :create :masked-phrase] masked-seed-phrase)
+     {:db (assoc-in db [:keycard :create :masked-phrase] seed-phrase)
       :fx [[:dispatch [:navigate-back]]
            [:dispatch
             [:open-modal :screen/keycard.create.ready-to-add
@@ -116,8 +116,7 @@
       {:on-continue #(rf/dispatch [:keycard/create.connect-and-generate-phrase])}])
     (rf/dispatch
      [:open-modal :screen/use-recovery-phrase-dark
-      {:on-success (fn [{:keys [seed-phrase]}]
-                     (rf/dispatch [:keycard/create.seed-phrase-entered seed-phrase]))}])))
+      {:on-success #(rf/dispatch [:keycard/create.seed-phrase-entered %])}])))
 
 (rf/reg-event-fx :keycard/create.open-empty
  (fn []
