@@ -797,7 +797,7 @@
  (fn [{:keys [db]}
       [{sent-transactions :sentTransactions
         send-details      :sendDetails}]]
-   (let [swap? (get-in db [:wallet :ui :swap])]
+   (let [swap? (get-in db db/swap)]
      {:fx [[:dispatch
             (if-let [error-response (:errorResponse send-details)]
               [(if swap?

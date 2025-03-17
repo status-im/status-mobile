@@ -1,13 +1,14 @@
 (ns status-im.contexts.wallet.buy-crypto.events
   (:require [re-frame.core :as rf]
             [react-native.core :as rn]
+            [status-im.contexts.wallet.db :as db]
             [status-im.contexts.wallet.sheets.buy-network-selection.view :as buy-network-selection]
             [status-im.contexts.wallet.sheets.select-asset.view :as select-asset]
             [utils.i18n :as i18n]))
 
 (rf/reg-event-fx :wallet.buy-crypto/select-provider
  (fn [{:keys [db]} [{:keys [account provider recurrent?]}]]
-   (let [swap-network (get-in db [:wallet :ui :swap :network])]
+   (let [{swap-network :network} (get-in db db/swap)]
      {:db (-> db
               (assoc-in [:wallet :ui :buy-crypto :account] account)
               (assoc-in [:wallet :ui :buy-crypto :provider] provider)
