@@ -8,13 +8,13 @@
    :tx-fee-mode/urgent])
 
 (def ^:private ?suggested-levels-for-max-fees-per-gas
-  [:map {:closed? true}
+  [:map
    [:low :schema.common/hex]
    [:medium :schema.common/hex]
    [:high :schema.common/hex]
-   [:low-estimated-time :int]
-   [:medium-estimated-time :int]
-   [:high-estimated-time :int]
+   [:low-estimated-time pos-int?]
+   [:medium-estimated-time pos-int?]
+   [:high-estimated-time pos-int?]
    [:low-priority :schema.common/hex]
    [:medium-priority :schema.common/hex]
    [:high-priority :schema.common/hex]])
@@ -22,8 +22,8 @@
 (def ^:private ?chain
   [:map
    [:short-name :string]
-   [:chain-id :int]
-   [:related-chain-id :int]
+   [:chain-id pos-int?]
+   [:related-chain-id pos-int?]
    [:chain-name :string]
    [:native-currency-name :string]])
 
@@ -43,11 +43,11 @@
    [:amount-in :schema.common/hex]
    [:amount-out :schema.common/hex]
    [:amount-in-locked :boolean]
-   [:required-native-balance :int]
-   [:required-token-balance :int]
+   [:required-native-balance pos-int?]
+   [:required-token-balance pos-int?]
 
    ;; Fees
-   [:tx-gas-amount :int]
+   [:tx-gas-amount pos-int?]
    [:tx-token-fees :schema.common/hex]
    [:tx-total-fee :schema.common/hex]
    [:tx-priority-fee :schema.common/hex]
@@ -55,12 +55,12 @@
    [:tx-fee :schema.common/hex]
    [:tx-l-1-fee :schema.common/hex]
    [:tx-bonder-fees [:maybe :schema.common/hex]]
-   [:tx-gas-fee-mode :int]
-   [:tx-estimated-time :int]
+   [:tx-gas-fee-mode pos-int?]
+   [:tx-estimated-time pos-int?]
    [:tx-max-fees-per-gas :schema.common/hex]
    [:suggested-min-priority-fee :schema.common/hex]
    [:suggested-max-priority-fee :schema.common/hex]
-   [:suggested-tx-gas-amount :int]
+   [:suggested-tx-gas-amount pos-int?]
    [:suggested-levels-for-max-fees-per-gas ?suggested-levels-for-max-fees-per-gas]
    [:current-base-fee :schema.common/hex]
    [:subtract-fees :boolean]
@@ -69,15 +69,15 @@
    [:approval-required :boolean]
    [:approval-tx-nonce [:maybe :schema.common/hex]]
    [:suggested-approval-tx-nonce [:maybe :schema.common/hex]]
-   [:suggested-approval-gas-amount :int]
+   [:suggested-approval-gas-amount pos-int?]
    [:approval-contract-address [:maybe :schema.common/hex]]
    [:approval-packed-data [:maybe :string]]
    [:approval-amount-required [:maybe :schema.common/hex]]
    [:approval-fee [:maybe :schema.common/hex]]
    [:approval-l-1-fee [:maybe :schema.common/hex]]
-   [:approval-gas-amount [:maybe :int]]
+   [:approval-gas-amount [:maybe pos-int?]]
    [:approval-priority-fee [:maybe :schema.common/hex]]
    [:approval-base-fee [:maybe :schema.common/hex]]
    [:approval-max-fees-per-gas [:maybe :schema.common/hex]]
-   [:approval-estimated-time [:maybe :int]]
-   [:approval-gas-fee-mode [:maybe :int]]])
+   [:approval-estimated-time [:maybe pos-int?]]
+   [:approval-gas-fee-mode [:maybe pos-int?]]])

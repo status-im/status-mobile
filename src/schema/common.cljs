@@ -1,6 +1,5 @@
 (ns schema.common
-  (:require
-    [schema.registry :as registry]))
+  (:require [schema.registry :as registry]))
 
 (def ^:private ?theme
   [:enum :light :dark])
@@ -36,8 +35,10 @@
 (def ^:private ?hiccup
   vector?)
 
+;; NOTE: malli doesn't have generators for the `:re` schema in cljs, so returning a static value instead
+(def ^:private default-generator-return "0x59682f00")
 (def ^:private ?hex
-  [:and :string [:re #"^0x[0-9a-fA-F]+$"]])
+  [:and {:gen/return default-generator-return} [:re #"^0x[0-9a-fA-F]+$"] :string])
 
 (defn register-schemas
   []
