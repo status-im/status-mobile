@@ -3,6 +3,7 @@
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.data-store :as data-store]
+            [status-im.contexts.wallet.db :as db]
             [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
             [status-im.contexts.wallet.swap.utils :as swap-utils]
@@ -88,7 +89,7 @@
    (let [previous-token (get-in db [:wallet :ui :swap :asset-to-pay])
          network        (get-in db [:wallet :ui :swap :network])]
      {:db (update-in db
-                     [:wallet :ui :swap]
+                     db/swap
                      #(-> %
                           (assoc :asset-to-pay token)
                           (dissoc :amount
@@ -132,7 +133,7 @@
   [{:keys [db amount-in amount-out request-uuid]}]
   (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
         {:keys [asset-to-pay asset-to-receive
-                network]}       (get-in db [:wallet :ui :swap])
+                network]}       (get-in db db/swap)
         test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
         networks                ((if test-networks-enabled? :test :prod)
                                  (get-in db [:wallet :networks]))
@@ -172,7 +173,7 @@
 (rf/reg-event-fx :wallet/start-get-swap-proposal
  (fn [{:keys [db]} [{:keys [amount-in amount-out clean-approval-transaction?]}]]
    (let [{:keys [asset-to-pay asset-to-receive
-                 network]} (get-in db [:wallet :ui :swap])
+                 network]} (get-in db db/swap)
          pay-token-decimal (:decimals asset-to-pay)
          pay-token-id      (:symbol asset-to-pay)
          receive-token-id  (:symbol asset-to-receive)
@@ -188,7 +189,7 @@
                              :request-uuid request-uuid})]
      (when-let [amount (or amount-in amount-out)]
        {:db            (update-in db
-                                  [:wallet :ui :swap]
+                                  db/swap
                                   #(cond-> %
                                      :always
                                      (assoc
@@ -231,7 +232,7 @@
                      (pos? (count best-routes))
                      (= (:amount-in (first best-routes)) amount-hex))))
        (cond-> {:db (update-in db
-                               [:wallet :ui :swap]
+                               db/swap
                                assoc
                                :swap-proposal          (when-not (empty? best-routes)
                                                          (assoc (first best-routes) :uuid request-uuid))
@@ -271,7 +272,7 @@
 (rf/reg-event-fx :wallet/swap-proposal-error
  (fn [{:keys [db]} [error-response]]
    {:db (-> db
-            (update-in [:wallet :ui :swap] dissoc :route :swap-proposal)
+            (update-in db/swap dissoc :route :swap-proposal)
             (assoc-in [:wallet :ui :swap :loading-swap-proposal?] false)
             (assoc-in [:wallet :ui :swap :error-response] error-response))
     :fx [[:dispatch
@@ -279,7 +280,7 @@
 
 (rf/reg-event-fx :wallet/stop-get-swap-proposal
  (fn [{:keys [db]}]
-   {:db            (update-in db [:wallet :ui :swap] dissoc :last-request-uuid)
+   {:db            (update-in db db/swap dissoc :last-request-uuid)
     :json-rpc/call [{:method   "wallet_stopSuggestedRoutesAsyncCalculation"
                      :params   []
                      :on-error (fn [error]
@@ -296,7 +297,7 @@
                                  :loading-swap-proposal?]
                           clean-amounts?              (conj :amount :amount-hex)
                           clean-approval-transaction? (conj :approval-transaction-id :approved-amount))]
-     {:db (apply update-in db [:wallet :ui :swap] dissoc keys-to-dissoc)
+     {:db (apply update-in db db/swap dissoc keys-to-dissoc)
       :fx [[:dispatch [:wallet/stop-get-swap-proposal]]]})))
 
 (rf/reg-event-fx :wallet/clean-swap
@@ -327,7 +328,7 @@
 (rf/reg-event-fx :wallet.swap/approve-transaction-update
  (fn [{:keys [db]} [{:keys [status]}]]
    (let [{:keys [amount asset-to-pay swap-proposal
-                 network]}                (get-in db [:wallet :ui :swap])
+                 network]}                (get-in db db/swap)
          provider-name                    (:bridge-name swap-proposal)
          token-symbol                     (:symbol asset-to-pay)
          swap-chain-id                    (:chain-id network)
@@ -363,7 +364,7 @@
          transaction-confirmed?
          (assoc :db (assoc-in db [:wallet :ui :swap :approved-amount] amount))
          (not transaction-confirmed?)
-         (assoc :db (update-in db [:wallet :ui :swap] dissoc :approval-transaction-id)))))))
+         (assoc :db (update-in db db/swap dissoc :approval-transaction-id)))))))
 
 (rf/reg-event-fx
  :wallet.swap/swap-transaction-update
@@ -401,7 +402,7 @@
  :wallet.swap/flip-assets
  (fn [{:keys [db]}]
    (let [{:keys [asset-to-pay asset-to-receive
-                 swap-proposal amount network]} (get-in db [:wallet :ui :swap])
+                 swap-proposal amount network]} (get-in db db/swap)
          receive-token-decimals                 (:decimals asset-to-receive)
          amount-out                             (when swap-proposal (:amount-out swap-proposal))
          receive-amount                         (when amount-out
@@ -409,7 +410,7 @@
                                                       (number/hex->whole receive-token-decimals)
                                                       (money/to-fixed receive-token-decimals)))]
      {:db (update-in db
-                     [:wallet :ui :swap]
+                     db/swap
                      #(-> %
                           (assoc
                            :asset-to-pay     asset-to-receive
@@ -441,7 +442,7 @@
  :wallet.swap/review-swap
  (fn [{:keys [db]}]
    {:db (-> db
-            (update-in [:wallet :ui :swap] dissoc :transaction-for-signing))
+            (update-in db/swap dissoc :transaction-for-signing))
     :fx [[:dispatch
           [:navigate-to-within-stack
            [:screen/wallet.swap-confirmation
@@ -486,7 +487,7 @@
                  asset-to-receive
                  network
                  amount]
-          :as   swap}           (get-in db [:wallet :ui :swap])
+          :as   swap}           (get-in db db/swap)
          swap-chain-id          (:chain-id network)
          token-id-from          (:symbol asset-to-pay)
          token-id-to            (:symbol asset-to-receive)
@@ -545,7 +546,7 @@
          {:keys [asset-to-pay
                  asset-to-receive
                  network]
-          :as   swap}       (get-in db [:wallet :ui :swap])
+          :as   swap}       (get-in db db/swap)
          swap-chain-id      (:chain-id network)
          token-id-from      (:symbol asset-to-pay)
          token-id-to        (:symbol asset-to-receive)
@@ -570,7 +571,7 @@
  :wallet.swap/clean-up-transaction-flow
  (fn [{:keys [db]}]
    (let [transactions       (get-in db [:wallet :transactions])
-         swap               (get-in db [:wallet :ui :swap])
+         swap               (get-in db db/swap)
          approval-required? (transaction-approval-required? transactions swap)]
      {:db (update-in db [:wallet :ui] dissoc :swap)
       :fx [[:dispatch
@@ -637,7 +638,7 @@
                               :approval-fee :approval-l-1-fee :bonder-fees]
          fee-data            (select-keys selected-route relevant-fee-fields)]
      {:db (update-in db
-                     [:wallet :ui :swap]
+                     db/swap
                      assoc
                      :loading-swap-proposal-fee? false
                      :swap-proposal
@@ -648,7 +649,7 @@
  :wallet/swap-proposal-fee-error
  (fn [{:keys [db]}]
    {:db (update-in db
-                   [:wallet :ui :swap]
+                   db/swap
                    assoc
                    :loading-swap-proposal-fee?
                    false)}))

@@ -1,4 +1,11 @@
-(ns status-im.contexts.wallet.db)
+(ns status-im.contexts.wallet.db
+  (:require [status-im.constants :as constants]))
+
+(def swap [:wallet :ui :swap])
+
+(def network-filter-defaults
+  {:selector-state    :default
+   :selected-networks (set constants/default-network-names)})
 
 (def defaults
   {:ui {;; Note: we set it to nil by default to differentiate when the user logs
