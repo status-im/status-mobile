@@ -413,16 +413,14 @@
  :wallet/swap-estimated-time
  :<- [:wallet/swap-proposal]
  (fn [route]
-   (when route
-     (-> route
-         :estimated-time
-         utils/estimated-time-v2-format))))
+   (some-> route
+           :estimated-time
+           utils/estimated-time-v2-format)))
 
 (rf/reg-sub
  :wallet/swap-approval-estimated-time
  :<- [:wallet/swap-proposal]
  (fn [route]
-   (when route
-     (-> route
-         :approval-estimated-time
-         utils/estimated-time-v2-format))))
+   (some-> route
+           :approval-estimated-time
+           utils/estimated-time-v2-format)))

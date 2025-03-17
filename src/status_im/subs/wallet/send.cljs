@@ -247,7 +247,6 @@
  :wallet/send-estimated-time
  :<- [:wallet/send-best-route]
  (fn [route]
-   (when route
-     (-> route
-         :estimated-time
-         common-utils/estimated-time-v2-format))))
+   (some-> route
+           :estimated-time
+           common-utils/estimated-time-v2-format)))
