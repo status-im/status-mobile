@@ -1,4 +1,3 @@
-ык
 (ns status-im.contexts.wallet.signals
   (:require
     [oops.core :as oops]
