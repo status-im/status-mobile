@@ -16,7 +16,6 @@
     [react-native.platform :as platform]
     [react-native.shake :as react-native-shake]
     [reagent.core]
-    [reagent.impl.batching :as batching]
     [status-im.common.log :as logging]
     [taoensso.timbre :as log]
     [status-im.common.universal-links :as universal-links]
@@ -35,7 +34,6 @@
 
 ;;;; re-frame RN setup
 (set! interop/next-tick js/setTimeout)
-(set! batching/fake-raf #(js/setTimeout % 0))
 
 (def adjust-resize 16)
 
