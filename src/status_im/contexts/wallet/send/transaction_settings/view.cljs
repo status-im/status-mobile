@@ -11,10 +11,10 @@
 
 (defn custom-settings-sheet
   [_]
-  (let [max-base-fee   (rf/sub [:wallet/tx-settings-max-base-fee])
-        priority-fee   (rf/sub [:wallet/tx-settings-priority-fee])
-        max-gas-amount (rf/sub [:wallet/tx-settings-gas-amount])
-        nonce          (rf/sub [:wallet/tx-settings-nonce])
+  (let [max-base-fee   (rf/sub [:wallet.send/tx-settings-max-base-fee])
+        priority-fee   (rf/sub [:wallet.send/tx-settings-priority-fee])
+        max-gas-amount (rf/sub [:wallet.send/tx-settings-gas-amount])
+        nonce          (rf/sub [:wallet.send/tx-settings-nonce])
         account-color  (rf/sub [:wallet/current-viewing-account-color])]
     [rn/view
      [quo/drawer-top
@@ -72,7 +72,7 @@
 
 (defn settings-sheet
   []
-  (let [current-transaction-setting                   (rf/sub [:wallet/tx-settings-fee-mode])
+  (let [current-transaction-setting                   (rf/sub [:wallet.send/tx-settings-fee-mode])
         account-color                                 (rf/sub [:wallet/current-viewing-account-color])
         [transaction-setting set-transaction-setting] (rn/use-state current-transaction-setting)
         set-normal                                    #(set-transaction-setting :tx-fee-mode/normal)

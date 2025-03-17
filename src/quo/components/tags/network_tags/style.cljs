@@ -11,8 +11,6 @@
 
 (defn container
   [{:keys [status theme blur?]}]
-  (tap> {:in     :container
-         :status status})
   {:flex-direction   :row
    :align-self       :flex-start
    :background-color (condp = status

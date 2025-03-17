@@ -25,10 +25,10 @@
 
 (defn view
   []
-  (let [priority-fee (rf/sub [:wallet/tx-settings-priority-fee])
-        max-base-fee (rf/sub [:wallet/tx-settings-max-base-fee])
-        spectrum     {:low  (rf/sub [:wallet/tx-settings-suggested-min-priority-fee])
-                      :high (rf/sub [:wallet/tx-settings-suggested-max-priority-fee])}
+  (let [priority-fee (rf/sub [:wallet.send/tx-settings-priority-fee])
+        max-base-fee (rf/sub [:wallet.send/tx-settings-max-base-fee])
+        spectrum     {:low  (rf/sub [:wallet.send/tx-settings-suggested-min-priority-fee])
+                      :high (rf/sub [:wallet.send/tx-settings-suggested-max-priority-fee])}
         conditions   (partial hint-and-status priority-fee spectrum max-base-fee)]
     [transaction-settings/custom-setting-screen
      {:screen-title  (i18n/label :t/priority-fee)

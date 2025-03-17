@@ -27,9 +27,9 @@
 
 (defn view
   []
-  (let [max-base-fee-from-route (rf/sub [:wallet/tx-settings-max-base-fee-route])
-        max-base-fee            (rf/sub [:wallet/tx-settings-max-base-fee])
-        priority-fee            (rf/sub [:wallet/tx-settings-priority-fee])
+  (let [max-base-fee-from-route (rf/sub [:wallet.send/tx-settings-max-base-fee-route])
+        max-base-fee            (rf/sub [:wallet.send/tx-settings-max-base-fee])
+        priority-fee            (rf/sub [:wallet.send/tx-settings-priority-fee])
         conditions              (partial hint-and-status max-base-fee-from-route priority-fee)]
     [transaction-settings/custom-setting-screen
      {:screen-title  (i18n/label :t/max-base-fee)

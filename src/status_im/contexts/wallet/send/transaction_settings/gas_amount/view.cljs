@@ -32,8 +32,8 @@
   []
   (let [spectrum              {:low  21000
                                :high 7920027}
-        gas-amount            (rf/sub [:wallet/tx-settings-gas-amount])
-        gas-amount-from-route (rf/sub [:wallet/tx-settings-gas-amount-route])
+        gas-amount            (rf/sub [:wallet.send/tx-settings-gas-amount])
+        gas-amount-from-route (rf/sub [:wallet.send/tx-settings-gas-amount-route])
         conditions            (partial hint-and-status gas-amount-from-route spectrum)]
     [transaction-settings/custom-setting-screen
      {:screen-title   (i18n/label :t/max-gas-amount)

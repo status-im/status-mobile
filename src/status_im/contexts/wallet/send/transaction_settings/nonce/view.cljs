@@ -11,8 +11,8 @@
 
 (defn view
   []
-  (let [current                       (rf/sub [:wallet/tx-settings-nonce])
-        suggested-nonce               (rf/sub [:wallet/tx-settings-suggested-nonce])
+  (let [current                       (rf/sub [:wallet.send/tx-settings-nonce])
+        suggested-nonce               (rf/sub [:wallet.send/tx-settings-suggested-nonce])
         last-tx-nonce                 (dec suggested-nonce)
         [input-state set-input-state] (rn/use-state (controlled-input/set-value-numeric
                                                      controlled-input/init-state

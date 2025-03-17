@@ -206,104 +206,103 @@
       :fiat   fiat-formatted})))
 
 (rf/reg-sub
- :wallet/user-fee-mode-settings
+ :wallet.send/user-fee-mode-settings
  :<- [:wallet/wallet-send]
  :-> :user-fee-mode)
 
 (rf/reg-sub
- :wallet/user-tx-settings
+ :wallet.send/user-tx-settings
  :<- [:wallet/wallet-send]
  :-> :user-tx-settings)
 
 (rf/reg-sub
- :wallet/tx-settings-max-base-fee-user
- :<- [:wallet/user-tx-settings]
+ :wallet.send/tx-settings-max-base-fee-user
+ :<- [:wallet.send/user-tx-settings]
  :-> :max-base-fee)
 
 (rf/reg-sub
- :wallet/tx-settings-priority-fee-user
- :<- [:wallet/user-tx-settings]
+ :wallet.send/tx-settings-priority-fee-user
+ :<- [:wallet.send/user-tx-settings]
  :-> :priority-fee)
 
 (rf/reg-sub
- :wallet/tx-settings-nonce-user
- :<- [:wallet/user-tx-settings]
+ :wallet.send/tx-settings-nonce-user
+ :<- [:wallet.send/user-tx-settings]
  :-> :nonce)
 
 (rf/reg-sub
- :wallet/tx-settings-gas-amount-user
- :<- [:wallet/user-tx-settings]
+ :wallet.send/tx-settings-gas-amount-user
+ :<- [:wallet.send/user-tx-settings]
  :-> :gas-amount)
 
 (rf/reg-sub
- :wallet/tx-settings-gas-fees
+ :wallet.send/tx-settings-gas-fees
  :<- [:wallet/send-route]
  (fn [route]
    (:gas-fees (first route))))
 
-
 (rf/reg-sub
- :wallet/tx-settings-max-base-fee-route
- :<- [:wallet/tx-settings-gas-fees]
+ :wallet.send/tx-settings-max-base-fee-route
+ :<- [:wallet.send/tx-settings-gas-fees]
  (fn [gas-fees]
    (:base-fee gas-fees)))
 
 (rf/reg-sub
- :wallet/tx-settings-gas-amount-route
+ :wallet.send/tx-settings-gas-amount-route
  :<- [:wallet/send-route]
  (fn [route]
    (:gas-amount (first route))))
 
 (rf/reg-sub
- :wallet/tx-settings-fee-mode
+ :wallet.send/tx-settings-fee-mode
  :<- [:wallet/send-route]
- :<- [:wallet/user-fee-mode-settings]
+ :<- [:wallet.send/user-fee-mode-settings]
  (fn [[route value-set-by-user]]
    (or value-set-by-user (:tx-fee-mode (first route)))))
 
 (rf/reg-sub
- :wallet/tx-settings-max-base-fee
- :<- [:wallet/tx-settings-max-base-fee-route]
- :<- [:wallet/tx-settings-max-base-fee-user]
+ :wallet.send/tx-settings-max-base-fee
+ :<- [:wallet.send/tx-settings-max-base-fee-route]
+ :<- [:wallet.send/tx-settings-max-base-fee-user]
  (fn [[value-from-routes value-set-by-user]]
    (or value-set-by-user value-from-routes)))
 
 (rf/reg-sub
- :wallet/tx-settings-priority-fee
- :<- [:wallet/tx-settings-gas-fees]
- :<- [:wallet/tx-settings-priority-fee-user]
+ :wallet.send/tx-settings-priority-fee
+ :<- [:wallet.send/tx-settings-gas-fees]
+ :<- [:wallet.send/tx-settings-priority-fee-user]
  (fn [[gas-fees value-set-by-user]]
    (or value-set-by-user (:tx-priority-fee gas-fees))))
 
 (rf/reg-sub
- :wallet/tx-settings-gas-amount
- :<- [:wallet/tx-settings-gas-amount-route]
- :<- [:wallet/tx-settings-gas-amount-user]
+ :wallet.send/tx-settings-gas-amount
+ :<- [:wallet.send/tx-settings-gas-amount-route]
+ :<- [:wallet.send/tx-settings-gas-amount-user]
  (fn [[value-from-routes value-set-by-user]]
    (or value-set-by-user value-from-routes)))
 
 (rf/reg-sub
- :wallet/tx-settings-nonce
+ :wallet.send/tx-settings-nonce
  :<- [:wallet/send-route]
- :<- [:wallet/tx-settings-nonce-user]
+ :<- [:wallet.send/tx-settings-nonce-user]
  (fn [[route value-set-by-user]]
    (or value-set-by-user (:nonce (first route)))))
 
 (rf/reg-sub
- :wallet/tx-settings-suggested-nonce
+ :wallet.send/tx-settings-suggested-nonce
  :<- [:wallet/send-route]
  (fn [route]
    (:suggested-tx-nonce (first route))))
 
 (rf/reg-sub
- :wallet/tx-settings-suggested-max-priority-fee
- :<- [:wallet/tx-settings-gas-fees]
- :<- [:wallet/tx-settings-max-base-fee]
+ :wallet.send/tx-settings-suggested-max-priority-fee
+ :<- [:wallet.send/tx-settings-gas-fees]
+ :<- [:wallet.send/tx-settings-max-base-fee]
  (fn [[gas-fees max-base-fee]]
    (min max-base-fee (:suggested-max-priority-fee gas-fees))))
 
 (rf/reg-sub
- :wallet/tx-settings-suggested-min-priority-fee
- :<- [:wallet/tx-settings-gas-fees]
+ :wallet.send/tx-settings-suggested-min-priority-fee
+ :<- [:wallet.send/tx-settings-gas-fees]
  (fn [gas-fees]
    (:suggested-min-priority-fee gas-fees)))
