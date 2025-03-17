@@ -6,36 +6,36 @@
   [{:keys [status theme blur?]}]
   {:flex-direction   :row
    :align-self       :flex-start
-   :background-color (cond (= status :error)
-                           (colors/theme-colors
-                            (colors/override-color :danger 10 50)
-                            (colors/override-color :danger 10 60)
-                            theme)
-                           (= status :warning)
-                           (colors/theme-colors
-                            (colors/override-color :warning 10 50)
-                            (colors/override-color :warning 10 60)
-                            theme))
+   :background-color (condp = status
+                       :error   (colors/theme-colors
+                                 (colors/override-color :danger 10 50)
+                                 (colors/override-color :danger 10 60)
+                                 theme)
+                       :warning (colors/theme-colors
+                                 (colors/override-color :warning 10 50)
+                                 (colors/override-color :warning 10 60)
+                                 theme))
    :border-width     1
-   :border-color     (cond (= status :error)
-                           (colors/theme-colors
-                            (colors/override-color :danger 20 50)
-                            (colors/override-color :danger 20 60)
-                            theme)
+   :border-color     (condp = status
+                       :error   (colors/theme-colors
+                                 (colors/override-color :danger 20 50)
+                                 (colors/override-color :danger 20 60)
+                                 theme)
 
-                           (= status :warning)
-                           (colors/theme-colors
-                            (colors/override-color :warning 20 50)
-                            (colors/override-color :warning 20 60)
-                            theme)
-                           (and blur? (= status :default)) (colors/theme-colors
-                                                            colors/neutral-80-opa-5
-                                                            colors/white-opa-5
-                                                            theme)
-                           :else (colors/theme-colors
-                                  colors/neutral-20
-                                  colors/neutral-80
-                                  theme))
+                       :warning (colors/theme-colors
+                                 (colors/override-color :warning 20 50)
+                                 (colors/override-color :warning 20 60)
+                                 theme)
+
+                       :default (if blur?
+                                  (colors/theme-colors
+                                   colors/neutral-80-opa-5
+                                   colors/white-opa-5
+                                   theme)
+                                  (colors/theme-colors
+                                   colors/neutral-20
+                                   colors/neutral-80
+                                   theme)))
    :border-radius    8
    :padding-left     5
    :padding-right    5
@@ -46,7 +46,6 @@
   [{:keys [status theme networks-shown?]}]
   {:padding-left (if networks-shown? 4 0)
    :margin-top   -1
-   :color        (cond (= status :error)
-                       (colors/resolve-color :danger theme)
-                       (= status :warning)
-                       (colors/resolve-color :warning theme))})
+   :color        (condp = status
+                   :error   (colors/resolve-color :danger theme)
+                   :warning (colors/resolve-color :warning theme))})

@@ -64,7 +64,7 @@
        :button-one-label (i18n/label :t/save-changes)
        :button-one-props {:disabled? (controlled-input/empty-value? input-state)
                           :on-press  (fn []
-                                       (rf/dispatch [:wallet/set-nonce
+                                       (rf/dispatch [:wallet.send/set-nonce
                                                      (controlled-input/value-numeric input-state)])
                                        (rf/dispatch [:navigate-back])
                                        (rf/dispatch [:show-bottom-sheet

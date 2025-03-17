@@ -39,7 +39,7 @@
       :info-title    (i18n/label :t/max-base-fee)
       :info-content  (i18n/label :t/about-max-base-fee)
       :on-save       (fn [new-val]
-                       (rf/dispatch [:wallet/set-max-base-fee new-val])
+                       (rf/dispatch [:wallet.send/set-max-base-fee new-val])
                        (rf/dispatch [:navigate-back])
                        (rf/dispatch [:show-bottom-sheet
                                      {:content transaction-settings/custom-settings-sheet}]))}]))

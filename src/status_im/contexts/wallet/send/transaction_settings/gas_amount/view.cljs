@@ -43,7 +43,7 @@
       :info-title     (i18n/label :t/gas-amount)
       :info-content   (i18n/label :t/about-gas-amount)
       :on-save        (fn [new-val]
-                        (rf/dispatch [:wallet/set-max-gas-amount new-val])
+                        (rf/dispatch [:wallet.send/set-max-gas-amount new-val])
                         (rf/dispatch [:navigate-back])
                         (rf/dispatch [:show-bottom-sheet
                                       {:content transaction-settings/custom-settings-sheet}]))

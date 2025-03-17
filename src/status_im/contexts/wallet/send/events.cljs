@@ -846,22 +846,22 @@
       :fx [[:dispatch [:navigate-back]]]})))
 
 (rf/reg-event-fx
- :wallet/set-max-base-fee
+ :wallet.send/set-max-base-fee
  (fn [{db :db} [value]]
    {:db (assoc-in db [:wallet :ui :send :user-tx-settings :max-base-fee] value)}))
 
 (rf/reg-event-fx
- :wallet/set-priority-fee
+ :wallet.send/set-priority-fee
  (fn [{db :db} [value]]
    {:db (assoc-in db [:wallet :ui :send :user-tx-settings :priority-fee] value)}))
 (rf/reg-event-fx
 
- :wallet/set-max-gas-amount
+ :wallet.send/set-max-gas-amount
  (fn [{db :db} [value]]
    {:db (assoc-in db [:wallet :ui :send :user-tx-settings :gas-amount] value)}))
 
 (rf/reg-event-fx
- :wallet/set-nonce
+ :wallet.send/set-nonce
  (fn [{db :db} [value]]
    {:db (assoc-in db [:wallet :ui :send :user-tx-settings :nonce] value)}))
 
@@ -873,11 +873,11 @@
        :params   params
        :on-error (fn [error]
                    (log/error "failed to set quick transaction settings"
-                              {:event  :wallet/quick-fee-mode-confirmed
+                              {:event  :wallet.send/quick-fee-mode-confirmed
                                :error  (:message error)
                                :params params}))}]]))
 
-(rf/reg-event-fx :wallet/quick-fee-mode-confirmed
+(rf/reg-event-fx :wallet.send/quick-fee-mode-confirmed
  (fn [{db :db} [fee-mode]]
    (let [gas-rate        (transaction-settings/tx-fee-mode->gas-rate fee-mode)
          tx-type         (get-in db [:wallet :ui :send :tx-type])
@@ -890,9 +890,9 @@
                            [(set-fee-mode-effect (send-utils/path-identity route) gas-rate)])]
      {:db (assoc-in db [:wallet :ui :send :user-fee-mode] fee-mode)
       :fx (conj set-fee-effects
-                [:dispatch [:wallet/mark-user-tx-settings-for-deletion]])})))
+                [:dispatch [:wallet.send/mark-user-tx-settings-for-deletion]])})))
 
-(rf/reg-event-fx :wallet/custom-transaction-settings-confirmed
+(rf/reg-event-fx :wallet.send/custom-transaction-settings-confirmed
  (fn [{db :db}]
    (let [route            (first (get-in db [:wallet :ui :send :route]))
          user-tx-settings (get-in db [:wallet :ui :send :user-tx-settings])
@@ -905,10 +905,10 @@
               :params   params
               :on-error (fn [error]
                           (log/error "failed to set custom tx settings"
-                                     {:event  :wallet/custom-transaction-settings-confirmed
+                                     {:event  :wallet.send/custom-transaction-settings-confirmed
                                       :error  (:message error)
                                       :params params}))}]]
-           [:dispatch [:wallet/mark-user-tx-settings-for-deletion]]]})))
+           [:dispatch [:wallet.send/mark-user-tx-settings-for-deletion]]]})))
 
 ;; There is a delay between the moment when user selected
 ;; custom settings and the moment when new route arrived
@@ -916,7 +916,7 @@
 ;; we should keep user settings for ui. After new route
 ;; arrived we should clean the settings.
 
-(rf/reg-event-fx :wallet/mark-user-tx-settings-for-deletion
+(rf/reg-event-fx :wallet.send/mark-user-tx-settings-for-deletion
  (fn [{db :db}]
    {:db (assoc-in db [:wallet :ui :send :user-tx-settings :delete-on-routes-update?] true)}))
 

@@ -65,7 +65,7 @@
       {:actions          :one-action
        :button-one-props {:on-press            (fn []
                                                  (rf/dispatch
-                                                  [:wallet/custom-transaction-settings-confirmed])
+                                                  [:wallet.send/custom-transaction-settings-confirmed])
                                                  (rf/dispatch [:hide-bottom-sheet]))
                           :customization-color account-color}
        :button-one-label (i18n/label :t/confirm)}]]))
@@ -152,7 +152,7 @@
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-props {:on-press            (fn []
-                                                 (rf/dispatch [:wallet/quick-fee-mode-confirmed
+                                                 (rf/dispatch [:wallet.send/quick-fee-mode-confirmed
                                                                transaction-setting])
                                                  (rf/dispatch [:hide-bottom-sheet]))
                           :customization-color account-color}

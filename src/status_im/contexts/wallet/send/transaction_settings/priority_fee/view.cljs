@@ -38,7 +38,7 @@
       :info-title    (i18n/label :t/priority-fee)
       :info-content  (i18n/label :t/about-priority-fee)
       :on-save       (fn [new-val]
-                       (rf/dispatch [:wallet/set-priority-fee new-val])
+                       (rf/dispatch [:wallet.send/set-priority-fee new-val])
                        (rf/dispatch [:navigate-back])
                        (rf/dispatch [:show-bottom-sheet
                                      {:content transaction-settings/custom-settings-sheet}]))}]))
