@@ -28,13 +28,6 @@
      [rn/view
       {:style (style/dot-divider theme)}])])
 
-(def ^:private default-token-symbols
-  {:ethereum "ETH"
-   :optimism "OP"
-   :arbitrum "ARB"
-   :base     "ETH"
-   :status   "ETH"})
-
 (defn networks
   [networks-to-show theme]
   (->> networks-to-show
@@ -44,7 +37,7 @@
                     (= amount "<0.01"))
             [network-amount
              {:network  k
-              :amount   (str amount " " (or token-symbol (get default-token-symbols k)))
+              :amount   (str amount " " token-symbol)
               :divider? (not= (inc i) (-> networks-to-show keys count))
               :theme    theme}])))
        (remove nil?)

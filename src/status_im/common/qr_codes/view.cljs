@@ -1,7 +1,7 @@
 (ns status-im.common.qr-codes.view
   (:require
+    [networks.core :as networks]
     [quo.core :as quo]
-    [status-im.constants :as constants]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
 
@@ -43,12 +43,8 @@
 
 (defn get-network-short-name-url
   [network]
-  (case network
-    :ethereum (str constants/mainnet-short-name ":")
-    :mainnet  (str constants/mainnet-short-name ":")
-    :optimism (str constants/optimism-short-name ":")
-    :arbitrum (str constants/arbitrum-short-name ":")
-    (str (name network) ":")))
+  (let [short-name (or (networks/network-name->short-name network) (name network))]
+    (str short-name ":")))
 
 (defn- get-qr-data-for-wallet-multichain
   [qr-data networks]

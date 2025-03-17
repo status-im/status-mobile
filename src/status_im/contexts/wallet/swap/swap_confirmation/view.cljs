@@ -7,7 +7,7 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.send.utils :as send-utils]
+    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.swap.swap-confirmation.style :as style]
     [utils.address :as address-utils]
     [utils.i18n :as i18n]
@@ -64,23 +64,21 @@
 
 (defn- summary-section
   [{:keys [theme label title-accessibility-label amount token-symbol token-address network]}]
-  (let [network-values {(if (= network :mainnet) :ethereum network)
-                        {:amount amount :token-symbol token-symbol}}]
-    [rn/view {:style style/summary-section-container}
-     [quo/text
-      {:size                :paragraph-2
-       :weight              :medium
-       :style               (style/section-label theme)
-       :accessibility-label title-accessibility-label}
-      label]
-     [quo/summary-info
-      {:type             :token
-       :token-props      {:token   token-symbol
-                          :label   (str amount " " token-symbol)
-                          :address (when token-address
-                                     (address-utils/get-shortened-compressed-key token-address))
-                          :size    32}
-       :networks-to-show (send-utils/network-values-for-ui network-values)}]]))
+  [rn/view {:style style/summary-section-container}
+   [quo/text
+    {:size                :paragraph-2
+     :weight              :medium
+     :style               (style/section-label theme)
+     :accessibility-label title-accessibility-label}
+    label]
+   [quo/summary-info
+    {:type             :token
+     :token-props      {:token   token-symbol
+                        :label   (str amount " " token-symbol)
+                        :address (when token-address
+                                   (address-utils/get-shortened-compressed-key token-address))
+                        :size    32}
+     :networks-to-show (network-utils/network-summary network token-symbol amount)}]])
 
 (defn- pay-section
   []

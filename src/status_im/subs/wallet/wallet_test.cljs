@@ -1,6 +1,7 @@
 (ns status-im.subs.wallet.wallet-test
   (:require
     [cljs.test :refer [is testing use-fixtures]]
+    [networks.core :as networks]
     [re-frame.db :as rf-db]
     [status-im.constants :as constants]
     [status-im.subs.root]
@@ -858,8 +859,7 @@
                                                          constants/optimism-network-name
                                                          constants/base-network-name}}}}))
     (is
-     (match? (sort [constants/ethereum-mainnet-chain-id constants/arbitrum-mainnet-chain-id
-                    constants/optimism-mainnet-chain-id constants/base-mainnet-chain-id])
+     (match? (sort (networks/chain-ids true))
              (sort (rf/sub [sub-name])))))
   (testing "selected networks -> chain-ids - specific network"
     (swap! rf-db/app-db #(assoc-in %

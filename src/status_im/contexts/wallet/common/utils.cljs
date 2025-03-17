@@ -7,7 +7,8 @@
             [utils.address]
             [utils.money :as money]
             [utils.number :as number]
-            [utils.string]))
+            [utils.string]
+            [networks.core :as networks]))
 
 (def missing-price-decimals 6) ; if we don't have the monetary value of the token, we default to 6 decimals
 (defn get-first-name
@@ -350,7 +351,7 @@
            :image-props           {:icon (resources/get-network network-name)
                                    :size :size-20}
            ;; Remove the following line for v2.35
-           :show-new-feature-tag? (= network-name constants/base-network-name)
+           :show-new-feature-tag? (networks/new-network? network-name)
            :action                :selector
            :action-props          {:type                (or type :checkbox)
                                    :blur?               blur?

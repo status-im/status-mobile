@@ -400,31 +400,7 @@
   {:ethereum "ethereum"
    :sepolia  "sepolia"})
 
-(def ^:const mainnet-chain-ids
-  #{ethereum-mainnet-chain-id arbitrum-mainnet-chain-id optimism-mainnet-chain-id base-mainnet-chain-id})
-
-(def ^:const sepolia-chain-ids
-  #{ethereum-sepolia-chain-id arbitrum-sepolia-chain-id optimism-sepolia-chain-id base-sepolia-chain-id
-    status-network-sepolia-chain-id})
-
 (def ^:const mainnet-short-name "eth")
-(def ^:const ethereum-short-name "eth")
-(def ^:const optimism-short-name "oeth")
-(def ^:const arbitrum-short-name "arb1")
-(def ^:const base-short-name "base")
-(def ^:const status-network-short-name "status")
-
-(def ^:const mainnet-abbreviated-name "Eth.")
-(def ^:const optimism-abbreviated-name "Oeth.")
-(def ^:const arbitrum-abbreviated-name "Arb1.")
-(def ^:const base-abbreviated-name "Base")
-(def ^:const status-network-abbreviated-name "Status")
-
-(def ^:const mainnet-full-name "Mainnet")
-(def ^:const optimism-full-name "Optimism")
-(def ^:const arbitrum-full-name "Arbitrum")
-(def ^:const base-full-name "Base")
-(def ^:const status-network-full-name "Status Network")
 
 (def ^:const sepolia-full-name "Sepolia")
 

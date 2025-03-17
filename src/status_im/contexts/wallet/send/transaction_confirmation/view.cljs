@@ -11,7 +11,6 @@
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
     [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
-    [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.feature-flags :as ff]
     [status-im.setup.hot-reload :as hot-reload]
@@ -145,7 +144,7 @@
      [quo/summary-info
       {:type             summary-info-type
        :networks-to-show (when bridge-tx?
-                           (send-utils/network-values-for-ui network-values))
+                           network-values)
        :account-props    (cond-> account-props
                            (and account-to? (not bridge-tx?))
                            (assoc

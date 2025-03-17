@@ -1,5 +1,6 @@
 (ns status-im.subs.wallet.networks
-  (:require [re-frame.core :as re-frame]
+  (:require [networks.core :as networks]
+            [re-frame.core :as re-frame]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [utils.money :as money]
             [utils.number :as number]))
@@ -64,11 +65,9 @@
          token-decimals (:decimals token)]
      (reduce-kv
       (fn [acc chain-id amount]
-        (let [network-name (network-utils/id->network chain-id)
+        (let [network-name (networks/chain-id->network-name chain-id)
               amount-fixed (number/to-fixed (money/->bignumber amount) token-decimals)]
-          (assoc acc
-                 (if (= network-name :mainnet) :ethereum network-name)
-                 {:amount amount-fixed :token-symbol token-symbol})))
+          (merge acc (network-utils/network-summary network-name token-symbol amount-fixed))))
       {}
       network-values))))
 
@@ -79,4 +78,4 @@
    (-> to-values-by-chain
        keys
        first
-       network-utils/get-network-details)))
+       networks/network-details)))

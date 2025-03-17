@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.swap.set-spending-cap.view
   (:require
+    [networks.core :as networks]
     [quo.core :as quo]
     [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]
@@ -7,7 +8,6 @@
     [status-im.common.events-helper :as events-helper]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.swap.set-spending-cap.style :as style]
     [utils.address :as address-utils]
     [utils.i18n :as i18n]
@@ -113,7 +113,7 @@
                     :on-press            (fn []
                                            (rf/dispatch
                                             [:wallet/navigate-to-chain-explorer-from-bottom-sheet
-                                             (external-links/get-explorer-url-by-chain-id chain-id)
+                                             (networks/chain-explorer-url chain-id)
                                              contract-address]))
                     :label               (i18n/label :t/view-on-eth)
                     :right-icon          :i/external}]]])}]))

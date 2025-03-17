@@ -15,18 +15,24 @@
   (h/test "Type of `status-account` title renders"
     (h/render-with-theme-provider [summary-info/view
                                    {:type             :status-account
-                                    :networks-to-show {:ethereum 150
-                                                       :optimism 50
-                                                       :arbitrum 25}
+                                    :networks-to-show {:ethereum {:amount       150
+                                                                  :token-symbol "ETH"}
+                                                       :optimism {:amount       50
+                                                                  :token-symbol "ETH"}
+                                                       :arbitrum {:amount       50
+                                                                  :token-symbol "ETH"}}
                                     :account-props    status-account-props}])
     (h/is-truthy (h/get-by-text "Collectibles vault")))
 
   (h/test "Type of `user` title renders"
     (h/render-with-theme-provider [summary-info/view
                                    {:type             :user
-                                    :networks-to-show {:ethereum 150
-                                                       :optimism 50
-                                                       :arbitrum 25}
+                                    :networks-to-show {:ethereum {:amount       150
+                                                                  :token-symbol "ETH"}
+                                                       :optimism {:amount       50
+                                                                  :token-symbol "ETH"}
+                                                       :arbitrum {:amount       25
+                                                                  :token-symbol "ETH"}}
                                     :account-props    {:full-name           "M L"
                                                        :status-indicator?   false
                                                        :size                :small
@@ -41,9 +47,12 @@
   (h/test "Networks specified render"
     (h/render-with-theme-provider [summary-info/view
                                    {:type             :status-account
-                                    :networks-to-show {:ethereum 150
-                                                       :optimism 50
-                                                       :arbitrum 25}
+                                    :networks-to-show {:ethereum {:amount       150
+                                                                  :token-symbol "ETH"}
+                                                       :optimism {:amount       50
+                                                                  :token-symbol "ETH"}
+                                                       :arbitrum {:amount       25
+                                                                  :token-symbol "ETH"}}
                                     :account-props    status-account-props}])
     (h/is-truthy (h/get-by-label-text :networks))))
 

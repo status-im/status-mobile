@@ -1,20 +1,25 @@
-(ns utils.ethereum.chain)
+(ns utils.ethereum.chain
+  (:require [networks.core :as networks]))
 
 (def BSC-mainnet-chain-id 56)
 (def BSC-testnet-chain-id 97)
 
+;; TODO @clauxx: is this ns needed? seems like leftover from when we supported one chain at a time
+(def wallet-networks
+  (reduce-kv (fn [m k v]
+               (assoc m k {:id (:chain-id v) :name (:full-name v)}))
+             {}
+             networks/networks-by-network-name))
+
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 (def chains
-  {:mainnet     {:id 1 :name "Mainnet"}
-   :xdai        {:id 100 :name "xDai"}
-   :sepolia     {:id 11155111 :name "Sepolia"}
-   :bsc         {:id   BSC-mainnet-chain-id
-                 :name "BSC"}
-   :bsc-testnet {:id   BSC-testnet-chain-id
-                 :name "BSC testnet"}
-   :arbitrum    {:id 42161 :name "Arbitrum"}
-   :optimism    {:id 10 :name "Optimism"}
-   :base        {:id 8453 :name "Base"}})
+  (assoc wallet-networks
+         :xdai        {:id 100 :name "xDai"}
+         :sepolia     {:id 11155111 :name "Sepolia"}
+         :bsc         {:id   BSC-mainnet-chain-id
+                       :name "BSC"}
+         :bsc-testnet {:id   BSC-testnet-chain-id
+                       :name "BSC testnet"}))
 
 (defn chain-id->chain-keyword
   [i]

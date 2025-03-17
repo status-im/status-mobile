@@ -43,21 +43,3 @@
    "eth:arb1:"      [:mainnet :polygon :arbitrum]
    ""               []
    ""               nil))
-
-(deftest network-ids->formatted-text-test
-  (testing "Empty network-ids should return an empty string"
-    (is (= "" (utils/network-ids->formatted-text []))))
-
-  (testing "Single network-id should return the capitalized name of that network"
-    (is (= "Mainnet" (utils/network-ids->formatted-text [constants/ethereum-mainnet-chain-id]))))
-
-  (testing "Two network-ids should return a comma-separated string with 'and' for the last item"
-    (is (= "Mainnet and Optimism"
-           (utils/network-ids->formatted-text [constants/ethereum-mainnet-chain-id
-                                               constants/optimism-mainnet-chain-id]))))
-
-  (testing "Multiple network-ids should return a comma-separated string with 'and' for the last item"
-    (is (= "Mainnet, Optimism and Arbitrum"
-           (utils/network-ids->formatted-text [constants/ethereum-mainnet-chain-id
-                                               constants/optimism-mainnet-chain-id
-                                               constants/arbitrum-mainnet-chain-id])))))

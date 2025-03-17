@@ -18,9 +18,12 @@
 (defn view
   []
   (let [state                (reagent/atom {:type             :status-account
-                                            :networks-to-show {:ethereum {:amount 150}
-                                                               :optimism {:amount 50}
-                                                               :arbitrum {:amount 25}}})
+                                            :networks-to-show {:ethereum {:amount       150
+                                                                          :token-symbol "ETH"}
+                                                               :optimism {:amount       50
+                                                                          :token-symbol "ETH"}
+                                                               :arbitrum {:amount       25
+                                                                          :token-symbol "ETH"}}})
         status-account-props {:customization-color :purple
                               :size                32
                               :emoji               "🍑"

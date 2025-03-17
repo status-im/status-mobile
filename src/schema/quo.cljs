@@ -1,6 +1,7 @@
 (ns schema.quo
   (:require
     [quo.foundations.colors :as colors]
+    [quo.foundations.resources :as resources]
     [schema.registry :as registry]))
 
 (def ^:private ?customization-color (into [:enum :primary] colors/account-colors))
@@ -71,9 +72,14 @@
    [:map
     [:config ?image-uri-config]]])
 
+(def ^:private ?networks
+  (-> (concat [:enum] resources/supported-networks)
+      vec))
+
 (defn register-schemas
   []
   (registry/register ::customization-color ?customization-color)
   (registry/register ::image-uri-config ?image-uri-config)
   (registry/register ::profile-picture-source ?profile-picture-source)
-  (registry/register ::profile-picture-options ?profile-picture-options))
+  (registry/register ::profile-picture-options ?profile-picture-options)
+  (registry/register ::networks ?networks))

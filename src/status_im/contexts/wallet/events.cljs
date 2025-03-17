@@ -4,6 +4,7 @@
     [cljs-time.coerce :as time-coerce]
     [clojure.set]
     [clojure.string :as string]
+    [networks.core :as networks]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     [status-im.contexts.network.data-store :as network.data-store]
@@ -11,7 +12,6 @@
     [status-im.contexts.settings.wallet.events]
     [status-im.contexts.wallet.common.activity-tab.events]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.db-path :as db-path]
@@ -469,7 +469,7 @@
    (let [network-data           (data-store/rpc->networks data)
          test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
          default-network-names  (->> (get network-data (if test-networks-enabled? :test :prod))
-                                     (map #(-> % :chain-id network-utils/id->network))
+                                     (map #(-> % :chain-id networks/chain-id->network-name))
                                      set)]
      {:db (-> db
               (assoc-in [:wallet :networks] network-data)
@@ -558,9 +558,9 @@
  :wallet/navigate-to-chain-explorer
  (fn [{:keys [db]} [{:keys [network chain-id address]}]]
    (let [chain-id      (or chain-id (network-utils/network->chain-id db network))
-         explorer-link (external-links/get-explorer-url-by-chain-id chain-id)]
+         explorer-link (networks/chain-explorer-url chain-id address)]
      {:fx [[:dispatch [:hide-bottom-sheet]]
-           [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]})))
+           [:dispatch [:browser.ui/open-url explorer-link]]]})))
 
 (rf/reg-event-fx :wallet/reload
  (fn [{:keys [db]}]
@@ -614,15 +614,11 @@
                                                   (for [[k v] chains :when (= v "down")] k))
                                      keys)
          test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
-         chain-ids-by-mode       (network-utils/get-default-chain-ids-by-mode
-                                  {:test-networks-enabled? test-networks-enabled?})
+         chain-ids-by-mode       (networks/chain-ids test-networks-enabled?)
          chains-filtered-by-mode (remove #(not (contains? chain-ids-by-mode %)) down-chain-ids)
          chains-down?            (and (network.data-store/online? db) (seq chains-filtered-by-mode))
          chain-names             (when chains-down?
-                                   (->> (map #(-> (network-utils/id->network %)
-                                                  name
-                                                  string/capitalize)
-                                             chains-filtered-by-mode)
+                                   (->> (map networks/full-name chains-filtered-by-mode)
                                         distinct
                                         (string/join ", ")))]
      (when (seq down-chain-ids)

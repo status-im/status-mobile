@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.collectible.options.view
   (:require
+    [networks.core :as networks]
     [quo.core :as quo]
-    [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.url :as url]))
@@ -14,12 +14,14 @@
         uri              (url/replace-port image (rf/sub [:mediaserver/port]))]
     [quo/action-drawer
      [[{:icon                :i/link
-        :accessibility-label :view-on-etherscan
+        :accessibility-label (networks/accessibility-label chain-id "view-on")
         :on-press            (fn []
                                (rf/dispatch [:wallet/navigate-to-chain-explorer-from-bottom-sheet
-                                             (external-links/get-explorer-url-by-chain-id chain-id)
+                                             (networks/chain-explorer-url chain-id)
                                              contract-address]))
-        :label               (i18n/label :t/view-on-eth)
+        :label               (i18n/label :t/view-on-chain-explorer
+                                         {:chain-explorer-name (networks/chain-explorer-name
+                                                                chain-id)})
         :right-icon          :i/external}]
       [{:icon                :i/save
         :accessibility-label :save-image

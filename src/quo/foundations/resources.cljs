@@ -53,6 +53,8 @@
    :xdai     (js/require "../resources/images/networks/xDAI.png")
    :zksync   (js/require "../resources/images/networks/zkSync.png")})
 
+(def supported-networks (keys networks))
+
 (defn get-network
   [k]
   (get networks k))
