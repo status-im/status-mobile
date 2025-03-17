@@ -1,5 +1,6 @@
 (ns status-im.contexts.keycard.migrate.events
   (:require [clojure.string :as string]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [utils.security.core :as security]))
 
@@ -87,12 +88,15 @@
                  #(rf/dispatch [:keycard/migration.phrase-backed-up])}]))
 
 (rf/reg-event-fx :keycard/migration.phrase-entered
- (fn [{:keys [db]} [{:keys [phrase]}]]
-   {:db (assoc-in db [:keycard :migration :masked-phrase] phrase)
-    :fx [[:dispatch [:navigate-back]]
-         [:dispatch
-          [:open-modal :screen/keycard.authorise
-           {:on-success #(rf/dispatch [:keycard/migration.authorisation-success %])}]]]}))
+ (fn [{:keys [db]} [{:keys [seed-phrase key-uid]}]]
+   (if (not= key-uid (get-in db [:profile/profile :key-uid]))
+     {:fx [[:dispatch
+            [:enter-seed-phrase/set-error (i18n/label :t/seed-phrase-dont-match-migrate-flow)]]]}
+     {:db (assoc-in db [:keycard :migration :masked-phrase] seed-phrase)
+      :fx [[:dispatch [:navigate-back]]
+           [:dispatch
+            [:open-modal :screen/keycard.authorise
+             {:on-success #(rf/dispatch [:keycard/migration.authorisation-success %])}]]]})))
 
 (rf/reg-event-fx :keycard/migration.get-phrase
  (fn [{:keys [db]}]

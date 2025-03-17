@@ -24,8 +24,8 @@
          [:dispatch [:open-modal :screen/keycard.unblock.ready-to-unblock]]]}))
 
 (rf/reg-event-fx :keycard/unblock.phrase-entered
- (fn [{:keys [db]} [{:keys [phrase]}]]
-   {:db (assoc-in db [:keycard :unblock :masked-phrase] phrase)
+ (fn [{:keys [db]} [{:keys [seed-phrase]}]]
+   {:db (assoc-in db [:keycard :unblock :masked-phrase] seed-phrase)
     :fx [[:dispatch [:navigate-back]]
          [:dispatch
           [:open-modal :screen/keycard.pin.create
