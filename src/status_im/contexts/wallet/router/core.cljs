@@ -3,11 +3,14 @@
             [status-im.constants :as constants]
             [status-im.contexts.wallet.router.schema :as router.schema]
             [status-im.contexts.wallet.send.transaction-settings.core :as transaction-settings]
-            [status-im.contexts.wallet.send.utils :as send-utils]))
+            [utils.money :as money]))
 
 (defn- to-gwei
   [amount]
-  (send-utils/convert-to-gwei amount constants/min-token-decimals-to-display))
+  (-> amount
+      money/wei->gwei
+      (money/with-precision constants/min-token-decimals-to-display)
+      str))
 
 (defn transaction-fees-by-mode
   [route]

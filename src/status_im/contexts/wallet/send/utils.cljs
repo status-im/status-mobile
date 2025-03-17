@@ -229,13 +229,6 @@
   [tx-type]
   (contains? collectible-tx-set tx-type))
 
-(defn convert-to-gwei
-  [n precision]
-  (-> n
-      money/wei->gwei
-      (money/with-precision precision)
-      (str)))
-
 (defn bridge-disabled?
   [token-symbol]
   (not (constants/bridge-assets token-symbol)))
