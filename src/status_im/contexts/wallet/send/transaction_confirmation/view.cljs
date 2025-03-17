@@ -201,6 +201,7 @@
                                         {:content buy-token/view}])}]
 
       :else nil)))
+
 (defn- transaction-details
   [{:keys [estimated-time-min max-fees to-network
            transaction-type route-loaded?]}]
@@ -221,6 +222,7 @@
        :inner-style         {:opacity 1}
        :accessibility-label :advanced-button
        :container-style     {:margin-right 8}
+       :disabled?           no-routes-found?
        :on-press            #(rf/dispatch
                               [:show-bottom-sheet
                                {:content transaction-settings/settings-sheet}])}
