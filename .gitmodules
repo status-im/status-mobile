@@ -1,0 +1,3 @@
+[submodule "legal-docs"]
+	path = legal-docs
+	url = https://github.com/status-im/status-software-legal-documents.git
