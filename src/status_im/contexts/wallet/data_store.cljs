@@ -254,6 +254,7 @@
      :router-input-params-uuid  (:router-input-params-uuid new-path)
      :gas-fees                  (router/transaction-gas-fees new-path)
      :estimated-time            (router/transaction-estimated-time new-path)
+     :approval-estimated-time   (router/approval-estimated-time new-path)
      :fees-by-mode              (router/transaction-fees-by-mode new-path)
      :tx-fee-mode               (router/transaction-fee-mode new-path)}))
 

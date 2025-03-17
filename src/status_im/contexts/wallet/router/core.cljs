@@ -63,6 +63,16 @@
    [:cat router.schema/?route]
    :int])
 
+(defn approval-estimated-time
+  "Get the transaction approval estimated time."
+  [route]
+  (:approval-estimated-time route))
+
+(schema/=> approval-estimated-time
+  [:=>
+   [:cat router.schema/?route]
+   [:maybe :int]])
+
 (defn transaction-gas-fees
   [route]
   (let [{:keys [tx-base-fee tx-priority-fee
