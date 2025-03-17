@@ -1,14 +1,13 @@
 (ns status-im.contexts.wallet.router.core
   (:require [schema.core :as schema]
+            [status-im.constants :as constants]
             [status-im.contexts.wallet.router.schema :as router.schema]
             [status-im.contexts.wallet.send.transaction-settings.core :as transaction-settings]
             [status-im.contexts.wallet.send.utils :as send-utils]))
 
-(def ^:private gwei-precision 6)
-
 (defn- to-gwei
   [amount]
-  (send-utils/convert-to-gwei amount gwei-precision))
+  (send-utils/convert-to-gwei amount constants/min-token-decimals-to-display))
 
 (defn transaction-fees-by-mode
   [route]

@@ -7,20 +7,17 @@
    :tx-fee-mode/fast
    :tx-fee-mode/urgent])
 
-(def ^:private ?hex
-  [:and :string [:re #"^0x[0-9a-fA-F]+$"]])
-
 (def ^:private ?suggested-levels-for-max-fees-per-gas
   [:map {:closed? true}
-   [:low ?hex]
-   [:medium ?hex]
-   [:high ?hex]
+   [:low :schema.common/hex]
+   [:medium :schema.common/hex]
+   [:high :schema.common/hex]
    [:low-estimated-time :int]
    [:medium-estimated-time :int]
    [:high-estimated-time :int]
-   [:low-priority ?hex]
-   [:medium-priority ?hex]
-   [:high-priority ?hex]])
+   [:low-priority :schema.common/hex]
+   [:medium-priority :schema.common/hex]
+   [:high-priority :schema.common/hex]])
 
 (def ^:private ?chain
   [:map
@@ -36,51 +33,51 @@
    [:processor-name :string]
    [:router-input-params-uuid :string]
    [:tx-packed-data :string]
-   [:tx-nonce ?hex]
-   [:suggested-tx-nonce ?hex]
-   [:used-contract-address ?hex]
+   [:tx-nonce :schema.common/hex]
+   [:suggested-tx-nonce :schema.common/hex]
+   [:used-contract-address :schema.common/hex]
    [:from-chain ?chain]
    [:to-chain ?chain]
 
    ;; Amounts
-   [:amount-in ?hex]
-   [:amount-out ?hex]
+   [:amount-in :schema.common/hex]
+   [:amount-out :schema.common/hex]
    [:amount-in-locked :boolean]
    [:required-native-balance :int]
    [:required-token-balance :int]
 
    ;; Fees
    [:tx-gas-amount :int]
-   [:tx-token-fees ?hex]
-   [:tx-total-fee ?hex]
-   [:tx-priority-fee ?hex]
-   [:tx-base-fee ?hex]
-   [:tx-fee ?hex]
-   [:tx-l-1-fee ?hex]
-   [:tx-bonder-fees [:maybe ?hex]]
+   [:tx-token-fees :schema.common/hex]
+   [:tx-total-fee :schema.common/hex]
+   [:tx-priority-fee :schema.common/hex]
+   [:tx-base-fee :schema.common/hex]
+   [:tx-fee :schema.common/hex]
+   [:tx-l-1-fee :schema.common/hex]
+   [:tx-bonder-fees [:maybe :schema.common/hex]]
    [:tx-gas-fee-mode :int]
    [:tx-estimated-time :int]
-   [:tx-max-fees-per-gas ?hex]
-   [:suggested-min-priority-fee ?hex]
-   [:suggested-max-priority-fee ?hex]
+   [:tx-max-fees-per-gas :schema.common/hex]
+   [:suggested-min-priority-fee :schema.common/hex]
+   [:suggested-max-priority-fee :schema.common/hex]
    [:suggested-tx-gas-amount :int]
-   [:suggested-approval-gas-amount :int]
    [:suggested-levels-for-max-fees-per-gas ?suggested-levels-for-max-fees-per-gas]
-   [:current-base-fee ?hex]
+   [:current-base-fee :schema.common/hex]
    [:subtract-fees :boolean]
 
    ;; Approval
    [:approval-required :boolean]
-   [:approval-tx-nonce [:maybe ?hex]]
-   [:suggested-approval-tx-nonce [:maybe ?hex]]
-   [:approval-contract-address [:maybe ?hex]]
+   [:approval-tx-nonce [:maybe :schema.common/hex]]
+   [:suggested-approval-tx-nonce [:maybe :schema.common/hex]]
+   [:suggested-approval-gas-amount :int]
+   [:approval-contract-address [:maybe :schema.common/hex]]
    [:approval-packed-data [:maybe :string]]
-   [:approval-amount-required [:maybe ?hex]]
-   [:approval-fee [:maybe ?hex]]
-   [:approval-l-1-fee [:maybe ?hex]]
+   [:approval-amount-required [:maybe :schema.common/hex]]
+   [:approval-fee [:maybe :schema.common/hex]]
+   [:approval-l-1-fee [:maybe :schema.common/hex]]
    [:approval-gas-amount [:maybe :int]]
-   [:approval-priority-fee [:maybe ?hex]]
-   [:approval-base-fee [:maybe ?hex]]
-   [:approval-max-fees-per-gas [:maybe ?hex]]
+   [:approval-priority-fee [:maybe :schema.common/hex]]
+   [:approval-base-fee [:maybe :schema.common/hex]]
+   [:approval-max-fees-per-gas [:maybe :schema.common/hex]]
    [:approval-estimated-time [:maybe :int]]
    [:approval-gas-fee-mode [:maybe :int]]])

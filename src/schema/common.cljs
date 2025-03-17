@@ -36,6 +36,9 @@
 (def ^:private ?hiccup
   vector?)
 
+(def ^:private ?hex
+  [:and :string [:re #"^0x[0-9a-fA-F]+$"]])
+
 (defn register-schemas
   []
   (registry/register ::theme ?theme)
@@ -44,4 +47,5 @@
   (registry/register ::image-source ?image-source)
   (registry/register ::rpc-call ?rpc-call)
   (registry/register ::exception ?exception)
-  (registry/register ::hiccup ?hiccup))
+  (registry/register ::hiccup ?hiccup)
+  (registry/register ::hex ?hex))
