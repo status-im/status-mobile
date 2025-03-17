@@ -212,7 +212,8 @@ class TestrailReport(BaseTestReport):
                 except IndexError:
                     continue
                 for res in results:
-                    if self.get_lambda_test_job_url(job_id=device) in res['comment']:
+                    if ('setup failed' in last_testrun.error and self.get_lambda_test_job_url(job_id=device) in res[
+                        'comment']) or test.name in res['comment']:
                         try:
                             for log in test.logs_paths.keys():
                                 self.add_attachment(method='add_attachment_to_result/%s' % str(res['id']),
