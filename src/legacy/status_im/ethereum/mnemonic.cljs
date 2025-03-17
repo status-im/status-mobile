@@ -190,12 +190,6 @@
     (-> (sanitize-passphrase s)
         (string/split #" "))))
 
-(def valid-word-counts #{12 15 18 21 24})
-
-(defn valid-word-counts?
-  [v]
-  (boolean (valid-word-counts (count v))))
-
 (defn words-count
   [s]
   (if (empty? s)
@@ -203,23 +197,3 @@
     (-> s
         passphrase->words
         count)))
-
-(defn- valid-word?
-  [s]
-  (re-matches #"^[A-z]+$" s))
-
-(defn valid-length?
-  [s]
-  (-> s
-      passphrase->words
-      valid-word-counts?))
-
-(defn valid-words?
-  [s]
-  (->> s
-       passphrase->words
-       (every? valid-word?)))
-
-(defn status-generated-phrase?
-  [s]
-  (every? dictionary (passphrase->words s)))
