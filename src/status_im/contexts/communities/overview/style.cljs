@@ -123,7 +123,7 @@
    :padding-top    4
    :padding-bottom 25})
 
-(defn chanel-listing
+(defn channel-listing
   [theme]
   (let [height (- (:height (rn/get-window))
                   (safe-area/get-top)
