@@ -69,10 +69,10 @@
                                                               :qux-qux-2 nil}]}]}}]
           (is (= {"foo" {"fooFoo"
                          ;; This vector is transformed
-                         [{"fooFoo" [{"fooFoo1" nil, "fooFoo2" nil}]}
-                          {"fooBar" [{"fooBar1" nil, "fooBar2" nil}]}]}
+                         [{"fooFoo" [{"fooFoo1" nil "fooFoo2" nil}]}
+                          {"fooBar" [{"fooBar1" nil "fooBar2" nil}]}]}
                   "qux" {"quxQux"
                          ;; This vector is not
-                         [{"qux-qux" [{"qux-qux-1" nil, "qux-qux-2" nil}]}
-                          {"qux-bar" [{"qux-qux-1" nil, "qux-qux-2" nil}]}]}}
+                         [{"qux-qux" [{"qux-qux-1" nil "qux-qux-2" nil}]}
+                          {"qux-bar" [{"qux-qux-1" nil "qux-qux-2" nil}]}]}}
                  (test-fn props-with-vectors))))))))

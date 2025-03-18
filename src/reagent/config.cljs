@@ -5,7 +5,7 @@
             [reagent.impl.util :as reagent.util]
             [utils.transforms :as transforms]))
 
-(def ^:dynamic ^js *keys-to-convert* #js{})
+(def ^:dynamic ^js *keys-to-convert* #js {})
 
 (declare convert-prop-value)
 
@@ -44,7 +44,7 @@
   [keys-to-convert]
   (set! *keys-to-convert* (reduce (fn [o k]
                                     (doto o (gobj/set (name k) true)))
-                                  #js{}
+                                  #js {}
                                   keys-to-convert))
   (set! template/convert-prop-value convert-prop-value))
 
