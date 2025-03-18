@@ -1,4 +1,4 @@
-(ns networks.optimism
+(ns status-im.contexts.wallet.networks.chains.optimism
   (:require [quo.foundations.resources :as resources]))
 
 (def network

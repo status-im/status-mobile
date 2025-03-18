@@ -1,7 +1,7 @@
 (ns status-im.subs.wallet.networks
-  (:require [networks.core :as networks]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
+            [status-im.contexts.wallet.networks.core :as networks]
             [utils.money :as money]
             [utils.number :as number]))
 

@@ -1,6 +1,6 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.sheets.address-options.view
   (:require
-    [networks.core :as networks]
+    [status-im.contexts.wallet.networks.core :as networks]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.platform :as platform]

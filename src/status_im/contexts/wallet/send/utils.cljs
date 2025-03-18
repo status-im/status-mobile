@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.send.utils
   (:require
-    [networks.core :as networks]
+    [status-im.contexts.wallet.networks.core :as networks]
     [status-im.constants :as constants]
     [utils.money :as money]))
 

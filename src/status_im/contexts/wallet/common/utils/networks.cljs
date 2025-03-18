@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.common.utils.networks
   (:require
     [clojure.string :as string]
-    [networks.core :as networks]
+    [status-im.contexts.wallet.networks.core :as networks]
     [utils.money :as money]
     [utils.number]))
 

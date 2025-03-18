@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.set :as set]
             [clojure.string :as string]
-            [networks.core :as networks]
+            [status-im.contexts.wallet.networks.core :as networks]
             [status-im.constants :as constants]
             [utils.string]))
 

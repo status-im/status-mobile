@@ -1,9 +1,9 @@
 (ns status-im.subs.wallet.wallet-test
   (:require
     [cljs.test :refer [is testing use-fixtures]]
-    [networks.core :as networks]
     [re-frame.db :as rf-db]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.networks.core :as networks]
     [status-im.subs.root]
     [test-helpers.unit :as h]
     [utils.money :as money]

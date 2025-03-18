@@ -1,4 +1,4 @@
-(ns networks.arbitrum
+(ns status-im.contexts.wallet.networks.chains.arbitrum
   (:require [quo.foundations.resources :as resources]))
 
 (def network

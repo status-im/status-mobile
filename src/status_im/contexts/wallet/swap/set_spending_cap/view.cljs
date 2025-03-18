@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.swap.set-spending-cap.view
   (:require
-    [networks.core :as networks]
+    [status-im.contexts.wallet.networks.core :as networks]
     [quo.core :as quo]
     [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]

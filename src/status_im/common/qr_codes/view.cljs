@@ -1,7 +1,7 @@
 (ns status-im.common.qr-codes.view
   (:require
-    [networks.core :as networks]
     [quo.core :as quo]
+    [status-im.contexts.wallet.networks.core :as networks]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
 

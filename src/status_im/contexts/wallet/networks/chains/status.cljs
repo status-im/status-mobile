@@ -1,4 +1,4 @@
-(ns networks.status
+(ns status-im.contexts.wallet.networks.chains.status
   (:require [quo.foundations.resources :as resources]))
 
 (def network

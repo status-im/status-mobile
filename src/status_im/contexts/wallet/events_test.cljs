@@ -3,11 +3,11 @@
     [cljs.test :refer-macros [is testing]]
     [matcher-combinators.matchers :as matchers]
     matcher-combinators.test
-    [networks.arbitrum :as arbitrum]
-    [networks.core :as networks]
-    [networks.optimism :as optimism]
     [re-frame.db :as rf-db]
     status-im.contexts.wallet.events
+    [status-im.contexts.wallet.networks.chains.arbitrum :as arbitrum]
+    [status-im.contexts.wallet.networks.chains.optimism :as optimism]
+    [status-im.contexts.wallet.networks.core :as networks]
     [test-helpers.unit :as h]))
 
 (def arbitrum-network-name (:network-name arbitrum/network))

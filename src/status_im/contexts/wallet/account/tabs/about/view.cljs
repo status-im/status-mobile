@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.account.tabs.about.view
   (:require
-    [networks.core :as networks]
+    [status-im.contexts.wallet.networks.core :as networks]
     [quo.core :as quo]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]

@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.collectible.options.view
   (:require
-    [networks.core :as networks]
+    [status-im.contexts.wallet.networks.core :as networks]
     [quo.core :as quo]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]

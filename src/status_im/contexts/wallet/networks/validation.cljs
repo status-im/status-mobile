@@ -1,4 +1,4 @@
-(ns networks.validation
+(ns status-im.contexts.wallet.networks.validation
   (:require [malli.core]
             [malli.error]))
 

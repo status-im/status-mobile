@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.collectible.utils
   (:require [clojure.string :as string]
-            [networks.core :as networks]
             [status-im.config :as config]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.networks.core :as networks]
             [taoensso.timbre :as log]
             [utils.number :as utils.number]))
 

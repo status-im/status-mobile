@@ -1,13 +1,13 @@
-(ns networks.core
+(ns status-im.contexts.wallet.networks.core
   (:require
     [malli.core]
     [malli.error]
-    [networks.arbitrum :as arbitrum]
-    [networks.base :as base]
-    [networks.mainnet :as mainnet]
-    [networks.optimism :as optimism]
-    [networks.status :as status]
-    [networks.validation]))
+    [status-im.contexts.wallet.networks.chains.arbitrum :as arbitrum]
+    [status-im.contexts.wallet.networks.chains.base :as base]
+    [status-im.contexts.wallet.networks.chains.mainnet :as mainnet]
+    [status-im.contexts.wallet.networks.chains.optimism :as optimism]
+    [status-im.contexts.wallet.networks.chains.status :as status]
+    [status-im.contexts.wallet.networks.validation :as validation]))
 
 (def networks
   [mainnet/network
@@ -44,7 +44,7 @@
 ;; NOTE: runs schema validation over all the networks only in debug
 ;; mode to make sure the networks are defined correctly
 (when ^boolean js/goog.DEBUG
-  (map networks.validation/validate-network all-networks))
+  (map validation/validate-network all-networks))
 
 ;; mappings
 

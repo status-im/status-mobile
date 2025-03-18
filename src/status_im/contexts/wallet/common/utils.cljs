@@ -4,11 +4,11 @@
             [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
+            [status-im.contexts.wallet.networks.core :as networks]
             [utils.address]
             [utils.money :as money]
             [utils.number :as number]
-            [utils.string]
-            [networks.core :as networks]))
+            [utils.string]))
 
 (def missing-price-decimals 6) ; if we don't have the monetary value of the token, we default to 6 decimals
 (defn get-first-name

@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.common.activity-tab.options.view
-  (:require [networks.core :as networks]
-            [quo.core :as quo]
+  (:require [quo.core :as quo]
             [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
+            [status-im.contexts.wallet.networks.core :as networks]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 

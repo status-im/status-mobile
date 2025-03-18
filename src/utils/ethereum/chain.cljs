@@ -1,5 +1,5 @@
 (ns utils.ethereum.chain
-  (:require [networks.core :as networks]))
+  (:require [status-im.contexts.wallet.networks.core :as networks]))
 
 (def BSC-mainnet-chain-id 56)
 (def BSC-testnet-chain-id 97)

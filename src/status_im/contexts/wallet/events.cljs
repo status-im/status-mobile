@@ -4,7 +4,7 @@
     [cljs-time.coerce :as time-coerce]
     [clojure.set]
     [clojure.string :as string]
-    [networks.core :as networks]
+    [status-im.contexts.wallet.networks.core :as networks]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     [status-im.contexts.network.data-store :as network.data-store]
