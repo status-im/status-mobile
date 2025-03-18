@@ -25,7 +25,7 @@
                       (case k
                         "tokenGated"              :token-gated?
                         "canPost"                 :can-post?
-                        "can-view"                :can-view?
+                        "canView"                 :can-view?
                         "hideIfPermissionsNotMet" :hide-if-permissions-not-met?
                         (keyword k)))
         chat-val-fn (fn [k v]
@@ -75,9 +75,9 @@
     (keyword k)))
 
 (defn <-rpc
-  [c-js]
+  [community-js]
   (let [community (transforms/<-js-map
-                   c-js
+                   community-js
                    {:key-fn rename-community-key
                     :val-fn (fn [k v]
                               (case k

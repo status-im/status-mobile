@@ -47,7 +47,8 @@
 (defn group-chat?
   ([chat]
    (and (multi-user-chat? chat)
-        (not (:public? chat))))
+        (not (:public? chat))
+        (not= (:chat-type chat) constants/community-chat-type)))
   ([cofx chat-id]
    (group-chat? (get-chat cofx chat-id))))
 
