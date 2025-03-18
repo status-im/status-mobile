@@ -188,14 +188,17 @@
    :channel   48
    :separator 8})
 
-(defn- calc-scrollable-content
-  [scrollable-area]
-  (+ scrollable-area
-     (safe-area/get-top)
-     32
-     12 ;; top spacing
-     (safe-area/get-bottom)
-     (- (:height (rn/get-window)))))
+(defn- unusable-area-height []
+  (+ (safe-area/get-top)
+     32 11 ;;top page buttons & button's padding
+     (safe-area/get-bottom)))
+
+(defn- calc-scrollable-content [scrollable-height]
+  (- (+ scrollable-height (unusable-area-height))
+     (:height (rn/get-window))))
+
+(defn- calc-listing-height []
+  (- (:height (rn/get-window)) (unusable-area-height)))
 
 (defn- channel-listing
   [{:keys [community-id scroll-amount header-height set-max-scroll]}]
@@ -207,24 +210,25 @@
                                      :sheetDisplacementThreshold sheet-displacement-threshold
                                      :expandHeaderLimit          expand-header-limit})
         flat-list-ref          (reanimated/use-animated-ref)
-        _ (worklets/use-scroll-to
-           #js {:animatedRef       flat-list-ref
-                :scrollAmount      scroll-amount
-                :expandHeaderLimit expand-header-limit})
-        community              (rf/sub [:communities/community community-id])
-        joined-or-spectated?   (or (:joined community) (:spectated community))
+        _scroll-to-animation   (worklets/use-scroll-to
+                                #js {:animatedRef       flat-list-ref
+                                     :scrollAmount      scroll-amount
+                                     :expandHeaderLimit expand-header-limit})
+        {:keys [joined?
+                spectated?]}   (rf/sub [:communities/community-overview community-id])
+        joined-or-spectated?   (or joined? spectated?)
         render-fn              (rn/use-callback
                                 (channel-listing-item {:community-id         community-id
                                                        :joined-or-spectated? joined-or-spectated?})
                                 [joined-or-spectated?])
         flatten-channels       (rf/sub [:communities/flatten-channels-and-categories community-id])
         categories-indexes     (keep-indexed (fn [idx {:keys [render-as]}]
-                                               (when (= render-as :category)
-                                                 idx))
+                                               (when (= render-as :category) idx))
                                              flatten-channels)
         scrollable-area-height (->> flatten-channels
                                     (map (comp channel-component-heights :render-as))
-                                    (reduce +))]
+                                    (reduce +))
+        listing-height         (calc-listing-height)]
     (rn/use-effect
      (fn []
        (let [max-scroll-offset (calc-scrollable-content scrollable-area-height)]
@@ -234,15 +238,13 @@
      [scrollable-area-height])
     [reanimated/flat-list
      {:ref                     flat-list-ref
-      :style                   [(style/chanel-listing theme) channels-styles]
+      :style                   [(style/channel-listing theme listing-height) channels-styles]
       :data                    flatten-channels
-      :content-container-style (when platform/ios?
-                                 {:padding-bottom (safe-area/get-bottom)})
+      :content-container-style (when platform/ios? {:padding-bottom (safe-area/get-bottom)})
       :sticky-header-indices   categories-indexes
       :scroll-enabled          false
       :render-fn               render-fn
       :key-fn                  :id}]))
-
 
 (defn- header-cover-image
   [{:keys [cover-image background-color header-opacity]}]
@@ -296,11 +298,12 @@
                                  #js {:scrollAmount               scroll-amount
                                       :sheetDisplacementThreshold sheet-displacement-threshold
                                       :expandHeaderLimit          expand-header-limit})
-        community               (rf/sub [:communities/community community-id])]
+        {:keys [community-name color logo
+                cover-image]} (rf/sub [:communities/community-overview community-id])]
     [:<>
      [header-cover-image
-      {:cover-image      (-> community :images :banner :uri)
-       :background-color (:color community)
+      {:cover-image      cover-image
+       :background-color color
        :header-opacity   header-opacity}]
      [reanimated/view {:style (style/page-nav-container opposite-header-opacity)}
       [page-nav
@@ -311,8 +314,8 @@
        {:blur-version?       true
         :community-id        community-id
         :nav-content-opacity nav-content-opacity
-        :community-name      (:name community)
-        :community-logo      (-> community :images :large :uri)}]]]))
+        :community-name      community-name
+        :community-logo      logo}]]]))
 
 (defn- community-logo
   [{:keys [scroll-amount community-id]}]
@@ -322,7 +325,7 @@
                           :expandHeaderThreshold      expand-header-threshold
                           :sheetDisplacementThreshold sheet-displacement-threshold
                           :textMovementThreshold      text-movement-threshold})
-        logo        (-> (rf/sub [:communities/community community-id]) :images :large :uri)]
+        {:keys [logo]} (rf/sub [:communities/community-overview community-id])]
     [reanimated/view
      {:style [style/community-logo
               (style/community-logo-bg-color theme)
@@ -379,32 +382,34 @@
                            (fn [e]
                              (let [height (oops/oget e "nativeEvent.layout.height")]
                                (reanimated/set-shared-value header-height (or height 0)))))
-        community         (rf/sub [:communities/community community-id])
-        members-count     (count (js-keys (:members community)))]
+        {:keys [community-name description active-members-count tags role-permissions?
+                permissions color
+                joined?]} (rf/sub [:communities/community-overview community-id])
+        members-count     (count (rf/sub [:communities/community-members community-id]))]
     [reanimated/view
      {:style     [(style/community-info theme) sheet-styles]
       :on-layout set-header-height}
      [status-tag
       {:community-id community-id
-       :joined?      (:joined community)
+       :joined?      joined?
        :info-styles  info-styles}]
      [name-and-description
       {:scroll-amount         scroll-amount
-       :community-name        (:name community)
-       :community-description (:description community)
+       :community-name        community-name
+       :community-description description
        :info-styles           info-styles}]
      [community-info-stats
       {:members-count        members-count
-       :active-members-count (:activeMembersCount community)
+       :active-members-count active-members-count
        :info-styles          info-styles}]
-     [community-info-tags (:tags community) info-styles]
+     [community-info-tags tags info-styles]
      [join-community
       {:community-id      community-id
-       :joined?           (:joined community)
-       :tags?             (seq (:tags community))
-       :permissions       (:permissions community)
-       :role-permissions? (:role-permissions? community)
-       :color             (:color community)}]]))
+       :joined?           joined?
+       :tags?             (seq tags)
+       :permissions       permissions
+       :role-permissions? role-permissions?
+       :color             color}]]))
 
 (defn- community-sheet
   [{:keys [community-id scroll-amount set-max-scroll]}]
@@ -483,8 +488,8 @@
 (defn view
   [id]
   (let [community-id    (or id (rf/sub [:get-screen-params :community-overview]))
-        community       (rf/sub [:communities/community community-id])
-        start-expanded? (not (:joined community))]
+        community       (rf/sub [:communities/community-overview community-id])
+        start-expanded? (:joined? community)]
     [rn/view {:style style/community-overview-container}
      (if community
        [community-overview community-id start-expanded?]

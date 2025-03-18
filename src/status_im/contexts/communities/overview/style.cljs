@@ -124,15 +124,10 @@
    :padding-bottom 25})
 
 (defn channel-listing
-  [theme]
-  (let [height (- (:height (rn/get-window))
-                  (safe-area/get-top)
-                  32
-                  11
-                  (safe-area/get-bottom))]
-    {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)
-     :height           height
-     :z-index          1}))
+  [theme height]
+  {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)
+   :height           height
+   :z-index          1})
 
 (defn category-divider
   [theme]

@@ -69,9 +69,9 @@
 (re-frame/reg-sub
  :communities/community-members
  (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities/community community-id])])
- (fn [[{:keys [members]}] _]
-   (js-keys members)))
+   (re-frame/subscribe [:communities/community community-id]))
+ (fn [community _]
+   (js-keys (:members community))))
 
 (re-frame/reg-sub
  :communities/community-chat-members
@@ -364,51 +364,65 @@
                                            %)))])))]
      categories-and-chats)))
 
-(def ^:private channel-separator {:render-as :separator})
+(def ^:private channel-separator-item [{:render-as :separator}])
 
-(defn- mark-as-category
+(defn- get-category-item
   ([category]
-   (assoc (dissoc category :chats) :render-as :category))
+   (get-category-item category nil))
   ([category category-id]
    (let [render-as (if (= category-id :communities/not-categorized) :nothing :category)]
-     (assoc (dissoc category :chats)
-            :render-as
-            render-as))))
+     (-> category
+         (dissoc :chats)
+         (assoc :render-as render-as)
+         vector))))
 
 (defn- mark-as-channel
   [channel]
   (assoc channel :render-as :channel))
+
+(defn- category-with-channels
+  [category-id {:keys [chats] :as category}]
+  (let [category-item (get-category-item category category-id)
+        channels      (map mark-as-channel chats)]
+    (concat category-item channels channel-separator-item)))
 
 (re-frame/reg-sub
  :communities/flatten-channels-and-categories
  (fn [[_ community-id]]
    (re-frame/subscribe [:communities/categorized-channels community-id]))
  (fn [categorized-channels [_ _community-id]]
-   (mapcat (fn [[category-id category]]
-             (when (seq (:chats category))
-               (if (:collapsed? category)
-                 [(mark-as-category category)]
-                 (concat [(mark-as-category category category-id)]
-                         (map mark-as-channel (:chats category))
-                         [channel-separator]))))
-    categorized-channels)))
+   (mapcat (fn [[category-id {:keys [collapsed? chats] :as category}]]
+             (when (seq chats)
+               (if collapsed?
+                 (get-category-item category)
+                 (category-with-channels category-id category))))
+           categorized-channels)))
 
 (re-frame/reg-sub
- :communities
+ :communities/community-overview
  (fn [[_ community-id]]
-   (re-frame/subscribe [:communities/flatten-channels-and-categories community-id]))
- (fn [flatten-channels-and-categories [_ _community-id]]
-   (keep-indexed (fn [idx {:keys [render-as]}]
-                   (when (= render-as :category)
-                     idx))
-                 flatten-channels-and-categories)))
+   (re-frame/subscribe [:communities/community community-id]))
+ (fn [{:keys [joined spectated images description color activeMembersCount tags
+              permissions role-permissions?]
+       :as   community}]
+   (when community
+     {:joined?              joined
+      :spectated?           spectated
+      :cover-image          (-> images :banner :uri)
+      :logo                 (-> images :large :uri)
+      :community-name       (:name community)
+      :description          description
+      :color                color
+      :active-members-count activeMembersCount
+      :tags                 tags
+      :permissions          permissions
+      :role-permissions?    role-permissions?})))
 
 (re-frame/reg-sub
  :communities/collapsed-categories-for-community
  :<- [:communities/collapsed-categories]
  (fn [collapsed-categories [_ community-id]]
    (get collapsed-categories community-id)))
-
 
 (defn token-requirement->token
   [checking-permissions?
