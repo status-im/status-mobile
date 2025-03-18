@@ -188,16 +188,20 @@
    :channel   48
    :separator 8})
 
-(defn- unusable-area-height []
+(defn- unusable-area-height
+  []
   (+ (safe-area/get-top)
-     32 11 ;;top page buttons & button's padding
+     32
+     11 ;;top page buttons & button's padding
      (safe-area/get-bottom)))
 
-(defn- calc-scrollable-content [scrollable-height]
+(defn- calc-scrollable-content
+  [scrollable-height]
   (- (+ scrollable-height (unusable-area-height))
      (:height (rn/get-window))))
 
-(defn- calc-listing-height []
+(defn- calc-listing-height
+  []
   (- (:height (rn/get-window)) (unusable-area-height)))
 
 (defn- channel-listing
@@ -299,7 +303,7 @@
                                   :sheet-displacement-threshold sheet-displacement-threshold
                                   :expand-header-limit          expand-header-limit})
         {:keys [community-name color logo
-                cover-image]} (rf/sub [:communities/community-overview community-id])]
+                cover-image]}   (rf/sub [:communities/community-overview community-id])]
     [:<>
      [header-cover-image
       {:cover-image      cover-image
@@ -319,12 +323,12 @@
 
 (defn- community-logo
   [{:keys [scroll-amount community-id]}]
-  (let [theme       (quo.theme/use-theme)
-        logo-styles (worklets/use-logo-styles
-                     {:scroll-amount                scroll-amount
-                      :expand-header-threshold      expand-header-threshold
-                      :sheet-displacement-threshold sheet-displacement-threshold
-                      :text-movement-threshold      text-movement-threshold})
+  (let [theme          (quo.theme/use-theme)
+        logo-styles    (worklets/use-logo-styles
+                        {:scroll-amount                scroll-amount
+                         :expand-header-threshold      expand-header-threshold
+                         :sheet-displacement-threshold sheet-displacement-threshold
+                         :text-movement-threshold      text-movement-threshold})
         {:keys [logo]} (rf/sub [:communities/community-overview community-id])]
     [reanimated/view
      {:style [style/community-logo
@@ -476,7 +480,7 @@
        :type       :title
        :text-align :left
        :icon-name  :i/close
-       :on-press   #(rf/dispatch [:navigate-back])}]
+       :on-press   events.helper/navigate-back}]
      [quo/empty-state
       {:image           (resources/get-themed-image :cat-in-box theme)
        :description     (when-not fetching? (i18n/label :t/here-is-a-cat-in-a-box-instead))

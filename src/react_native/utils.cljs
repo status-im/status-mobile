@@ -48,6 +48,6 @@
     (reduce-kv (fn [o k v]
                  (doto o
                    (gobj/set (transforms/->camelCaseString k) v)))
-               #js{}
+               #js {}
                m)
     m))

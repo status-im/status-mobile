@@ -396,7 +396,7 @@
                (if collapsed?
                  (get-category-item category)
                  (category-with-channels category-id category))))
-           categorized-channels)))
+    categorized-channels)))
 
 (re-frame/reg-sub
  :communities/community-overview

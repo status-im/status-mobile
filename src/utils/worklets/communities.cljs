@@ -5,11 +5,13 @@
 
 (def worklets (js/require "../src/js/worklets/communities.js"))
 
-(defn- transform-args [f]
+(defn- transform-args
+  [f]
   (fn [& args]
     (apply f (map utils/kebab-case-map->camelCase-obj args))))
 
-(defn- worklet-wrapper [worklet-name]
+(defn- worklet-wrapper
+  [worklet-name]
   (if-let [worklet-fn (gobj/get worklets worklet-name)]
     (transform-args worklet-fn)
     (log/error "Non-existing worklet!"
