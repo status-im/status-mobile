@@ -14,7 +14,8 @@
   [{:keys [action? text button-text text-number-of-lines container-style on-button-press]}]
   (let [theme (quo.theme/use-theme)]
     [rn/view
-     {:accessibility-label :alert-banner}
+     {:accessibility-label :alert-banner
+      :style               (style/alert-banner-container theme)}
      [linear-gradient/linear-gradient
       {:style  (style/container container-style)
        :start  {:x 0 :y 0}

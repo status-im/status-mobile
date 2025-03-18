@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -11,6 +12,7 @@
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
     [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
     [status-im.contexts.wallet.send.utils :as send-utils]
+    [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.feature-flags :as ff]
     [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
@@ -169,56 +171,83 @@
          :network-props network}]])))
 
 (defn- data-item
-  [{:keys [title subtitle]}]
+  [{:keys [title subtitle subtitle-color loading?]}]
   [quo/data-item
    {:container-style style/detail-item
     :blur?           false
     :card?           false
-    :status          :default
+    :status          (if loading? :loading :default)
     :size            :small
     :title           title
-    :subtitle        subtitle}])
+    :subtitle        subtitle
+    :subtitle-color  subtitle-color}])
+
+(defn- error-banner
+  []
+  (let [enough-assets?   (rf/sub [:wallet/send-enough-assets?])
+        no-routes-found? (rf/sub [:wallet/no-routes-found?])]
+    (cond
+      no-routes-found?
+      [quo/alert-banner
+       {:text                 (i18n/label :t/no-routes-found-confirmation)
+        :text-number-of-lines 2}]
+
+      (not enough-assets?)
+      [quo/alert-banner
+       {:action?         true
+        :text            (i18n/label :t/not-enough-assets-to-pay-gas-fees)
+        :button-text     (i18n/label :t/add-eth)
+        :on-button-press #(rf/dispatch [:show-bottom-sheet
+                                        {:content buy-token/view}])}]
+
+      :else nil)))
 
 (defn- transaction-details
   [{:keys [estimated-time-min max-fees to-network
            transaction-type route-loaded?]}]
-  (let [loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+  (let [theme                     (quo.theme/use-theme)
+        loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+        enough-assets?            (rf/sub [:wallet/send-enough-assets?])
+        no-routes-found?          (rf/sub [:wallet/no-routes-found?])
+        loading?                  (or loading-suggested-routes? no-routes-found?)
         amount                    (rf/sub [:wallet/send-total-amount-formatted])]
     [rn/view
      {:style (style/details-container
               {:loading-suggested-routes? loading-suggested-routes?
                :route-loaded?             route-loaded?})}
-     (cond
-       loading-suggested-routes?
-       [rn/activity-indicator {:style {:flex 1}}]
-       route-loaded?
-       [:<>
-        [quo/button
-         {:icon-only?          true
-          :type                :outline
-          :size                32
-          :inner-style         {:opacity 1}
-          :accessibility-label :advanced-button
-          :container-style     {:margin-right 8}
-          :on-press            #(rf/dispatch
-                                 [:show-bottom-sheet
-                                  {:content transaction-settings/settings-sheet}])}
-         :i/advanced]
-        [data-item
-         {:title    (i18n/label :t/est-time)
-          :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time-min)})}]
-        [data-item
-         {:title    (i18n/label :t/max-fees)
-          :subtitle max-fees}]
-        [data-item
-         {:title    (if (= transaction-type :tx/bridge)
-                      (i18n/label :t/bridged-to
-                                  {:network (:abbreviated-name to-network)})
-                      (i18n/label :t/recipient-gets))
-          :subtitle amount}]]
-       :else
-       [quo/text {:style {:align-self :center}}
-        (i18n/label :t/no-routes-found-confirmation)])]))
+     [quo/button
+      {:icon-only?          true
+       :type                :outline
+       :size                32
+       :inner-style         {:opacity 1}
+       :accessibility-label :advanced-button
+       :container-style     {:margin-right 8}
+       :disabled?           no-routes-found?
+       :on-press            #(rf/dispatch
+                              [:show-bottom-sheet
+                               {:content transaction-settings/settings-sheet}])}
+      :i/advanced]
+     (when estimated-time-min
+       [data-item
+        {:title    (i18n/label :t/est-time)
+         :loading? loading?
+         :subtitle (i18n/label :t/time-in-mins
+                               {:minutes estimated-time-min})}])
+     [data-item
+      {:title          (i18n/label :t/max-fees)
+       :loading?       loading?
+       :subtitle       max-fees
+       :subtitle-color (when-not enough-assets?
+                         (colors/theme-colors colors/danger-50
+                                              colors/danger-60
+                                              theme))}]
+     [data-item
+      {:title    (if (= transaction-type :tx/bridge)
+                   (i18n/label :t/bridged-to
+                               {:network (:abbreviated-name to-network)})
+                   (i18n/label :t/recipient-gets))
+       :loading? loading?
+       :subtitle amount}]]))
 
 (defn view
   [_]
@@ -254,7 +283,9 @@
         user-props                {:full-name to-address
                                    :address   (utils/get-shortened-address
                                                to-address)}
-        auth-icon                 (rf/sub [:standard-auth/slider-icon])]
+        auth-icon                 (rf/sub [:standard-auth/slider-icon])
+        enough-assets?            (rf/sub [:wallet/send-enough-assets?])
+        no-routes-found?          (rf/sub [:wallet/no-routes-found?])]
     (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clean-route-data-for-collectible-tx]))
     (rn/use-mount
      (fn []
@@ -269,26 +300,31 @@
                                    :margin-top          (safe-area/get-top)
                                    :background          :blur
                                    :accessibility-label :top-bar}]
-       :footer                   [:<>
-                                  [transaction-details
-                                   {:estimated-time-min estimated-time-min
-                                    :max-fees           fee-formatted
-                                    :to-network         bridge-to-network
-                                    :theme              theme
-                                    :route              route
-                                    :transaction-type   transaction-type
-                                    :route-loaded?      (and route (seq route))}]
-                                  (when (and (not loading-suggested-routes?) route (seq route))
-                                    [quo/slide-button
-                                     {:size                :size-48
-                                      :track-text          (if (= transaction-type :tx/bridge)
-                                                             (i18n/label :t/slide-to-bridge)
-                                                             (i18n/label :t/slide-to-send))
-                                      :container-style     {:z-index 2}
-                                      :customization-color account-color
-                                      :track-icon          auth-icon
-                                      :on-complete         #(rf/dispatch
-                                                             [:wallet.send/auth-slider-completed])}])]
+       :blur-options             {:padding-horizontal 0}
+       :footer                   [rn/view
+                                  [error-banner]
+                                  [rn/view {:style {:padding-horizontal 20}}
+                                   [transaction-details
+                                    {:estimated-time-min estimated-time-min
+                                     :max-fees           fee-formatted
+                                     :to-network         bridge-to-network
+                                     :theme              theme
+                                     :route              route
+                                     :transaction-type   transaction-type
+                                     :route-loaded?      (and route (seq route))}]
+                                   [quo/slide-button
+                                    {:size                :size-48
+                                     :track-text          (if (= transaction-type :tx/bridge)
+                                                            (i18n/label :t/slide-to-bridge)
+                                                            (i18n/label :t/slide-to-send))
+                                     :container-style     {:z-index 2}
+                                     :disabled?           (or (not enough-assets?)
+                                                              loading-suggested-routes?
+                                                              no-routes-found?)
+                                     :customization-color account-color
+                                     :track-icon          auth-icon
+                                     :on-complete         #(rf/dispatch
+                                                            [:wallet.send/auth-slider-completed])}]]]
        :gradient-cover?          true
        :customization-color      (:color account)}
       [rn/view

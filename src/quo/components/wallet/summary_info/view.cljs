@@ -44,7 +44,7 @@
             [network-amount
              {:network  k
               :amount   (str amount " " (or token-symbol (get default-token-symbols k)))
-              :divider? (not= (dec i) (-> networks-to-show keys count))
+              :divider? (not= (inc i) (-> networks-to-show keys count))
               :theme    theme}])))
        (remove nil?)
        (into [rn/view
@@ -56,7 +56,7 @@
   (let [theme   (quo.theme/use-theme)
         address (or (:address account-props) (:address token-props))]
     [rn/view
-     {:style (style/container (seq? networks-to-show) theme)}
+     {:style (style/container (boolean networks-to-show) theme)}
      [rn/view
       {:style style/info-container}
       (case type

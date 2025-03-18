@@ -12,11 +12,13 @@
   {:padding-top        12
    :padding-horizontal 20})
 
-(def details-container
+(defn details-container
+  [theme]
   {:flex-direction     :row
    :justify-content    :space-between
    :padding-top        7
-   :padding-horizontal 20})
+   :padding-horizontal 20
+   :background-color   (colors/theme-colors colors/white colors/neutral-95 theme)})
 
 (def detail-item
   {:flex             1

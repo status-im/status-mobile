@@ -1,7 +1,6 @@
 (ns status-im.contexts.onboarding.events
   (:require
     [quo.foundations.colors :as colors]
-    [re-frame.core :as re-frame]
     status-im.common.biometric.events
     [status-im.constants :as constants]
     [status-im.contexts.shell.constants :as shell.constants]
@@ -31,7 +30,10 @@
 (rf/reg-event-fx :onboarding/navigate-to-sign-in-by-seed-phrase
  (fn [{:keys [db]} [from-screen]]
    {:db (assoc db :onboarding/navigated-to-enter-seed-phrase-from-screen from-screen)
-    :fx [[:dispatch [:navigate-to-within-stack [:screen/onboarding.enter-seed-phrase from-screen]]]]}))
+    :fx [[:dispatch
+          [:navigate-to-within-stack [:screen/onboarding.enter-seed-phrase from-screen]
+           {:on-success       #(rf/dispatch [:onboarding/seed-phrase-validated %])
+            :onboarding-flow? true}]]]}))
 
 (rf/reg-event-fx
  :onboarding/clear-navigated-to-enter-seed-phrase-from-screen
@@ -108,27 +110,14 @@
               [:onboarding/create-account-and-login])]]})))
 
 (rf/reg-event-fx
- :onboarding/multiaccount-already-exists
- (fn [_ [key-uid]]
-   {:fx [[:effects.utils/show-confirmation
-          {:title               (i18n/label :t/multiaccount-exists-title)
-           :content             (i18n/label :t/multiaccount-exists-content)
-           :confirm-button-text (i18n/label :t/unlock)
-           :on-accept           (fn []
-                                  (re-frame/dispatch [:pop-to-root :screen/profile.profiles])
-                                  ;; Note - Profile selection is not working
-                                  (re-frame/dispatch [:profile/profile-selected key-uid]))
-           :on-cancel           #(re-frame/dispatch [:pop-to-root :screen/profile.profiles])}]]}))
-
-(rf/reg-event-fx
  :onboarding/seed-phrase-validated
- (fn [{:keys [db]} [seed-phrase key-uid]]
+ (fn [{:keys [db]} [{:keys [seed-phrase key-uid]}]]
    (let [next-screen :screen/onboarding.create-profile-password
          from-screen (get db
                           :onboarding/navigated-to-enter-seed-phrase-from-screen
                           :screen/onboarding.create-profile)]
      (if (contains? (:profile/profiles-overview db) key-uid)
-       {:fx [[:dispatch [:onboarding/multiaccount-already-exists key-uid]]]}
+       {:fx [[:dispatch [:enter-seed-phrase/set-error (i18n/label :t/account-already-exist-error)]]]}
        {:db (-> db
                 (assoc-in [:onboarding/profile :seed-phrase] seed-phrase)
                 (assoc-in [:onboarding/profile :key-uid] key-uid)

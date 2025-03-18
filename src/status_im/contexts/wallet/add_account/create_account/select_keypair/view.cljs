@@ -35,9 +35,8 @@
       :add-divider?        true
       :on-press            (fn []
                              (rf/dispatch [:navigate-to :screen/use-recovery-phrase
-                                           {:on-success (fn [{:keys [key-uid phrase on-error]}]
-                                                          (rf/dispatch [:wallet/seed-phrase-validated
-                                                                        phrase key-uid on-error]))}]))}
+                                           {:on-success #(rf/dispatch [:wallet/seed-phrase-validated
+                                                                       %])}]))}
      (when (ff/enabled? ::ff/wallet.import-private-key)
        {:icon                :i/key
         :accessibility-label :import-private-key

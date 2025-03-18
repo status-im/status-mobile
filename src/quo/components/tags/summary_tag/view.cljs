@@ -70,6 +70,7 @@
      [left-view props]
      [text/text
       {:style           (style/label type theme)
+       :ellipsize-mode  :tail
        :weight          :semi-bold
        :number-of-lines 1
        :size            :heading-1}

@@ -242,3 +242,16 @@
  :<- [:wallet/tx-settings-fee-mode-user]
  (fn [[route value-set-by-user]]
    (or value-set-by-user (:tx-fee-mode (first route)))))
+
+(rf/reg-sub
+ :wallet/send-enough-assets?
+ :<- [:wallet/wallet-send]
+ (fn [{:keys [enough-assets?]}]
+   (if (nil? enough-assets?) true enough-assets?)))
+
+(rf/reg-sub
+ :wallet/no-routes-found?
+ :<- [:wallet/wallet-send-loading-suggested-routes?]
+ :<- [:wallet/send-route]
+ (fn [[loading? route]]
+   (and (empty? route) (not loading?))))
