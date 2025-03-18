@@ -191,8 +191,10 @@ Also its fine to keep one liner styles in view
 ```
 
 ### Abstract styles and use the vector syntax
+
 We modified reagent to support passing styles in the [React Native way](https://reactnative.dev/docs/0.73/style): 
 by using Clojure vectors (arrays in JS).
+
 ```clojure
 ;; ...style.cljs
 (def absolute-position
@@ -224,7 +226,6 @@ by using Clojure vectors (arrays in JS).
 [rn/view {:style rn/stylesheet-absolute-fill} ;; <- Already provided by RN, used directly
  [rn/view {:style [rn/stylesheet-absolute-fill ;; <- Reagent skips this transformation  
                    (style/padding 20)]}]] ;; <- Reagent transforms this map
-
 ```
 
 ### Don't define properties in styles ns
