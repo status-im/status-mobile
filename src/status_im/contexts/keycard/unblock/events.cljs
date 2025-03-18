@@ -1,5 +1,6 @@
 (ns status-im.contexts.keycard.unblock.events
-  (:require [utils.re-frame :as rf]
+  (:require [utils.i18n :as i18n]
+            [utils.re-frame :as rf]
             [utils.security.core :as security]))
 
 (defn show-different-card
@@ -24,12 +25,15 @@
          [:dispatch [:open-modal :screen/keycard.unblock.ready-to-unblock]]]}))
 
 (rf/reg-event-fx :keycard/unblock.phrase-entered
- (fn [{:keys [db]} [{:keys [seed-phrase]}]]
-   {:db (assoc-in db [:keycard :unblock :masked-phrase] seed-phrase)
-    :fx [[:dispatch [:navigate-back]]
-         [:dispatch
-          [:open-modal :screen/keycard.pin.create
-           {:on-complete #(rf/dispatch [:keycard/unblock.pin-created (security/mask-data %)])}]]]}))
+ (fn [{:keys [db]} [{:keys [seed-phrase key-uid]}]]
+   (if (not= key-uid (get-in db [:keycard :application-info :key-uid]))
+     {:fx [[:dispatch
+            [:enter-seed-phrase/set-error (i18n/label :t/seed-phrase-dont-match-migrate-flow)]]]}
+     {:db (assoc-in db [:keycard :unblock :masked-phrase] seed-phrase)
+      :fx [[:dispatch [:navigate-back]]
+           [:dispatch
+            [:open-modal :screen/keycard.pin.create
+             {:on-complete #(rf/dispatch [:keycard/unblock.pin-created (security/mask-data %)])}]]]})))
 
 (rf/reg-event-fx :keycard/unblock.generate-and-load-key
  (fn [{:keys [db]}]
