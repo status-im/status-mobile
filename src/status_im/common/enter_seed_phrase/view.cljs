@@ -110,30 +110,20 @@
                      focus-input               #(some-> @input-ref
                                                         (oops/ocall "focus"))
                      set-incorrect-seed-phrase #(reset! incorrect-seed-phrase? true)
-                     set-invalid-seed-phrase   #(reset! invalid-seed-phrase? true)
+                     on-error                  #(reset! invalid-seed-phrase? true)
                      seed-phrase               (reagent/atom "")
-                     on-change-seed-phrase     (fn [new-phrase]
-                                                 (when @invalid-seed-phrase?
-                                                   (reset! invalid-seed-phrase? false))
-                                                 (when @incorrect-seed-phrase?
-                                                   (reset! incorrect-seed-phrase? false))
-                                                 (reset! seed-phrase new-phrase))
                      on-submit                 (fn []
                                                  (swap! seed-phrase clean-seed-phrase)
                                                  (rf/dispatch
                                                   [:profile.recover/validate-recovery-phrase
                                                    (security/mask-data @seed-phrase)
                                                    {:on-success (fn [mnemonic key-uid]
-                                                                  (if on-success
+                                                                  (when on-success
                                                                     (on-success
-                                                                     {:key-uid key-uid
-                                                                      :phrase mnemonic
-                                                                      :on-error
-                                                                      set-invalid-seed-phrase})
-                                                                    (rf/dispatch
-                                                                     [:onboarding/seed-phrase-validated
-                                                                      mnemonic key-uid])))
-                                                    :on-error   set-invalid-seed-phrase}]))]
+                                                                     {:key-uid     key-uid
+                                                                      :seed-phrase mnemonic
+                                                                      :on-error    on-error})))
+                                                    :on-error   on-error}]))]
     (let [words-coll               (mnemonic/passphrase->words @seed-phrase)
           last-word                (peek words-coll)
           pick-suggested-word      (fn [pressed-word]
@@ -149,8 +139,18 @@
           error-in-words?          (or (not last-partial-word-valid?)
                                        (not butlast-words-valid?))
           upper-case?              (boolean (re-find #"[A-Z]" @seed-phrase))
+          global-error             (rf/sub [:enter-seed-phrase/error])
+          on-change-seed-phrase    (fn [new-phrase]
+                                     (when global-error
+                                       (rf/dispatch [:enter-seed-phrase/clear-error]))
+                                     (when @invalid-seed-phrase?
+                                       (reset! invalid-seed-phrase? false))
+                                     (when @incorrect-seed-phrase?
+                                       (reset! incorrect-seed-phrase? false))
+                                     (reset! seed-phrase new-phrase))
           suggestions-state        (cond
-                                     (or error-in-words?
+                                     (or global-error
+                                         error-in-words?
                                          words-exceeded?
                                          @invalid-seed-phrase?
                                          @incorrect-seed-phrase?)         :error
@@ -158,16 +158,26 @@
                                      (string/ends-with? @seed-phrase " ") :empty
                                      :else                                :words)
           suggestions-text         (cond
-                                     upper-case?             (i18n/label :t/seed-phrase-words-uppercase)
-                                     words-exceeded?         (i18n/label :t/seed-phrase-words-exceeded)
+                                     global-error            global-error
+                                     upper-case?             (i18n/label
+                                                              :t/seed-phrase-words-uppercase)
+                                     words-exceeded?         (i18n/label
+                                                              :t/seed-phrase-words-exceeded)
                                      error-in-words?         (i18n/label :t/seed-phrase-error)
                                      @invalid-seed-phrase?   (i18n/label :t/seed-phrase-invalid)
                                      @incorrect-seed-phrase? (i18n/label :t/seed-phrase-incorrect)
                                      :else                   (i18n/label :t/seed-phrase-info))
           error-state?             (= suggestions-state :error)
-          button-disabled?         (or error-state?
+          button-disabled?         (or (and (not global-error) error-state?)
                                        (not (constants/seed-phrase-valid-length word-count))
-                                       (not all-words-valid?))]
+                                       (not all-words-valid?))
+          button-label             (if global-error
+                                     (i18n/label :t/enter-another-recovery-phrase)
+                                     (i18n/label :t/continue))
+          reset-seed-phrase        (fn []
+                                     (reset! seed-phrase "")
+                                     (on-change-seed-phrase ""))
+          button-on-press          (if global-error reset-seed-phrase on-submit)]
       [rn/view
        {:style (style/recovery-phrase-container {:insets          initial-insets
                                                  :banner-offset   banner-offset
@@ -191,16 +201,17 @@
            {:container-style style/continue-button
             :type            :primary
             :disabled?       button-disabled?
-            :on-press        on-submit}
-           (i18n/label :t/continue)])]
+            :on-press        button-on-press}
+           button-label])]
        (when (or @keyboard-shown? error-state?)
          [rn/view {:style style/keyboard-container}
           [quo/predictive-keyboard
-           {:type     suggestions-state
-            :blur?    (not on-success)
-            :text     suggestions-text
-            :words    (keyboard-suggestions last-word)
-            :on-press pick-suggested-word}]])])
+           {:type            suggestions-state
+            :blur?           (not on-success)
+            :text            suggestions-text
+            :container-style {:padding-right 20}
+            :words           (keyboard-suggestions last-word)
+            :on-press        pick-suggested-word}]])])
     (finally
      (.remove keyboard-show-listener)
      (.remove keyboard-hide-listener))))
@@ -227,10 +238,12 @@
 
 (defn view
   []
-  (let [{:keys [on-success]} (rf/sub [:get-screen-params])]
+  (let [{:keys [on-success onboarding-flow?]} (rf/sub [:get-screen-params])]
     (rn/use-unmount
-     (when-not on-success
-       #(rf/dispatch [:onboarding/clear-navigated-to-enter-seed-phrase-from-screen])))
+     (fn []
+       (rf/dispatch [:enter-seed-phrase/clear-error])
+       (when onboarding-flow?
+         (rf/dispatch [:onboarding/clear-navigated-to-enter-seed-phrase-from-screen]))))
     [screen
      {:title      (i18n/label :t/use-recovery-phrase)
       :on-success on-success}]))

@@ -1,6 +1,10 @@
 (ns quo.components.banners.alert-banner.style
   (:require [quo.foundations.colors :as colors]))
 
+(defn alert-banner-container
+  [theme]
+  {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
+
 (defn container
   [container-style]
   (merge
