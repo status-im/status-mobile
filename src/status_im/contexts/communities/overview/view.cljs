@@ -204,16 +204,16 @@
   [{:keys [community-id scroll-amount header-height set-max-scroll]}]
   (let [theme                  (quo.theme/use-theme)
         channels-styles        (worklets/use-channels-styles
-                                #js {:scrollAmount               scroll-amount
-                                     :headerHeight               header-height
-                                     :expandHeaderThreshold      expand-header-threshold
-                                     :sheetDisplacementThreshold sheet-displacement-threshold
-                                     :expandHeaderLimit          expand-header-limit})
+                                {:scroll-amount                scroll-amount
+                                 :header-height                header-height
+                                 :expand-header-threshold      expand-header-threshold
+                                 :sheet-displacement-threshold sheet-displacement-threshold
+                                 :expand-header-limit          expand-header-limit})
         flat-list-ref          (reanimated/use-animated-ref)
         _scroll-to-animation   (worklets/use-scroll-to
-                                #js {:animatedRef       flat-list-ref
-                                     :scrollAmount      scroll-amount
-                                     :expandHeaderLimit expand-header-limit})
+                                {:animated-ref        flat-list-ref
+                                 :scroll-amount       scroll-amount
+                                 :expand-header-limit expand-header-limit})
         {:keys [joined?
                 spectated?]}   (rf/sub [:communities/community-overview community-id])
         joined-or-spectated?   (or joined? spectated?)
@@ -290,14 +290,14 @@
 (defn- header
   [community-id scroll-amount]
   (let [header-opacity          (worklets/use-header-opacity
-                                 #js {:scrollAmount               scroll-amount
-                                      :expandHeaderThreshold      expand-header-threshold
-                                      :sheetDisplacementThreshold sheet-displacement-threshold})
+                                 {:scroll-amount                scroll-amount
+                                  :expand-header-threshold      expand-header-threshold
+                                  :sheet-displacement-threshold sheet-displacement-threshold})
         opposite-header-opacity (worklets/use-opposite-header-opacity header-opacity)
         nav-content-opacity     (worklets/use-nav-content-opacity
-                                 #js {:scrollAmount               scroll-amount
-                                      :sheetDisplacementThreshold sheet-displacement-threshold
-                                      :expandHeaderLimit          expand-header-limit})
+                                 {:scroll-amount                scroll-amount
+                                  :sheet-displacement-threshold sheet-displacement-threshold
+                                  :expand-header-limit          expand-header-limit})
         {:keys [community-name color logo
                 cover-image]} (rf/sub [:communities/community-overview community-id])]
     [:<>
@@ -321,10 +321,10 @@
   [{:keys [scroll-amount community-id]}]
   (let [theme       (quo.theme/use-theme)
         logo-styles (worklets/use-logo-styles
-                     #js {:scrollAmount               scroll-amount
-                          :expandHeaderThreshold      expand-header-threshold
-                          :sheetDisplacementThreshold sheet-displacement-threshold
-                          :textMovementThreshold      text-movement-threshold})
+                     {:scroll-amount                scroll-amount
+                      :expand-header-threshold      expand-header-threshold
+                      :sheet-displacement-threshold sheet-displacement-threshold
+                      :text-movement-threshold      text-movement-threshold})
         {:keys [logo]} (rf/sub [:communities/community-overview community-id])]
     [reanimated/view
      {:style [style/community-logo
@@ -335,9 +335,9 @@
 (defn- name-and-description
   [{:keys [scroll-amount community-name community-description info-styles]}]
   (let [name-styles (worklets/use-name-styles
-                     #js {:scrollAmount          scroll-amount
-                          :expandHeaderThreshold expand-header-threshold
-                          :textMovementThreshold text-movement-threshold})]
+                     {:scroll-amount           scroll-amount
+                      :expand-header-threshold expand-header-threshold
+                      :text-movement-threshold text-movement-threshold})]
     [rn/view {:style style/community-name-and-description}
      [reanimated/view {:style name-styles}
       [quo/text {:weight :semi-bold :size :heading-1 :number-of-lines 1}
@@ -372,12 +372,12 @@
   [{:keys [scroll-amount header-height community-id]}]
   (let [theme             (quo.theme/use-theme)
         sheet-styles      (worklets/use-sheet-styles
-                           #js {:scrollAmount               scroll-amount
-                                :expandHeaderThreshold      expand-header-threshold
-                                :sheetDisplacementThreshold sheet-displacement-threshold})
+                           {:scroll-amount                scroll-amount
+                            :expand-header-threshold      expand-header-threshold
+                            :sheet-displacement-threshold sheet-displacement-threshold})
         info-styles       (worklets/use-info-styles
-                           #js {:scrollAmount         scroll-amount
-                                :infoOpacityThreshold info-opacity-threshold})
+                           {:scroll-amount          scroll-amount
+                            :info-opacity-threshold info-opacity-threshold})
         set-header-height (rn/use-callback
                            (fn [e]
                              (let [height (oops/oget e "nativeEvent.layout.height")]
@@ -438,17 +438,17 @@
         scroll-amount  (reanimated/use-shared-value (if expanded? 0 expand-header-threshold))
         on-pan-start   (worklets/on-pan-start scroll-start scroll-amount)
         on-pan-update  (worklets/on-pan-update
-                        #js {:scrollStart       scroll-start
-                             :scrollAmount      scroll-amount
-                             :maxScroll         max-scroll
-                             :expandHeaderLimit expand-header-limit})
+                        {:scroll-start        scroll-start
+                         :scroll-amount       scroll-amount
+                         :max-scroll          max-scroll
+                         :expand-header-limit expand-header-limit})
         on-pan-end     (worklets/on-pan-end
-                        #js {:scrollStart           scroll-start
-                             :scrollAmount          scroll-amount
-                             :maxScroll             max-scroll
-                             :expandHeaderLimit     expand-header-limit
-                             :expandHeaderThreshold expand-header-threshold
-                             :snapHeaderThreshold   snap-header-threshold})
+                        {:scroll-start            scroll-start
+                         :scroll-amount           scroll-amount
+                         :max-scroll              max-scroll
+                         :expand-header-limit     expand-header-limit
+                         :expand-header-threshold expand-header-threshold
+                         :snap-header-threshold   snap-header-threshold})
         pan-gesture    (-> (gesture/gesture-pan)
                            (gesture/on-start on-pan-start)
                            (gesture/on-update on-pan-update)

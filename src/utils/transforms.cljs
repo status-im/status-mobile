@@ -59,6 +59,7 @@
 
 (def ->kebab-case-keyword (memoize csk/->kebab-case-keyword))
 (def ->PascalCaseKeyword (memoize csk/->PascalCaseKeyword))
+(def ->camelCaseString (memoize csk/->camelCaseString))
 
 (defn json->js
   [json]
