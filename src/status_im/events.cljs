@@ -5,6 +5,7 @@
     status-im.common.app-monitoring.events
     status-im.common.async-storage.effects
     status-im.common.emoji-picker.events
+    status-im.common.enter-seed-phrase.events
     status-im.common.font.events
     status-im.common.image-crop-picker.events
     [status-im.common.json-rpc.events]

@@ -10,13 +10,14 @@
    :padding-left     4
    :padding-right    10
    :flex-direction   :row
+   :flex-shrink      1
    :border-radius    (if (#{:account :collectible} type) 10 16)
    :background-color (colors/resolve-color customization-color theme 10)})
 
 (defn label
   [type theme]
   {:color       (colors/theme-colors colors/neutral-100 colors/white theme)
-   :flex-shrink 1
+   :flex-grow   1
    :margin-left (if (= type :address) 6 4)})
 
 (def collectible-image

@@ -564,8 +564,17 @@
            [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]})))
 
 (rf/reg-event-fx :wallet/reload
- (fn [_]
-   {:fx [[:dispatch [:wallet/get-wallet-token-for-all-accounts]]]}))
+ (fn [{:keys [db]}]
+   (let [supported-chains-by-symbol (get-in db [:wallet :tokens :supported-chains-by-symbol])
+         symbols                    (mapv name (keys supported-chains-by-symbol))
+         profile-currency           (get-in db [:profile/profile :currency])]
+     {:fx [[:dispatch [:wallet/get-wallet-token-for-all-accounts]]
+           [:effects.wallet.tokens/fetch-prices
+            {:symbols    symbols
+             :currencies [constants/profile-default-currency profile-currency]
+             :on-success [:wallet.tokens/store-prices]
+             :on-error   [:wallet.tokens/fetch-prices-failed]}]]
+      :db (assoc-in db [:wallet :ui :loading :prices] true)})))
 
 (rf/reg-event-fx :wallet/start-wallet
  (fn [_]

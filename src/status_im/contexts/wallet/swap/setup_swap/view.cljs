@@ -88,7 +88,7 @@
                                 currency-symbol
                                 max-fee)
         error-response         (rf/sub [:wallet/swap-error-response])]
-    [rn/view {:style style/details-container}
+    [rn/view {:style (style/details-container theme)}
      [data-item
       (cond-> {:title    (i18n/label :t/max-fees)
                :subtitle max-fee-formatted

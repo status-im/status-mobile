@@ -1,5 +1,6 @@
 (ns status-im.contexts.keycard.backup.events
-  (:require [utils.re-frame :as rf]
+  (:require [utils.i18n :as i18n]
+            [utils.re-frame :as rf]
             [utils.security.core :as security]))
 
 (rf/reg-event-fx :keycard/backup.generate-and-load-key
@@ -24,12 +25,14 @@
             :on-success   #(rf/dispatch [:keycard/backup.generate-and-load-key])}]]]}))
 
 (rf/reg-event-fx :keycard/backup.phrase-entered
- (fn [{:keys [db]} [{:keys [phrase]}]]
-   {:db (assoc-in db [:keycard :backup :masked-phrase] phrase)
-    :fx [[:dispatch [:navigate-back]]
-         [:dispatch
-          [:open-modal :screen/keycard.backup.ready-to-add
-           {:on-press #(rf/dispatch [:keycard/backup.ready-to-add-connect])}]]]}))
+ (fn [{:keys [db]} [{:keys [key-uid seed-phrase]}]]
+   (if (not= key-uid (get-in db [:profile/profile :key-uid]))
+     {:fx [[:dispatch [:enter-seed-phrase/set-error (i18n/label :t/seed-phrase-dont-match)]]]}
+     {:db (assoc-in db [:keycard :backup :masked-phrase] seed-phrase)
+      :fx [[:dispatch [:navigate-back]]
+           [:dispatch
+            [:open-modal :screen/keycard.backup.ready-to-add
+             {:on-press #(rf/dispatch [:keycard/backup.ready-to-add-connect])}]]]})))
 
 (rf/reg-event-fx :keycard/backup.save-instance-uid-and-pin
  (fn [{:keys [db]} [masked-pin]]

@@ -31,68 +31,73 @@
          [:dispatch [:wallet/clean-suggested-routes]]]}))
 
 (defn- add-not-enough-assets-data
-  [send-data chosen-route]
+  [send-data chosen-route to-network-amounts-by-chain]
   (-> send-data
       (assoc :route                     chosen-route
              :loading-suggested-routes? false
              :suggested-routes          {:best []}
-             :enough-assets?            false)
+             :enough-assets?            false
+             :to-values-by-chain        to-network-amounts-by-chain)
       (update :sender-network-values send-utils/reset-loading-network-amounts-to-zero)
       (update :receiver-network-values send-utils/reset-loading-network-amounts-to-zero)))
 
 (rf/reg-event-fx
  :wallet/suggested-routes-success
  (fn [{:keys [db]} [suggested-routes-data enough-assets?]]
-   (if-not enough-assets?
-     {:db (update-in db [:wallet :ui :send] add-not-enough-assets-data (:best suggested-routes-data))}
-     (let [chosen-route                            (:best suggested-routes-data)
-           {:keys [token collectible token-display-name
-                   receiver-network-values
-                   sender-network-values tx-type]} (get-in db [:wallet :ui :send])
-           token-decimals                          (if collectible 0 (:decimals token))
-           native-token?                           (and token (= token-display-name "ETH"))
-           routes-available?                       (pos? (count chosen-route))
-           from-network-amounts-by-chain           (send-utils/network-amounts-by-chain
-                                                    {:route          chosen-route
-                                                     :token-decimals token-decimals
-                                                     :native-token?  native-token?
-                                                     :receiver?      false})
-           to-network-amounts-by-chain             (send-utils/network-amounts-by-chain
-                                                    {:route          chosen-route
-                                                     :token-decimals token-decimals
-                                                     :native-token?  native-token?
-                                                     :receiver?      true})
-           sender-possible-chain-ids               (map :chain-id sender-network-values)
-           sender-network-values                   (if routes-available?
-                                                     (send-utils/network-amounts
-                                                      (if (= tx-type :tx/bridge)
-                                                        from-network-amounts-by-chain
-                                                        (send-utils/add-zero-values-to-network-values
-                                                         from-network-amounts-by-chain
-                                                         sender-possible-chain-ids)))
-                                                     (send-utils/reset-loading-network-amounts-to-zero
-                                                      sender-network-values))
-           receiver-network-values                 (if routes-available?
-                                                     (send-utils/network-amounts
-                                                      to-network-amounts-by-chain)
-                                                     (send-utils/reset-loading-network-amounts-to-zero
-                                                      receiver-network-values))
-           network-links                           (when routes-available?
-                                                     (send-utils/network-links chosen-route
-                                                                               sender-network-values
-                                                                               receiver-network-values))]
+   (let [chosen-route                            (:best suggested-routes-data)
+         {:keys [token collectible token-display-name
+                 receiver-network-values
+                 sender-network-values tx-type]} (get-in db [:wallet :ui :send])
+         token-decimals                          (if collectible 0 (:decimals token))
+         native-token?                           (and token (= token-display-name "ETH"))
+         to-network-amounts-by-chain             (send-utils/network-amounts-by-chain
+                                                  {:route          chosen-route
+                                                   :token-decimals token-decimals
+                                                   :native-token?  native-token?
+                                                   :receiver?      true})]
+     (if-not enough-assets?
        {:db (update-in db
                        [:wallet :ui :send]
-                       assoc
-                       :suggested-routes          suggested-routes-data
-                       :route                     chosen-route
-                       :from-values-by-chain      from-network-amounts-by-chain
-                       :to-values-by-chain        to-network-amounts-by-chain
-                       :sender-network-values     sender-network-values
-                       :receiver-network-values   receiver-network-values
-                       :network-links             network-links
-                       :loading-suggested-routes? false
-                       :enough-assets?            true)}))))
+                       add-not-enough-assets-data
+                       chosen-route
+                       to-network-amounts-by-chain)}
+       (let [routes-available?             (pos? (count chosen-route))
+             from-network-amounts-by-chain (send-utils/network-amounts-by-chain
+                                            {:route          chosen-route
+                                             :token-decimals token-decimals
+                                             :native-token?  native-token?
+                                             :receiver?      false})
+             sender-possible-chain-ids     (map :chain-id sender-network-values)
+             sender-network-values         (if routes-available?
+                                             (send-utils/network-amounts
+                                              (if (= tx-type :tx/bridge)
+                                                from-network-amounts-by-chain
+                                                (send-utils/add-zero-values-to-network-values
+                                                 from-network-amounts-by-chain
+                                                 sender-possible-chain-ids)))
+                                             (send-utils/reset-loading-network-amounts-to-zero
+                                              sender-network-values))
+             receiver-network-values       (if routes-available?
+                                             (send-utils/network-amounts
+                                              to-network-amounts-by-chain)
+                                             (send-utils/reset-loading-network-amounts-to-zero
+                                              receiver-network-values))
+             network-links                 (when routes-available?
+                                             (send-utils/network-links chosen-route
+                                                                       sender-network-values
+                                                                       receiver-network-values))]
+         {:db (update-in db
+                         [:wallet :ui :send]
+                         assoc
+                         :suggested-routes          suggested-routes-data
+                         :route                     chosen-route
+                         :from-values-by-chain      from-network-amounts-by-chain
+                         :to-values-by-chain        to-network-amounts-by-chain
+                         :sender-network-values     sender-network-values
+                         :receiver-network-values   receiver-network-values
+                         :network-links             network-links
+                         :loading-suggested-routes? false
+                         :enough-assets?            true)})))))
 
 (rf/reg-event-fx
  :wallet/suggested-routes-error
