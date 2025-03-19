@@ -15,8 +15,8 @@
 
 (rf/reg-event-fx :keycard.pin/number-pressed
  (fn [{:keys [db]} [number max-numbers on-complete]]
-   (let [pin     (get-in db [:keycard :pin :text])
-         new-pin (str pin number)
+   (let [pin          (get-in db [:keycard :pin :text])
+         new-pin      (str pin number)
          last-number? (= max-numbers (count new-pin))]
      (when (<= (count new-pin) max-numbers)
        {:db (-> db
