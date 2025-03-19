@@ -12,10 +12,11 @@
 (defn kv-conv
   [convert-in-vectors?]
   (fn [o k v]
-    (let [recursively-convert-in-vectors? (or convert-in-vectors?
-                                              (.hasOwnProperty *keys-to-convert* (name k)))]
+    (let [prop-name                       (template/cached-prop-name k)
+          recursively-convert-in-vectors? (or convert-in-vectors?
+                                              (.hasOwnProperty *keys-to-convert* prop-name))]
       (doto o
-        (gobj/set (template/cached-prop-name k)
+        (gobj/set prop-name
                   (convert-prop-value v recursively-convert-in-vectors?))))))
 
 (defn convert-prop-value
@@ -43,7 +44,8 @@
   "We override the default reagent implementation with the one that supports vectors."
   [keys-to-convert]
   (set! *keys-to-convert* (reduce (fn [o k]
-                                    (doto o (gobj/set (name k) true)))
+                                    (doto o
+                                      (gobj/set (template/cached-prop-name k) true)))
                                   #js {}
                                   keys-to-convert))
   (set! template/convert-prop-value convert-prop-value))
@@ -51,4 +53,4 @@
 ;; Config applied for all the app
 (def functional-compiler (reagent.core/create-compiler {:function-components true}))
 (reagent.core/set-default-compiler! functional-compiler)
-(set-convert-props-in-vectors! #{:style :holes})
+(set-convert-props-in-vectors! #{:style :holes :content-container-style})
