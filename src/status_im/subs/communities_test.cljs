@@ -349,7 +349,7 @@
   [sub-name]
   (testing
     "returns a map keyed by the images of tokens/collectibles
-            And has data-uri as it's values"
+           And has data-uri as it's values"
     (swap! rf-db/app-db assoc-in
       [:communities community-id :tokens-metadata]
       [{:contract-addresses {:420 "0x1"}
@@ -573,3 +573,182 @@
 
       (is (= [member-1-id member-2-id]
              (rf/sub [sub-name community-id chat-id :offline]))))))
+
+(h/deftest-sub :communities/flatten-channels-and-categories
+  [sub-name]
+  (let [none-category {:name "None" :collapsed? nil :render-as :nothing}
+        separator     {:render-as :separator}
+        chat          (fn [{:keys [id chat-name position]}]
+                        {:emoji                        nil
+                         :muted?                       nil
+                         :color                        nil
+                         :name                         chat-name
+                         :mentions-count               0
+                         :unread-messages?             false
+                         :hide-if-permissions-not-met? nil
+                         :render-as                    :channel
+                         :id                           id
+                         :locked?                      false
+                         :position                     position
+                         :can-post?                    true})
+        category      (fn [{:keys [id category-name position collapsed?]}]
+                        {:id         id
+                         :position   position
+                         :name       category-name
+                         :collapsed? collapsed?
+                         :render-as  :category})]
+    (testing "A list with the categories and channels"
+      (swap! rf-db/app-db assoc
+        :communities
+        {"0x1" {:id         "0x1"
+                :chats      {"0x1" {:id           "0x1"
+                                    :position     1
+                                    :name         "chat1"
+                                    :muted?       nil
+                                    :categoryID   "1"
+                                    :token-gated? true
+                                    :can-post?    true}
+                             "0x2" {:id           "0x2"
+                                    :position     2
+                                    :name         "chat2"
+                                    :muted?       nil
+                                    :categoryID   "1"
+                                    :token-gated? true
+                                    :can-post?    true}
+                             "0x3" {:id           "0x3"
+                                    :position     3
+                                    :name         "chat3"
+                                    :muted?       nil
+                                    :categoryID   "2"
+                                    :token-gated? true
+                                    :can-post?    true}
+                             "0x4" {:id           "0x4"
+                                    :position     4
+                                    :name         "chat4"
+                                    :muted?       nil
+                                    :categoryID   ""
+                                    :token-gated? true
+                                    :can-post?    true}}
+                :categories {"1" {:id       "1"
+                                  :position 2
+                                  :name     "category1"}
+                             "2" {:id       "2"
+                                  :position 1
+                                  :name     "category2"}}
+                :joined     true}})
+      (is
+       (= [none-category
+           (chat {:id        "0x4"
+                  :chat-name "chat4"
+                  :position  4})
+           separator
+           (category {:id            "2"
+                      :category-name "category2"
+                      :position      1})
+           (chat {:id        "0x3"
+                  :chat-name "chat3"
+                  :position  3})
+           separator
+           (category {:id            "1"
+                      :category-name "category1"
+                      :position      2})
+           (chat {:id        "0x1"
+                  :chat-name "chat1"
+                  :position  1})
+           (chat {:id        "0x2"
+                  :chat-name "chat2"
+                  :position  2})
+           separator]
+          (rf/sub [sub-name "0x1"]))))
+
+    (testing "All chats are uncategorized"
+      (swap! rf-db/app-db assoc
+        :communities
+        {"0x1" {:id     "0x1"
+                :chats  {"0x1" {:id           "0x1"
+                                :position     1
+                                :name         "chat1"
+                                :muted?       nil
+                                :categoryID   ""
+                                :token-gated? true
+                                :can-post?    true}
+                         "0x2" {:id           "0x2"
+                                :position     2
+                                :name         "chat2"
+                                :muted?       nil
+                                :categoryID   ""
+                                :token-gated? true
+                                :can-post?    true}
+                         "0x3" {:id           "0x3"
+                                :position     3
+                                :name         "chat3"
+                                :muted?       nil
+                                :categoryID   ""
+                                :token-gated? true
+                                :can-post?    true}}
+                :joined true}})
+      (is (= [none-category
+              (chat {:id        "0x1"
+                     :chat-name "chat1"
+                     :position  1})
+              (chat {:id        "0x2"
+                     :chat-name "chat2"
+                     :position  2})
+              (chat {:id        "0x3"
+                     :chat-name "chat3"
+                     :position  3})
+              separator]
+             (rf/sub [sub-name "0x1"]))))
+
+    (testing "Collapsed categories don't include their channels"
+      (swap! rf-db/app-db assoc
+        :communities/collapsed-categories {"0x1" {"1" true "2" true}}
+        :communities
+        {"0x1" {:id         "0x1"
+                :chats      {"0x1" {:id           "0x1"
+                                    :position     1
+                                    :name         "chat1"
+                                    :muted?       nil
+                                    :categoryID   "1"
+                                    :token-gated? false
+                                    :can-post?    true}
+                             "0x2" {:id           "0x2"
+                                    :position     2
+                                    :name         "chat2"
+                                    :muted?       nil
+                                    :categoryID   "2"
+                                    :token-gated? true
+                                    :can-post?    false}
+                             "0x3" {:id           "0x3"
+                                    :position     3
+                                    :name         "chat3"
+                                    :muted?       nil
+                                    :categoryID   "3"
+                                    :token-gated? true
+                                    :can-post?    true}}
+                :categories {"1" {:id       "1"
+                                  :position 1
+                                  :name     "category1"}
+                             "2" {:id       "2"
+                                  :position 2
+                                  :name     "category2"}
+                             "3" {:id       "3"
+                                  :position 3
+                                  :name     "category3"}}
+                :joined     true}})
+      (is (= [(category {:id            "1"
+                         :category-name "category1"
+                         :position      1
+                         :collapsed?    true})
+              (category {:id            "2"
+                         :category-name "category2"
+                         :position      2
+                         :collapsed?    true})
+              (category {:id            "3"
+                         :category-name "category3"
+                         :position      3})
+              (chat {:id        "0x3"
+                     :chat-name "chat3"
+                     :position  3})
+              separator]
+             (rf/sub [sub-name "0x1"]))))))
