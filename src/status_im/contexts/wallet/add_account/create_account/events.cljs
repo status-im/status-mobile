@@ -56,7 +56,7 @@
 (rf/reg-event-fx :wallet/store-new-seed-phrase store-new-seed-phrase)
 
 (defn seed-phrase-validated
-  [{:keys [db]} [seed-phrase key-uid on-error]]
+  [{:keys [db]} [{:keys [seed-phrase key-uid on-error]}]]
   (let [keypair-already-added? (-> db
                                    :wallet
                                    :keypairs

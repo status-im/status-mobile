@@ -190,6 +190,44 @@ Also its fine to keep one liner styles in view
 [rn/view {:style {:flex 1 :padding-top 5}}]
 ```
 
+### Abstract styles and use the vector syntax
+
+We modified reagent to support passing styles in the [React Native way](https://reactnative.dev/docs/0.73/style): 
+by using Clojure vectors (arrays in JS).
+
+```clojure
+;; ...style.cljs
+(def absolute-position
+  {:position :absolute
+   :top      0
+   :left     0
+   :right    0
+   :bottom   0})
+
+(defn padding [amount]
+  {:background-color :red
+   :padding          amount})
+
+;; ...view.cljs
+
+;; bad
+[rn/view {:style style/absolute-position}
+ [rn/view {:style (merge style/absolute-position ;; <- merge is not performant
+                         (style/padding 20))}]]
+
+;; good
+[rn/view {:style style/absolute-position}
+ [rn/view {:style [style/absolute-position ;; <- vector syntax, RN merges the styles
+                   (style/padding 20)]}]]
+
+;; better 
+;; Reference an already existing JS obj with the required styles, by doing this, Reagent 
+;; skips the transformation of styles and uses the obj directly.
+[rn/view {:style rn/stylesheet-absolute-fill} ;; <- Already provided by RN, used directly
+ [rn/view {:style [rn/stylesheet-absolute-fill ;; <- Reagent skips this transformation  
+                   (style/padding 20)]}]] ;; <- Reagent transforms this map
+```
+
 ### Don't define properties in styles ns
 
 Properties must be set on view level

@@ -10,9 +10,8 @@
   (merge
    {:flex-direction     :row
     :align-items        :center
-    :height             50
     :padding-horizontal 20
-    :padding-vertical   12}
+    :padding-vertical   16}
    container-style))
 
 (def content-container

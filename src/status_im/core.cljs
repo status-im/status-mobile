@@ -2,7 +2,10 @@
   (:require
     ;; NOTE: Do NOT sort i18n-resources because it MUST be loaded first.
     [status-im.setup.i18n-resources :as i18n-resources]
+    ;; NOTE: reagent.config Must be before any component definition, so they take the config
+    ;; properly
     #_{:clj-kondo/ignore [:unsorted-required-namespaces]}
+    reagent.config
     ["@walletconnect/react-native-compat"]
     legacy.status-im.events
     legacy.status-im.subs.root
@@ -28,15 +31,11 @@
     [status-im.setup.interceptors :as interceptors]
     status-im.subs.root
     [utils.i18n :as i18n]
-    [utils.reagent]
     [status-im.setup.status-backend-client :as status-backend-client]))
 
 ;;;; re-frame RN setup
 (set! interop/next-tick js/setTimeout)
 (set! batching/fake-raf #(js/setTimeout % 0))
-(def functional-compiler (reagent.core/create-compiler {:function-components true}))
-(reagent.core/set-default-compiler! functional-compiler)
-(utils.reagent/set-convert-props-in-vectors!)
 
 (def adjust-resize 16)
 

@@ -223,34 +223,29 @@
     :description-accessibility-label :community-description}])
 
 (defn- community-content
-  [_]
-  (fn [id
-       {:keys [on-category-layout
-               collapsed?
-               on-first-channel-height-changed]}]
-    (let [{:keys [name description joined spectated images tags id membership-permissions?]
-           :as   community}
-          (rf/sub [:communities/community id])
-          joined-or-spectated (or joined spectated)
-          chats-by-category (rf/sub [:communities/categorized-channels id])]
-      [:<>
-       [rn/view {:style style/community-content-container}
-        (when-not collapsed?
-          [status-tag id joined])
-        [community-header name (when collapsed? (get-in images [:thumbnail :uri]))
-         (when-not collapsed? description)]
-        (when (and (seq tags) (not collapsed?))
-          [quo/community-tags
-           {:tags            tags
-            :last-item-style style/last-community-tag
-            :container-style style/community-tag-container}])
-        [join-community community]]
-       (when (or joined (not membership-permissions?))
-         [channel-list-component
-          {:on-category-layout              on-category-layout
-           :community-id                    id
-           :on-first-channel-height-changed on-first-channel-height-changed}
-          (add-handlers-to-categorized-chats id chats-by-category joined-or-spectated)])])))
+  [id {:keys [on-category-layout collapsed? on-first-channel-height-changed]}]
+  (let [{:keys [name description joined spectated images tags id membership-permissions?]
+         :as   community}   (rf/sub [:communities/community id])
+        joined-or-spectated (or joined spectated)
+        chats-by-category   (rf/sub [:communities/categorized-channels id])]
+    [:<>
+     [rn/view {:style style/community-content-container}
+      (when-not collapsed?
+        [status-tag id joined])
+      [community-header name (when collapsed? (get-in images [:thumbnail :uri]))
+       (when-not collapsed? description)]
+      (when (and (seq tags) (not collapsed?))
+        [quo/community-tags
+         {:tags            tags
+          :last-item-style style/last-community-tag
+          :container-style style/community-tag-container}])
+      [join-community community]]
+     (when (or joined (not membership-permissions?))
+       [channel-list-component
+        {:on-category-layout              on-category-layout
+         :community-id                    id
+         :on-first-channel-height-changed on-first-channel-height-changed}
+        (add-handlers-to-categorized-chats id chats-by-category joined-or-spectated)])]))
 
 (defn- sticky-category-header
   [_]

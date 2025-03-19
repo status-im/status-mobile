@@ -16,8 +16,6 @@
     [status-im.setup.hot-reload :as reloader]
     [utils.re-frame :as rf]))
 
-(def functional-compiler (reagent/create-compiler {:function-components true}))
-
 (defn get-screens
   []
   (reduce
@@ -88,8 +86,7 @@
         (when js/goog.DEBUG
           [:<>
            [reloader/reload-view]
-           [schema.view/view]])]))
-   functional-compiler))
+           [schema.view/view]])]))))
 
 (def bottom-sheet
   (reagent/reactify-component
@@ -109,18 +106,16 @@
          (when sheet
            [bottom-sheet/view
             {:insets insets :hide? hide?}
-            sheet])]]))
-   functional-compiler))
+            sheet])]]))))
 
-(def toasts (reagent/reactify-component toasts/toasts functional-compiler))
+(def toasts (reagent/reactify-component toasts/toasts))
 
 (def alert-banner
   (reagent/reactify-component
    (fn []
      ^{:key (str "alert-banner" @reloader/cnt)}
      [quo.theme/provider :dark
-      [alert-banner/view]])
-   functional-compiler))
+      [alert-banner/view]])))
 
 (def nfc-sheet-comp
   (reagent/reactify-component
@@ -130,8 +125,7 @@
        [quo.theme/provider app-theme
         [rn/keyboard-avoiding-view
          {:style {:position :relative :flex 1}}
-         [keycard.sheet/connect-keycard]]]))
-   functional-compiler))
+         [keycard.sheet/connect-keycard]]]))))
 
 ;; LEGACY (should be removed in status 2.0)
 
@@ -143,5 +137,4 @@
       [inactive]
       [popover/popover]
       (when js/goog.DEBUG
-        [reloader/reload-view])])
-   functional-compiler))
+        [reloader/reload-view])])))

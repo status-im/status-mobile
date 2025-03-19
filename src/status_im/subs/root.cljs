@@ -77,6 +77,7 @@
 (reg-root-key-sub :alert-banners :alert-banners)
 (reg-root-key-sub :alert-banners/hide? :alert-banners/hide?)
 (reg-root-key-sub :currencies :currencies)
+(reg-root-key-sub :enter-seed-phrase/error :enter-seed-phrase/error)
 
 ;;onboarding
 (reg-root-key-sub :onboarding/generated-keys? :onboarding/generated-keys?)

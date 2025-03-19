@@ -34,10 +34,10 @@
    - `words` List of words to display in the keyboard.
    - `on-press` Callback called when a word is pressed `(fn [word])`
    - `theme` :light or :dark, received from with-theme HOC."
-  [{:keys [type blur? text words on-press]}]
+  [{:keys [type blur? text words on-press container-style] :or {container-style {}}}]
   (let [theme (quo.theme/use-theme)]
     [linear-gradient/linear-gradient
-     {:style               {:flex-direction :row}
+     {:style               (assoc container-style :flex-direction :row)
       :accessibility-label :predictive-keyboard
       :colors              (if blur?
                              (gradients :blur)

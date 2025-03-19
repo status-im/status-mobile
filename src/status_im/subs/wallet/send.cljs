@@ -250,3 +250,16 @@
    (some-> route
            :estimated-time
            common-utils/estimated-time-v2-format)))
+
+(rf/reg-sub
+ :wallet/send-enough-assets?
+ :<- [:wallet/wallet-send]
+ (fn [{:keys [enough-assets?]}]
+   (if (nil? enough-assets?) true enough-assets?)))
+
+(rf/reg-sub
+ :wallet/no-routes-found?
+ :<- [:wallet/wallet-send-loading-suggested-routes?]
+ :<- [:wallet/send-route]
+ (fn [[loading? route]]
+   (and (empty? route) (not loading?))))
