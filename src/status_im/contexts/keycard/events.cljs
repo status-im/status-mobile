@@ -125,7 +125,7 @@
 (rf/reg-event-fx :keycard/disconnect
  (fn [_ _]
    {:fx [[:dispatch [:keycard/cancel-connection]]
-         [:dispatch [:keycard/hide-connection-sheet]]]}))
+         [:dispatch [:keycard/hide-connection-sheet {:success? true}]]]}))
 
 (rf/reg-event-fx :keycard/on-application-info-error
  (fn [{:keys [db]} [error]]
@@ -168,14 +168,17 @@
 ;; instance-uid is used if we need to know if it's the same card flow was started with
 ;; key-uid is used if we want to make sure it's card with the specific profile (on login for example)
 (rf/reg-event-fx :keycard/connect
- (fn [{:keys [db]} [{:keys [on-success on-error theme next-stage? instance-uid key-uid]}]]
+ (fn [{:keys [db]} [{:keys [on-success on-error theme next-step? instance-uid key-uid steps]}]]
    (let [event-vector [:keycard/get-application-info
                        {:instance-uid instance-uid
                         :key-uid      key-uid
                         :on-success   on-success
                         :on-error     on-error}]]
-     {:db (assoc-in db [:keycard :on-card-connected-event-vector] event-vector)
-      :fx [(when-not next-stage?
+     {:db (-> db
+              (assoc-in [:keycard :on-card-connected-event-vector] event-vector)
+              (update-in [:keycard :steps] #(if next-step? % steps))
+              (update-in [:keycard :current-step] #(if next-step? (inc %) 1)))
+      :fx [(when-not next-step?
              [:dispatch
               [:keycard/show-connection-sheet
                {:on-cancel-event-vector [:keycard/cancel-connection]

@@ -126,7 +126,7 @@
            (i18n/label (case state
                          :has-activity :t/address-activity
                          :no-activity  :t/address-no-activity
-                         :t/scanning))]]
+                         :t/scanning-for-activity))]]
          [rn/view {:style (style/save-button-container bottom)}
           [quo/bottom-actions
            {:actions          :one-action

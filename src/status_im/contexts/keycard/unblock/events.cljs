@@ -48,7 +48,7 @@
 (defn import-keys
   []
   (rf/dispatch [:keycard/connect
-                {:next-stage? true
+                {:next-step? true
                  :on-success
                  (fn [{:keys [has-master-key?]}]
                    (if has-master-key?
@@ -61,7 +61,7 @@
   [masked-pin]
   (rf/dispatch
    [:keycard/connect
-    {:next-stage? true
+    {:next-step? true
      :on-success
      (fn [{:keys [initialized? has-master-key?]}]
        (if has-master-key?
@@ -79,6 +79,7 @@
      {:fx [[:dispatch
             [:keycard/connect
              {:instance-uid (get-in db [:keycard :unblock :instance-uid])
+              :steps 3
               :on-success
               (fn [{:keys [initialized?]}]
                 (if initialized?

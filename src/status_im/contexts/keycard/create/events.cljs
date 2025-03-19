@@ -20,7 +20,7 @@
                :pin        pin
                :on-success (fn []
                              (rf/dispatch [:keycard/connect
-                                           {:next-stage?  true
+                                           {:next-step?   true
                                             :instance-uid instance-uid
                                             :on-success   #(rf/dispatch
                                                             [:keycard/create.generate-and-load-keys
@@ -34,6 +34,7 @@
      {:fx [[:dispatch
             [:keycard/connect
              {:theme :dark
+              :steps 2
               :instance-uid instance-uid
               :on-success
               #(rf/dispatch [:keycard/create.generate-and-load-keys %])}]]]})))

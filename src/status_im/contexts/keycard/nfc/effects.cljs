@@ -7,5 +7,5 @@
    (keycard/check-nfc-enabled
     {:on-success #(rf/dispatch [:keycard/on-check-nfc-enabled-success %])})))
 
-(rf/reg-fx :effects.keycard.ios/start-nfc keycard/start-nfc)
-(rf/reg-fx :effects.keycard.ios/stop-nfc keycard/stop-nfc)
+(rf/reg-fx :effects.keycard/start-nfc keycard/start-nfc)
+(rf/reg-fx :effects.keycard/stop-nfc keycard/stop-nfc)
