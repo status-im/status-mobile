@@ -79,6 +79,11 @@ pipeline {
         }
       }
     }
+    stage('Commit Checks') {
+      steps {
+        make('lint-commits')
+      }
+    }
   }
   post {
     success { script { github.notifyPR(true) } }
