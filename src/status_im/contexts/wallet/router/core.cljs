@@ -76,16 +76,34 @@
    [:cat router.schema/?route]
    [:maybe :int]])
 
+(defn nonce-field
+  "Extract nonce field encoded in hex to integer representation"
+  [route field]
+  (-> route
+      field
+      money/from-hex
+      money/to-string
+      js/parseInt))
+
+(schema/=> nonce-field
+  [:=>
+   [:cat router.schema/?route :keyword]
+   [:maybe :int]])
+
 (defn transaction-gas-fees
   [route]
   (let [{:keys [tx-base-fee tx-priority-fee
-                tx-l-1-fee tx-max-fees-per-gas]} route]
-    {:gas-price                "0"
-     :eip-1559-enabled         true
-     :base-fee                 (to-gwei tx-base-fee)
-     :max-priority-fee-per-gas (to-gwei tx-priority-fee)
-     :l-1-gas-fee              (to-gwei tx-l-1-fee)
-     :tx-max-fees-per-gas      (to-gwei tx-max-fees-per-gas)}))
+                tx-l-1-fee tx-max-fees-per-gas
+                suggested-min-priority-fee
+                suggested-max-priority-fee]} route]
+    {:gas-price                  "0"
+     :eip-1559-enabled           true
+     :base-fee                   (to-gwei tx-base-fee)
+     :tx-priority-fee            (to-gwei tx-priority-fee)
+     :l-1-gas-fee                (to-gwei tx-l-1-fee)
+     :tx-max-fees-per-gas        (to-gwei tx-max-fees-per-gas)
+     :suggested-min-priority-fee (to-gwei suggested-min-priority-fee)
+     :suggested-max-priority-fee (to-gwei suggested-max-priority-fee)}))
 
 (schema/=> transaction-gas-fees
   [:=>
@@ -94,6 +112,8 @@
     [:gas-price :string]
     [:eip-1559-enabled :boolean]
     [:base-fee :string]
-    [:max-priority-fee-per-gas :string]
+    [:tx-priority-fee :string]
     [:l-1-gas-fee :string]
-    [:tx-max-fees-per-gas :string]]])
+    [:tx-max-fees-per-gas :string]
+    [:suggested-min-priority-fee :string]
+    [:suggested-max-priority-fee :string]]])

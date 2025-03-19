@@ -66,9 +66,8 @@
                                                    :to         {:chain-id               1
                                                                 :native-currency-symbol "ETH"}
                                                    :gas-amount "23487"
-                                                   :gas-fees   {:base-fee                 "32.325296406"
-                                                                :max-priority-fee-per-gas "0.011000001"
-                                                                :eip1559-enabled          true}}]
+                                                   :gas-fees   {:base-fee        "32.325296406"
+                                                                :eip1559-enabled true}}]
    :wallet/wallet-send-suggested-routes          nil
    :wallet/wallet-send-receiver-networks         [1]
    :view-id                                      :screen/wallet.send-input-amount

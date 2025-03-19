@@ -6,17 +6,15 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.controlled-input.utils :as controlled-input]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-
 (defn custom-settings-sheet
   [_]
-  (let [max-base-fee   (:current (rf/sub [:wallet/tx-settings-max-base-fee]))
-        priority-fee   (:current (rf/sub [:wallet/tx-settings-priority-fee]))
-        max-gas-amount (:current (rf/sub [:wallet/tx-settings-max-gas-amount]))
-        nonce          (:current (rf/sub [:wallet/tx-settings-nonce]))
+  (let [max-base-fee   (rf/sub [:wallet.send/tx-settings-max-base-fee])
+        priority-fee   (rf/sub [:wallet.send/tx-settings-priority-fee])
+        max-gas-amount (rf/sub [:wallet.send/tx-settings-gas-amount])
+        nonce          (rf/sub [:wallet.send/tx-settings-nonce])
         account-color  (rf/sub [:wallet/current-viewing-account-color])]
     [rn/view
      [quo/drawer-top
@@ -65,7 +63,10 @@
                     :preview-size      :size-32}]}]
      [quo/bottom-actions
       {:actions          :one-action
-       :button-one-props {:on-press            #(rf/dispatch [:hide-bottom-sheet])
+       :button-one-props {:on-press            (fn []
+                                                 (rf/dispatch
+                                                  [:wallet.send/custom-transaction-settings-confirmed])
+                                                 (rf/dispatch [:hide-bottom-sheet]))
                           :customization-color account-color}
        :button-one-label (i18n/label :t/confirm)}]]))
 
@@ -93,7 +94,7 @@
 
 (defn settings-sheet
   []
-  (let [current-transaction-setting                   (rf/sub [:wallet/tx-fee-mode])
+  (let [current-transaction-setting                   (rf/sub [:wallet.send/tx-settings-fee-mode])
         fees-by-mode                                  (rf/sub [:wallet/suggested-gas-fees-for-setting])
         account-color                                 (rf/sub [:wallet/current-viewing-account-color])
         [transaction-setting set-transaction-setting] (rn/use-state current-transaction-setting)
@@ -103,86 +104,92 @@
         title                                         (fn [fee-mode]
                                                         (-> fees-by-mode
                                                             (estimated-time fee-mode)
-                                                            (format-title fee-mode)))]
+                                                            (format-title fee-mode)))
+        set-custom                                    (fn []
+                                                        (rf/dispatch
+                                                         [:show-bottom-sheet
+                                                          {:content custom-settings-sheet}]))]
     [rn/view
      [quo/drawer-top
       {:title (i18n/label :t/transaction-settings)}]
      [quo/category
       {:list-type :settings
-       :data [{:title             (title :tx-fee-mode/normal)
-               :image-props       "🍿"
-               :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
-                                                  :tx-fee-mode/normal])}
-               :image             :emoji
-               :description       :text
-               :action            :selector
-               :action-props      {:type                :radio
-                                   :checked?            (= :tx-fee-mode/normal transaction-setting)
-                                   :customization-color account-color
-                                   ;; there is an UI isssue in quo/category, it has :on-press event
-                                   ;; and child radio button has own :on-change. If they are not set
-                                   ;; to the same action then we are getting inconsistent behaviour
-                                   ;; when user can click on settings item but cant on radio itself.
-                                   ;; So duplication is to prevent that until general fix is applied
-                                   ;; to quo/category
-                                   :on-change           set-normal}
-               :on-press          set-normal
-               :label             :text
-               :preview-size      :size-32}
-              {:title             (title :tx-fee-mode/fast)
-               :image-props       "🚗"
-               :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
-                                                  :tx-fee-mode/fast])}
-               :image             :emoji
-               :description       :text
-               :action            :selector
-               :action-props      {:type                :radio
-                                   :checked?            (= :tx-fee-mode/fast transaction-setting)
-                                   :on-change           set-fast
-                                   :customization-color account-color}
-               :on-press          set-fast
-               :label             :text
-               :preview-size      :size-32}
-              {:title             (title :tx-fee-mode/urgent)
-               :image-props       "🚀"
-               :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
-                                                  :tx-fee-mode/urgent])}
-               :image             :emoji
-               :description       :text
-               :action            :selector
-               :action-props      {:type                :radio
-                                   :checked?            (= :tx-fee-mode/urgent transaction-setting)
-                                   :customization-color account-color
-                                   :on-change           set-urgent}
-               :on-press          set-urgent
-               :label             :text
-               :preview-size      :size-32}
-              (when (ff/enabled? ::ff/wallet.transaction-params)
-                {:title             (i18n/label :t/custom)
-                 :image-props       :i/edit
-                 :description-props {:text "Set your own fees and nonce"}
-                 :image             :icon
-                 :description       :text
-                 :action            :arrow
-                 :on-press          #(rf/dispatch
-                                      [:show-bottom-sheet
-                                       {:content custom-settings-sheet}])
-                 :label             :text
-                 :preview-size      :size-32})]}]
+       :data
+       [{:title             (title :tx-fee-mode/normal)
+         :image-props       "🍿"
+         :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
+                                            :tx-fee-mode/normal])}
+         :image             :emoji
+         :description       :text
+         :action            :selector
+         :action-props      {:type                :radio
+                             :checked?            (= :tx-fee-mode/normal transaction-setting)
+                             :customization-color account-color
+                             ;; there is an UI isssue in quo/category, it has :on-press event
+                             ;; and child radio button has own :on-change. If they are not set
+                             ;; to the same action then we are getting inconsistent behaviour
+                             ;; when user can click on settings item but cant on radio itself.
+                             ;; So duplication is to prevent that until general fix is applied
+                             ;; to quo/category
+                             :on-change           set-normal}
+         :on-press          set-normal
+         :label             :text
+         :preview-size      :size-32}
+        {:title             (title :tx-fee-mode/fast)
+         :image-props       "🚗"
+         :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
+                                            :tx-fee-mode/fast])}
+         :image             :emoji
+         :description       :text
+         :action            :selector
+         :action-props      {:type                :radio
+                             :checked?            (= :tx-fee-mode/fast transaction-setting)
+                             :on-change           set-fast
+                             :customization-color account-color}
+         :on-press          set-fast
+         :label             :text
+         :preview-size      :size-32}
+        {:title             (title :tx-fee-mode/urgent)
+         :image-props       "🚀"
+         :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
+                                            :tx-fee-mode/urgent])}
+         :image             :emoji
+         :description       :text
+         :action            :selector
+         :action-props      {:type                :radio
+                             :checked?            (= :tx-fee-mode/urgent transaction-setting)
+                             :customization-color account-color
+                             :on-change           set-urgent}
+         :on-press          set-urgent
+         :label             :text
+         :preview-size      :size-32}
+        {:title             (i18n/label :t/custom)
+         :image-props       :i/edit
+         :description-props {:text "Set your own fees and nonce"}
+         :image             :icon
+         :description       :text
+         :action            :selector
+         :action-props      {:type                :radio
+                             :checked?            (= :tx-fee-mode/custom transaction-setting)
+                             :customization-color account-color
+                             :on-change           set-custom}
+         :on-press          set-custom
+         :label             :text
+         :preview-size      :size-32}]}]
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-props {:on-press            (fn []
-                                                 (rf/dispatch [:wallet/quick-fee-mode-confirmed
+                                                 (rf/dispatch [:wallet.send/quick-fee-mode-confirmed
                                                                transaction-setting])
                                                  (rf/dispatch [:hide-bottom-sheet]))
                           :customization-color account-color}
        :button-one-label (i18n/label :t/confirm)}]]))
 
 (defn- hint
-  [{:keys [error? text]}]
+  [{:keys [status text]}]
   [quo/network-tags
    {:title  text
-    :status (when error? :error)}])
+    :status status}])
 
 (defn info-sheet
   [info-title info-content]
@@ -199,27 +206,21 @@
                         :padding-bottom  (if platform/ios? 14 24)
                         :align-self      :flex-start
                         :justify-content :center}
-      :on-press        #()}
+      :on-press        #(rn/open-url "https://status.app/help/wallet/set-transaction-fees-and-nonce")}
      (i18n/label :t/read-more)]]])
 
 (defn custom-setting-screen
-  [{:keys [screen-title token-symbol hint-text-fn suggested-values info-title info-content on-save
+  "conditions-fn parameter should be a function that returns map with keys :status and :hint-text"
+  [{:keys [screen-title token-symbol conditions-fn current info-title info-content
+           on-save
            with-decimals?]
     :or   {with-decimals? true}}]
   (let [[input-state set-input-state] (rn/use-state (controlled-input/set-value-numeric
                                                      controlled-input/init-state
-                                                     (:current suggested-values)))
+                                                     current))
         input-value                   (controlled-input/input-value input-state)
-        out-of-limits?                (controlled-input/input-error input-state)
-        valid-input?                  (not (or (controlled-input/empty-value? input-state)
-                                               out-of-limits?))]
-    (rn/use-mount
-     (fn []
-
-       (set-input-state (fn [state]
-                          (-> state
-                              (controlled-input/set-upper-limit (:high suggested-values))
-                              (controlled-input/set-lower-limit (:low suggested-values)))))))
+        condition                     (when conditions-fn
+                                        (conditions-fn input-value))]
     [rn/view
      {:style {:flex 1}}
      [quo/page-nav
@@ -240,18 +241,16 @@
        :swappable?       false
        :show-token-icon? false
        :value            input-value
-       :error?           out-of-limits?
+       :error?           (= (:status condition) :error)
        :currency-symbol  token-symbol
        :hint-component   [hint
-                          {:error? out-of-limits?
-                           :text   (hint-text-fn
-                                    (controlled-input/lower-limit-exceeded? input-state)
-                                    (controlled-input/upper-limit-exceeded? input-state))}]}]
+                          {:status (:status condition)
+                           :text   (:hint-text condition)}]}]
      [rn/view {:style {:flex 1}}]
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-label (i18n/label :t/save-changes)
-       :button-one-props {:disabled? (not valid-input?)
+       :button-one-props {:disabled? (= (:status condition) :error)
                           :on-press  #(on-save (controlled-input/value-numeric input-state))}}]
      [quo/numbered-keyboard
       {:container-style      {:padding-bottom (safe-area/get-bottom)}
