@@ -7,17 +7,21 @@
 
 (defn pin-retries
   [error]
-  (when-let [matched-error (re-matches pin-mismatch-error error)]
-    (js/parseInt (second (filter some? matched-error)))))
+  (some->> error
+           (re-matches pin-mismatch-error)
+           (filter some?)
+           second
+           js/parseInt))
 
 (defn tag-lost?
   [error]
-  (or
-   (= error "Tag was lost.")
-   (= error "NFCError:100")
-   (= error "NFCError:102")
-   (= error "Malformed card response")
-   (re-matches #".*NFCError:100.*" error)))
+  (when error
+    (or
+     (= error "Tag was lost.")
+     (= error "NFCError:100")
+     (= error "NFCError:102")
+     (= error "Malformed card response")
+     (re-matches #".*NFCError:100.*" error))))
 
 (defn validate-application-info
   [{:keys [has-master-key? paired? pin-retry-counter puk-retry-counter] :as application-info}
