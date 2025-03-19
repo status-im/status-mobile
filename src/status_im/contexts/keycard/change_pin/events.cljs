@@ -56,9 +56,9 @@
     {:pin        (security/safe-unmask-data (:current-pin change-pin-data))
      :on-success (fn []
                    (rf/dispatch [:keycard/connect
-                                 {:next-stage? true
-                                  :key-uid     (:key-uid change-pin-data)
-                                  :on-success  #(change-pin-and-continue change-pin-data)}]))
+                                 {:next-step? true
+                                  :key-uid    (:key-uid change-pin-data)
+                                  :on-success #(change-pin-and-continue change-pin-data)}]))
      :on-failure (fn [error]
                    (when-not (utils/tag-lost? (:error error))
                      (rf/dispatch [:keycard/disconnect])
@@ -72,5 +72,6 @@
      {:fx [[:dispatch
             [:keycard/connect
              {:theme      :dark
+              :steps      2
               :key-uid    key-uid
               :on-success #(verify-pin-and-continue change-pin-data)}]]]})))

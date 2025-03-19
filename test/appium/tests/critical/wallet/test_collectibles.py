@@ -44,7 +44,7 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
         self.wallet_view.collectibles_tab.click()
         self.wallet_view.set_network_in_wallet(self.network_name + ', NEW')
         collectibles = {
-            "BVL": {"quantity": 1,
+            "BVL": {"quantity": 2,
                     "info": {"Account": "Account 1",
                              "Network": "Base",
                              "category": "Football Player",

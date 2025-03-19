@@ -125,7 +125,7 @@
        [quo.theme/provider app-theme
         [rn/keyboard-avoiding-view
          {:style {:position :relative :flex 1}}
-         [keycard.sheet/connect-keycard]]]))))
+         [keycard.sheet/android-view]]]))))
 
 ;; LEGACY (should be removed in status 2.0)
 

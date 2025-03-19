@@ -378,14 +378,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.sign_in_2.passphrase_edit_box.clear()
         self.sign_in_2.passphrase_edit_box.send_keys(self.recovery_phrase)
         self.sign_in_2.continue_button.click()
-        try:
-            self.sign_in_2.native_alert_title.wait_for_element()
-            shown_text = self.sign_in_2.native_alert_title.text
-            if shown_text != "Keys for this account already exist":
-                self.errors.append(self.sign_in_2,
-                                   "Incorrect error message '%s' is shown for already synced account" % shown_text)
-            self.sign_in_2.cancel_button.click()
-        except TimeoutException:
+        if not self.sign_in_2.element_by_translation_id('account-already-exist-error').is_element_displayed():
             self.errors.append(self.sign_in_2, "Error is not shown for already synced account")
 
         self.errors.verify_no_errors()

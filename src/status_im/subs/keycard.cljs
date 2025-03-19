@@ -54,6 +54,18 @@
    (:card-connected? keycard)))
 
 (rf/reg-sub
+ :keycard/steps
+ :<- [:keycard]
+ (fn [keycard]
+   (:steps keycard)))
+
+(rf/reg-sub
+ :keycard/current-step
+ :<- [:keycard]
+ (fn [keycard]
+   (:current-step keycard)))
+
+(rf/reg-sub
  :keycard/pin
  :<- [:keycard]
  (fn [keycard]

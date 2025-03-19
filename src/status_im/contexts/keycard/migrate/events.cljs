@@ -20,7 +20,7 @@
                :on-success (fn []
                              (rf/dispatch
                               [:keycard/connect
-                               {:next-stage?  true
+                               {:next-step?   true
                                 :instance-uid instance-uid
                                 :on-success   #(rf/dispatch
                                                 [:keycard/migration.generate-and-load-keys %])}]))
@@ -33,6 +33,7 @@
           [:keycard/connect
            {:theme        :dark
             :instance-uid (get-in db [:keycard :migration :instance-uid])
+            :steps        2
             :on-success   #(rf/dispatch [:keycard/migration.generate-and-load-keys %])}]]]}))
 
 (rf/reg-event-fx :keycard/migration.save-instance-uid-and-pin
