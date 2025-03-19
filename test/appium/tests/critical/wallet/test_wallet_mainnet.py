@@ -122,7 +122,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
                             asset, network, text))
 
                 data_to_check = {
-                    'Est. time': ' min',
+                    'Est. time': r'~\d+ sec',
                     'Max fees': r"[$]\d+.\d+",
                     'Recipient gets': "%s %s" % (data['amount'], 'ETH' if asset == 'Ether' else 'SNT')
                 }
@@ -134,6 +134,12 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
                                 self.errors.append(self.wallet_view,
                                                    "%s on %s: max fee is not a number - %s on the Review Send page" % (
                                                        asset, network, text))
+                        elif key == 'Est. time':
+                            if not re.findall(expected_value, text) or int(re.findall(r'\d+', text)[0]) > 60:
+                                self.errors.append(
+                                    self.wallet_view,
+                                    "%s on %s: unexpected Est. time value - %s on the Review Send page" % (
+                                        asset, network, text))
                         else:
                             if text != expected_value:
                                 self.errors.append(
@@ -319,14 +325,18 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
             else:
                 network_to_short_name = network_to
             data_to_check = {
-                'Est. time': ' min',
+                'Est. time': r'~\d+ sec',
                 'Max fees': r"[$]\d+.\d+",
                 'Bridged to %s' % network_to_short_name: r"0.000\d+ ETH"
             }
             for key, expected_value in data_to_check.items():
                 try:
                     text = self.wallet_view.get_data_item_element_text(data_item_name=key)
-                    if not re.findall(expected_value, text):
+                    if key == 'Est. time':
+                        exp_condition = re.findall(expected_value, text) and int(re.findall(r'\d+', text)[0]) < 60
+                    else:
+                        exp_condition = re.findall(expected_value, text)
+                    if not exp_condition:
                         self.errors.append(self.wallet_view,
                                            "%s to %s: %s has incorrect value - %s on the Review Bridge screen" % (
                                                network_from, network_to, key, text))

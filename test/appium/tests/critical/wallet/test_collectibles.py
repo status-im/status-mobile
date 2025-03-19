@@ -118,7 +118,7 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
             self.errors.append(self.wallet_view,
                                "Text %s is not shown inside 'On' container on the Review Send page" % text)
         data_to_check = {
-            'Est. time': ' min',
+            'Est. time': r'~\d+ sec',
             'Max fees': r"[$]\d+.\d+",
             'Recipient gets': '1 '
         }
@@ -129,6 +129,11 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
                     if not re.findall(expected_value, text):
                         self.errors.append(self.wallet_view,
                                            "Max fee is not a number - %s on the Review Send page" % text)
+                elif key == 'Est. time':
+                    if not re.findall(expected_value, text) or int(re.findall(r'\d+', text)[0]) > 60:
+                        self.errors.append(
+                            self.wallet_view,
+                            "Unexpected value '%s' is shown for est. time on the Review Send page" % text)
                 else:
                     if text != expected_value:
                         self.errors.append(
@@ -166,7 +171,7 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
             self.errors.append(self.wallet_view,
                                "Text %s is not shown inside 'On' container on the Review Send page" % text)
         data_to_check = {
-            'Est. time': ' min',
+            'Est. time': r'~\d+ sec',
             'Max fees': r"[$]\d+.\d+",
             'Recipient gets': '1 '
         }
@@ -177,6 +182,11 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
                     if not re.findall(expected_value, text):
                         self.errors.append(self.wallet_view,
                                            "Max fee is not a number - %s on the Review Send page" % text)
+                elif key == 'Est. time':
+                    if not re.findall(expected_value, text) or int(re.findall(r'\d+', text)[0]) > 60:
+                        self.errors.append(
+                            self.wallet_view,
+                            "Unexpected value '%s' is shown for est. time on the Review Send page" % text)
                 else:
                     if text != expected_value:
                         self.errors.append(
