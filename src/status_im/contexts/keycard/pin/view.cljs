@@ -36,6 +36,7 @@
 (defn auth-sheet
   [params]
   [:<>
-   [quo/drawer-top {:container-style {:padding-horizontal 20 :padding-bottom 34}
-                    :title (i18n/label :t/enter-keycard-pin)}]
+   [quo/drawer-top
+    {:container-style {:padding-horizontal 20 :padding-bottom 34}
+     :title           (i18n/label :t/enter-keycard-pin)}]
    [auth params]])
