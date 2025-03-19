@@ -14,7 +14,7 @@
 (rf/reg-event-fx :standard-auth/authorize-with-keycard authorize-with-keycard)
 
 (defn- authorize-with-keycard-key
-  [{:keys [db]} [{:keys [on-auth-success]}]]
+  [{:keys [db]} [{:keys [on-auth-success on-auth-fail]}]]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     {:fx [[:dispatch
            [:standard-auth/authorize-with-keycard
@@ -30,7 +30,8 @@
                       {:pin        pin
                        :on-success #(rf/dispatch [:standard-auth/on-keycard-key-success %
                                                   on-auth-success])
-                       :on-failure #(rf/dispatch [:standard-auth/on-keycard-key-fail])}]))}]))}]]]}))
+                       :on-failure #(rf/dispatch [:standard-auth/on-keycard-key-fail %
+                                                  on-auth-fail])}]))}]))}]]]}))
 (rf/reg-event-fx :standard-auth/authorize-with-keycard-key authorize-with-keycard-key)
 
 (defn on-keycard-key-success
