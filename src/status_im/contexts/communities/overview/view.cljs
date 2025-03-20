@@ -21,12 +21,31 @@
     [utils.worklets.communities :as worklets]))
 
 ;; NOTE: values compared against `scroll-amount` to trigger animations.
-(def expand-header-threshold 150) ;; drag distance to collapse/extend the community
-(def sheet-displacement-threshold (+ expand-header-threshold 20))
-(def text-movement-threshold (* expand-header-threshold 0.7))
-(def info-opacity-threshold (* expand-header-threshold 0.5))
-(def expand-header-limit (+ sheet-displacement-threshold 56))
-(def snap-header-threshold (* expand-header-threshold 0.75))
+(def expand-header-threshold
+  "Dragging distance to collapse/extend the community."
+  150)
+
+(def sheet-displacement-threshold
+  "Dragging distance to round sheet borders and move the sheet 8 units."
+  (+ expand-header-threshold 20))
+
+(def text-movement-threshold
+  "Dragging distance to start the text movement from/to the bottom to/from the right."
+  (* expand-header-threshold 0.7))
+
+(def info-opacity-threshold
+  "Dragging distance to appear/disappear the community info (description, tags & stats)."
+  (* expand-header-threshold 0.5))
+
+(def snap-header-threshold
+  "Threshold to automatically move the header to a collapsed/expanded state and avoid an
+  intermediate state."
+  (* expand-header-threshold 0.75))
+
+(def expand-header-limit
+  "Max dragging distance where the header animation ends. It works to identify when to
+  start the flat-list scrolling."
+  (+ sheet-displacement-threshold 56))
 
 (defn- collapse-category
   [community-id category-id collapsed?]

@@ -191,8 +191,8 @@ export function onScrollAnimationEnd(
 ) {
   'worklet';
   return function () {
-    const duration = {duration: animationDuration}
     'worklet';
+    const duration = { duration: animationDuration };
     if (scrollAmount.value > snapHeaderThreshold && scrollAmount.value <= expandHeaderThreshold) {
       scrollStart.value = withTiming(-expandHeaderThreshold, duration);
       scrollAmount.value = withTiming(expandHeaderThreshold, duration);
