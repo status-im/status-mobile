@@ -1880,7 +1880,6 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "createAccountAndLogin", _CreateAccountAndLogin);
 	NODE_SET_METHOD(exports, "validateMnemonic", _ValidateMnemonic);
 	NODE_SET_METHOD(exports, "multiformatSerializePublicKey", _MultiformatSerializePublicKey);
-	NODE_SET_METHOD(exports, "saveAccountAndLoginWithKeycard", _SaveAccountAndLoginWithKeycard);
 	NODE_SET_METHOD(exports, "loginWithKeycard", _LoginWithKeycard);
 	NODE_SET_METHOD(exports, "multiformatDeserializePublicKey", _MultiformatDeserializePublicKey);
 	NODE_SET_METHOD(exports, "login", _Login);

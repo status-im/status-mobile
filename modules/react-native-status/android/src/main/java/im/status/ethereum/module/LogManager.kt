@@ -41,34 +41,6 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
         return File(pubDirectory, preLoginLogFileName)
     }
 
-    fun prepareLogsFile(context: Context): File? {
-        val logFile = getGethLogFile()
-
-        try {
-            logFile.setReadable(true)
-            val parent = logFile.parentFile
-            if (!parent?.canWrite()!!) {
-                return null
-            }
-            if (!parent.exists()) {
-                parent.mkdirs()
-            }
-            logFile.createNewFile()
-            logFile.setWritable(true)
-            Log.d(TAG, "Can write ${logFile.canWrite()}")
-            val gethLogUri = Uri.fromFile(logFile)
-
-            val gethLogFilePath = logFile.absolutePath
-            Log.d(TAG, gethLogFilePath)
-
-            return logFile
-        } catch (e: Exception) {
-            Log.d(TAG, "Can't create geth.log file! ${e.message}")
-        }
-
-        return null
-    }
-
     private fun showErrorMessage(message: String) {
         val activity = currentActivity
 
