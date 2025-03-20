@@ -203,10 +203,11 @@
       :else nil)))
 
 (defn- transaction-details
-  [{:keys [estimated-time-min max-fees to-network
+  [{:keys [max-fees to-network
            transaction-type route-loaded?]}]
   (let [theme                     (quo.theme/use-theme)
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
+        estimated-time            (rf/sub [:wallet/send-estimated-time])
         enough-assets?            (rf/sub [:wallet/send-enough-assets?])
         no-routes-found?          (rf/sub [:wallet/no-routes-found?])
         loading?                  (or loading-suggested-routes? no-routes-found?)
@@ -227,12 +228,11 @@
                               [:show-bottom-sheet
                                {:content transaction-settings/settings-sheet}])}
       :i/advanced]
-     (when estimated-time-min
-       [data-item
-        {:title    (i18n/label :t/est-time)
-         :loading? loading?
-         :subtitle (i18n/label :t/time-in-mins
-                               {:minutes estimated-time-min})}])
+     [data-item
+      {:title    (i18n/label :t/est-time)
+       :loading? loading?
+       :subtitle (i18n/label :t/time-in-sec
+                             {:seconds estimated-time})}]
      [data-item
       {:title          (i18n/label :t/max-fees)
        :loading?       loading?
@@ -261,7 +261,6 @@
         image-url                 (when collectible
                                     (get-in collectible [:preview-url :uri]))
         transaction-type          (:tx-type send-transaction-data)
-        estimated-time-min        (reduce + (map :estimated-time route))
         token-symbol              (or token-display-name
                                       (-> send-transaction-data :token :symbol))
         fee-formatted             (rf/sub [:wallet/wallet-send-fee-fiat-formatted])
@@ -305,13 +304,10 @@
                                   [error-banner]
                                   [rn/view {:style {:padding-horizontal 20}}
                                    [transaction-details
-                                    {:estimated-time-min estimated-time-min
-                                     :max-fees           fee-formatted
-                                     :to-network         bridge-to-network
-                                     :theme              theme
-                                     :route              route
-                                     :transaction-type   transaction-type
-                                     :route-loaded?      (and route (seq route))}]
+                                    {:max-fees         fee-formatted
+                                     :to-network       bridge-to-network
+                                     :transaction-type transaction-type
+                                     :route-loaded?    (and route (seq route))}]
                                    [quo/slide-button
                                     {:size                :size-48
                                      :track-text          (if (= transaction-type :tx/bridge)

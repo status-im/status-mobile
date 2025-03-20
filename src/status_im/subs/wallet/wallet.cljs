@@ -168,6 +168,12 @@
  :-> :route)
 
 (rf/reg-sub
+ :wallet/send-best-route
+ :<- [:wallet/wallet-send-route]
+ (fn [routes]
+   (first routes)))
+
+(rf/reg-sub
  :wallet/gas-fees
  :<- [:wallet/wallet-send-route]
  (fn [route]
@@ -175,8 +181,8 @@
 
 (rf/reg-sub
  :wallet/suggested-gas-fees-for-setting
- :<- [:wallet/gas-fees]
- :-> :suggested-gas-fees-for-setting)
+ :<- [:wallet/send-best-route]
+ :-> :fees-by-mode)
 
 (rf/reg-sub
  :wallet/wallet-send-enough-assets?
@@ -894,7 +900,9 @@
              token-for-fees      (first (filter #(= (string/lower-case (:symbol %))
                                                     (string/lower-case token-symbol-for-fees))
                                                 tokens))
-             gas-price           (transaction-setting fees-for-settings)
+             gas-price           (-> fees-for-settings
+                                     (get transaction-setting)
+                                     :max-fees)
              fee-in-native-token (send-utils/full-route-gas-fee-for-custom-gas-price route gas-price)
              fee-in-fiat         (utils/calculate-token-fiat-value
                                   {:currency         currency

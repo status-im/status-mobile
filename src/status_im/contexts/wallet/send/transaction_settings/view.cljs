@@ -5,6 +5,7 @@
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [status-im.common.controlled-input.utils :as controlled-input]
+    [status-im.contexts.wallet.common.utils :as utils]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -68,20 +69,47 @@
                           :customization-color account-color}
        :button-one-label (i18n/label :t/confirm)}]]))
 
+(defn- estimated-time
+  [fees-by-mode fee-mode]
+  (-> (get fees-by-mode fee-mode)
+      :estimated-time
+      utils/estimated-time-v2-format))
+
+(defn- format-title
+  [estimated-time-s fee-mode]
+  (-> (condp =
+        fee-mode
+        :tx-fee-mode/normal
+        (i18n/label :t/normal)
+
+        :tx-fee-mode/fast
+        (i18n/label :t/fast)
+
+        :tx-fee-mode/urgent
+        (i18n/label :t/urgent)
+
+        "")
+      (str " " estimated-time-s "s")))
+
 (defn settings-sheet
   []
   (let [current-transaction-setting                   (rf/sub [:wallet/tx-fee-mode])
+        fees-by-mode                                  (rf/sub [:wallet/suggested-gas-fees-for-setting])
         account-color                                 (rf/sub [:wallet/current-viewing-account-color])
         [transaction-setting set-transaction-setting] (rn/use-state current-transaction-setting)
         set-normal                                    #(set-transaction-setting :tx-fee-mode/normal)
         set-fast                                      #(set-transaction-setting :tx-fee-mode/fast)
-        set-urgent                                    #(set-transaction-setting :tx-fee-mode/urgent)]
+        set-urgent                                    #(set-transaction-setting :tx-fee-mode/urgent)
+        title                                         (fn [fee-mode]
+                                                        (-> fees-by-mode
+                                                            (estimated-time fee-mode)
+                                                            (format-title fee-mode)))]
     [rn/view
      [quo/drawer-top
       {:title (i18n/label :t/transaction-settings)}]
      [quo/category
       {:list-type :settings
-       :data [{:title             (str (i18n/label :t/normal) "~60s")
+       :data [{:title             (title :tx-fee-mode/normal)
                :image-props       "🍿"
                :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
                                                   :tx-fee-mode/normal])}
@@ -101,7 +129,7 @@
                :on-press          set-normal
                :label             :text
                :preview-size      :size-32}
-              {:title             (str (i18n/label :t/fast) "~40s")
+              {:title             (title :tx-fee-mode/fast)
                :image-props       "🚗"
                :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
                                                   :tx-fee-mode/fast])}
@@ -115,7 +143,7 @@
                :on-press          set-fast
                :label             :text
                :preview-size      :size-32}
-              {:title             (str (i18n/label :t/urgent) "~15s")
+              {:title             (title :tx-fee-mode/urgent)
                :image-props       "🚀"
                :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
                                                   :tx-fee-mode/urgent])}

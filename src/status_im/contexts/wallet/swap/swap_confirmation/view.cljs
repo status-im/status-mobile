@@ -141,16 +141,15 @@
         max-fees-formatted     (utils/fiat-formatted-for-ui
                                 currency-symbol
                                 max-fees)
-        estimated-time         (rf/sub [:wallet/swap-proposal-estimated-time])
+        estimated-time         (rf/sub [:wallet/swap-estimated-time])
         loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
         max-slippage           (rf/sub [:wallet/swap-max-slippage])]
     [rn/view {:style style/details-container}
      [:<>
-      (when estimated-time
-        [data-item
-         {:title    (i18n/label :t/est-time)
-          :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time)})
-          :loading? loading-swap-proposal?}])
+      [data-item
+       {:title    (i18n/label :t/est-time)
+        :subtitle (i18n/label :t/time-in-sec {:seconds estimated-time})
+        :loading? loading-swap-proposal?}]
       [data-item
        {:title    (i18n/label :t/max-fees)
         :subtitle (if max-fees-formatted max-fees-formatted (i18n/label :t/unknown))

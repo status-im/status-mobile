@@ -244,6 +244,14 @@
    (or value-set-by-user (:tx-fee-mode (first route)))))
 
 (rf/reg-sub
+ :wallet/send-estimated-time
+ :<- [:wallet/send-best-route]
+ (fn [route]
+   (some-> route
+           :estimated-time
+           common-utils/estimated-time-v2-format)))
+
+(rf/reg-sub
  :wallet/send-enough-assets?
  :<- [:wallet/wallet-send]
  (fn [{:keys [enough-assets?]}]

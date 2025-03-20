@@ -15,13 +15,14 @@
 
 (rf/reg-event-fx :keycard.pin/number-pressed
  (fn [{:keys [db]} [number max-numbers on-complete]]
-   (let [pin     (get-in db [:keycard :pin :text])
-         new-pin (str pin number)]
+   (let [pin          (get-in db [:keycard :pin :text])
+         new-pin      (str pin number)
+         last-number? (= max-numbers (count new-pin))]
      (when (<= (count new-pin) max-numbers)
        {:db (-> db
-                (assoc-in [:keycard :pin :text] new-pin)
+                (assoc-in [:keycard :pin :text] (when-not last-number? new-pin))
                 (assoc-in [:keycard :pin :status] nil))
-        :fx [(when (and on-complete (= (dec max-numbers) (count pin)))
+        :fx [(when (and on-complete last-number?)
                [:effects.keycard.pin/dispatch-on-complete [on-complete new-pin]])]}))))
 
 (rf/reg-event-fx :keycard.pin/clear

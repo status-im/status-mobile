@@ -192,7 +192,7 @@
                                  currency-symbol
                                  approval-fees)
         loading-swap-proposal?  (rf/sub [:wallet/swap-loading-swap-proposal?])
-        estimated-time          (rf/sub [:wallet/swap-proposal-estimated-time])]
+        estimated-time          (rf/sub [:wallet/swap-approval-estimated-time])]
     [rn/view {:style style/details-container}
      [:<>
       [data-item
@@ -206,12 +206,11 @@
                     (i18n/label :t/unknown))
         :loading? loading-swap-proposal?
         :size     :small}]
-      (when estimated-time
-        [data-item
-         {:title    (i18n/label :t/est-time)
-          :subtitle (i18n/label :t/time-in-mins {:minutes (str estimated-time)})
-          :loading? loading-swap-proposal?
-          :size     :small}])]]))
+      [data-item
+       {:title    (i18n/label :t/est-time)
+        :subtitle (i18n/label :t/time-in-sec {:seconds estimated-time})
+        :loading? loading-swap-proposal?
+        :size     :small}]]]))
 
 (defn- slide-button
   []

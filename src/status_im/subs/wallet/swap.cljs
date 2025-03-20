@@ -255,11 +255,6 @@
  :-> :approval-amount-required)
 
 (rf/reg-sub
- :wallet/swap-proposal-estimated-time
- :<- [:wallet/swap-proposal]
- :-> :estimated-time)
-
-(rf/reg-sub
  :wallet/wallet-swap-proposal-fee-fiat
  :<- [:wallet/current-viewing-account]
  :<- [:wallet/swap-proposal]
@@ -413,3 +408,19 @@
                                      (inc (/ constants/eth-max-fee-buffer-percent 100)))]
          (money/sub pay-token-balance buffered-fee))
        pay-token-balance))))
+
+(rf/reg-sub
+ :wallet/swap-estimated-time
+ :<- [:wallet/swap-proposal]
+ (fn [route]
+   (some-> route
+           :estimated-time
+           utils/estimated-time-v2-format)))
+
+(rf/reg-sub
+ :wallet/swap-approval-estimated-time
+ :<- [:wallet/swap-proposal]
+ (fn [route]
+   (some-> route
+           :approval-estimated-time
+           utils/estimated-time-v2-format)))

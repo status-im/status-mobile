@@ -114,6 +114,6 @@
          :container-style style/data-item
          :title           (i18n/label :t/est-time)
          :subtitle        (if estimated-time
-                            (i18n/label :t/time-in-mins {:minutes estimated-time})
+                            (i18n/label :t/time-in-sec {:seconds (str estimated-time)})
                             (i18n/label :t/unknown))}]]]]))
 

@@ -3,10 +3,11 @@
     [camel-snake-kebab.extras :as cske]
     [clojure.set :as set]
     [clojure.string :as string]
+    [schema.core :as schema]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.collectible.utils :as collectible-utils]
-    [status-im.contexts.wallet.send.transaction-settings.core :as transaction-settings]
-    [status-im.contexts.wallet.send.utils :as send-utils]
+    [status-im.contexts.wallet.router.core :as router]
+    [status-im.contexts.wallet.router.schema :as router.schema]
     [utils.collection :as utils.collection]
     [utils.money :as money]
     [utils.number :as utils.number]
@@ -232,12 +233,9 @@
 
     :else suggested-routes))
 
-(def ^:private precision 6)
-
 (defn new->old-route-path
   [new-path]
-  (let [to-bignumber                          (fn [k] (-> new-path k money/bignumber))
-        suggested-levels-for-max-fees-per-gas (:suggested-levels-for-max-fees-per-gas new-path)]
+  (let [to-bignumber (fn [k] (-> new-path k money/bignumber))]
     {:approval-fee              (to-bignumber :approval-fee)
      :approval-l-1-fee          (to-bignumber :approval-l-1-fee)
      :bonder-fees               (to-bignumber :tx-bonder-fees)
@@ -245,47 +243,25 @@
      :from                      (:from-chain new-path)
      :amount-in-locked          (:amount-in-locked new-path)
      :amount-in                 (:amount-in new-path)
-     :max-amount-in             (:max-amount-in new-path)
-     :gas-fees                  {:gas-price "0"
-                                 :base-fee (send-utils/convert-to-gwei (:tx-base-fee
-                                                                        new-path)
-                                                                       precision)
-                                 :max-priority-fee-per-gas (send-utils/convert-to-gwei (:tx-priority-fee
-                                                                                        new-path)
-                                                                                       precision)
-                                 :l-1-gas-fee (send-utils/convert-to-gwei (:tx-l-1-fee
-                                                                           new-path)
-                                                                          precision)
-                                 :eip-1559-enabled true
-                                 :tx-max-fees-per-gas (send-utils/convert-to-gwei
-                                                       (:tx-max-fees-per-gas
-                                                        new-path)
-                                                       precision)
-                                 :suggested-gas-fees-for-setting
-                                 {:tx-fee-mode/normal (send-utils/convert-to-gwei
-                                                       (:low
-                                                        suggested-levels-for-max-fees-per-gas)
-                                                       precision)
-                                  :tx-fee-mode/fast   (send-utils/convert-to-gwei
-                                                       (:medium
-                                                        suggested-levels-for-max-fees-per-gas)
-                                                       precision)
-                                  :tx-fee-mode/urgent (send-utils/convert-to-gwei
-                                                       (:high
-                                                        suggested-levels-for-max-fees-per-gas)
-                                                       precision)}}
      :bridge-name               (:processor-name new-path)
      :amount-out                (:amount-out new-path)
      :approval-contract-address (:approval-contract-address new-path)
      :approval-required         (:approval-required new-path)
-     :estimated-time            (:estimated-time new-path)
      :to                        (:to-chain new-path)
      :approval-amount-required  (:approval-amount-required new-path)
      ;;  :cost () ;; tbd not used on desktop
      :gas-amount                (:tx-gas-amount new-path)
      :router-input-params-uuid  (:router-input-params-uuid new-path)
-     :tx-fee-mode               (transaction-settings/gas-rate->tx-fee-mode (:tx-gas-fee-mode
-                                                                             new-path))}))
+     :gas-fees                  (router/transaction-gas-fees new-path)
+     :estimated-time            (router/transaction-estimated-time new-path)
+     :approval-estimated-time   (router/approval-estimated-time new-path)
+     :fees-by-mode              (router/transaction-fees-by-mode new-path)
+     :tx-fee-mode               (router/transaction-fee-mode new-path)}))
+
+(schema/=> new->old-route-path
+  [:=>
+   [:cat router.schema/?route]
+   :map])
 
 (defn tokens-never-loaded?
   [db]
