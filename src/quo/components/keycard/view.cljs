@@ -11,15 +11,17 @@
 
 (defn keycard
   []
-  [rn/image
-   {:resize-mode :contain
-    :style       {:margin-top     8
-                  :margin-bottom  20
-                  :max-height     210
-                  :flex           1
-                  :flex-direction :row
-                  :align-self     :center}
-    :source      (resources/get-image :keycard-orange)}])
+  (let [width (- (:width (rn/get-window)) 55)]
+    [rn/image
+     {:resize-mode :contain
+      :style       {:margin-top     8
+                    :margin-bottom  20
+                    :width          width
+                    :max-height     (/ width 1.6)
+                    :flex           1
+                    :flex-direction :row
+                    :align-self     :center}
+      :source      (resources/get-image :keycard-orange)}]))
 
 (defn keycard-component
   "This component based on the following properties:
