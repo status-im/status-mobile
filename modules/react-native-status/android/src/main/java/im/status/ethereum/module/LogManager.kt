@@ -27,17 +27,17 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
     override fun getName() = "LogManager"
 
     private fun getRequestLogFile(): File {
-        val pubDirectory = utils.getPublicStorageDirectory()
+        val pubDirectory = utils.getLogDirectory()
         return File(pubDirectory, requestsLogFileName)
     }
 
     private fun getGethLogFile(): File {
-        val pubDirectory = utils.getPublicStorageDirectory()
+        val pubDirectory = utils.getLogDirectory()
         return File(pubDirectory, gethLogFileName)
     }
 
     private fun getPreLoginLogFile(): File {
-        val pubDirectory = utils.getPublicStorageDirectory()
+        val pubDirectory = utils.getLogDirectory()
         return File(pubDirectory, preLoginLogFileName)
     }
 
@@ -202,7 +202,7 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun logFileDirectory(): String? {
-        return utils.getPublicStorageDirectory()?.absolutePath
+        return utils.getLogDirectory()?.absolutePath
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)

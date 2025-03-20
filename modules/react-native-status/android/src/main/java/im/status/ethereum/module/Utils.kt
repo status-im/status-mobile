@@ -38,7 +38,7 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
         return getNoBackupDirectory()
     }
 
-    fun getPublicStorageDirectory(): File? {
+    fun getLogDirectory(): File? {
         return File(getNoBackupDirectory(), "logs")
     }
 
