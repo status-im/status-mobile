@@ -187,13 +187,15 @@ export function onScrollAnimationEnd(
   expandHeaderThreshold,
   snapHeaderThreshold,
   expandHeaderLimit,
+  animationDuration,
 ) {
   'worklet';
   return function () {
+    const duration = {duration: animationDuration}
     'worklet';
     if (scrollAmount.value > snapHeaderThreshold && scrollAmount.value <= expandHeaderThreshold) {
-      scrollStart.value = withTiming(-expandHeaderThreshold, { duration: 300 });
-      scrollAmount.value = withTiming(expandHeaderThreshold, { duration: 300 });
+      scrollStart.value = withTiming(-expandHeaderThreshold, duration);
+      scrollAmount.value = withTiming(expandHeaderThreshold, duration);
     }
 
     if (scrollAmount.value > expandHeaderThreshold) {
@@ -201,17 +203,17 @@ export function onScrollAnimationEnd(
     }
 
     if (scrollAmount.value <= snapHeaderThreshold) {
-      scrollStart.value = withTiming(0, { duration: 300 });
-      scrollAmount.value = withTiming(0, { duration: 300 });
+      scrollStart.value = withTiming(0, duration);
+      scrollAmount.value = withTiming(0, duration);
     }
 
     if (scrollAmount.value > expandHeaderThreshold && scrollAmount.value < expandHeaderLimit) {
       if (scrollAmount.value >= (expandHeaderLimit - expandHeaderThreshold) * 0.65 + expandHeaderThreshold) {
-        scrollAmount.value = withTiming(expandHeaderLimit, { duration: 300 });
-        scrollStart.value = withTiming(-expandHeaderLimit, { duration: 300 });
+        scrollAmount.value = withTiming(expandHeaderLimit, duration);
+        scrollStart.value = withTiming(-expandHeaderLimit, duration);
       } else {
-        scrollAmount.value = withTiming(expandHeaderThreshold, { duration: 300 });
-        scrollStart.value = withTiming(-expandHeaderThreshold, { duration: 300 });
+        scrollAmount.value = withTiming(expandHeaderThreshold, duration);
+        scrollStart.value = withTiming(-expandHeaderThreshold, duration);
       }
     }
   };
@@ -246,6 +248,7 @@ export function onPanEnd({
   expandHeaderLimit,
   expandHeaderThreshold,
   snapHeaderThreshold,
+  animationDuration,
 }) {
   const isIOS = Platform.OS === 'ios';
   return function (event) {
@@ -257,6 +260,7 @@ export function onPanEnd({
       expandHeaderThreshold,
       snapHeaderThreshold,
       expandHeaderLimit,
+      animationDuration,
     );
     if (scrollAmount.value < expandHeaderLimit) {
       endAnimation();

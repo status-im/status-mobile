@@ -21,7 +21,7 @@
     [utils.worklets.communities :as worklets]))
 
 ;; NOTE: values compared against `scroll-amount` to trigger animations.
-(def expand-header-threshold 150)
+(def expand-header-threshold 150) ;; drag distance to collapse/extend the community
 (def sheet-displacement-threshold (+ expand-header-threshold 20))
 (def text-movement-threshold (* expand-header-threshold 0.7))
 (def info-opacity-threshold (* expand-header-threshold 0.5))
@@ -433,13 +433,13 @@
        :set-max-scroll set-max-scroll}]]))
 
 (defn- community-overview
-  [community-id expanded?]
+  [community-id collapsed?]
   (let [max-scroll     (reanimated/use-shared-value 0)
         set-max-scroll (rn/use-callback
                         (fn [max-scroll-amount]
                           (reanimated/set-shared-value max-scroll max-scroll-amount)))
-        scroll-start   (reanimated/use-shared-value (if expanded? 0 (- expand-header-threshold)))
-        scroll-amount  (reanimated/use-shared-value (if expanded? 0 expand-header-threshold))
+        scroll-start   (reanimated/use-shared-value (if collapsed? (- expand-header-threshold) 0))
+        scroll-amount  (reanimated/use-shared-value (if collapsed? expand-header-threshold 0))
         on-pan-start   (worklets/on-pan-start scroll-start scroll-amount)
         on-pan-update  (worklets/on-pan-update
                         {:scroll-start        scroll-start
@@ -452,7 +452,8 @@
                          :max-scroll              max-scroll
                          :expand-header-limit     expand-header-limit
                          :expand-header-threshold expand-header-threshold
-                         :snap-header-threshold   snap-header-threshold})
+                         :snap-header-threshold   snap-header-threshold
+                         :animation-duration      300})
         pan-gesture    (-> (gesture/gesture-pan)
                            (gesture/on-start on-pan-start)
                            (gesture/on-update on-pan-update)
@@ -491,10 +492,10 @@
 
 (defn view
   [id]
-  (let [community-id    (or id (rf/sub [:get-screen-params :community-overview]))
-        community       (rf/sub [:communities/community-overview community-id])
-        start-expanded? (:joined? community)]
+  (let [community-id (or id (rf/sub [:get-screen-params :community-overview]))
+        community    (rf/sub [:communities/community-overview community-id])
+        collapsed?   (:joined? community)]
     [rn/view {:style style/community-overview-container}
      (if community
-       [community-overview community-id start-expanded?]
+       [community-overview community-id collapsed?]
        [community-fetching-placeholder community-id])]))
