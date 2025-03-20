@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [status-im.constants :as constants]
@@ -9,7 +10,7 @@
     [status-im.contexts.chat.messenger.composer.actions.style :as style]
     [utils.re-frame :as rf]))
 
-(defn send-message
+(defn send-message-now
   [{:keys [input-ref edit btn-opacity]}]
   (when @input-ref
     (.clear ^js @input-ref))
@@ -30,7 +31,12 @@
    for that modification to happen and the related event dispatches to resolve
    before call the `send-message` function."
   [params]
-  (reagent/next-tick #(send-message params)))
+  (reagent/next-tick #(send-message-now params)))
+
+(def send-message
+  (if platform/ios?
+    send-message-next-tick
+    send-message-now))
 
 (defn send-button
   [input-ref edit]
@@ -45,9 +51,9 @@
                                       (rf/sub [:contacts/contact-customization-color-by-address
                                                chat-id]))
         on-press                    (rn/use-callback
-                                     #(send-message-next-tick {:edit        edit
-                                                               :input-ref   input-ref
-                                                               :btn-opacity btn-opacity})
+                                     #(send-message {:edit        edit
+                                                     :input-ref   input-ref
+                                                     :btn-opacity btn-opacity})
                                      [edit])]
     (rn/use-effect (fn []
                      ;; Handle send button opacity animation and z-index when input content changes
