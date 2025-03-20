@@ -52,6 +52,7 @@
                            (or repeat-stage-title (i18n/label :t/repeat-keycard-pin)))
        :description      :text
        :description-text (i18n/label :t/pin-needed-login-sign)}]
+     [quo/keycard]
      [rn/view {:style {:flex 1 :justify-content :center :align-items :center :padding-vertical 34}}
       [quo/pin-input
        {:blur?                 false

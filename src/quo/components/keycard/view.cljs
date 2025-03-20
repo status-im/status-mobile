@@ -10,6 +10,18 @@
     [utils.i18n :as i18n]))
 
 (defn keycard
+  []
+  [rn/image
+   {:resize-mode :contain
+    :style       {:margin-top     8
+                  :margin-bottom  20
+                  :max-height     210
+                  :flex           1
+                  :flex-direction :row
+                  :align-self     :center}
+    :source      (resources/get-image :keycard-orange)}])
+
+(defn keycard-component
   "This component based on the following properties:
   - :holder-name - Can be owner's name. Default is Empty
   - :locked? - Boolean to specify whether the keycard is locked or not

@@ -25,9 +25,8 @@
        :on-press  events-helper/navigate-back}]
      [quo/page-top
       {:title profile-name}]
-     [rn/view {:style {:margin-horizontal 20}}
-      [rn/view {:style {:padding-top 8 :padding-bottom 20}}
-       [quo/keycard {:blur? true}]]
+     [rn/view {:style {:margin-horizontal 20 :flex 1}}
+      [quo/keycard]
       [quo/section-label
        {:section (i18n/label :t/what-you-can-do) :container-style {:padding-vertical 8}}]
       [quo/settings-item
