@@ -35,7 +35,9 @@
                                                                        (count new-pin))
                                                                 (if (= :repeat stage)
                                                                   (if (= first-pin new-pin)
-                                                                    (on-complete new-pin)
+                                                                    (do
+                                                                      (set-pin "")
+                                                                      (on-complete new-pin))
                                                                     (set-error true))
                                                                   (do
                                                                     (set-pin "")
