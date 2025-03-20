@@ -1,5 +1,6 @@
 (ns status-im.contexts.keycard.sign.events
-  (:require [utils.address]
+  (:require [status-im.contexts.keycard.utils :as keycard.utils]
+            [utils.address]
             [utils.re-frame :as rf]))
 
 (defn- append-account-path
@@ -37,4 +38,11 @@
                    :on-success (fn [signatures]
                                  (rf/dispatch [:keycard/disconnect])
                                  (when on-success (on-success signatures)))
-                   :on-failure on-failure}]))}]]]})))
+                   :on-failure (fn [error]
+                                 ;; NOTE: pass down the error only if it's not the "wrong PIN"
+                                 ;; error, as that's already handled in
+                                 ;; `:keycard/on-action-with-pin-error`
+                                 (rf/dispatch [:keycard/on-action-with-pin-error error])
+                                 (when (and on-failure (not (keycard.utils/pin-retries (:error error))))
+                                   (on-failure (ex-info "Failed to sign with the keycard"
+                                                        {:error error}))))}]))}]]]})))
