@@ -1,9 +1,8 @@
 (ns utils.worklets.communities
   (:require [goog.object :as gobj]
-            [react-native.utils :as utils]
-            [taoensso.timbre :as log]))
+            [react-native.utils :as utils]))
 
-(def worklets (js/require "../src/js/worklets/communities.js"))
+(def ^:private worklets (js/require "../src/js/worklets/communities.js"))
 
 (defn- transform-args
   [f]
@@ -14,9 +13,10 @@
   [worklet-name]
   (if-let [worklet-fn (gobj/get worklets worklet-name)]
     (transform-args worklet-fn)
-    (log/error "Non-existing worklet!"
-               {:name worklet-name
-                :file "../src/js/worklets/communities.js"})))
+    (throw (js/Error.
+            (ex-info "Non-existing worklet!"
+                     {:name worklet-name
+                      :file "../src/js/worklets/communities.js"})))))
 
 (def use-logo-styles (worklet-wrapper "useLogoStyles"))
 (def use-sheet-styles (worklet-wrapper "useSheetStyles"))

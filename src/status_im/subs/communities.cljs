@@ -330,8 +330,8 @@
                              :position                     position
                              :mentions-count               (or unviewed-mentions-count 0)
                              :can-post?                    can-post?
-                             ;; NOTE: this is a troolean nil->no permissions, true->no access, false
-                             ;; -> has access
+                             ;; NOTE: this is a troolean nil->no permissions, true->no access,
+                             ;; false -> has access
                              :locked?                      locked?
                              :hide-if-permissions-not-met? (and hide-if-permissions-not-met? locked?)
                              :id                           id
