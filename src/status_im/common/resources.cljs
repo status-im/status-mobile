@@ -22,7 +22,7 @@
    :ethereum-address              (js/require "../resources/images/ui2/ethereum-address.png")
    :use-keycard                   (js/require "../resources/images/ui2/keycard.png")
    :use-recovery-phrase           (js/require "../resources/images/ui2/recovery-phrase.png")
-   :check-your-keycard            (js/require "../resources/images/ui2/check-your-keycard.png")
+   :check-your-keycard            (js/require "../resources/images/ui2/keycard-check.png")
    :qr-code                       (js/require "../resources/images/ui2/qr-code.png")
    :keycard-logo                  (js/require "../resources/images/ui2/keycard-logo.png")
    :keycard-buy                   (js/require "../resources/images/ui2/keycard-buy.png")
