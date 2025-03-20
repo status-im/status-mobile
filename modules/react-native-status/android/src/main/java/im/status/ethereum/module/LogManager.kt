@@ -26,21 +26,6 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
 
     override fun getName() = "LogManager"
 
-    private fun getRequestLogFile(): File {
-        val pubDirectory = utils.getLogDirectory()
-        return File(pubDirectory, requestsLogFileName)
-    }
-
-    private fun getGethLogFile(): File {
-        val pubDirectory = utils.getLogDirectory()
-        return File(pubDirectory, gethLogFileName)
-    }
-
-    private fun getPreLoginLogFile(): File {
-        val pubDirectory = utils.getLogDirectory()
-        return File(pubDirectory, preLoginLogFileName)
-    }
-
     private fun showErrorMessage(message: String) {
         val activity = currentActivity
 
@@ -132,9 +117,6 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
 
         val zipFile = File(logsTempDir, logsZipFileName)
         val statusLogFile = File(logsTempDir, statusLogFileName)
-        val gethLogFile = getGethLogFile()
-        val requestLogFile = getRequestLogFile()
-        val preLoginLogFile = getPreLoginLogFile()
 
         try {
             if (zipFile.exists() || zipFile.createNewFile()) {
@@ -150,13 +132,22 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
             dumpAdbLogsTo(FileOutputStream(statusLogFile))
 
             val errorList = Stack<String>()
-            val filesToZip = mutableListOf(dbFile, gethLogFile, statusLogFile)
-            if (requestLogFile.exists()) {
-                filesToZip.add(requestLogFile)
+            val filesToZip = mutableListOf<File>(dbFile, statusLogFile)
+            
+            // Get all files from the log directory
+            val logDirectory = utils.getLogDirectory()
+            if (logDirectory != null && logDirectory.exists()) {
+                val logFiles = logDirectory.listFiles()
+                if (logFiles != null) {
+                    for (file in logFiles) {
+                        if (file.isFile) {
+                            Log.d(TAG, "Adding log file: ${file.name}")
+                            filesToZip.add(file)
+                        }
+                    }
+                }
             }
-            if (preLoginLogFile.exists()) {
-                filesToZip.add(preLoginLogFile)
-            }
+            
             val zipped = zip(filesToZip.toTypedArray(), zipFile, errorList)
             if (zipped && zipFile.exists()) {
                 zipFile.setReadable(true, false)
