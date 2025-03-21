@@ -12,7 +12,8 @@
 ;; NOTE: to add a new chain:
 ;; 1. add new ns in `chains` with the chain details
 ;; 2. add them to `networks` and `sepolia` defs respectively
-;; 3. add alchemy tokens to `shadow-cljs.edn` (if necessary)
+;; 3. add network image resource to `quo.foundations.resources/networks`
+;; 4. add alchemy tokens to `shadow-cljs.edn` (if necessary)
 
 (def networks
   [mainnet/network
@@ -41,9 +42,17 @@
         (map :chain-id)
         set)))
 
+(defn network-names
+  ([]
+   (network-names false))
+  ([testnet?]
+   (->> (if testnet? sepolia-networks networks)
+        (map :network-name)
+        set)))
+
 (def all-networks (concat networks sepolia-networks))
 
-(def network-names
+(def all-network-names
   (->> all-networks
        (map :network-name)
        set))

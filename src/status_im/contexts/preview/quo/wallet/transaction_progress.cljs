@@ -94,23 +94,28 @@
   [state]
   (case (:network state)
     :mainnet           [{:network      :mainnet
+                         :full-name    "Mainnet"
                          :state        (:state-mainnet state)
                          :counter      @counter
                          :total-box    total-box
                          :epoch-number (:epoch-number-mainnet state)}]
     :optimism          [{:network      :optimism
+                         :full-name    "Optimism"
                          :state        (:state-optimism state)
                          :progress     (:optimism-progress-percentage state)
                          :epoch-number (:epoch-number-optimism state)}]
     :arbitrum          [{:network      :arbitrum
+                         :full-name    "Arbitrum"
                          :state        (:state-arbitrum state)
                          :progress     (:arbitrum-progress-percentage state)
                          :epoch-number (:epoch-number-arbitrum state)}]
     :optimism-arbitrum [{:network      :optimism
+                         :full-name    "Optimism"
                          :state        (:state-optimism state)
                          :progress     (:optimism-progress-percentage state)
                          :epoch-number (:epoch-number-optimism state)}
                         {:network      :arbitrum
+                         :full-name    "Arbitrum"
                          :state        (:state-arbitrum state)
                          :progress     (:arbitrum-progress-percentage state)
                          :epoch-number (:epoch-number-arbitrum state)}]))

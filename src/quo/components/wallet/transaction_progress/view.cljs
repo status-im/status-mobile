@@ -65,22 +65,19 @@
 
 (defn- text-steps
   [network state epoch-number counter]
-  (let [steps (case network
-                :mainnet
+  (let [steps (if (= network :mainnet)
                 {:pending    (mainnet-label 0)
                  :sending    (mainnet-label (calculate-counter counter))
                  :confirmed  (mainnet-label (calculate-counter counter))
                  :finalising (mainnet-label (calculate-counter counter))
                  :finalized  (i18n/label :t/epoch-number {:number epoch-number})
                  :error      (mainnet-label 0)}
-                (or :optimism :arbitrum)
                 {:pending    (subnet-label 0)
                  :sending    (subnet-label 0)
                  :confirmed  (subnet-label 0)
                  :finalising (subnet-label 1)
                  :finalized  (i18n/label :t/epoch-number {:number epoch-number})
-                 :error      (subnet-label 0)}
-                nil)]
+                 :error      (subnet-label 0)})]
     (get steps state)))
 
 (defn- get-status-icon
@@ -96,11 +93,6 @@
     :error                   {:icon  :i/negative-state
                               :color (colors/resolve-color :danger theme)}
     nil))
-
-(defn- get-network
-  [networks network]
-  (some #(when (= (:network %) network) %)
-        networks))
 
 (defn- calculate-error-state
   [networks]
@@ -128,16 +120,8 @@
      :collectible-number tag-number
      :type               :collectible}]])
 
-(defn- get-network-text
-  [network]
-  (case network
-    :arbitrum (i18n/label :t/arbitrum)
-    :mainnet  (i18n/label :t/mainnet)
-    :optimism (i18n/label :t/optimism)
-    nil))
-
 (defn- status-row
-  [{:keys [theme state network epoch-number counter]}]
+  [{:keys [theme state network epoch-number counter full-name]}]
   (let [{:keys [icon color]} (get-status-icon theme state)]
     [rn/view {:style style/status-row-container}
      [icon-internal icon color 16]
@@ -145,7 +129,7 @@
       [text-internal
        {:weight :regular
         :size   :paragraph-2}
-       (str (network-type-text state) " " (get-network-text network))]]
+       (str (network-type-text state) " " full-name)]]
      [rn/view
       [text-internal
        {:weight :regular
@@ -154,14 +138,15 @@
        (text-steps network state epoch-number counter)]]]))
 
 (defn- view-network
-  [{:keys [theme state epoch-number counter total-box progress network]}]
+  [{:keys [theme state epoch-number counter total-box progress network full-name]}]
   [:<>
    [status-row
     {:theme        theme
      :state        state
      :network      network
      :epoch-number epoch-number
-     :counter      counter}]
+     :counter      counter
+     :full-name    full-name}]
    [confirmation-progress/view
     {:state          state
      :network        network
@@ -183,8 +168,7 @@
         :networks networks}]
       [tag-internal tag-photo tag-name tag-number theme]
       (for [network networks]
-        (let [assoc-props #(get-network networks %)]
-          ^{:key (:network network)}
-          [view-network (assoc-props (:network network))]))]]))
+        ^{:key (:network network)}
+        [view-network (assoc network :theme theme)])]]))
 
 (def view (schema/instrument #'view-internal component-schema/?schema))

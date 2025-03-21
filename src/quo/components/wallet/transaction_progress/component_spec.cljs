@@ -11,16 +11,19 @@
    :network             network
    :customization-color :blue
    :networks            [{:network      :mainnet
+                          :full-name    "Mainnet"
                           :state        state
                           :counter      0
                           :total-box    85
                           :progress     30
                           :epoch-number "123"}
                          {:network      :optimism
+                          :full-name    "Optimism"
                           :state        state
                           :progress     50
                           :epoch-number "123"}
                          {:network      :arbitrum
+                          :full-name    "Arbitrum"
                           :state        state
                           :progress     30
                           :epoch-number "123"}]

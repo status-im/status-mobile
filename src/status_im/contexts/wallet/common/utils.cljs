@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.common.utils
   (:require [clojure.string :as string]
             [quo.foundations.resources :as resources]
-            [status-im.common.qr-codes.view :as qr-codes]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [status-im.contexts.wallet.networks.core :as networks]
@@ -260,15 +259,6 @@
            tokens-per-account))
         {})
        vals))
-
-(defn get-wallet-qr
-  [{:keys [wallet-type selected-networks address]}]
-  (if (= wallet-type :multichain)
-    (as-> selected-networks $
-      (map qr-codes/get-network-short-name-url $)
-      (apply str $)
-      (str $ address))
-    address))
 
 (defn fiat-formatted-for-ui
   [currency-symbol fiat-value]

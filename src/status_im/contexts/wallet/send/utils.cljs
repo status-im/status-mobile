@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.send.utils
   (:require
-    [status-im.contexts.wallet.networks.core :as networks]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.networks.core :as networks]
     [utils.money :as money]))
 
 (defn amount-in-hex
@@ -154,7 +154,8 @@
          (map first))))
 
 (def ^:private network-priority-score
-  (zipmap networks/network-names (range 1 (inc (count networks/network-names)))))
+  (zipmap networks/all-network-names
+          (range 1 (inc (count networks/all-network-names)))))
 
 (defn reset-loading-network-amounts-to-zero
   [network-amounts]

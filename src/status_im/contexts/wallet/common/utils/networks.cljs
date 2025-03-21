@@ -55,12 +55,6 @@
          (remove nil?)
          short-names->network-preference-prefix)))
 
-(defn token-available-on-network?
-  [token-networks chain-id]
-  (let [token-networks-ids     (mapv #(:chain-id %) token-networks)
-        token-networks-ids-set (set token-networks-ids)]
-    (contains? token-networks-ids-set chain-id)))
-
 (defn split-network-full-address
   [address]
   (as-> address $

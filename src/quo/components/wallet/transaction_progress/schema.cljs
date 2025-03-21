@@ -2,7 +2,8 @@
 
 (def ^:private ?network
   [:map
-   [:network {:optional true} [:maybe [:enum :schema.quo/networks]]]
+   [:network {:optional true} [:maybe :keyword]]
+   [:full-name {:optional true} [:maybe :string]]
    [:state {:optional true} [:maybe [:enum :pending :sending :confirmed :finalising :finalized :error]]]
    [:counter {:optional true} [:maybe :int]]
    [:total-box {:optional true} [:maybe :int]]
@@ -16,6 +17,7 @@
      [:map
       [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
       [:title {:optional true} [:maybe :string]]
+      [:network {:optional true} [:maybe :keyword]]
       [:tag-name {:optional true} [:maybe :string]]
       [:tag-number {:optional true} [:maybe [:or :string :int]]]
       [:tag-photo {:optional true} [:maybe :schema.common/image-source]]

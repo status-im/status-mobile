@@ -110,21 +110,6 @@
           address-to-find "0x999"]
       (is (= (utils/get-account-by-address accounts address-to-find) nil)))))
 
-(deftest get-wallet-qr-test
-  (testing "Test get-wallet-qr function"
-    (let [wallet-multichain  {:wallet-type       :multichain
-                              :selected-networks [:ethereum :optimism]
-                              :address           "x000"}
-          wallet-singlechain {:wallet-type       :singlechain
-                              :selected-networks [:ethereum :optimism]
-                              :address           "x000"}]
-
-      (is (= (utils/get-wallet-qr wallet-multichain)
-             "eth:oeth:x000"))
-
-      (is (= (utils/get-wallet-qr wallet-singlechain)
-             "x000")))))
-
 (deftest prettify-percentage-change-test
   (testing "prettify-percentage-change function"
     (is (= (utils/prettify-percentage-change nil) "0.00"))

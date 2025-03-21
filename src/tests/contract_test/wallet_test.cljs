@@ -76,7 +76,7 @@
             (is (not-empty raw-balance))
             (is (re-matches #"\d+" raw-balance))))))))
 
-(deftest wallet-get-walet-token-test
+(deftest wallet-get-wallet-token-test
   (h/test-async :wallet/get-wallet-token
     (fn []
       (promesa/let [accounts        (rpc-events/call-async "accounts_getAccounts" false)
@@ -84,7 +84,8 @@
                     response        (rpc-events/call-async
                                      "wallet_fetchOrGetCachedWalletBalances"
                                      false
-                                     [default-address])]
+                                     [default-address]
+                                     true)]
         (assert-wallet-tokens response)))))
 
 (defn assert-address-details

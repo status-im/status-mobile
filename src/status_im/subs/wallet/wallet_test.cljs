@@ -217,8 +217,8 @@
 
 (def ui-data
   {:network-filter {:selected-state    :default
-                    :default-networks  networks/network-names
-                    :selected-networks networks/network-names}})
+                    :default-networks  networks/all-network-names
+                    :selected-networks networks/all-network-names}})
 
 (def route-data
   [{:gas-amount "25000"
@@ -534,21 +534,21 @@
                :abbreviated-name "Eth."
                :full-name        "Mainnet"
                :chain-id         1
-               :related-chain-id nil
+               :related-chain-id 1
                :layer            1}
               {:short-name       "arb1"
                :network-name     :arbitrum
                :abbreviated-name "Arb1."
                :full-name        "Arbitrum"
                :chain-id         42161
-               :related-chain-id nil
+               :related-chain-id 42161
                :layer            2}
               {:short-name       "oeth"
                :network-name     :optimism
                :abbreviated-name "Oeth."
                :full-name        "Optimism"
                :chain-id         10
-               :related-chain-id nil
+               :related-chain-id 10
                :layer            2}]
              (->> (rf/sub [sub-name])
                   ;; Removed `#js source` property for correct compare
@@ -857,7 +857,7 @@
   (testing "selected networks -> chain-ids - All networks"
     (swap! rf-db/app-db #(assoc %
                                 :wallet
-                                {:ui {:network-filter {:selected-networks networks/network-names}}}))
+                                {:ui {:network-filter {:selected-networks (networks/network-names)}}}))
     (is
      (match? (sort (networks/chain-ids))
              (sort (rf/sub [sub-name])))))

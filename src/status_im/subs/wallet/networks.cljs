@@ -50,11 +50,6 @@
     network-details)))
 
 (re-frame/reg-sub
- :wallet/account-address
- (fn [_ [_ address network-preferences]]
-   (network-utils/format-address address network-preferences)))
-
-(re-frame/reg-sub
  :wallet/network-values
  :<- [:wallet/wallet-send]
  (fn [{:keys [from-values-by-chain to-values-by-chain token-display-name token] :as send-data}
