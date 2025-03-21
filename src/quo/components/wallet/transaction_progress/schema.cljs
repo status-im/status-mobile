@@ -2,7 +2,7 @@
 
 (def ^:private ?network
   [:map
-   [:network {:optional true} [:maybe [:enum :mainnet :optimism :arbitrum]]]
+   [:network {:optional true} [:maybe [:enum :schema.quo/networks]]]
    [:state {:optional true} [:maybe [:enum :pending :sending :confirmed :finalising :finalized :error]]]
    [:counter {:optional true} [:maybe :int]]
    [:total-box {:optional true} [:maybe :int]]

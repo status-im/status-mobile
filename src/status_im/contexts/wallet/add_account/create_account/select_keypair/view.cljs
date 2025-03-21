@@ -55,9 +55,6 @@
                                :type                :default
                                :name                name
                                :address             address}
-               :networks      [{:network-name :ethereum :short-name "eth"}
-                               {:network-name :optimism :short-name "oeth"}
-                               {:network-name :arbitrum :short-name "arb1"}]
                :state         :default
                :action        :none}))))
 

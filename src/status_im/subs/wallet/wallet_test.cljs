@@ -2,7 +2,6 @@
   (:require
     [cljs.test :refer [is testing use-fixtures]]
     [re-frame.db :as rf-db]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.networks.core :as networks]
     [status-im.subs.root]
     [test-helpers.unit :as h]
@@ -39,74 +38,87 @@
          :operable                  :partially
          :address                   "0x2"}})
 
+(def mainnet-name :mainnet)
+(def optimism-name :optimism)
+(def arbitrum-name :arbitrum)
+(def mainnet-chain-id (networks/get-chain-id mainnet-name))
+(def optimism-chain-id (networks/get-chain-id optimism-name))
+(def arbitrum-chain-id (networks/get-chain-id arbitrum-name))
+
 (def tokens-0x1
   [{:decimals           0
     :symbol             "ETH"
     :name               "Ether"
-    :balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber "2")
-                                                              :has-error   false}
-                         constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber "1")
-                                                              :has-error   false}}}
+    :balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
+                                                          "2")
+                                            :has-error   false}
+                         optimism-chain-id {:raw-balance (money/bignumber
+                                                          "1")
+                                            :has-error   false}}}
    {:decimals           0
     :symbol             "DAI"
     :name               "Dai Stablecoin"
-    :balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                            "1")
-                                                              :has-error   false}
-                         constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                            "1.5")
-                                                              :has-error   false}
-                         constants/arbitrum-mainnet-chain-id {:raw-balance nil :has-error false}}}])
+    :balances-per-chain {mainnet-chain-id
+                         {:raw-balance (money/bignumber
+                                        "1")
+                          :has-error   false}
+                         optimism-chain-id
+                         {:raw-balance (money/bignumber
+                                        "1.5")
+                          :has-error   false}
+                         arbitrum-chain-id
+                         {:raw-balance nil :has-error false}}}])
 
 (def tokens-0x2
   [{:decimals           0
     :symbol             "ETH"
     :name               "Ether"
-    :balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                            "2.5")
-                                                              :has-error   false}
-                         constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                            "3")
-                                                              :has-error   false}
-                         constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                            "<nil>")
-                                                              :has-error   false}}}
+    :balances-per-chain {mainnet-chain-id
+                         {:raw-balance (money/bignumber
+                                        "2.5")
+                          :has-error   false}
+                         optimism-chain-id {:raw-balance (money/bignumber
+                                                          "3")
+                                            :has-error   false}
+                         arbitrum-chain-id {:raw-balance (money/bignumber
+                                                          "<nil>")
+                                            :has-error   false}}}
    {:decimals           0
     :symbol             "DAI"
     :name               "Dai Stablecoin"
-    :balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                            "1")
-                                                              :has-error   false}
-                         constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber "0")
-                                                              :has-error   false}
-                         constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                            "<nil>")
-                                                              :has-error   false}}}])
+    :balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
+                                                          "1")
+                                            :has-error   false}
+                         optimism-chain-id {:raw-balance (money/bignumber "0")
+                                            :has-error   false}
+                         arbitrum-chain-id {:raw-balance (money/bignumber
+                                                          "<nil>")
+                                            :has-error   false}}}])
 
 (def tokens-0x3
   [{:decimals           0
     :symbol             "ETH"
     :name               "Ether"
-    :balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                            "5")
-                                                              :has-error   false}
-                         constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                            "2")
-                                                              :has-error   false}
-                         constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                            "<nil>")
-                                                              :has-error   false}}}
+    :balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
+                                                          "5")
+                                            :has-error   false}
+                         optimism-chain-id {:raw-balance (money/bignumber
+                                                          "2")
+                                            :has-error   false}
+                         arbitrum-chain-id {:raw-balance (money/bignumber
+                                                          "<nil>")
+                                            :has-error   false}}}
    {:decimals           0
     :symbol             "DAI"
     :name               "Dai Stablecoin"
-    :balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                            "1")
-                                                              :has-error   false}
-                         constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber "0")
-                                                              :has-error   false}
-                         constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                            "<nil>")
-                                                              :has-error   false}}}])
+    :balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
+                                                          "1")
+                                            :has-error   false}
+                         optimism-chain-id {:raw-balance (money/bignumber "0")
+                                            :has-error   false}
+                         arbitrum-chain-id {:raw-balance (money/bignumber
+                                                          "<nil>")
+                                            :has-error   false}}}])
 
 (def accounts
   {"0x1" {:path                     "m/44'/60'/0'/0/0"
@@ -205,16 +217,8 @@
 
 (def ui-data
   {:network-filter {:selected-state    :default
-                    :default-networks  #{constants/mainnet-network-name
-                                         constants/arbitrum-network-name
-                                         constants/optimism-network-name
-                                         constants/base-network-name
-                                         constants/status-network-name}
-                    :selected-networks #{constants/mainnet-network-name
-                                         constants/arbitrum-network-name
-                                         constants/optimism-network-name
-                                         constants/base-network-name
-                                         constants/status-network-name}}})
+                    :default-networks  networks/network-names
+                    :selected-networks networks/network-names}})
 
 (def route-data
   [{:gas-amount "25000"
@@ -853,20 +857,16 @@
   (testing "selected networks -> chain-ids - All networks"
     (swap! rf-db/app-db #(assoc %
                                 :wallet
-                                {:ui {:network-filter {:selected-networks
-                                                       #{constants/mainnet-network-name
-                                                         constants/arbitrum-network-name
-                                                         constants/optimism-network-name
-                                                         constants/base-network-name}}}}))
+                                {:ui {:network-filter {:selected-networks networks/network-names}}}))
     (is
-     (match? (sort (networks/chain-ids true))
+     (match? (sort (networks/chain-ids))
              (sort (rf/sub [sub-name])))))
   (testing "selected networks -> chain-ids - specific network"
     (swap! rf-db/app-db #(assoc-in %
                           [:wallet :ui :network-filter :selected-networks]
-                          #{constants/optimism-network-name}))
+                          #{optimism-name}))
     (is
-     (match? (sort [constants/optimism-mainnet-chain-id])
+     (match? (sort [optimism-chain-id])
              (sort (rf/sub [sub-name]))))))
 
 
@@ -875,7 +875,7 @@
   (testing "current account tokens in selected networks"
     (swap! rf-db/app-db
       #(-> %
-           (assoc-in [:wallet :ui :network-filter :selected-networks] #{constants/arbitrum-network-name})
+           (assoc-in [:wallet :ui :network-filter :selected-networks] #{arbitrum-name})
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
            (assoc-in [:wallet :tokens :prices-per-token]
@@ -888,14 +888,14 @@
                      :balances-per-chain
                      keys)]
       (is (match? (count chains) 1))
-      (is (match? (first chains) constants/arbitrum-mainnet-chain-id)))))
+      (is (match? (first chains) arbitrum-chain-id)))))
 
 (h/deftest-sub :wallet/aggregated-tokens-in-selected-networks
   [sub-name]
   (testing "aggregated tokens in selected networks"
     (swap! rf-db/app-db
       #(-> %
-           (assoc-in [:wallet :ui :network-filter :selected-networks] #{constants/optimism-network-name})
+           (assoc-in [:wallet :ui :network-filter :selected-networks] #{optimism-name})
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :networks] network-data)))
 
@@ -905,7 +905,7 @@
                      :balances-per-chain
                      keys)]
       (is (match? (count chains) 1))
-      (is (match? (first chains) constants/optimism-mainnet-chain-id)))))
+      (is (match? (first chains) optimism-chain-id)))))
 
 (h/deftest-sub :wallet/aggregated-fiat-balance-per-chain
   [sub-name]
@@ -921,8 +921,8 @@
     (let [result (rf/sub [sub-name])
           chains (keys result)]
       (is (match? (count chains) 3))
-      (is (match? (get result constants/ethereum-mainnet-chain-id) "$9002.00"))
-      (is (match? (get result constants/optimism-mainnet-chain-id) "$8001.50")))))
+      (is (match? (get result mainnet-chain-id) "$9002.00"))
+      (is (match? (get result optimism-chain-id) "$8001.50")))))
 
 (h/deftest-sub :wallet/current-viewing-account-fiat-balance-per-chain
   [sub-name]
@@ -939,9 +939,9 @@
     (let [result (rf/sub [sub-name])
           chains (keys result)]
       (is (match? (count chains) 3))
-      (is (match? (get result constants/ethereum-mainnet-chain-id) "$5001.00"))
-      (is (match? (get result constants/optimism-mainnet-chain-id) "$6000.00"))
-      (is (match? (get result constants/arbitrum-mainnet-chain-id) "$0.00")))))
+      (is (match? (get result mainnet-chain-id) "$5001.00"))
+      (is (match? (get result optimism-chain-id) "$6000.00"))
+      (is (match? (get result arbitrum-chain-id) "$0.00")))))
 
 (h/deftest-sub :wallet/wallet-send-fee-fiat-formatted
   [sub-name]
@@ -968,74 +968,74 @@
         {"0x1" {:address "0x1"
                 :watch-only? false
                 :tokens
-                [{:balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}
-                                       constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}
-                                       constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}}}
-                 {:balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}
-                                       constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}
-                                       constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}}}]}
+                [{:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}
+                                       optimism-chain-id {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}
+                                       arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}}}
+                 {:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}
+                                       optimism-chain-id {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}
+                                       arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}}}]}
          "0x2" {:address "0x2"
                 :watch-only? false
                 :tokens
-                [{:balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}
-                                       constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}
-                                       constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}}}
-                 {:balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}
-                                       constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}
-                                       constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}}}]}
+                [{:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}
+                                       optimism-chain-id {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}
+                                       arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}}}
+                 {:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}
+                                       optimism-chain-id {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}
+                                       arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}}}]}
 
          "0x3"
          {:address     "0x3"
           :watch-only? true
-          :tokens      [{:balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance
-                                                                                   (money/bignumber
-                                                                                    "2")
-                                                                                   :has-error false}
-                                              constants/optimism-mainnet-chain-id {:raw-balance
-                                                                                   (money/bignumber
-                                                                                    "1")
-                                                                                   :has-error false}
-                                              constants/arbitrum-mainnet-chain-id {:raw-balance
-                                                                                   (money/bignumber
-                                                                                    "0")
-                                                                                   :has-error false}}}
-                        {:balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance
-                                                                                   (money/bignumber
-                                                                                    "0")
-                                                                                   :has-error false}
-                                              constants/optimism-mainnet-chain-id {:raw-balance
-                                                                                   (money/bignumber
-                                                                                    "2")
-                                                                                   :has-error false}
-                                              constants/arbitrum-mainnet-chain-id {:raw-balance
-                                                                                   (money/bignumber
-                                                                                    "0")
-                                                                                   :has-error
-                                                                                   false}}}]}}))
+          :tokens      [{:balances-per-chain {mainnet-chain-id  {:raw-balance
+                                                                 (money/bignumber
+                                                                  "2")
+                                                                 :has-error false}
+                                              optimism-chain-id {:raw-balance
+                                                                 (money/bignumber
+                                                                  "1")
+                                                                 :has-error false}
+                                              arbitrum-chain-id {:raw-balance
+                                                                 (money/bignumber
+                                                                  "0")
+                                                                 :has-error false}}}
+                        {:balances-per-chain {mainnet-chain-id  {:raw-balance
+                                                                 (money/bignumber
+                                                                  "0")
+                                                                 :has-error false}
+                                              optimism-chain-id {:raw-balance
+                                                                 (money/bignumber
+                                                                  "2")
+                                                                 :has-error false}
+                                              arbitrum-chain-id {:raw-balance
+                                                                 (money/bignumber
+                                                                  "0")
+                                                                 :has-error
+                                                                 false}}}]}}))
     (is (true? (rf/sub [sub-name]))))
   (testing "returns false if the balance is not zero in all non-watched accounts"
     (swap! rf-db/app-db
@@ -1044,45 +1044,45 @@
         {"0x1" {:address "0x1"
                 :watch-only? false
                 :tokens
-                [{:balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "2")
-                                                                            :has-error   false}
-                                       constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "1")
-                                                                            :has-error   false}
-                                       constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}}}
-                 {:balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}
-                                       constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "2")
-                                                                            :has-error   false}
-                                       constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}}}]}
+                [{:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                        "2")
+                                                          :has-error   false}
+                                       optimism-chain-id {:raw-balance (money/bignumber
+                                                                        "1")
+                                                          :has-error   false}
+                                       arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}}}
+                 {:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}
+                                       optimism-chain-id {:raw-balance (money/bignumber
+                                                                        "2")
+                                                          :has-error   false}
+                                       arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}}}]}
          "0x2" {:address "0x2"
                 :watch-only? true
                 :tokens
-                [{:balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "2")
-                                                                            :has-error   false}
-                                       constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "1")
-                                                                            :has-error   false}
-                                       constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}}}
-                 {:balances-per-chain {constants/ethereum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}
-                                       constants/optimism-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "2")
-                                                                            :has-error   false}
-                                       constants/arbitrum-mainnet-chain-id {:raw-balance (money/bignumber
-                                                                                          "0")
-                                                                            :has-error   false}}}]}}))
+                [{:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                        "2")
+                                                          :has-error   false}
+                                       optimism-chain-id {:raw-balance (money/bignumber
+                                                                        "1")
+                                                          :has-error   false}
+                                       arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}}}
+                 {:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}
+                                       optimism-chain-id {:raw-balance (money/bignumber
+                                                                        "2")
+                                                          :has-error   false}
+                                       arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                        "0")
+                                                          :has-error   false}}}]}}))
     (is (false? (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/selected-keypair-keycard?

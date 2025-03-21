@@ -386,30 +386,12 @@
 (def ^:const ens-action-type-set-pub-key 2)
 
 ;; wallet
-(def ^:const ethereum-mainnet-chain-id 1)
-(def ^:const ethereum-sepolia-chain-id 11155111)
-(def ^:const arbitrum-mainnet-chain-id 42161)
-(def ^:const arbitrum-sepolia-chain-id 421614)
-(def ^:const optimism-mainnet-chain-id 10)
-(def ^:const optimism-sepolia-chain-id 11155420)
-(def ^:const base-mainnet-chain-id 8453)
-(def ^:const base-sepolia-chain-id 84532)
-(def ^:const status-network-sepolia-chain-id 1660990954)
 
 (def opensea-url-names
   {:ethereum "ethereum"
    :sepolia  "sepolia"})
 
 (def ^:const mainnet-short-name "eth")
-
-(def ^:const sepolia-full-name "Sepolia")
-
-(def ^:const mainnet-network-name :mainnet)
-(def ^:const ethereum-network-name :ethereum)
-(def ^:const optimism-network-name :optimism)
-(def ^:const arbitrum-network-name :arbitrum)
-(def ^:const base-network-name :base)
-(def ^:const status-network-name :status)
 
 (def ^:const layer-1-network 1)
 (def ^:const layer-2-network 2)

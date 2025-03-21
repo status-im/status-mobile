@@ -3,7 +3,6 @@
             [clojure.set :as set]
             [clojure.string :as string]
             [status-im.contexts.wallet.networks.core :as networks]
-            [status-im.constants :as constants]
             [utils.string]))
 
 (defn chain-id->eip155
@@ -21,22 +20,10 @@
   [address chain-id]
   (str chain-id ":" address))
 
-(defn- add-full-testnet-name
-  "Updates the `:full-name` key with the full testnet name if using testnet `:chain-id`.\n
-  e.g. `{:full-name \"Mainnet\"}` -> `{:full-name \"Mainnet Sepolia\"`}`"
-  [network]
-  (let [testnet-chain-ids (networks/chain-ids true)
-        add-testnet-name  (fn [testnet-name]
-                            (update network :full-name #(str % " " testnet-name)))]
-    (condp #(contains? %1 %2) (:chain-id network)
-      testnet-chain-ids (add-testnet-name constants/sepolia-full-name)
-      network)))
-
 (defn chain-id->network-details
   [chain-id]
   (-> chain-id
-      (networks/network-details)
-      (add-full-testnet-name)))
+      (networks/network-details)))
 
 (defn session-networks-allowed?
   [testnet-mode? {:keys [chains]}]

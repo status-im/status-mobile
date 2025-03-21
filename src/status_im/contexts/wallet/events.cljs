@@ -683,7 +683,7 @@
 (rf/reg-event-fx
  :wallet/resolve-ens
  (fn [{db :db} [{:keys [ens on-success on-error]}]]
-   (let [chain-id (network-utils/network->chain-id db constants/mainnet-network-name)]
+   (let [chain-id (network-utils/network->chain-id db :mainnet)]
      {:fx [[:json-rpc/call
             [{:method     "ens_addressOf"
               :params     [chain-id ens]

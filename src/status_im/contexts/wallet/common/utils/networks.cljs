@@ -15,7 +15,7 @@
   ([{:keys [network testnet-enabled?]}]
    (-> network
        keyword
-       (networks/network-name->chain-id testnet-enabled?))))
+       (networks/get-chain-id testnet-enabled?))))
 
 (defn network-list
   [{:keys [balances-per-chain]} networks]

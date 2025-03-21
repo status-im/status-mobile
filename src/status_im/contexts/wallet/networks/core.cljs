@@ -9,6 +9,11 @@
     [status-im.contexts.wallet.networks.chains.status :as status]
     [status-im.contexts.wallet.networks.validation :as validation]))
 
+;; NOTE: to add a new chain:
+;; 1. add new ns in `chains` with the chain details
+;; 2. add them to `networks` and `sepolia` defs respectively
+;; 3. add alchemy tokens to `shadow-cljs.edn` (if necessary)
+
 (def networks
   [mainnet/network
    optimism/network
@@ -29,10 +34,12 @@
        set))
 
 (defn chain-ids
-  [testnet?]
-  (->> (if testnet? sepolia-networks networks)
-       (map :chain-id)
-       set))
+  ([]
+   (chain-ids false))
+  ([testnet?]
+   (->> (if testnet? sepolia-networks networks)
+        (map :chain-id)
+        set)))
 
 (def all-networks (concat networks sepolia-networks))
 
@@ -64,11 +71,13 @@
   [chain-id]
   (get-in networks-by-chain-id [chain-id :network-name]))
 
-(defn network-name->chain-id
-  [network-name testnet?]
-  (-> (if testnet? sepolia-networks-by-network-name networks-by-network-name)
-      (get network-name)
-      (get :chain-id)))
+(defn get-chain-id
+  ([network-name]
+   (get-chain-id network-name false))
+  ([network-name testnet?]
+   (-> (if testnet? sepolia-networks-by-network-name networks-by-network-name)
+       (get network-name)
+       (get :chain-id))))
 
 (defn network-name->short-name
   [network-name]
@@ -121,3 +130,5 @@
 (defn new-network?
   [network-name]
   (contains? new-networks network-name))
+
+(defn eth-mainnet? [chain-id] (= 1 chain-id))

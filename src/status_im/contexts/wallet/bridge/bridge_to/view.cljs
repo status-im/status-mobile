@@ -4,10 +4,10 @@
     [quo.foundations.resources :as quo.resources]
     [quo.theme]
     [react-native.core :as rn]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.bridge.bridge-to.style :as style]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.utils :as utils]
+    [status-im.contexts.wallet.networks.core :as networks]
     [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -85,7 +85,7 @@
         :type         :network
         :network-logo (:source network)
         :size         24}]]
-     (when (not= (:chain-id network) constants/ethereum-mainnet-chain-id)
+     (when-not (networks/eth-mainnet? (:chain-id network))
        [rn/view style/content-container
         [bridge-token-component (assoc mainnet :network-name :t/mainnet) account-token]])
      [quo/divider-label (i18n/label :t/layer-2)]

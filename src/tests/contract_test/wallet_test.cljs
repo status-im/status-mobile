@@ -6,7 +6,6 @@
     [promesa.core :as promesa]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.common.json-rpc.events :as rpc-events]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.networks.core :as networks]
     status-im.events
@@ -16,6 +15,8 @@
     [tests.contract-test.utils :as contract-utils]))
 
 (use-fixtures :each (h/fixture-session))
+
+(def mainnet-chain-id (networks/get-chain-id :mainnet))
 
 (defn assert-accounts-get-accounts
   [result]
@@ -97,7 +98,7 @@
   (h/test-async :wallet/get-address-details
     (fn []
       (promesa/let [input       "test.eth"
-                    chain-id    constants/ethereum-mainnet-chain-id
+                    chain-id    mainnet-chain-id
                     ens-address (rpc-events/call-async "ens_addressOf" false chain-id input)
                     response    (rpc-events/call-async "wallet_getAddressDetails"
                                                        false

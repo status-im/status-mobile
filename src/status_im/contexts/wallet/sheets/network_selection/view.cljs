@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [quo.foundations.resources :as quo.resources]
             [react-native.core :as rn]
-            [status-im.constants :as constants]
+            [status-im.contexts.wallet.networks.core :as networks]
             [status-im.contexts.wallet.sheets.network-selection.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -11,11 +11,12 @@
   [{:keys [network on-select-network source]}]
   (let [{:keys [full-name network-name chain-id]} network
         {balance-in-crypto :crypto
-         balance-in-fiat   :fiat} (if (= source :swap)
-                                    (rf/sub [:wallet/swap-asset-to-pay-network-balance chain-id])
-                                    (rf/sub [:wallet/send-token-network-balance chain-id]))
-        mainnet?
-        (= network-name constants/mainnet-network-name)]
+         balance-in-fiat   :fiat}                 (if (= source :swap)
+                                                    (rf/sub [:wallet/swap-asset-to-pay-network-balance
+                                                             chain-id])
+                                                    (rf/sub [:wallet/send-token-network-balance
+                                                             chain-id]))
+        mainnet?                                  (networks/eth-mainnet? chain-id)]
     [quo/network-list
      {:label           full-name
       :network-image   (quo.resources/get-network network-name)

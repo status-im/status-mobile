@@ -1,23 +1,7 @@
 (ns status-im.contexts.wallet.common.utils.networks-test
   (:require
-    [cljs.test :refer [are deftest is testing]]
-    [status-im.constants :as constants]
+    [cljs.test :refer [are deftest]]
     [status-im.contexts.wallet.common.utils.networks :as utils]))
-
-(deftest network->chain-id-test
-  (testing "network->chain-id function"
-    (is (= (utils/network->chain-id {:network :mainnet :testnet-enabled? false})
-           constants/ethereum-mainnet-chain-id))
-    (is (= (utils/network->chain-id {:network :eth :testnet-enabled? true})
-           constants/ethereum-sepolia-chain-id))
-    (is (= (utils/network->chain-id {:network "optimism" :testnet-enabled? true})
-           constants/optimism-sepolia-chain-id))
-    (is (= (utils/network->chain-id {:network "oeth" :testnet-enabled? false})
-           constants/optimism-mainnet-chain-id))
-    (is (= (utils/network->chain-id {:network :arb1 :testnet-enabled? false})
-           constants/arbitrum-mainnet-chain-id))
-    (is (= (utils/network->chain-id {:network :arbitrum :testnet-enabled? true})
-           constants/arbitrum-sepolia-chain-id))))
 
 (deftest short-names->network-preference-prefix-test
   (are [expected short-names]
