@@ -1,6 +1,5 @@
 (ns status-im.contexts.settings.wallet.network-settings.view
   (:require [quo.core :as quo]
-            [quo.foundations.resources :as resources]
             [quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
@@ -15,11 +14,11 @@
 
 (defn make-network-settings-item
   [{:keys [details testnet-label testnet-mode?]}]
-  (let [{:keys [network-name full-name]} details]
+  (let [{:keys [full-name source]} details]
     (cond-> {:blur?       true
              :title       full-name
              :image       :icon-avatar
-             :image-props {:icon (resources/get-network network-name)
+             :image-props {:icon source
                            :size :size-20}}
       testnet-mode? (assoc
                      :label       :text
@@ -38,21 +37,13 @@
 
 (defn layer-2-settings
   [{:keys [networks testnet-mode?]}]
-  (let [network-items [{:details       (:arbitrum networks)
-                        :testnet-mode? testnet-mode?
-                        :testnet-label (i18n/label :t/sepolia-active)}
-                       {:details       (:base networks)
-                        :testnet-mode? testnet-mode?
-                        :testnet-label (i18n/label :t/sepolia-active)}
-                       {:details       (:optimism networks)
-                        :testnet-mode? testnet-mode?
-                        :testnet-label (i18n/label :t/sepolia-active)}]
-        network-items (if (and testnet-mode? (not-empty (:status networks)))
-                        (conj network-items
-                              {:details       (:status networks)
-                               :testnet-mode? testnet-mode?
-                               :testnet-label (i18n/label :t/sepolia-active)})
-                        network-items)]
+  (let [network-items (->> networks
+                           keys
+                           (filter #(not= :mainnet %))
+                           (map (fn [network-name]
+                                  {:details       (get networks network-name)
+                                   :testnet-mode? testnet-mode?
+                                   :testnet-label (i18n/label :t/sepolia-active)})))]
     [quo/category
      {:key       :layer-2-settings
       :label     (i18n/label :t/layer-2)

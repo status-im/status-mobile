@@ -8,6 +8,7 @@
     [status-im.common.json-rpc.events :as rpc-events]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.data-store :as data-store]
+    [status-im.contexts.wallet.networks.core :as networks]
     status-im.events
     status-im.navigation.core
     status-im.subs.root
@@ -15,8 +16,6 @@
     [tests.contract-test.utils :as contract-utils]))
 
 (use-fixtures :each (h/fixture-session))
-
-(def number-of-networks 3)
 
 (defn assert-accounts-get-accounts
   [result]
@@ -50,15 +49,11 @@
 
 (defn assert-ethereum-chains
   [response]
-  (is (= number-of-networks (count response)))
-  (is (some #(= constants/ethereum-mainnet-chain-id (get-in % [:Prod :chainId])) response))
-  (is (some #(= constants/optimism-mainnet-chain-id (get-in % [:Prod :chainId])) response))
-  (is (some #(= constants/arbitrum-mainnet-chain-id (get-in % [:Prod :chainId])) response))
-  (is (some #(= constants/base-mainnet-chain-id (get-in % [:Prod :chainId])) response))
-  (is (some #(= constants/ethereum-sepolia-chain-id (get-in % [:Test :chainId])) response))
-  (is (some #(= constants/arbitrum-sepolia-chain-id (get-in % [:Test :chainId])) response))
-  (is (some #(= constants/optimism-sepolia-chain-id (get-in % [:Test :chainId])) response))
-  (is (some #(= constants/base-sepolia-chain-id (get-in % [:Test :chainId])) response)))
+  (is (= networks/all-networks (count response)))
+  (doseq [chain-id (networks/chain-ids false)]
+    (is (some #(= chain-id (get-in % [:Prod :chainId])) response)))
+  (doseq [chain-id (networks/chain-ids true)]
+    (is (some #(= chain-id (get-in % [:Test :chainId])) response))))
 
 (deftest accounts-get-chains-contract-test
   (h/test-async :contract/wallet_get-ethereum-chains
