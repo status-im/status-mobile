@@ -43,7 +43,7 @@
 
 (defn- get-opensea-network-name
   [chain-id test-networks-enabled?]
-  (let [network-kw   (networks/chain-id->network-name chain-id)
+  (let [network-kw   (networks/get-network-name chain-id)
         network-name (name network-kw)
         mainnet?     (= :mainnet network-kw)]
     (cond (and test-networks-enabled? mainnet?)

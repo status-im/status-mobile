@@ -26,16 +26,22 @@
           base/sepolia-network
           status/sepolia-network]})
 
+(def ^:private new-networks
+  [base/network
+   status/sepolia-network])
+
 (def ^:private all-networks
   (->> networks
        vals
        (apply concat)))
 
-(def ^:private new-networks
-  (->> [base/network
-        status/sepolia-network]
-       (map :network-name)
-       set))
+;; NOTE: runs schema validation over all the networks only in debug
+;; mode to make sure the networks are defined correctly
+(when ^boolean js/goog.DEBUG
+  (map validation/validate-network all-networks))
+
+(def networks-by-chain-id
+  (into {} (map (juxt :chain-id identity)) all-networks))
 
 (defn- networks-by-testnet-mode
   [testnet?]
@@ -64,76 +70,57 @@
        (map :network-name)
        set))
 
-;; NOTE: runs schema validation over all the networks only in debug
-;; mode to make sure the networks are defined correctly
-(when ^boolean js/goog.DEBUG
-  (map validation/validate-network all-networks))
-
-;; mappings
-
-(def ^:private networks-by-chain-id
-  (into {} (map (juxt :chain-id identity)) all-networks))
-
-(def ^:private networks-by-network-name
-  (into {} (map (juxt :network-name identity)) (:prod networks)))
-
-(def ^:private testnet-networks-by-network-name
-  (into {} (map (juxt :network-name identity)) (:test networks)))
-
 (defn get-chain-id
-  ([network-name]
-   (get-chain-id network-name false))
-  ([network-name testnet?]
-   (-> (if testnet? testnet-networks-by-network-name networks-by-network-name)
-       (get network-name)
-       (get :chain-id))))
+  [network-name]
+  (->> networks
+       :prod
+       (some #(when (= network-name (:network-name %)) %))
+       :chain-id))
 
-(defn chain-id->network-name
+(defn get-testnet-chain-id
+  [network-name]
+  (->> networks
+       :test
+       (some #(when (= network-name (:network-name %)) %))
+       :chain-id))
+
+(defn new-network?
   [chain-id]
-  (get-in networks-by-chain-id [chain-id :network-name]))
+  (contains? (->> new-networks
+                  (map :chain-id)
+                  set)
+             chain-id))
 
-;; extractors
-
-(defn network-details
+(defn get-network-details
   [chain-id]
-  (get networks-by-chain-id chain-id))
+  (get networks-by-chain-id chain-id 1))
 
-(defn block-explorer-address-url
-  ([chain-id]
-   (-> networks-by-chain-id
-       (get chain-id 1)
-       (get :block-explorer-url)
-       (str "address")))
-  ([chain-id address]
-   (-> (block-explorer-address-url chain-id)
-       (str "/" address))))
+(defn get-network-name
+  [chain-id]
+  (-> chain-id
+      get-network-details
+      :network-name))
 
-(defn block-explorer-tx-url
+(defn get-block-explorer-address-url
+  [chain-id address]
+  (-> chain-id
+      get-network-details
+      (get :block-explorer-url)
+      (str "address/" address)))
+
+(defn get-block-explorer-tx-url
   [chain-id tx-hash]
-  (-> networks-by-chain-id
-      (get chain-id 1)
+  (-> chain-id
+      get-network-details
       (get :block-explorer-url)
       (str "tx/" tx-hash)))
 
-(defn block-explorer-name
+(defn get-block-explorer-name
   [chain-id]
-  (get-in networks-by-chain-id [chain-id :block-explorer-name]))
+  (-> chain-id
+      get-network-details
+      :block-explorer-name))
 
-(defn full-name
+(defn eth-mainnet?
   [chain-id]
-  (get-in networks-by-chain-id [chain-id :full-name]))
-
-(defn short-name
-  [chain-id]
-  (get-in networks-by-chain-id [chain-id :short-name]))
-
-(defn accessibility-label
-  [chain-id prefix]
-  (-> (str prefix "-" (short-name chain-id))
-      keyword))
-
-(defn new-network?
-  [network-name]
-  (contains? new-networks network-name))
-
-(defn eth-mainnet? [chain-id] (= 1 chain-id))
+  (= 1 chain-id))

@@ -60,7 +60,7 @@
          token-decimals (:decimals token)]
      (reduce-kv
       (fn [acc chain-id amount]
-        (let [network-name (networks/chain-id->network-name chain-id)
+        (let [network-name (networks/get-network-name chain-id)
               amount-fixed (number/to-fixed (money/->bignumber amount) token-decimals)]
           (merge acc (network-utils/network-summary network-name token-symbol amount-fixed))))
       {}
@@ -73,4 +73,4 @@
    (-> to-values-by-chain
        keys
        first
-       networks/network-details)))
+       networks/get-network-details)))

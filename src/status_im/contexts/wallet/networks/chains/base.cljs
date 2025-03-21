@@ -18,5 +18,6 @@
 (def sepolia-network
   (assoc network
          :chain-id           84532
+         :testnet?           true
          :related-chain-id   8453
          :block-explorer-url "https://sepolia.basescan.org/"))

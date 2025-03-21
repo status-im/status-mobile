@@ -4,7 +4,6 @@
     [cljs-time.coerce :as time-coerce]
     [clojure.set]
     [clojure.string :as string]
-    [status-im.contexts.wallet.networks.core :as networks]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     [status-im.contexts.network.data-store :as network.data-store]
@@ -16,6 +15,7 @@
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.db-path :as db-path]
     [status-im.contexts.wallet.item-types :as item-types]
+    [status-im.contexts.wallet.networks.core :as networks]
     [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
     [status-im.contexts.wallet.tokens.events]
     [status-im.feature-flags :as ff]
@@ -469,7 +469,7 @@
    (let [network-data           (data-store/rpc->networks data)
          test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
          default-network-names  (->> (get network-data (if test-networks-enabled? :test :prod))
-                                     (map #(-> % :chain-id networks/chain-id->network-name))
+                                     (map #(-> % :chain-id networks/get-network-name))
                                      set)]
      {:db (-> db
               (assoc-in [:wallet :networks] network-data)
@@ -549,16 +549,9 @@
    {:db (assoc-in db [:wallet :ui :search-address :loading?] true)}))
 
 (rf/reg-event-fx
- :wallet/navigate-to-chain-explorer-from-bottom-sheet
- (fn [_ [explorer-link address]]
-   {:fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:browser.ui/open-url (str explorer-link "/" address)]]]}))
-
-(rf/reg-event-fx
  :wallet/navigate-to-chain-explorer
- (fn [{:keys [db]} [{:keys [network chain-id address]}]]
-   (let [chain-id      (or chain-id (network-utils/network->chain-id db network))
-         explorer-link (networks/block-explorer-address-url chain-id address)]
+ (fn [_ [chain-id address]]
+   (let [explorer-link (networks/get-block-explorer-address-url chain-id address)]
      {:fx [[:dispatch [:hide-bottom-sheet]]
            [:dispatch [:browser.ui/open-url explorer-link]]]})))
 
@@ -614,11 +607,15 @@
                                                   (for [[k v] chains :when (= v "down")] k))
                                      keys)
          test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
-         chain-ids-by-mode       (networks/chain-ids test-networks-enabled?)
+         chain-ids-by-mode       (->> (get-in db
+                                              [:wallet :networks
+                                               (if test-networks-enabled? :test :prod)])
+                                      (map :chain-id))
          chains-filtered-by-mode (remove #(not (contains? chain-ids-by-mode %)) down-chain-ids)
          chains-down?            (and (network.data-store/online? db) (seq chains-filtered-by-mode))
          chain-names             (when chains-down?
-                                   (->> (map networks/full-name chains-filtered-by-mode)
+                                   (->> (map (comp :full-name networks/get-network-details)
+                                             chains-filtered-by-mode)
                                         distinct
                                         (string/join ", ")))]
      (when (seq down-chain-ids)

@@ -15,14 +15,11 @@
               {:icon                :i/link
                :right-icon          :i/external
                :label               (i18n/label :t/view-address-on-block-explorer
-                                                {:block-explorer-name (networks/block-explorer-name
+                                                {:block-explorer-name (networks/get-block-explorer-name
                                                                        chain-id)})
                :blur?               true
-               :on-press            #(rf/dispatch [:wallet/navigate-to-chain-explorer
-                                                   {:address address
-                                                    :network (networks/chain-id->network-name
-                                                              chain-id)}])
-               :accessibility-label (networks/accessibility-label chain-id "view-on")}))))
+               :on-press            #(rf/dispatch [:wallet/navigate-to-chain-explorer chain-id address])
+               :accessibility-label :view-on-block-explorer}))))
 
 (defn view
   [{:keys [name address customization-color] :as address-details}]

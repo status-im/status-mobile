@@ -109,13 +109,15 @@
     {:content (fn []
                 [quo/action-drawer
                  [[{:icon                :i/link
-                    :accessibility-label :view-on-etherscan
+                    :accessibility-label :view-on-block-explorer
                     :on-press            (fn []
                                            (rf/dispatch
-                                            [:wallet/navigate-to-chain-explorer-from-bottom-sheet
-                                             (networks/block-explorer-address-url chain-id)
+                                            [:wallet/navigate-to-chain-explorer chain-id
                                              contract-address]))
-                    :label               (i18n/label :t/view-on-eth)
+                    :label               (i18n/label :t/view-address-on-block-explorer
+                                                     {:block-explorer-name
+                                                      (networks/get-block-explorer-name
+                                                       chain-id)})
                     :right-icon          :i/external}]]])}]))
 
 (defn- token-section

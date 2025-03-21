@@ -23,7 +23,7 @@
 (defn chain-id->network-details
   [chain-id]
   (-> chain-id
-      (networks/network-details)))
+      (networks/get-network-details)))
 
 (defn session-networks-allowed?
   [testnet-mode? {:keys [chains]}]

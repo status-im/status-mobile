@@ -9,8 +9,8 @@
 
 (def mainnet-chain-id (networks/get-chain-id :mainnet))
 (def arbitrum-chain-id (networks/get-chain-id :arbitrum))
-(def sepolia-chain-id (networks/get-chain-id :mainnet true))
-(def sepolia-arbitrum-chain-id (networks/get-chain-id :arbitrum true))
+(def sepolia-chain-id (networks/get-testnet-chain-id :mainnet))
+(def sepolia-arbitrum-chain-id (networks/get-testnet-chain-id :arbitrum))
 
 (deftest network->chain-id-test
   (testing "get-opensea-collectible-url mainnet"

@@ -321,27 +321,15 @@
                            :fiat-change            formatted-fiat-change
                            :percentage-change      percentage-change}}))
 
-(defn get-multichain-address
-  [networks address]
-  (str (->> networks
-            (map #(str (:short-name %) ":"))
-            (clojure.string/join ""))
-       address))
-
-(defn split-prefix-and-address
-  [input-string]
-  (let [split-result (string/split input-string #"0x")]
-    [(first split-result) (str "0x" (second split-result))]))
-
 (defn make-network-item
   "This function generates props for quo/category component item"
-  [{:keys [network-name full-name color on-change networks label-props type blur?]}]
+  [{:keys [chain-id network-name full-name color on-change networks label-props type blur?]}]
   (cond-> {:title                 full-name
            :image                 :icon-avatar
            :image-props           {:icon (resources/get-network network-name)
                                    :size :size-20}
            ;; Remove the following line for v2.35
-           :show-new-feature-tag? (networks/new-network? network-name)
+           :show-new-feature-tag? (networks/new-network? chain-id)
            :action                :selector
            :action-props          {:type                (or type :checkbox)
                                    :blur?               blur?

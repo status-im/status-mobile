@@ -15,15 +15,13 @@
   [address testnet?]
   (map (fn [chain-id]
          {:icon                :i/link
-          :accessibility-label (networks/accessibility-label chain-id "view-on")
+          :accessibility-label :view-on-block-explorer
           :label               (i18n/label :t/view-on-block-explorer
-                                           {:block-explorer-name (networks/block-explorer-name
+                                           {:block-explorer-name (networks/get-block-explorer-name
                                                                   chain-id)})
           :right-icon          :i/external
           :on-press            #(rf/dispatch
-                                 [:wallet/navigate-to-chain-explorer-from-bottom-sheet
-                                  (networks/block-explorer-name chain-id)
-                                  address])})
+                                 [:wallet/navigate-to-chain-explorer chain-id address])})
        (networks/chain-ids testnet?)))
 
 (defn about-options

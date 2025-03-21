@@ -7,9 +7,12 @@
 ;; TODO @clauxx: is this ns needed? seems like leftover from when we supported one chain at a time
 (def wallet-networks
   (reduce-kv (fn [m k v]
-               (assoc m k {:id (:chain-id v) :name (:full-name v)}))
+               (let [key-name (if (:testnet? v)
+                                (-> v :network-name name (str "-testnet") keyword)
+                                (:network-name v))]
+                 (assoc m key-name {:id k :name (:full-name v)})))
              {}
-             networks/networks-by-network-name))
+             networks/networks-by-chain-id))
 
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 (def chains

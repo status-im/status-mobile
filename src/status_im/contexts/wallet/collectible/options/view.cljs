@@ -14,13 +14,12 @@
         uri              (url/replace-port image (rf/sub [:mediaserver/port]))]
     [quo/action-drawer
      [[{:icon                :i/link
-        :accessibility-label (networks/accessibility-label chain-id "view-on")
+        :accessibility-label :view-on-block-explorer
         :on-press            (fn []
-                               (rf/dispatch [:wallet/navigate-to-chain-explorer-from-bottom-sheet
-                                             (networks/block-explorer-address-url chain-id)
+                               (rf/dispatch [:wallet/navigate-to-chain-explorer chain-id
                                              contract-address]))
         :label               (i18n/label :t/view-on-block-explorer
-                                         {:block-explorer-name (networks/block-explorer-name
+                                         {:block-explorer-name (networks/get-block-explorer-name
                                                                 chain-id)})
         :right-icon          :i/external}]
       [{:icon                :i/save

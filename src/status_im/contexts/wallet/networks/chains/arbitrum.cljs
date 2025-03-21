@@ -18,5 +18,6 @@
 (def sepolia-network
   (assoc network
          :chain-id           421614
+         :testnet?           true
          :related-chain-id   42161
          :block-explorer-url "https://sepolia.arbiscan.io/"))

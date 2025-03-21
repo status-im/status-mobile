@@ -186,7 +186,7 @@
            :type         :default}))
        (sort-by (fn [network-amount]
                   (get network-priority-score
-                       (networks/chain-id->network-name (:chain-id network-amount)))))
+                       (networks/get-network-name (:chain-id network-amount)))))
        (vec)))
 
 (defn loading-network-amounts

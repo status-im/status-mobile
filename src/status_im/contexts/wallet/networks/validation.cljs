@@ -5,6 +5,7 @@
 (def ?network
   [:map {:closed? true}
    [:chain-id int?]
+   [:testnet {:optional true} :boolean]
    [:related-chain-id int?]
    [:layer int?]
    [:short-name string?]

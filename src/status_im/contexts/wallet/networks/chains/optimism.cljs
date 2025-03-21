@@ -18,5 +18,6 @@
 (def sepolia-network
   (assoc network
          :chain-id           11155420
+         :testnet?           true
          :related-chain-id   10
          :block-explorer-url "https://sepolia-optimistic.etherscan.io/"))

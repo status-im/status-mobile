@@ -24,6 +24,7 @@
        :data      (mapv (fn [network]
                           (utils/make-network-item
                            {:network-name (:network-name network)
+                            :chain-id     (:chain-id network)
                             :full-name    (:full-name network)
                             :color        color
                             :networks     selected-networks

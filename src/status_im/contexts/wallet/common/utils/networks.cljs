@@ -11,9 +11,10 @@
      (network->chain-id {:network          network
                          :testnet-enabled? test-networks-enabled?})))
   ([{:keys [network testnet-enabled?]}]
-   (-> network
-       keyword
-       (networks/get-chain-id testnet-enabled?))))
+   (let [network-name (keyword network)]
+     (if testnet-enabled?
+       (networks/get-testnet-chain-id network-name)
+       (networks/get-chain-id network-name)))))
 
 (defn network-list
   [{:keys [balances-per-chain]} networks]
@@ -44,7 +45,7 @@
   (->> networks
        (map
         (fn [network]
-          (-> network :chain-id networks/network-details)))
+          (-> network :chain-id networks/get-network-details)))
        (sort-by (juxt :layer :short-name))))
 
 (defn network-summary

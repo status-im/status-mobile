@@ -1,10 +1,10 @@
 (ns status-im.contexts.wallet.send.routes.view
   (:require
-    [status-im.contexts.wallet.networks.core :as networks]
     [quo.core :as quo]
     [quo.theme]
     [react-native.core :as rn]
     [status-im.contexts.wallet.common.utils :as common-utils]
+    [status-im.contexts.wallet.networks.core :as networks]
     [status-im.contexts.wallet.send.routes.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -32,7 +32,7 @@
                        :style {:margin-top (if (pos? index) 11 7.5)}}
                       [quo/network-bridge
                        {:amount  amount-formatted
-                        :network (networks/chain-id->network-name chain-id)
+                        :network (networks/get-network-name chain-id)
                         :status  network-value-type}]]))
                  network-values))])
 
@@ -51,8 +51,8 @@
                                      1 network-link-1x-height
                                      2 network-link-2x-height)
             inverted?              (neg? position-diff)
-            source                 (networks/chain-id->network-name from-chain-id)
-            destination            (networks/chain-id->network-name to-chain-id)
+            source                 (networks/get-network-name from-chain-id)
+            destination            (networks/get-network-name to-chain-id)
             from-chain-id-index    (first (keep-indexed #(when (= from-chain-id (:chain-id %2)) %1)
                                                         sender-network-values))
             base-margin-top        (* (+ row-height space-between-rows)
