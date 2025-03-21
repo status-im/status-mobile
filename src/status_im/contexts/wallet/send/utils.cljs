@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.send.utils
   (:require
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.networks.core :as networks]
     [utils.money :as money]))
 
 (defn amount-in-hex
@@ -153,10 +152,6 @@
                                  (money/above-zero? raw-balance))))))
          (map first))))
 
-(def ^:private network-priority-score
-  (zipmap networks/all-network-names
-          (range 1 (inc (count networks/all-network-names)))))
-
 (defn reset-loading-network-amounts-to-zero
   [network-amounts]
   (mapv
@@ -184,10 +179,7 @@
           {:chain-id     chain-id
            :total-amount amount
            :type         :default}))
-       (sort-by (fn [network-amount]
-                  (get network-priority-score
-                       (networks/get-network-name (:chain-id network-amount)))))
-       (vec)))
+       vec))
 
 (defn loading-network-amounts
   [{:keys [networks values receiver?]}]

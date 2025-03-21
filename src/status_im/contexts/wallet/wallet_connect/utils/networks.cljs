@@ -26,14 +26,14 @@
       (networks/get-network-details)))
 
 (defn session-networks-allowed?
-  [testnet-mode? {:keys [chains]}]
-  (let [chain-ids (set (map (fn [chain]
-                              (-> chain
-                                  (string/split ":")
-                                  second
-                                  js/parseInt))
-                            chains))]
-    (set/subset? chain-ids (networks/chain-ids testnet-mode?))))
+  [supported-chain-ids {:keys [chains]}]
+  (let [session-chain-ids (set (map (fn [chain]
+                                      (-> chain
+                                          (string/split ":")
+                                          second
+                                          js/parseInt))
+                                    chains))]
+    (set/subset? session-chain-ids supported-chain-ids)))
 
 (defn get-proposal-networks
   [proposal]
@@ -71,7 +71,10 @@
 
 (defn event-should-be-handled?
   [db {:keys [topic]}]
-  (let [testnet-mode? (get-in db [:profile/profile :test-networks-enabled?])]
+  (let [testnet-mode? (get-in db [:profile/profile :test-networks-enabled?])
+        chain-ids     (->> (get-in db [:wallet :networks (if testnet-mode? :test :prod)])
+                           (map :chain-id)
+                           set)]
     (some #(and (= (:topic %) topic)
-                (session-networks-allowed? testnet-mode? %))
+                (session-networks-allowed? chain-ids %))
           (:wallet-connect/sessions db))))

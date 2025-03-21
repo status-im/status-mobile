@@ -11,6 +11,13 @@
 (use-fixtures :each
               {:before #(reset! rf-db/app-db {})})
 
+(def mainnet-name :mainnet)
+(def optimism-name :optimism)
+(def arbitrum-name :arbitrum)
+(def mainnet-chain-id (networks/get-chain-id mainnet-name))
+(def optimism-chain-id (networks/get-chain-id optimism-name))
+(def arbitrum-chain-id (networks/get-chain-id arbitrum-name))
+
 (def ^:private currencies
   {:usd {:id         :usd
          :short-name "USD"
@@ -37,13 +44,6 @@
          :operable?                 true
          :operable                  :partially
          :address                   "0x2"}})
-
-(def mainnet-name :mainnet)
-(def optimism-name :optimism)
-(def arbitrum-name :arbitrum)
-(def mainnet-chain-id (networks/get-chain-id mainnet-name))
-(def optimism-chain-id (networks/get-chain-id optimism-name))
-(def arbitrum-chain-id (networks/get-chain-id arbitrum-name))
 
 (def tokens-0x1
   [{:decimals           0
@@ -217,8 +217,8 @@
 
 (def ui-data
   {:network-filter {:selected-state    :default
-                    :default-networks  networks/all-network-names
-                    :selected-networks networks/all-network-names}})
+                    :default-networks  #{mainnet-name arbitrum-name optimism-name}
+                    :selected-networks #{mainnet-name arbitrum-name optimism-name}}})
 
 (def route-data
   [{:gas-amount "25000"
@@ -857,10 +857,11 @@
   (testing "selected networks -> chain-ids - All networks"
     (swap! rf-db/app-db #(assoc %
                                 :wallet
-                                {:ui {:network-filter {:selected-networks (networks/network-names)}}}))
+                                {:ui {:network-filter {:selected-networks #{mainnet-name arbitrum-name
+                                                                            optimism-name}}}}))
     (is
-     (match? (sort (networks/chain-ids))
-             (sort (rf/sub [sub-name])))))
+     (match? #{mainnet-chain-id arbitrum-chain-id optimism-chain-id}
+             (rf/sub [sub-name]))))
   (testing "selected networks -> chain-ids - specific network"
     (swap! rf-db/app-db #(assoc-in %
                           [:wallet :ui :network-filter :selected-networks]

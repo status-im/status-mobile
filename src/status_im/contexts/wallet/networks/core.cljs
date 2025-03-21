@@ -35,40 +35,13 @@
        vals
        (apply concat)))
 
+(def ^:private networks-by-chain-id
+  (into {} (map (juxt :chain-id identity)) all-networks))
+
 ;; NOTE: runs schema validation over all the networks only in debug
 ;; mode to make sure the networks are defined correctly
 (when ^boolean js/goog.DEBUG
   (map validation/validate-network all-networks))
-
-(def networks-by-chain-id
-  (into {} (map (juxt :chain-id identity)) all-networks))
-
-(defn- networks-by-testnet-mode
-  [testnet?]
-  (if testnet?
-    (:test networks)
-    (:prod networks)))
-
-(defn chain-ids
-  ([]
-   (chain-ids false))
-  ([testnet?]
-   (->> (networks-by-testnet-mode testnet?)
-        (map :chain-id)
-        set)))
-
-(defn network-names
-  ([]
-   (network-names false))
-  ([testnet?]
-   (->> (networks-by-testnet-mode testnet?)
-        (map :network-name)
-        set)))
-
-(def all-network-names
-  (->> all-networks
-       (map :network-name)
-       set))
 
 (defn get-chain-id
   [network-name]
@@ -101,25 +74,29 @@
       get-network-details
       :network-name))
 
-(defn get-block-explorer-address-url
-  [chain-id address]
-  (-> chain-id
-      get-network-details
-      (get :block-explorer-url)
-      (str "address/" address)))
-
-(defn get-block-explorer-tx-url
-  [chain-id tx-hash]
-  (-> chain-id
-      get-network-details
-      (get :block-explorer-url)
-      (str "tx/" tx-hash)))
-
 (defn get-block-explorer-name
   [chain-id]
   (-> chain-id
       get-network-details
       :block-explorer-name))
+
+(defn get-block-explorer-url
+  [chain-id]
+  (-> chain-id
+      get-network-details
+      :block-explorer-url))
+
+(defn get-block-explorer-address-url
+  [chain-id address]
+  (-> chain-id
+      get-block-explorer-url
+      (str "address/" address)))
+
+(defn get-block-explorer-tx-url
+  [chain-id tx-hash]
+  (-> chain-id
+      get-block-explorer-url
+      (str "tx/" tx-hash)))
 
 (defn eth-mainnet?
   [chain-id]

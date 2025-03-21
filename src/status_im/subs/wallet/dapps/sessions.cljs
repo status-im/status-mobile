@@ -16,10 +16,13 @@
 
 (rf/reg-sub
  :wallet-connect/sessions-for-current-account-and-networks
+ :<- [:wallet/network-details]
  :<- [:wallet-connect/sessions-for-current-account]
- :<- [:profile/test-networks-enabled?]
- (fn [[sessions testnet-mode?]]
-   (filter
-    (partial networks/session-networks-allowed? testnet-mode?)
-    sessions)))
+ (fn [[networks sessions]]
+   (let [chain-ids (->> networks
+                        (map :chain-ids)
+                        set)]
+     (filter
+      (partial networks/session-networks-allowed? chain-ids)
+      sessions))))
 

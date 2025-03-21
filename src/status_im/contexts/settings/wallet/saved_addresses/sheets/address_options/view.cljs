@@ -9,9 +9,9 @@
     [utils.re-frame :as rf]))
 
 (defn chain-explorer-options
-  [address testnet?]
-  (->> (networks/chain-ids testnet?)
-       (map (fn [chain-id]
+  [address network-details]
+  (->> network-details
+       (map (fn [{:keys [chain-id]}]
               {:icon                :i/link
                :right-icon          :i/external
                :label               (i18n/label :t/view-address-on-block-explorer
@@ -23,7 +23,7 @@
 
 (defn view
   [{:keys [name address customization-color] :as address-details}]
-  (let [testnet-mode?                  (rf/sub [:profile/test-networks-enabled?])
+  (let [network-details                (rf/sub [:wallet/network-details])
         open-send-flow                 (rn/use-callback
                                         (fn []
                                           (rf/dispatch [:wallet/init-send-flow-for-address
@@ -77,7 +77,7 @@
          :blur?               true
          :on-press            open-send-flow
          :accessibility-label :send-to-user}]
-       (chain-explorer-options address testnet-mode?)
+       (chain-explorer-options address network-details)
        [{:icon                :i/share
          :on-press            open-share
          :label               (i18n/label :t/share-address)

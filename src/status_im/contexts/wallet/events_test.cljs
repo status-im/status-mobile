@@ -5,13 +5,12 @@
     matcher-combinators.test
     [re-frame.db :as rf-db]
     status-im.contexts.wallet.events
-    [status-im.contexts.wallet.networks.chains.arbitrum :as arbitrum]
-    [status-im.contexts.wallet.networks.chains.optimism :as optimism]
-    [status-im.contexts.wallet.networks.core :as networks]
     [test-helpers.unit :as h]))
 
-(def arbitrum-network-name (:network-name arbitrum/network))
-(def optimism-network-name (:network-name optimism/network))
+(def mainnet-name :mainnet)
+(def arbitrum-name :arbitrum)
+(def optimism-name :optimism)
+(def default-networks #{mainnet-name arbitrum-name optimism-name})
 
 (def address "0x2ee6138eb9344a8b76eca3cf7554a06c82a1e2d8")
 
@@ -62,8 +61,6 @@
    "0x04ee7c47e4b68cc05dcd3377cbd5cde6be3c89fcf20a981e55e0285ed63a50f51f8b423465eee134c51bb0255e6041e9e5b006054b0fa72a7c76942a5a1a3f4e7e"
    :removed false})
 
-(def default-networks (networks/network-names))
-
 (h/deftest-event :wallet/scan-address-success
   [event-id dispatch]
   (is (match? {:wallet {:ui {:scanned-address address}}}
@@ -87,21 +84,21 @@
 (h/deftest-event :wallet/update-selected-networks
   [event-id dispatch]
   (testing "update-selected-networks"
-    (let [network-name arbitrum-network-name
+    (let [network-name arbitrum-name
           expected-db  {:wallet {:ui {:network-filter {:default-networks default-networks
                                                        :selected-networks
-                                                       #{optimism-network-name
+                                                       #{optimism-name
                                                          network-name}
                                                        :selector-state :changed}}}}]
       (reset! rf-db/app-db
         {:wallet {:ui {:network-filter {:default-networks default-networks
                                         :selected-networks
-                                        #{optimism-network-name}
+                                        #{optimism-name}
                                         :selector-state :changed}}}})
       (is (match? expected-db (:db (dispatch [event-id network-name]))))))
 
   (testing "update-selected-networks > if all networks is already selected, update to incoming network"
-    (let [network-name arbitrum-network-name
+    (let [network-name arbitrum-name
           expected-db  {:wallet {:ui {:network-filter {:default-networks  default-networks
                                                        :selected-networks #{network-name}
                                                        :selector-state    :changed}}}}]
@@ -115,10 +112,10 @@
     (let [expected-fx [[:dispatch [:wallet/reset-selected-networks]]]]
       (reset! rf-db/app-db
         {:wallet {:ui {:network-filter {:default-networks  default-networks
-                                        :selected-networks #{optimism-network-name}
+                                        :selected-networks #{optimism-name}
                                         :selector-state    :changed}}}})
       (is (match? expected-fx
-                  (:fx (dispatch [event-id optimism-network-name])))))))
+                  (:fx (dispatch [event-id optimism-name])))))))
 
 (h/deftest-event :wallet/get-wallet-token-for-all-accounts
   [event-id dispatch]

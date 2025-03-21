@@ -12,8 +12,8 @@
     [utils.re-frame :as rf]))
 
 (defn chain-explorer-options
-  [address testnet?]
-  (map (fn [chain-id]
+  [address network-details]
+  (map (fn [{:keys [chain-id]}]
          {:icon                :i/link
           :accessibility-label :view-on-block-explorer
           :label               (i18n/label :t/view-on-block-explorer
@@ -22,15 +22,15 @@
           :right-icon          :i/external
           :on-press            #(rf/dispatch
                                  [:wallet/navigate-to-chain-explorer chain-id address])})
-       (networks/chain-ids testnet?)))
+       network-details))
 
 (defn about-options
   []
   (let [{:keys [address] :as account} (rf/sub [:wallet/current-viewing-account])
-        share-title                   (str (:name account) " " (i18n/label :t/address))
-        testnet-mode?                 (rf/sub [:profile/test-networks-enabled?])]
+        network-details               (rf/sub [:wallet/network-details])
+        share-title                   (str (:name account) " " (i18n/label :t/address))]
     [quo/action-drawer
-     [(concat (chain-explorer-options address testnet-mode?)
+     [(concat (chain-explorer-options address network-details)
               [{:icon                :i/copy
                 :accessibility-label :copy-address
                 :label               (i18n/label :t/copy-address)
