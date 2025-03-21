@@ -1,7 +1,6 @@
 (ns status-im.common.qr-codes.view
   (:require
     [quo.core :as quo]
-    [status-im.contexts.wallet.networks.core :as networks]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
 
@@ -41,18 +40,6 @@
             :qr-image-uri
             qr-media-server-uri)]))
 
-(defn get-network-short-name-url
-  [network]
-  (let [short-name (or (networks/network-name->short-name network) (name network))]
-    (str short-name ":")))
-
-(defn- get-qr-data-for-wallet-multichain
-  [qr-data networks]
-  (as-> networks $
-    (map get-network-short-name-url $)
-    (apply str $)
-    (str $ qr-data)))
-
 (defn share-qr-code
   "Receives the following properties:
      - type:                  :profile | :wallet | :saved-address | :watched-address
@@ -69,33 +56,14 @@
      `:profile`
        - profile-picture:     map ({:source image-source}) or any image source.
      `:wallet`
-       - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
        - emoji:               Emoji in a string to show in the QR code.
-       - on-legacy-press:     Callback for the legacy tab.
-       - on-multichain-press: Callback for the multichain tab.
-       - address:             :legacy | :multichain
-     `:saved-address`
-       - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
-       - on-settings-press:   Callback for the settings button.
-       - on-legacy-press:     Callback for the legacy tab.
-       - address:             :legacy | :multichain
-       - on-multichain-press: Callback for the multichain tab.
      `:watched-address`
-       - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
-       - on-settings-press:   Callback for the settings button.
-       - emoji:               Emoji in a string to show in the QR code.
-       - on-legacy-press:     Callback for the legacy tab.
-       - address:             :legacy | :multichain
-       - on-multichain-press: Callback for the multichain tab."
-  [{:keys         [qr-data qr-data-label-shown networks address]
-    share-qr-type :type
-    :as           props}]
+       - emoji:               Emoji in a string to show in the QR code. "
+  [{:keys [qr-data qr-data-label-shown]
+    :as   props}]
   (let [label               (or qr-data-label-shown qr-data)
-        string-to-encode    (if (and (= share-qr-type :wallet) (= address :multichain))
-                              (get-qr-data-for-wallet-multichain qr-data networks)
-                              qr-data)
         qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
-                             {:url         string-to-encode
+                             {:url         qr-data
                               :port        (rf/sub [:mediaserver/port])
                               :qr-size     600
                               :error-level :highest})]

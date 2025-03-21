@@ -954,11 +954,8 @@
       (fn [account]
         (let [tokens            (:tokens account)
               filtered-tokens   (filter #(= (:symbol %) token-symbol) tokens)
-              asset-pay-balance (utils/calculate-total-token-balance filtered-tokens)
-              formatted-address (network-utils/format-address (:address account)
-                                                              (:network-preferences-names account))]
+              asset-pay-balance (utils/calculate-total-token-balance filtered-tokens)]
           (assoc account
-                 :formatted-address formatted-address
                  :asset-pay-balance (utils/sanitized-token-amount-to-display
                                      asset-pay-balance
                                      constants/min-token-decimals-to-display)

@@ -24,7 +24,7 @@
       :token-props   {:symbol (:asset-pay-symbol item)
                       :value  (:asset-pay-balance item)}
       :account-props (assoc item
-                            :address       (:formatted-address item)
+                            :address       (:address item)
                             :full-address? true)}]))
 
 (defn- on-close
