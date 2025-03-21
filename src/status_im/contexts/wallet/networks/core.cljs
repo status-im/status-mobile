@@ -15,30 +15,39 @@
 ;; 3. add network image resource to `quo.foundations.resources/networks`
 ;; 4. add alchemy tokens to `shadow-cljs.edn` (if necessary)
 
-(def networks
-  [mainnet/network
-   optimism/network
-   arbitrum/network
-   base/network])
+(def ^:private networks
+  {:prod [mainnet/network
+          optimism/network
+          arbitrum/network
+          base/network]
+   :test [mainnet/sepolia-network
+          optimism/sepolia-network
+          arbitrum/sepolia-network
+          base/sepolia-network
+          status/sepolia-network]})
 
-(def sepolia-networks
-  [mainnet/sepolia-network
-   optimism/sepolia-network
-   arbitrum/sepolia-network
-   base/sepolia-network
-   status/sepolia-network])
+(def ^:private all-networks
+  (->> networks
+       vals
+       (apply concat)))
 
-(def new-networks
+(def ^:private new-networks
   (->> [base/network
         status/sepolia-network]
        (map :network-name)
        set))
 
+(defn- networks-by-testnet-mode
+  [testnet?]
+  (if testnet?
+    (:test networks)
+    (:prod networks)))
+
 (defn chain-ids
   ([]
    (chain-ids false))
   ([testnet?]
-   (->> (if testnet? sepolia-networks networks)
+   (->> (networks-by-testnet-mode testnet?)
         (map :chain-id)
         set)))
 
@@ -46,11 +55,9 @@
   ([]
    (network-names false))
   ([testnet?]
-   (->> (if testnet? sepolia-networks networks)
+   (->> (networks-by-testnet-mode testnet?)
         (map :network-name)
         set)))
-
-(def all-networks (concat networks sepolia-networks))
 
 (def all-network-names
   (->> all-networks
@@ -64,37 +71,26 @@
 
 ;; mappings
 
-(def networks-by-chain-id
+(def ^:private networks-by-chain-id
   (into {} (map (juxt :chain-id identity)) all-networks))
 
-(def networks-by-network-name
-  (into {} (map (juxt :network-name identity)) networks))
+(def ^:private networks-by-network-name
+  (into {} (map (juxt :network-name identity)) (:prod networks)))
 
-(def sepolia-networks-by-network-name
-  (into {} (map (juxt :network-name identity)) sepolia-networks))
-
-(def networks-by-short-name
-  (into {} (map (juxt :short-name identity)) networks))
-
-(defn chain-id->network-name
-  [chain-id]
-  (get-in networks-by-chain-id [chain-id :network-name]))
+(def ^:private testnet-networks-by-network-name
+  (into {} (map (juxt :network-name identity)) (:test networks)))
 
 (defn get-chain-id
   ([network-name]
    (get-chain-id network-name false))
   ([network-name testnet?]
-   (-> (if testnet? sepolia-networks-by-network-name networks-by-network-name)
+   (-> (if testnet? testnet-networks-by-network-name networks-by-network-name)
        (get network-name)
        (get :chain-id))))
 
-(defn network-name->short-name
-  [network-name]
-  (get-in networks-by-network-name [network-name :short-name]))
-
-(defn short-name->network-name
-  [short-name]
-  (get-in networks-by-short-name [short-name :network-name]))
+(defn chain-id->network-name
+  [chain-id]
+  (get-in networks-by-chain-id [chain-id :network-name]))
 
 ;; extractors
 

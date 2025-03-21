@@ -62,10 +62,7 @@
    "0x04ee7c47e4b68cc05dcd3377cbd5cde6be3c89fcf20a981e55e0285ed63a50f51f8b423465eee134c51bb0255e6041e9e5b006054b0fa72a7c76942a5a1a3f4e7e"
    :removed false})
 
-(def default-networks
-  (->> networks/networks
-       (map :network-name)
-       set))
+(def default-networks (networks/network-names))
 
 (h/deftest-event :wallet/scan-address-success
   [event-id dispatch]
