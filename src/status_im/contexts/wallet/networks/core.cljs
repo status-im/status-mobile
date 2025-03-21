@@ -84,25 +84,26 @@
   [chain-id]
   (get networks-by-chain-id chain-id))
 
-(defn chain-explorer-url
+(defn block-explorer-address-url
   ([chain-id]
    (-> networks-by-chain-id
        (get chain-id 1)
-       (get :chain-explorer-base-url)))
+       (get :block-explorer-url)
+       (str "address")))
   ([chain-id address]
-   (-> (chain-explorer-url chain-id)
+   (-> (block-explorer-address-url chain-id)
        (str "/" address))))
 
-(defn tx-details-url
+(defn block-explorer-tx-url
   [chain-id tx-hash]
   (-> networks-by-chain-id
       (get chain-id 1)
-      (get :tx-details-base-url)
-      (str "/" tx-hash)))
+      (get :block-explorer-url)
+      (str "tx/" tx-hash)))
 
-(defn chain-explorer-name
+(defn block-explorer-name
   [chain-id]
-  (get-in networks-by-chain-id [chain-id :chain-explorer-name]))
+  (get-in networks-by-chain-id [chain-id :block-explorer-name]))
 
 (defn full-name
   [chain-id]

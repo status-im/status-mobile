@@ -1,10 +1,10 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.sheets.address-options.view
   (:require
-    [status-im.contexts.wallet.networks.core :as networks]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [status-im.contexts.settings.wallet.saved-addresses.sheets.remove-address.view :as remove-address]
+    [status-im.contexts.wallet.networks.core :as networks]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -14,8 +14,8 @@
        (map (fn [chain-id]
               {:icon                :i/link
                :right-icon          :i/external
-               :label               (i18n/label :t/view-address-on-chain-explorer
-                                                {:chain-explorer-name (networks/chain-explorer-name
+               :label               (i18n/label :t/view-address-on-block-explorer
+                                                {:block-explorer-name (networks/block-explorer-name
                                                                        chain-id)})
                :blur?               true
                :on-press            #(rf/dispatch [:wallet/navigate-to-chain-explorer

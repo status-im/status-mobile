@@ -2,21 +2,19 @@
   (:require [quo.foundations.resources :as resources]))
 
 (def network
-  {:chain-id                1
-   :related-chain-id        1
-   :layer                   1
-   :short-name              "eth"
-   :abbreviated-name        "Eth."
-   :full-name               "Mainnet"
-   :network-name            :mainnet
-   :source                  (resources/get-network :mainnet)
-   :chain-explorer-name     "Etherscan"
-   :tx-details-base-url     "https://etherscan.io/tx"
-   :chain-explorer-base-url "https://etherscan.io/address/"})
+  {:chain-id            1
+   :related-chain-id    1
+   :layer               1
+   :short-name          "eth"
+   :abbreviated-name    "Eth."
+   :full-name           "Mainnet"
+   :network-name        :mainnet
+   :source              (resources/get-network :mainnet)
+   :block-explorer-name "Etherscan"
+   :block-explorer-url  "https://etherscan.io/"})
 
 (def sepolia-network
   (assoc network
-         :chain-id                        11155111
-         :related-chain-id                1
-         :sepolia-tx-details-base-url     "https://sepolia.etherscan.io/tx"
-         :sepolia-chain-explorer-base-url "https://sepolia.etherscan.io/address/"))
+         :chain-id           11155111
+         :related-chain-id   1
+         :block-explorer-url "https://sepolia.etherscan.io/"))

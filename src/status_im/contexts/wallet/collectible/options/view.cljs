@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.collectible.options.view
   (:require
-    [status-im.contexts.wallet.networks.core :as networks]
     [quo.core :as quo]
+    [status-im.contexts.wallet.networks.core :as networks]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.url :as url]))
@@ -17,10 +17,10 @@
         :accessibility-label (networks/accessibility-label chain-id "view-on")
         :on-press            (fn []
                                (rf/dispatch [:wallet/navigate-to-chain-explorer-from-bottom-sheet
-                                             (networks/chain-explorer-url chain-id)
+                                             (networks/block-explorer-address-url chain-id)
                                              contract-address]))
-        :label               (i18n/label :t/view-on-chain-explorer
-                                         {:chain-explorer-name (networks/chain-explorer-name
+        :label               (i18n/label :t/view-on-block-explorer
+                                         {:block-explorer-name (networks/block-explorer-name
                                                                 chain-id)})
         :right-icon          :i/external}]
       [{:icon                :i/save

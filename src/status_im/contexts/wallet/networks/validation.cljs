@@ -12,9 +12,8 @@
    [:full-name string?]
    [:network-name string?]
    [:source :schema.common/image-source]
-   [:tx-details-base-url string?]
-   [:chain-explorer-name string?]
-   [:chain-explorer-base-url string?]])
+   [:block-explorer-url string?]
+   [:block-explorer-name string?]])
 
 (defn validate-network
   [network]

@@ -113,7 +113,7 @@
                     :on-press            (fn []
                                            (rf/dispatch
                                             [:wallet/navigate-to-chain-explorer-from-bottom-sheet
-                                             (networks/chain-explorer-url chain-id)
+                                             (networks/block-explorer-address-url chain-id)
                                              contract-address]))
                     :label               (i18n/label :t/view-on-eth)
                     :right-icon          :i/external}]]])}]))

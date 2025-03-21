@@ -558,7 +558,7 @@
  :wallet/navigate-to-chain-explorer
  (fn [{:keys [db]} [{:keys [network chain-id address]}]]
    (let [chain-id      (or chain-id (network-utils/network->chain-id db network))
-         explorer-link (networks/chain-explorer-url chain-id address)]
+         explorer-link (networks/block-explorer-address-url chain-id address)]
      {:fx [[:dispatch [:hide-bottom-sheet]]
            [:dispatch [:browser.ui/open-url explorer-link]]]})))
 

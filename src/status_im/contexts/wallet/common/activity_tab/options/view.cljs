@@ -9,7 +9,7 @@
 (defn view
   [{:keys   [chain-id]
     tx-hash :hash}]
-  (let [tx-details-link-on-block-explorer (networks/tx-details-url chain-id tx-hash)
+  (let [tx-details-link-on-block-explorer (networks/block-explorer-tx-url chain-id tx-hash)
         open-tx-on-block-explorer         (rn/use-callback
                                            #(rf/dispatch [:browser.ui/open-url
                                                           tx-details-link-on-block-explorer])
@@ -34,8 +34,8 @@
      [[{:icon                :i/link
         :accessibility-label :view-on-block-explorer
         :on-press            open-tx-on-block-explorer
-        :label               (i18n/label :t/view-on-chain-explorer
-                                         {:chain-explorer-name (networks/chain-explorer-name
+        :label               (i18n/label :t/view-on-block-explorer
+                                         {:block-explorer-name (networks/block-explorer-name
                                                                 chain-id)})
         :right-icon          :i/external}]
       [{:icon                :i/copy
@@ -44,7 +44,7 @@
         :on-press            copy-tx-hash-to-clipboard}]
       [{:icon                :i/share
         :accessibility-label :share-link-to-block-explorer
-        :label               (i18n/label :t/share-link-to-chain-explorer
-                                         {:chain-explorer-name (networks/chain-explorer-name
+        :label               (i18n/label :t/share-link-to-block-explorer
+                                         {:block-explorer-name (networks/block-explorer-name
                                                                 chain-id)})
         :on-press            share-link-to-block-explorer}]]]))

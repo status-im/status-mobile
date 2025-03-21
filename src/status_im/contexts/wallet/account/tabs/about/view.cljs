@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.account.tabs.about.view
   (:require
-    [status-im.contexts.wallet.networks.core :as networks]
     [quo.core :as quo]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
@@ -8,6 +7,7 @@
     [status-im.contexts.shell.constants :as constants]
     [status-im.contexts.wallet.account.tabs.about.style :as style]
     [status-im.contexts.wallet.add-account.create-account.utils :as create-account.utils]
+    [status-im.contexts.wallet.networks.core :as networks]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -16,13 +16,13 @@
   (map (fn [chain-id]
          {:icon                :i/link
           :accessibility-label (networks/accessibility-label chain-id "view-on")
-          :label               (i18n/label :t/view-on-chain-explorer
-                                           {:chain-explorer-name (networks/chain-explorer-name
+          :label               (i18n/label :t/view-on-block-explorer
+                                           {:block-explorer-name (networks/block-explorer-name
                                                                   chain-id)})
           :right-icon          :i/external
           :on-press            #(rf/dispatch
                                  [:wallet/navigate-to-chain-explorer-from-bottom-sheet
-                                  (networks/chain-explorer-name chain-id)
+                                  (networks/block-explorer-name chain-id)
                                   address])})
        (networks/chain-ids testnet?)))
 
