@@ -19,7 +19,7 @@
                                                      current))
         input-value                   (controlled-input/input-value input-state)
         warning?                      (> (controlled-input/value-numeric input-state)
-                                         current)]
+                                         suggested-nonce)]
     [rn/view
      {:style {:flex 1}}
      [quo/page-nav
