@@ -1,0 +1,10 @@
+appId: im.status.ethereum.pr
+---
+- launchApp
+- runFlow: # run onboarding flow only when onboarding is visible
+    when:
+      visible: "Create profile"
+    file: "actions/onboard.yml"
+- runFlow: "actions/login.yml"
+- runFlow: "actions/explore.yml"
+- runFlow: "actions/logout.yml"

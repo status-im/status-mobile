@@ -1,0 +1,24 @@
+appId: im.status.ethereum.pr
+---
+- tapOn:
+    id: "wallet-stack"
+- tapOn: "open-scanner-button"
+- tapOn: "profile-picture"
+- tapOn: "show-qr-button"
+- tapOn:
+      text: "Wallet"
+      index: 1
+- tapOn: "profile-picture"
+- tapOn: "network-dropdown"
+- tapOn: "profile-picture"
+- tapOn:
+    id: "chats-stack"
+- tapOn: "Groups"
+- tapOn: "Contacts"
+- tapOn: "Invite friends to Status"
+- tapOn:
+    id: com.android.intentresolver:id/copy
+- tapOn:
+    id: "communities-stack"
+- tapOn: discover-communities-illustration
+- tapOn: "icon"
