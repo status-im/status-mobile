@@ -1,0 +1,341 @@
+apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "com.facebook.react"
+
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
+import com.android.build.OutputFile
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
+
+/*
+ * This is the configuration block to customize your React Native Android app.
+ * By default you don't need to apply any configuration, just uncomment the lines you need.
+ */
+react {
+    /* Folders */
+    //   The root of your project, i.e. where "package.json" lives. Default is '..'
+    // root = file("../")
+    //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
+    // reactNativeDir = file("../node_modules/react-native")
+    //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
+    // codegenDir = file("../node_modules/@react-native/codegen")
+    //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
+    // cliFile = file("../node_modules/react-native/cli.js")
+
+    /* Variants */
+    //   The list of variants to that are debuggable. For those we're going to
+    //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
+    //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
+    // debuggableVariants = ["liteDebug", "prodDebug"]
+
+    /* Bundling */
+    //   A list containing the node command and its flags. Default is just 'node'.
+    nodeExecutableAndArgs = ["node", "--max-old-space-size=16384" ]
+    //
+    //   The command to run when bundling. By default is 'bundle'
+    // bundleCommand = "ram-bundle"
+    //
+    //   The path to the CLI configuration file. Default is empty.
+    // bundleConfig = file(../rn-cli.config.js)
+    //
+    //   The name of the generated asset file containing your JS bundle
+    // bundleAssetName = "MyApplication.android.bundle"
+    //
+    //   The entry file for bundle generation. Default is 'index.android.js' or 'index.js'
+    // entryFile = file("../js/MyApplication.android.js")
+    //
+    //   A list of extra flags to pass to the 'bundle' commands.
+    //   See https://github.com/react-native-community/cli/blob/main/docs/commands.md#bundle
+    // extraPackagerArgs = []
+
+    /* Hermes Commands */
+    //   The hermes compiler command to run. By default it is 'hermesc'
+    // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
+    //
+    //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
+    // hermesFlags = ["-O", "-output-source-map"]
+}
+
+/**
+ * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
+ */
+def enableProguardInReleaseBuilds = true
+
+/**
+ * The preferred build flavor of JavaScriptCore (JSC)
+ *
+ * For example, to use the international variant, you can use:
+ * `def jscFlavor = 'org.webkit:android-jsc-intl:+'`
+ *
+ * The international variant includes ICU i18n library and necessary data
+ * allowing to use e.g. `Date.toLocaleString` and `String.localeCompare` that
+ * give correct results when using with locales other than en-US. Note that
+ * this variant is about 6MiB larger per architecture than default.
+ */
+def jscFlavor = 'org.webkit:android-jsc:+'
+
+/**
+ * Whether to enable the Hermes VM.
+ *
+ * This should be set on project.ext.react and mirrored here.  If it is not set
+ * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
+ * and the benefits of using Hermes will therefore be sharply reduced.
+ */
+def enableHermes = hermesEnabled.toBoolean();
+
+def getCommitHash = { ->
+    if (project.hasProperty("commitHash")) {
+        return project.commitHash
+    }
+    return "unknown"
+}
+
+def getVersionCode = { ->
+    new ByteArrayOutputStream().withStream { stdOut ->
+        if (project.hasProperty("versionCode")) {
+            return project.versionCode.toString().toInteger()
+        }
+
+        exec {
+            commandLine "bash", "../../scripts/version/build_no.sh"
+            standardOutput = stdOut
+            errorOutput = System.err
+        }
+        return stdOut.toString().toInteger()
+    }
+}
+
+def getVersionName = { ->
+    new ByteArrayOutputStream().withStream { stdOut ->
+        // TODO: probably not used, cleanup
+        if (project.hasProperty("releaseVersion")) {
+            return project.releaseVersion
+        }
+        /* Necessary because Android Studio uses wrong PWD.
+         * Is actually absolute directory path of this file. */
+        def configDir = project.projectDir.toString()
+        version = new File(configDir + '/../../VERSION').text
+        return version.replaceAll("\\s","")
+    }
+}
+
+def getBuildUrl = { ->
+    new ByteArrayOutputStream().withStream { stdOut ->
+        if (project.hasProperty("buildUrl")) {
+            return project.buildUrl
+        }
+        return 'Local Build'
+    }
+}
+
+/* check if environment variable exists for given variable name first */
+def getEnvOrConfig = { varName ->
+    def val = System.getenv(varName) ? System.getenv(varName) : project.property(varName)
+    return val
+}
+
+android {
+    ndkVersion rootProject.ext.ndkVersion
+
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk rootProject.ext.compileSdkVersion
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17
+    }
+    // Disable default lint checks to remove redundant lintVitalReportRelease task
+    lintOptions {
+        checkReleaseBuilds false
+    }
+
+    // https://developer.android.com/studio/projects/install-ndk#vanilla_cmake
+    externalNativeBuild {
+        cmake {
+            // This version must match cmakeVersions inside nix/pkgs/android-sdk/compose.nix
+            version "3.22.1"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    namespace "im.status.ethereum"
+    defaultConfig {
+        applicationId "im.status.ethereum"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        multiDexEnabled true
+        versionCode getVersionCode()
+        versionName getVersionName()
+        missingDimensionStrategy 'react-native-camera', 'general'
+        manifestPlaceholders = [commitHash: getCommitHash()]
+        /* this needs to be empty if we want APKs split by ABIs */
+        if (!getEnvOrConfig('ANDROID_ABI_SPLIT').toBoolean()) {
+            ndk {
+                abiFilters getEnvOrConfig('ANDROID_ABI_INCLUDE').split(";")
+            }
+        }
+    }
+
+    /**
+     * Arbitrary project metadata
+     * https://docs.gradle.org/current/dsl/org.gradle.api.plugins.ExtraPropertiesExtension.html
+     **/
+    project.ext {
+        buildUrl = getBuildUrl()
+    }
+    /**
+    * Fix for: (https://github.com/ReactiveX/RxJava/issues/4445)
+    * Execution failed for task ':app:transformResourcesWithMergeJavaResForDebug'.
+    * > com.android.build.api.transform.TransformException: com.android.builder.packaging.DuplicateFileException:
+    *   Duplicate files copied in APK META-INF/rxjava.properties
+    */
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+        exclude '/lib/mips64/**'
+        exclude '/lib/armeabi/**'
+
+        pickFirst '**/armeabi-v7a/libc++_shared.so'
+        pickFirst '**/x86/libc++_shared.so'
+        pickFirst '**/arm64-v8a/libc++_shared.so'
+        pickFirst '**/x86_64/libc++_shared.so'
+        pickFirst '**/x86/libjsc.so'
+        pickFirst '**/armeabi-v7a/libjsc.so'
+
+        /** Fix for: Execution failed for task ':app:transformNativeLibsWithStripDebugSymbolForDebug'.
+        *   with recent version of ndk (17.0.4754217)
+        */
+        doNotStrip '*/mips/*.so'
+        doNotStrip '*/mips64/*.so'
+    }
+    splits {
+        abi {
+            reset()
+            enable getEnvOrConfig('ANDROID_ABI_SPLIT').toBoolean()
+            include getEnvOrConfig('ANDROID_ABI_INCLUDE').split(";")
+            universalApk getEnvOrConfig('ORG_GRADLE_PROJECT_universalApk').toBoolean()
+        }
+    }
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable          true
+            versionNameSuffix   "-SNAPSHOT"
+            resValue "string", "build_config_package", "im.status.ethereum"
+            signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled enableProguardInReleaseBuilds
+            shrinkResources enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig null
+        }
+        pr {
+            initWith release
+            applicationIdSuffix ".pr"
+            versionNameSuffix   ".pr"
+            debuggable false
+            matchingFallbacks = ["release"]
+            // necessary to make react-native-config's code generation work
+            resValue "string", "build_config_package", "im.status.ethereum"
+        }
+    }
+
+    // applicationVariants are e.g. debug, release
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            // For each separate APK per architecture, set a unique version code as described here:
+
+            // https://developer.android.com/studio/build/configure-apk-splits.html
+            def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
+            def abi = output.getFilter(OutputFile.ABI)
+            if (abi != null) {  // null for the universal-debug, universal-release variants
+                output.versionCodeOverride = versionCodes.get(abi) + defaultConfig.versionCode
+            }
+
+        }
+    }
+
+
+    aaptOptions {
+        // disable PNG optimization as for some reason it cannot be trusted to provide deterministic output (see https://f-droid.org/en/docs/Reproducible_Builds/)
+        cruncherEnabled = false
+    }
+
+    sourceSets {
+        main { jniLibs.srcDirs 'libs' }
+    }
+}
+
+dependencies {
+    // The version of react-native is set by the React Native Gradle Plugin
+    implementation("com.facebook.react:react-android")
+    implementation("androidx.core:core-splashscreen:1.0.0")
+
+    if (enableHermes) {
+        implementation("com.facebook.react:hermes-android")
+    } else {
+        // https://github.com/status-im/status-mobile/issues/18493
+        // we don't use hermes for debug builds because it crashes too often
+        implementation(jscFlavor)
+    }
+
+    // react-native-screens
+    implementation("androidx.appcompat:appcompat:1.1.0-rc01")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02")
+    implementation("androidx.multidex:multidex:2.0.1") // required by status-mobile/android/app/src/main/java/im/status/ethereum/MainApplication.java
+    implementation project(':react-native-blur')
+    implementation project(':react-native-status')
+    implementation project(':react-native-status-keycard')
+    implementation("com.github.status-im:function:0.0.1")
+    implementation("com.facebook.fresco:fresco:2.5.0")
+    implementation("com.facebook.fresco:animated-gif:2.5.0")
+    implementation("com.squareup.okhttp3:okhttp-tls:4.11.0")
+    implementation("com.google.prefab:cli:2.0.0")
+    implementation("com.android.tools.build:aapt2:8.1.1-10154469")
+}
+
+
+def getLocalNDKDir = { ->
+    def rootDir = project.rootDir
+    def localProperties = new File(rootDir, "local.properties")
+    if (!localProperties.exists()) {
+        return null
+    }
+    Properties properties = new Properties()
+    localProperties.withInputStream { instr ->
+        properties.load(instr)
+    }
+    return properties.getProperty('ndk.dir')
+}
+
+// Run this once to be able to run the application with BUCK
+// puts all compile dependencies into folder libs for BUCK to use
+task hemroidBuild(type: Exec) {
+    def localNdkDir = getLocalNDKDir()
+    def ndkDir = System.env.ANDROID_NDK_ROOT
+    if (localNdkDir != null) {
+        ndkDir = localNdkDir
+    }
+
+    def execPath = "$ndkDir/ndk-build"
+    def exec = new File(execPath)
+    if (!exec.exists()) {
+        throw new GradleException("No ndk-build binary found!")
+    }
+    executable execPath
+}
+
+preBuild.dependsOn hemroidBuild
+
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
