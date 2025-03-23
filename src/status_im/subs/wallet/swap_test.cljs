@@ -2,7 +2,7 @@
   (:require
     [cljs.test :refer [is testing]]
     [re-frame.db :as rf-db]
-    [status-im.contexts.wallet.db :as db]
+    [status-im.contexts.wallet.db-path :as db-path]
     [status-im.subs.root]
     [status-im.subs.wallet.collectibles]
     [test-helpers.unit :as h]
@@ -132,7 +132,7 @@
   [sub-name]
   (testing "Return the wallet/ui/swap node"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (match? swap-data (rf/sub [sub-name])))))
 
@@ -140,7 +140,7 @@
   [sub-name]
   (testing "Return swap asset-to-pay"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (match? (swap-data :asset-to-pay) (rf/sub [sub-name])))))
 
@@ -148,7 +148,7 @@
   [sub-name]
   (testing "Return swap asset-to-receive"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (match? (swap-data :asset-to-receive) (rf/sub [sub-name])))))
 
@@ -156,7 +156,7 @@
   [sub-name]
   (testing "Return asset-to-pay token symbol"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (match? "SNT" (rf/sub [sub-name])))))
 
@@ -164,7 +164,7 @@
   [sub-name]
   (testing "Return the available networks for the swap asset-to-pay"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (match? networks (rf/sub [sub-name])))))
 
@@ -174,7 +174,7 @@
     (swap! rf-db/app-db
       #(-> %
            (assoc :currencies currencies)
-           (assoc-in db/swap swap-data)
+           (assoc-in db-path/swap swap-data)
            (assoc-in [:wallet :tokens :prices-per-token] prices-per-token-low)))
     (is (match? {:crypto "1 SNT" :fiat "$0.03"} (rf/sub [sub-name 1])))))
 
@@ -182,7 +182,7 @@
   [sub-name]
   (testing "Return the current swap network"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (match? (swap-data :network) (rf/sub [sub-name])))))
 
@@ -190,7 +190,7 @@
   [sub-name]
   (testing "Return the swap error response"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (match? (swap-data :error-response) (rf/sub [sub-name])))))
 
@@ -198,7 +198,7 @@
   [sub-name]
   (testing "Return the max slippage for the swap"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (match? 0.5 (rf/sub [sub-name])))))
 
@@ -206,7 +206,7 @@
   [sub-name]
   (testing "Return if swap is loading the swap proposal"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (false? (rf/sub [sub-name])))))
 
@@ -214,7 +214,7 @@
   [sub-name]
   (testing "Return the swap proposal"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (match? (swap-data :swap-proposal) (rf/sub [sub-name])))))
 
@@ -222,7 +222,7 @@
   [sub-name]
   (testing "Return the amount out in the swap proposal"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (match? "0x10000" (rf/sub [sub-name])))))
 
@@ -230,7 +230,7 @@
   [sub-name]
   (testing "Return if approval is required in the swap proposal"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (true? (rf/sub [sub-name])))))
 
@@ -238,7 +238,7 @@
   [sub-name]
   (testing "Return the approval amount required in the swap proposal"
     (swap! rf-db/app-db assoc-in
-      db/swap
+      db-path/swap
       swap-data)
     (is (match? "0x10000" (rf/sub [sub-name])))))
 
@@ -249,7 +249,7 @@
       #(-> %
            (assoc-in [:wallet :accounts] accounts-with-tokens)
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
-           (assoc-in db/swap swap-data)
+           (assoc-in db-path/swap swap-data)
            (assoc-in [:currencies] currencies)
            (assoc-in [:profile/profile :currency] :usd)
            (assoc-in [:profile/profile :currency-symbol] "$")

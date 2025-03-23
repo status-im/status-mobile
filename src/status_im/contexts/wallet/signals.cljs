@@ -2,7 +2,7 @@
   (:require
     [oops.core :as oops]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.db :as db]
+    [status-im.contexts.wallet.db-path :as db-path]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
     [utils.transforms :as transforms]))
@@ -20,7 +20,7 @@
                                                   :pending
                                                   (= tx-status constants/transaction-status-failed)
                                                   :failed)
-         {:keys [swap-approval-transaction-id]} (get-in db db/swap)
+         {:keys [swap-approval-transaction-id]} (get-in db db-path/swap)
          swap-approval-transaction?             (= swap-approval-transaction-id tx-hash)
          swap-transaction-ids                   (get-in db [:wallet :swap-transaction-ids])
          swap-transaction?                      (and swap-transaction-ids

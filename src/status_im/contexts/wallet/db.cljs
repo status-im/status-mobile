@@ -1,8 +1,6 @@
 (ns status-im.contexts.wallet.db
   (:require [status-im.constants :as constants]))
 
-(def swap [:wallet :ui :swap])
-
 (def network-filter-defaults
   {:selector-state    :default
    :selected-networks (set constants/default-network-names)})

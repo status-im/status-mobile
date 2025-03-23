@@ -14,6 +14,7 @@
     [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]
+    [status-im.contexts.wallet.db-path :as db-path]
     [status-im.contexts.wallet.item-types :as item-types]
     [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
     [status-im.contexts.wallet.tokens.events]
@@ -797,7 +798,9 @@
  (fn [{:keys [db]}
       [{sent-transactions :sentTransactions
         send-details      :sendDetails}]]
-   (let [swap? (get-in db db/swap)]
+   (let [swap? (-> db
+                   (get-in db db-path/swap)
+                   seq)]
      {:fx [[:dispatch
             (if-let [error-response (:errorResponse send-details)]
               [(if swap?
