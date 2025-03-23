@@ -23,7 +23,7 @@ in mkShell {
       # build specific utilities
       clojure maven watchman
       # other nice to have stuff
-      yarn nodejs python310 maestro
+      yarn nodejs python310 maestro flashlight
       # Required for /scripts/compress_image.sh script
       imagemagick
     ] # and some special cases
