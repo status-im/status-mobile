@@ -1,0 +1,11 @@
+appId: im.status.ethereum.pr
+---
+- tapOn: "profile-picture"
+- repeat:
+    while:
+      notVisible: "Log out"
+    commands:
+      - swipe:
+          direction: UP
+- tapOn: "Log out"
+- tapOn: "LOG OUT"

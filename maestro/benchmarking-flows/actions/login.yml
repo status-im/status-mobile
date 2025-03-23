@@ -1,0 +1,6 @@
+appId: im.status.ethereum.pr
+---
+- tapOn: "profile-picture"
+- tapOn: "password-input"
+- inputText: "password123"
+- tapOn: "Log in"

@@ -1,0 +1,11 @@
+appId: im.status.ethereum.pr
+---
+- tapOn: "Create profile"
+- tapOn: "Agree"
+- tapOn: "Let's go!"
+- inputText: "password123"
+- pressKey: enter
+- tapOn:
+    point: 50%,33%
+- inputText: "password123"
+- tapOn: "Confirm password"
