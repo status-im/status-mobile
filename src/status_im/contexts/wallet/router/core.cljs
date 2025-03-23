@@ -54,7 +54,7 @@
   fallback to the current fee-mode's estimated time."
   [route]
   (let [estimated-time (:tx-estimated-time route)]
-    (if (zero? estimated-time)
+    (if (nil? estimated-time)
       (-> route
           transaction-fees-by-mode
           (get (transaction-fee-mode route))
