@@ -64,7 +64,7 @@
 (schema/=> transaction-estimated-time
   [:=>
    [:cat router.schema/?route]
-   :int])
+   [:maybe :int]])
 
 (defn approval-estimated-time
   "Get the transaction approval estimated time."

@@ -468,7 +468,8 @@
   "Formats the estimated time (v2) in seconds for a transaction"
   [estimated-time]
   (cond
-    (or (= estimated-time 0)
+    (or (nil? estimated-time)
+        (= estimated-time 0)
         (> estimated-time 60)) ">60"
     :else                      (str "~" estimated-time)))
 
