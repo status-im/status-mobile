@@ -54,15 +54,16 @@
                            (or repeat-stage-title (i18n/label :t/repeat-keycard-pin)))
        :description      :text
        :description-text (i18n/label :t/pin-needed-login-sign)}]
-     [quo/keycard]
-     [rn/view {:style {:flex 1 :justify-content :center :align-items :center :padding-vertical 34}}
-      [quo/pin-input
-       {:blur?                 false
-        :number-of-pins        constants/pincode-length
-        :number-of-filled-pins (count pin)
-        :error?                error?
-        :info                  (when error? (i18n/label :t/pin-not-match))}]]
-     [quo/numbered-keyboard
-      {:delete-key? (not pin-empty?)
-       :on-delete   on-delete
-       :on-press    on-press}]]))
+     [rn/view {:style {:justify-content :space-between :flex 1}}
+      [quo/keycard]
+      [rn/view {:style {:justify-content :center :align-items :center :padding-vertical 34}}
+       [quo/pin-input
+        {:blur?                 false
+         :number-of-pins        constants/pincode-length
+         :number-of-filled-pins (count pin)
+         :error?                error?
+         :info                  (when error? (i18n/label :t/pin-not-match))}]]
+      [quo/numbered-keyboard
+       {:delete-key? (not pin-empty?)
+        :on-delete   on-delete
+        :on-press    on-press}]]]))
