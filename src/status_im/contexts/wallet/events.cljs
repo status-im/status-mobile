@@ -799,7 +799,7 @@
       [{sent-transactions :sentTransactions
         send-details      :sendDetails}]]
    (let [swap? (-> db
-                   (get-in db db-path/swap)
+                   (get-in db-path/swap)
                    seq)]
      {:fx [[:dispatch
             (if-let [error-response (:errorResponse send-details)]
