@@ -191,29 +191,34 @@
 (def network-data
   {:test [{:test?            true
            :short-name       "eth"
-           :network-name     :ethereum
+           :network-name     :mainnet
            :related-chain-id 1
            :layer            1}
           {:test?            true
            :short-name       "arb1"
+           :network-name     :arbitrum
            :related-chain-id 42161
            :layer            2}
           {:test?            true
            :short-name       "oeth"
+           :network-name     :optimism
            :related-chain-id 10
            :layer            2}]
-   :prod [{:test?      false
-           :short-name "eth"
-           :chain-id   1
-           :layer      1}
-          {:test?      false
-           :short-name "arb1"
-           :chain-id   42161
-           :layer      2}
-          {:test?      false
-           :short-name "oeth"
-           :chain-id   10
-           :layer      2}]})
+   :prod [{:test?        false
+           :short-name   "eth"
+           :network-name :mainnet
+           :chain-id     1
+           :layer        1}
+          {:test?        false
+           :short-name   "arb1"
+           :network-name :arbitrum
+           :chain-id     42161
+           :layer        2}
+          {:test?        false
+           :short-name   "oeth"
+           :network-name :optimism
+           :chain-id     10
+           :layer        2}]})
 
 (def ui-data
   {:network-filter {:selected-state    :default
@@ -232,6 +237,7 @@
   (testing "a map: address->balance"
     (swap! rf-db/app-db #(-> %
                              (assoc-in [:wallet :ui] ui-data)
+                             (assoc-in [:wallet :networks] network-data)
                              (assoc-in [:wallet :accounts] accounts)
                              (assoc-in [:wallet :tokens :prices-per-token]
                                        {:ETH {:usd 2000} :DAI {:usd 1}})))
@@ -520,7 +526,7 @@
 
 (h/deftest-sub :wallet/network-preference-details
   [sub-name]
-  (testing "returns current viewing account address"
+  (testing "returns newtork preference details"
     (swap! rf-db/app-db
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
@@ -529,30 +535,8 @@
                      {:ETH {:usd 2000} :DAI {:usd 1}})
            (assoc-in [:wallet :networks] network-data)))
     (is
-     (match? [{:short-name       "eth"
-               :network-name     :mainnet
-               :abbreviated-name "Eth."
-               :full-name        "Mainnet"
-               :chain-id         1
-               :related-chain-id 1
-               :layer            1}
-              {:short-name       "arb1"
-               :network-name     :arbitrum
-               :abbreviated-name "Arb1."
-               :full-name        "Arbitrum"
-               :chain-id         42161
-               :related-chain-id 42161
-               :layer            2}
-              {:short-name       "oeth"
-               :network-name     :optimism
-               :abbreviated-name "Oeth."
-               :full-name        "Optimism"
-               :chain-id         10
-               :related-chain-id 10
-               :layer            2}]
-             (->> (rf/sub [sub-name])
-                  ;; Removed `#js source` property for correct compare
-                  (map #(dissoc % :source)))))))
+     (match? (:prod network-data)
+             (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/aggregated-tokens
   [sub-name]
@@ -571,6 +555,7 @@
                              (assoc-in [:wallet :ui] ui-data)
                              (assoc :currencies currencies)
                              (assoc-in [:wallet :accounts] accounts)
+                             (assoc-in [:wallet :networks] network-data)
                              (assoc-in [:wallet :tokens :prices-per-token]
                                        {:ETH {:usd 2000} :DAI {:usd 1}})))
     (let [{:keys [formatted-balance tokens]} (rf/sub [sub-name])]
@@ -759,7 +744,7 @@
                   name
                   address
                   emoji]} operable-wallet-account
-          network-options [{:network-name :ethereum :short-name "eth"}
+          network-options [{:network-name :mainnet :short-name "eth"}
                            {:network-name :optimism :short-name "oeth"}
                            {:network-name :arbitrum :short-name "arb1"}]
           size-option     20]
@@ -857,15 +842,19 @@
   (testing "selected networks -> chain-ids - All networks"
     (swap! rf-db/app-db #(assoc %
                                 :wallet
-                                {:ui {:network-filter {:selected-networks #{mainnet-name arbitrum-name
-                                                                            optimism-name}}}}))
+                                {:networks network-data
+                                 :ui       {:network-filter {:selected-networks #{mainnet-name
+                                                                                  arbitrum-name
+                                                                                  optimism-name}}}}))
     (is
      (match? #{mainnet-chain-id arbitrum-chain-id optimism-chain-id}
              (rf/sub [sub-name]))))
   (testing "selected networks -> chain-ids - specific network"
-    (swap! rf-db/app-db #(assoc-in %
-                          [:wallet :ui :network-filter :selected-networks]
-                          #{optimism-name}))
+    (swap! rf-db/app-db #(-> %
+                             (assoc-in [:wallet :networks] network-data)
+                             (assoc-in
+                              [:wallet :ui :network-filter :selected-networks]
+                              #{optimism-name})))
     (is
      (match? (sort [optimism-chain-id])
              (sort (rf/sub [sub-name]))))))

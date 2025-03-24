@@ -42,8 +42,8 @@
 
 (defn- get-opensea-network-name
   [network-name test-networks-enabled?]
-  (let [network-name (name network-name)
-        mainnet?     (= :mainnet network-name)]
+  (let [mainnet?     (= :mainnet network-name)
+        network-name (name network-name)]
     (cond (and test-networks-enabled? mainnet?)
           (:sepolia constants/opensea-url-names)
 

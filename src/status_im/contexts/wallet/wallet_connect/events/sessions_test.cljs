@@ -3,9 +3,14 @@
     [cljs.test :refer-macros [is are testing]]
     matcher-combinators.test
     [re-frame.db :as rf-db]
+    [status-im.contexts.wallet.networks.config :as networks.config]
     status-im.contexts.wallet.wallet-connect.events.session-responses
     status-im.contexts.wallet.wallet-connect.events.sessions
     [test-helpers.unit :as h]))
+
+(def ethereum-chain-id networks.config/ethereum-chain-id)
+(def optimism-chain-id networks.config/optimism-chain-id)
+(def sepolia-chain-id networks.config/sepolia-chain-id)
 
 (defn- find-fx
   [fx name]
@@ -23,6 +28,8 @@
   [event-id dispatch]
   (testing "successfully deletes the session"
     (reset! rf-db/app-db {:profile/profile         {:test-networks-enabled? false}
+                          :wallet                  {:networks {:prod [{:chain-id ethereum-chain-id}
+                                                                      {:chain-id optimism-chain-id}]}}
                           :wallet-connect/sessions [{:topic  "topic"
                                                      :chains ["eip155:1"]}]})
     (let [fx             (:fx (dispatch [event-id
@@ -39,6 +46,8 @@
     (let [topic-1 "topic-1"
           topic-2 "topic-2"]
       (reset! rf-db/app-db {:profile/profile         {:test-networks-enabled? false}
+                            :wallet                  {:networks {:prod [{:chain-id ethereum-chain-id}
+                                                                        {:chain-id optimism-chain-id}]}}
                             :wallet-connect/sessions [{:topic  topic-1
                                                        :chains ["eip155:1"]}]})
       (is (match? nil
@@ -49,6 +58,7 @@
   (testing "ignore the deletion if the event is for the wrong network mode (testnet/mainnet)"
     (let [topic "topic"]
       (reset! rf-db/app-db {:profile/profile         {:test-networks-enabled? true}
+                            :wallet                  {:networks {:test [{:chain-id sepolia-chain-id}]}}
                             :wallet-connect/sessions [{:topic  topic
                                                        :chains ["eip155:1"]}]})
       (is (match? nil

@@ -1,39 +1,36 @@
 (ns status-im.contexts.wallet.collectible.utils-test
   (:require
     [cljs.test :refer [deftest is testing]]
-    [status-im.contexts.wallet.collectible.utils :as utils]
-    [status-im.contexts.wallet.networks.config :as networks.config]))
+    [status-im.contexts.wallet.collectible.utils :as utils]))
 
 (def token-id "0xT")
 (def contract-address "0xC")
 
-(def mainnet-chain-id networks.config/ethereum-chain-id)
-(def arbitrum-chain-id networks.config/arbitrum-chain-id)
-(def sepolia-chain-id networks.config/sepolia-chain-id)
-(def sepolia-arbitrum-chain-id networks.config/arbitrum-sepolia-chain-id)
+(def mainnet-name :mainnet)
+(def arbitrum-name :arbitrum)
 
 (deftest network->chain-id-test
   (testing "get-opensea-collectible-url mainnet"
-    (is (= (utils/get-opensea-collectible-url {:chain-id         mainnet-chain-id
+    (is (= (utils/get-opensea-collectible-url {:network-name     mainnet-name
                                                :contract-address contract-address
                                                :token-id         token-id})
            "https://opensea.io/assets/ethereum/0xC/0xT")))
 
   (testing "get-opensea-collectible-url mainnet arbitrum"
-    (is (= (utils/get-opensea-collectible-url {:chain-id         arbitrum-chain-id
+    (is (= (utils/get-opensea-collectible-url {:network-name     arbitrum-name
                                                :contract-address contract-address
                                                :token-id         token-id})
            "https://opensea.io/assets/arbitrum/0xC/0xT")))
 
   (testing "get-opensea-collectible-url sepolia"
-    (is (= (utils/get-opensea-collectible-url {:chain-id               sepolia-chain-id
+    (is (= (utils/get-opensea-collectible-url {:network-name           mainnet-name
                                                :contract-address       contract-address
                                                :token-id               token-id
                                                :test-networks-enabled? true})
            "https://testnets.opensea.io/assets/sepolia/0xC/0xT")))
 
   (testing "get-opensea-collectible-url sepolia arbitrum"
-    (is (= (utils/get-opensea-collectible-url {:chain-id               sepolia-arbitrum-chain-id
+    (is (= (utils/get-opensea-collectible-url {:network-name           arbitrum-name
                                                :contract-address       contract-address
                                                :token-id               token-id
                                                :test-networks-enabled? true})

@@ -2,67 +2,81 @@
   (:require
     [cljs.test :refer [is testing]]
     [re-frame.db :as rf-db]
+    [status-im.contexts.wallet.networks.config :as networks.config]
     status-im.subs.root
     status-im.subs.wallet.networks
     [test-helpers.unit :as h]
     [utils.re-frame :as rf]))
 
+(def mainnet-chain-id networks.config/ethereum-chain-id)
+(def optimism-chain-id networks.config/optimism-chain-id)
+(def arbitrum-chain-id networks.config/arbitrum-chain-id)
+(def sepolia-chain-id networks.config/sepolia-chain-id)
+(def arbitrum-sepolia-chain-id networks.config/arbitrum-sepolia-chain-id)
+(def optimism-sepolia-chain-id networks.config/optimism-sepolia-chain-id)
+(def mainnet-name :mainnet)
+(def optimism-name :optimism)
+(def arbitrum-name :arbitrum)
+
+(def mainnet
+  {:test?        false
+   :short-name   "eth"
+   :network-name mainnet-name
+   :chain-id     mainnet-chain-id
+   :layer        1})
+
+(def arbitrum
+  {:test?        false
+   :short-name   "arb1"
+   :network-name arbitrum-name
+   :chain-id     arbitrum-chain-id
+   :layer        2})
+
+(def optimism
+  {:test?        false
+   :short-name   "oeth"
+   :network-name optimism-name
+   :chain-id     optimism-chain-id
+   :layer        2})
+
+(def sepolia
+  (assoc mainnet
+         :test?    true
+         :chain-id sepolia-chain-id))
+
+(def arbitrum-sepolia
+  (assoc mainnet
+         :test?    true
+         :chain-id arbitrum-sepolia-chain-id))
+
+(def optimism-sepolia
+  (assoc mainnet
+         :test?    true
+         :chain-id optimism-sepolia-chain-id))
+
 (def network-data
-  {:test [{:test?            true
-           :short-name       "eth"
-           :network-name     :mainnet
-           :abbreviated-name "Eth."
-           :full-name        "Mainnet"
-           :related-chain-id 1
-           :chain-id         3
-           :layer            1}
-          {:test?            true
-           :short-name       "arb1"
-           :related-chain-id 42161
-           :chain-id         4
-           :layer            2}
-          {:test?            true
-           :short-name       "oeth"
-           :related-chain-id 10
-           :chain-id         5
-           :layer            2}]
-   :prod [{:test?      false
-           :short-name "eth"
-           :chain-id   1
-           :layer      1}
-          {:test?      false
-           :short-name "arb1"
-           :chain-id   42161
-           :layer      2}
-          {:test?      false
-           :short-name "oeth"
-           :chain-id   10
-           :layer      2}]})
+  {:prod [mainnet
+          arbitrum
+          optimism]
+   :test [sepolia
+          arbitrum-sepolia
+          optimism-sepolia]})
+
+(def network-data-by-id
+  {mainnet-chain-id          mainnet
+   optimism-chain-id         optimism
+   arbitrum-chain-id         arbitrum
+   sepolia-chain-id          sepolia
+   arbitrum-sepolia-chain-id arbitrum-sepolia
+   optimism-sepolia-chain-id optimism-sepolia})
 
 (h/deftest-sub :wallet/network-details
   [sub-name]
   (testing "returns data with prod"
     (swap! rf-db/app-db assoc-in [:wallet :networks] network-data)
     (is
-     (match? [{:network-name     :mainnet
-               :short-name       "eth"
-               :chain-id         1
-               :abbreviated-name "Eth."
-               :full-name        "Mainnet"
-               :layer            1}
-              {:network-name     :arbitrum
-               :short-name       "arb1"
-               :abbreviated-name "Arb1."
-               :full-name        "Arbitrum"
-               :chain-id         42161
-               :layer            2}
-              {:network-name     :optimism
-               :short-name       "oeth"
-               :abbreviated-name "Oeth."
-               :full-name        "Optimism"
-               :chain-id         10
-               :layer            2}]
-             (map #(dissoc % :source :related-chain-id) (rf/sub [sub-name]))))))
+     (match? (get network-data :prod)
+             (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/network-details-by-network-name
   [sub-name]
@@ -70,42 +84,31 @@
     (swap! rf-db/app-db assoc-in [:wallet :networks] network-data)
     (is
      (match?
-      {:mainnet  {:network-name     :mainnet
-                  :short-name       "eth"
-                  :chain-id         1
-                  :abbreviated-name "Eth."
-                  :full-name        "Mainnet"
-                  :layer            1}
-       :arbitrum {:network-name     :arbitrum
-                  :short-name       "arb1"
-                  :abbreviated-name "Arb1."
-                  :full-name        "Arbitrum"
-                  :chain-id         42161
-                  :layer            2}
-       :optimism {:network-name     :optimism
-                  :short-name       "oeth"
-                  :abbreviated-name "Oeth."
-                  :full-name        "Optimism"
-                  :chain-id         10
-                  :layer            2}}
+      {:mainnet  mainnet
+       :arbitrum arbitrum
+       :optimism optimism}
       (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/network-values
   [sub-name]
   (testing "network values for the from account are returned correctly"
-    (swap! rf-db/app-db assoc-in
-      [:wallet :ui :send]
-      {:from-values-by-chain {1 100}
-       :to-values-by-chain   {42161 100}
-       :token-display-name   "ETH"})
+    (swap! rf-db/app-db #(-> %
+                             (assoc-in [:wallet :networks-by-id] network-data-by-id)
+                             (assoc-in
+                              [:wallet :ui :send]
+                              {:from-values-by-chain {mainnet-chain-id 100}
+                               :to-values-by-chain   {arbitrum-chain-id 100}
+                               :token-display-name   "ETH"})))
     (is
      (match? {:mainnet {:amount "100" :token-symbol "ETH"}} (rf/sub [sub-name false]))))
 
   (testing "network values for the to account are returned correctly"
-    (swap! rf-db/app-db assoc-in
-      [:wallet :ui :send]
-      {:from-values-by-chain {1 100}
-       :to-values-by-chain   {42161 100}
-       :token-display-name   "ARB1"})
+    (swap! rf-db/app-db #(-> %
+                             (assoc-in [:wallet :networks-by-id] network-data-by-id)
+                             (assoc-in
+                              [:wallet :ui :send]
+                              {:from-values-by-chain {mainnet-chain-id 100}
+                               :to-values-by-chain   {arbitrum-chain-id 100}
+                               :token-display-name   "ARB1"})))
     (is
      (match? {:arbitrum {:amount "100" :token-symbol "ARB1"}} (rf/sub [sub-name true])))))
