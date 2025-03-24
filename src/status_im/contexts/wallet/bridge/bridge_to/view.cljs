@@ -85,7 +85,7 @@
         :type         :network
         :network-logo (:source network)
         :size         24}]]
-     (when-not (networks/eth-mainnet? (:chain-id network))
+     (when-not (networks/eth-mainnet? network)
        [rn/view style/content-container
         [bridge-token-component (assoc mainnet :network-name :t/mainnet) account-token]])
      [quo/divider-label (i18n/label :t/layer-2)]

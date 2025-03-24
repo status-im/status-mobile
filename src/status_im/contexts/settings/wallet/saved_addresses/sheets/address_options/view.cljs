@@ -4,19 +4,17 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [status-im.contexts.settings.wallet.saved-addresses.sheets.remove-address.view :as remove-address]
-    [status-im.contexts.wallet.networks.core :as networks]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn chain-explorer-options
   [address network-details]
   (->> network-details
-       (map (fn [{:keys [chain-id]}]
+       (map (fn [{:keys [chain-id block-explorer-name]}]
               {:icon                :i/link
                :right-icon          :i/external
                :label               (i18n/label :t/view-address-on-block-explorer
-                                                {:block-explorer-name (networks/get-block-explorer-name
-                                                                       chain-id)})
+                                                {:block-explorer-name block-explorer-name})
                :blur?               true
                :on-press            #(rf/dispatch [:wallet/navigate-to-chain-explorer chain-id address])
                :accessibility-label :view-on-block-explorer}))))

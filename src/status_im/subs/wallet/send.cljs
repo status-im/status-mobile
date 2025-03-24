@@ -93,7 +93,7 @@
 (rf/reg-sub
  :wallet/bridge-from-chain-ids
  :<- [:wallet/wallet-send]
- :<- [:wallet/networks-by-mode]
+ :<- [:wallet/network-details]
  (fn [[{:keys [bridge-to-chain-id]} networks]]
    (keep (fn [network]
            (when (not= (:chain-id network) bridge-to-chain-id)

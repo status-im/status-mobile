@@ -1,17 +1,17 @@
 (ns status-im.contexts.wallet.collectible.options.view
   (:require
     [quo.core :as quo]
-    [status-im.contexts.wallet.networks.core :as networks]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.url :as url]))
 
 (defn view
   [{:keys [image name id]}]
-  (let [chain-id         (get-in id [:contract-id :chain-id])
-        token-id         (:token-id id)
-        contract-address (get-in id [:contract-id :address])
-        uri              (url/replace-port image (rf/sub [:mediaserver/port]))]
+  (let [chain-id                      (get-in id [:contract-id :chain-id])
+        {:keys [block-explorer-name]} (rf/sub [:wallet/network-details-by-chain-id chain-id])
+        token-id                      (:token-id id)
+        contract-address              (get-in id [:contract-id :address])
+        uri                           (url/replace-port image (rf/sub [:mediaserver/port]))]
     [quo/action-drawer
      [[{:icon                :i/link
         :accessibility-label :view-on-block-explorer
@@ -19,8 +19,7 @@
                                (rf/dispatch [:wallet/navigate-to-chain-explorer chain-id
                                              contract-address]))
         :label               (i18n/label :t/view-on-block-explorer
-                                         {:block-explorer-name (networks/get-block-explorer-name
-                                                                chain-id)})
+                                         {:block-explorer-name block-explorer-name})
         :right-icon          :i/external}]
       [{:icon                :i/save
         :accessibility-label :save-image

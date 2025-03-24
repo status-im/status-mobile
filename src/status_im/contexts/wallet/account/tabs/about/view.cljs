@@ -7,18 +7,16 @@
     [status-im.contexts.shell.constants :as constants]
     [status-im.contexts.wallet.account.tabs.about.style :as style]
     [status-im.contexts.wallet.add-account.create-account.utils :as create-account.utils]
-    [status-im.contexts.wallet.networks.core :as networks]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn chain-explorer-options
   [address network-details]
-  (map (fn [{:keys [chain-id]}]
+  (map (fn [{:keys [chain-id block-explorer-name]}]
          {:icon                :i/link
           :accessibility-label :view-on-block-explorer
           :label               (i18n/label :t/view-on-block-explorer
-                                           {:block-explorer-name (networks/get-block-explorer-name
-                                                                  chain-id)})
+                                           {:block-explorer-name block-explorer-name})
           :right-icon          :i/external
           :on-press            #(rf/dispatch
                                  [:wallet/navigate-to-chain-explorer chain-id address])})

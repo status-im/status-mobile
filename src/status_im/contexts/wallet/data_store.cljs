@@ -114,35 +114,6 @@
       (update-vals remove-tokens-with-empty-values)
       (update-vals #(update-balances-per-chain % supported-chains-by-token-symbol))))
 
-(defn rpc->network
-  [network]
-  (set/rename-keys network
-                   {:isTest                 :test?
-                    :tokenOverrides         :token-overrides
-                    :rpcUrl                 :rpc-url
-                    :chainColor             :chain-color
-                    :chainName              :chain-name
-                    :nativeCurrencyDecimals :native-currency-decimals
-                    :relatedChainId         :related-chain-id
-                    :shortName              :short-name
-                    :chainId                :chain-id
-                    :originalFallbackURL    :original-fallback-url
-                    :originalRpcUrl         :original-rpc-url
-                    :fallbackURL            :fallback-url
-                    :blockExplorerUrl       :block-explorer-url
-                    :nativeCurrencySymbol   :native-currency-symbol
-                    :nativeCurrencyName     :native-currency-symbol}))
-
-(defn rpc->networks
-  [networks]
-  (reduce
-   (fn [result {:keys [Prod Test]}]
-     (cond-> result
-       Prod (update :prod (fnil conj []) (rpc->network Prod))
-       Test (update :test (fnil conj []) (rpc->network Test))))
-   {:prod [] :test []}
-   networks))
-
 (defn partially-operable-accounts?
   [accounts]
   (->> accounts

@@ -325,11 +325,11 @@
 (rf/reg-sub
  :wallet/selected-networks->chain-ids
  :<- [:wallet/selected-networks]
- :<- [:profile/test-networks-enabled?]
- (fn [[selected-networks testnet-enabled?]]
+ :<- [:wallet/network-details]
+ (fn [[selected-networks networks]]
    (set (map #(network-utils/network->chain-id
-               {:network          %
-                :testnet-enabled? testnet-enabled?})
+               {:network-name %
+                :networks     networks})
              selected-networks))))
 
 (defn- format-settings-keypair-accounts

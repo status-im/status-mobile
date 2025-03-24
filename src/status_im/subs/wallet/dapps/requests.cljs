@@ -59,8 +59,10 @@
 
 (rf/reg-sub
  :wallet-connect/current-request-network
+ :<- [:wallet/networks-by-id]
  :<- [:wallet-connect/chain-id]
- networks/chain-id->network-details)
+ (fn [[networks chain-id]]
+   (get networks chain-id)))
 
 (rf/reg-sub
  :wallet-connect/typed-data-request?

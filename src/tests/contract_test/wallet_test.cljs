@@ -7,7 +7,7 @@
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [status-im.common.json-rpc.events :as rpc-events]
     [status-im.contexts.wallet.data-store :as data-store]
-    [status-im.contexts.wallet.networks.core :as networks]
+    [status-im.contexts.wallet.networks.config :as networks.config]
     status-im.events
     status-im.navigation.core
     status-im.subs.root
@@ -16,7 +16,10 @@
 
 (use-fixtures :each (h/fixture-session))
 
-(def mainnet-chain-id (networks/get-chain-id :mainnet))
+(def ethereum-chain-id networks.config/ethereum-chain-id)
+(def mainnet-chain-ids (keys networks.config/mainnets))
+(def testnet-chain-ids (keys networks.config/testnets))
+(def all-chain-ids (keys networks.config/networks))
 
 (defn assert-accounts-get-accounts
   [result]
@@ -50,10 +53,10 @@
 
 (defn assert-ethereum-chains
   [response]
-  (is (= networks/all-networks (count response)))
-  (doseq [chain-id (networks/chain-ids false)]
+  (is (= (count all-chain-ids) (count response)))
+  (doseq [chain-id mainnet-chain-ids]
     (is (some #(= chain-id (get-in % [:Prod :chainId])) response)))
-  (doseq [chain-id (networks/chain-ids true)]
+  (doseq [chain-id testnet-chain-ids]
     (is (some #(= chain-id (get-in % [:Test :chainId])) response))))
 
 (deftest accounts-get-chains-contract-test
@@ -99,7 +102,7 @@
   (h/test-async :wallet/get-address-details
     (fn []
       (promesa/let [input       "test.eth"
-                    chain-id    mainnet-chain-id
+                    chain-id    ethereum-chain-id
                     ens-address (rpc-events/call-async "ens_addressOf" false chain-id input)
                     response    (rpc-events/call-async "wallet_getAddressDetails"
                                                        false

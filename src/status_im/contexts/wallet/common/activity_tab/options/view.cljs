@@ -9,34 +9,34 @@
 (defn view
   [{:keys   [chain-id]
     tx-hash :hash}]
-  (let [tx-details-link-on-block-explorer (networks/get-block-explorer-tx-url chain-id tx-hash)
-        open-tx-on-block-explorer         (rn/use-callback
-                                           #(rf/dispatch [:browser.ui/open-url
-                                                          tx-details-link-on-block-explorer])
-                                           [tx-details-link-on-block-explorer])
-        copy-tx-hash-to-clipboard         (rn/use-callback
-                                           (fn []
-                                             (clipboard/set-string tx-hash)
-                                             (rf/dispatch
-                                              [:toasts/upsert
-                                               {:type :positive
-                                                :text
-                                                (i18n/label
-                                                 :t/transaction-hash-copied-to-clipboard)}]))
-                                           [tx-hash])
-        share-link-to-block-explorer      (rn/use-callback
-                                           #(rf/dispatch [:open-share
-                                                          {:options
-                                                           {:message
-                                                            tx-details-link-on-block-explorer}}])
-                                           [tx-details-link-on-block-explorer])]
+  (let [{:keys [block-explorer-name] :as network} (rf/sub [:wallet/network-details-by-chain-id chain-id])
+        tx-details-link-on-block-explorer         (networks/get-block-explorer-tx-url network tx-hash)
+        open-tx-on-block-explorer                 (rn/use-callback
+                                                   #(rf/dispatch [:browser.ui/open-url
+                                                                  tx-details-link-on-block-explorer])
+                                                   [tx-details-link-on-block-explorer])
+        copy-tx-hash-to-clipboard                 (rn/use-callback
+                                                   (fn []
+                                                     (clipboard/set-string tx-hash)
+                                                     (rf/dispatch
+                                                      [:toasts/upsert
+                                                       {:type :positive
+                                                        :text
+                                                        (i18n/label
+                                                         :t/transaction-hash-copied-to-clipboard)}]))
+                                                   [tx-hash])
+        share-link-to-block-explorer              (rn/use-callback
+                                                   #(rf/dispatch [:open-share
+                                                                  {:options
+                                                                   {:message
+                                                                    tx-details-link-on-block-explorer}}])
+                                                   [tx-details-link-on-block-explorer])]
     [quo/action-drawer
      [[{:icon                :i/link
         :accessibility-label :view-on-block-explorer
         :on-press            open-tx-on-block-explorer
         :label               (i18n/label :t/view-on-block-explorer
-                                         {:block-explorer-name (networks/get-block-explorer-name
-                                                                chain-id)})
+                                         {:block-explorer-name block-explorer-name})
         :right-icon          :i/external}]
       [{:icon                :i/copy
         :accessibility-label :copy-transaction-hash
@@ -45,6 +45,5 @@
       [{:icon                :i/share
         :accessibility-label :share-link-to-block-explorer
         :label               (i18n/label :t/share-link-to-block-explorer
-                                         {:block-explorer-name (networks/get-block-explorer-name
-                                                                chain-id)})
+                                         {:block-explorer-name block-explorer-name})
         :on-press            share-link-to-block-explorer}]]]))

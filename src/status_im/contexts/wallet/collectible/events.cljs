@@ -6,6 +6,7 @@
             [status-im.contexts.network.data-store :as network.data-store]
             [status-im.contexts.wallet.collectible.utils :as collectible-utils]
             [status-im.contexts.wallet.data-store :as data-store]
+            [status-im.contexts.wallet.networks.core :as networks]
             [taoensso.timbre :as log]
             [utils.collection]
             [utils.ethereum.chain :as chain]
@@ -400,11 +401,12 @@
 
 (rf/reg-event-fx :wallet/share-collectible
  (fn [{:keys [db]} [{:keys [title token-id contract-address chain-id]}]]
-   (let [uri (collectible-utils/get-opensea-collectible-url
-              {:chain-id               chain-id
-               :token-id               token-id
-               :contract-address       contract-address
-               :test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])})]
+   (let [network (networks/get-network-details db chain-id)
+         uri     (collectible-utils/get-opensea-collectible-url
+                  {:network-name           (:network-name network)
+                   :token-id               token-id
+                   :contract-address       contract-address
+                   :test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])})]
      {:fx [[:dispatch
             [:hide-bottom-sheet]]
            [:dispatch-later
@@ -416,11 +418,12 @@
 (rf/reg-event-fx
  :wallet/navigate-to-opensea
  (fn [{:keys [db]} [chain-id token-id contract-address]]
-   {:fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch
-          [:browser.ui/open-url
-           (collectible-utils/get-opensea-collectible-url
-            {:chain-id               chain-id
-             :token-id               token-id
-             :contract-address       contract-address
-             :test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])})]]]}))
+   (let [network (networks/get-network-details db chain-id)]
+     {:fx [[:dispatch [:hide-bottom-sheet]]
+           [:dispatch
+            [:browser.ui/open-url
+             (collectible-utils/get-opensea-collectible-url
+              {:network-name           (:network-name network)
+               :token-id               token-id
+               :contract-address       contract-address
+               :test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])})]]]})))

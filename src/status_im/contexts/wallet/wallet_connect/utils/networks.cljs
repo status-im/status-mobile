@@ -2,7 +2,6 @@
   (:require [clojure.edn :as edn]
             [clojure.set :as set]
             [clojure.string :as string]
-            [status-im.contexts.wallet.networks.core :as networks]
             [utils.string]))
 
 (defn chain-id->eip155
@@ -19,11 +18,6 @@
 (defn format-eip155-address
   [address chain-id]
   (str chain-id ":" address))
-
-(defn chain-id->network-details
-  [chain-id]
-  (-> chain-id
-      (networks/get-network-details)))
 
 (defn session-networks-allowed?
   [supported-chain-ids {:keys [chains]}]

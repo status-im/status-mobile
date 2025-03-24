@@ -3,9 +3,10 @@
             [clojure.string :as string]
             [native-module.core :as native-module]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.networks.core :as networks]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
-            [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
+            [status-im.contexts.wallet.wallet-connect.utils.networks :as networks.utils]
             [status-im.contexts.wallet.wallet-connect.utils.transactions :as transactions]
             [status-im.contexts.wallet.wallet-connect.utils.typed-data :as typed-data]
             [taoensso.timbre :as log]
@@ -103,7 +104,7 @@
          tx       (-> event data-store/get-request-params first)
          chain-id (-> event
                       (get-in [:params :chainId])
-                      networks/eip155->chain-id)]
+                      networks.utils/eip155->chain-id)]
      (when tx
        {:fx [[:effects.wallet-connect/prepare-transaction
               {:tx         tx
@@ -124,7 +125,7 @@
                                   data-store/get-request-method)
            session-chain-id   (-> (data-store/get-db-current-request-event db)
                                   (get-in [:params :chainId])
-                                  networks/eip155->chain-id)
+                                  networks.utils/eip155->chain-id)
            typed-data         (-> raw-data
                                   transforms/js-parse
                                   transforms/js->clj)
@@ -157,16 +158,16 @@
 
 (rf/reg-event-fx
  :wallet-connect/wrong-typed-data-chain-id
- (fn [_ [{:keys [expected-chain-id wrong-chain-id]}]]
-   (let [wrong-network-name    (-> wrong-chain-id
-                                   networks/chain-id->network-details
-                                   :full-name)
-         expected-network-name (-> expected-chain-id
-                                   networks/chain-id->network-details
-                                   :full-name)
+ (fn [{:keys [db]} [{:keys [expected-chain-id wrong-chain-id]}]]
+   (let [wrong-network-name    (->> wrong-chain-id
+                                    (networks/get-network-details db)
+                                    :full-name)
+         expected-network-name (->> expected-chain-id
+                                    (networks/get-network-details db)
+                                    :full-name)
          toast-message         (i18n/label :t/wallet-connect-typed-data-wrong-chain-id-warning
                                            {:wrong-chain    (or wrong-network-name
-                                                                (networks/chain-id->eip155
+                                                                (networks.utils/chain-id->eip155
                                                                  wrong-chain-id))
                                             :expected-chain expected-network-name})]
      {:fx [[:dispatch

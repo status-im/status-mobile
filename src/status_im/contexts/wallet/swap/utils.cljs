@@ -42,8 +42,7 @@
    That happens when token is being selected on the home screen and
    it basically indicates that no account pre-selection was made."
   [{:keys [wallet account test-networks-enabled? token-symbol]}]
-  (let [networks (-> (get-in wallet [:networks (if test-networks-enabled? :test :prod)])
-                     (network-utils/sorted-networks-with-details))
+  (let [networks (get-in wallet [:networks (if test-networks-enabled? :test :prod)])
         token    (->> account
                       :tokens
                       (filter #(= token-symbol (:symbol %)))

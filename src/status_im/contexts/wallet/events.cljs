@@ -16,6 +16,7 @@
     [status-im.contexts.wallet.db-path :as db-path]
     [status-im.contexts.wallet.item-types :as item-types]
     [status-im.contexts.wallet.networks.core :as networks]
+    status-im.contexts.wallet.networks.events
     [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
     [status-im.contexts.wallet.tokens.events]
     [status-im.feature-flags :as ff]
@@ -384,10 +385,9 @@
                                                 (vals (:balances-per-chain token))))
          balance-in-only-one-network? (when networks-with-balance (= (count networks-with-balance) 1))
          test-networks-enabled?       (get-in db [:profile/profile :test-networks-enabled?])
-         network-details              (-> (get-in db
-                                                  [:wallet :networks
-                                                   (if test-networks-enabled? :test :prod)])
-                                          (network-utils/sorted-networks-with-details))
+         network-details              (get-in db
+                                              [:wallet :networks
+                                               (if test-networks-enabled? :test :prod)])
          network                      (if balance-in-only-one-network?
                                         (first (filter #(= (:chain-id %)
                                                            (:chain-id (first networks-with-balance)))
@@ -453,29 +453,6 @@
           [:wallet/wizard-navigate-forward
            {:current-screen stack-id
             :flow-id        :wallet-bridge-flow}]]]}))
-
-(rf/reg-event-fx
- :wallet/get-ethereum-chains
- (fn [_]
-   {:json-rpc/call
-    [{:method     "wallet_getEthereumChains"
-      :params     []
-      :on-success [:wallet/get-ethereum-chains-success]
-      :on-error   [:wallet/log-rpc-error {:event :wallet/get-ethereum-chains}]}]}))
-
-(rf/reg-event-fx
- :wallet/get-ethereum-chains-success
- (fn [{:keys [db]} [data]]
-   (let [network-data           (data-store/rpc->networks data)
-         test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
-         default-network-names  (->> (get network-data (if test-networks-enabled? :test :prod))
-                                     (map #(-> % :chain-id networks/get-network-name))
-                                     set)]
-     {:db (-> db
-              (assoc-in [:wallet :networks] network-data)
-              (assoc-in [:wallet :ui :network-filter :default-networks] default-network-names))
-      :fx [[:dispatch [:wallet.tokens/get-token-list]]
-           [:dispatch [:wallet/reset-selected-networks]]]})))
 
 (rf/reg-event-fx
  :wallet/find-ens
@@ -548,13 +525,6 @@
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :search-address :loading?] true)}))
 
-(rf/reg-event-fx
- :wallet/navigate-to-chain-explorer
- (fn [_ [chain-id address]]
-   (let [explorer-link (networks/get-block-explorer-address-url chain-id address)]
-     {:fx [[:dispatch [:hide-bottom-sheet]]
-           [:dispatch [:browser.ui/open-url explorer-link]]]})))
-
 (rf/reg-event-fx :wallet/reload
  (fn [{:keys [db]}]
    (let [supported-chains-by-symbol (get-in db [:wallet :tokens :supported-chains-by-symbol])
@@ -601,23 +571,27 @@
 (rf/reg-event-fx
  :wallet/blockchain-status-changed
  (fn [{:keys [db]} [{:keys [message]}]]
-   (let [chains                  (-> (transforms/json->clj message)
-                                     (update-keys (comp utils.number/parse-int name)))
-         down-chain-ids          (-> (select-keys chains
-                                                  (for [[k v] chains :when (= v "down")] k))
-                                     keys)
-         test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
-         chain-ids-by-mode       (->> (get-in db
-                                              [:wallet :networks
-                                               (if test-networks-enabled? :test :prod)])
-                                      (map :chain-id))
-         chains-filtered-by-mode (remove #(not (contains? chain-ids-by-mode %)) down-chain-ids)
-         chains-down?            (and (network.data-store/online? db) (seq chains-filtered-by-mode))
-         chain-names             (when chains-down?
-                                   (->> (map (comp :full-name networks/get-network-details)
-                                             chains-filtered-by-mode)
-                                        distinct
-                                        (string/join ", ")))]
+   (let [chains                 (-> (transforms/json->clj message)
+                                    (update-keys (comp utils.number/parse-int name)))
+         down-chain-ids         (-> (select-keys chains
+                                                 (for [[k v] chains :when (= v "down")] k))
+                                    keys)
+         test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
+         networks               (->> (get-in db
+                                             [:wallet :networks
+                                              (if test-networks-enabled? :test :prod)])
+                                     (map :chain-id))
+         chain-ids              (->> networks
+                                     (map :chain-id)
+                                     set)
+         chains-filtered        (remove #(not (contains? chain-ids %)) down-chain-ids)
+         chains-down?           (and (network.data-store/online? db) (seq chains-filtered))
+         chain-names            (when chains-down?
+                                  (->> (map (partial networks/get-network-details db)
+                                            chains-filtered)
+                                       (map :full-name)
+                                       distinct
+                                       (string/join ", ")))]
      (when (seq down-chain-ids)
        (log/info "[wallet] Chain(s) down: " down-chain-ids)
        (log/info "[wallet] Chain name(s) down: " chain-names)

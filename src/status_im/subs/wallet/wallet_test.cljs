@@ -2,7 +2,7 @@
   (:require
     [cljs.test :refer [is testing use-fixtures]]
     [re-frame.db :as rf-db]
-    [status-im.contexts.wallet.networks.core :as networks]
+    [status-im.contexts.wallet.networks.config :as networks.config]
     [status-im.subs.root]
     [test-helpers.unit :as h]
     [utils.money :as money]
@@ -11,12 +11,12 @@
 (use-fixtures :each
               {:before #(reset! rf-db/app-db {})})
 
-(def mainnet-name :mainnet)
-(def optimism-name :optimism)
-(def arbitrum-name :arbitrum)
-(def mainnet-chain-id (networks/get-chain-id mainnet-name))
-(def optimism-chain-id (networks/get-chain-id optimism-name))
-(def arbitrum-chain-id (networks/get-chain-id arbitrum-name))
+(def mainnet-chain-id networks.config/ethereum-chain-id)
+(def optimism-chain-id networks.config/optimism-chain-id)
+(def arbitrum-chain-id networks.config/arbitrum-chain-id)
+(def mainnet-name (get-in networks.config/mainnets [mainnet-chain-id :network-name]))
+(def optimism-name (get-in networks.config/mainnets [optimism-chain-id :network-name]))
+(def arbitrum-name (get-in networks.config/mainnets [arbitrum-chain-id :network-name]))
 
 (def ^:private currencies
   {:usd {:id         :usd

@@ -4,7 +4,6 @@
     [quo.theme]
     [react-native.core :as rn]
     [status-im.contexts.wallet.common.utils :as common-utils]
-    [status-im.contexts.wallet.networks.core :as networks]
     [status-im.contexts.wallet.send.routes.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -23,7 +22,8 @@
                       {chain-id           :chain-id
                        network-value-type :type
                        total-amount       :total-amount}]
-                   (let [amount-formatted (-> total-amount
+                   (let [network-name     (rf/sub [:wallet/network-name-from-chain-id chain-id])
+                         amount-formatted (-> total-amount
                                               (common-utils/sanitized-token-amount-to-display
                                                token-decimals)
                                               (str " " token-symbol))]
@@ -32,7 +32,7 @@
                        :style {:margin-top (if (pos? index) 11 7.5)}}
                       [quo/network-bridge
                        {:amount  amount-formatted
-                        :network (networks/get-network-name chain-id)
+                        :network network-name
                         :status  network-value-type}]]))
                  network-values))])
 
@@ -51,8 +51,8 @@
                                      1 network-link-1x-height
                                      2 network-link-2x-height)
             inverted?              (neg? position-diff)
-            source                 (networks/get-network-name from-chain-id)
-            destination            (networks/get-network-name to-chain-id)
+            source                 (rf/sub [:wallet/network-name-from-chain-id from-chain-id])
+            destination            (rf/sub [:wallet/network-name-from-chain-id to-chain-id])
             from-chain-id-index    (first (keep-indexed #(when (= from-chain-id (:chain-id %2)) %1)
                                                         sender-network-values))
             base-margin-top        (* (+ row-height space-between-rows)

@@ -2,15 +2,15 @@
   (:require
     [cljs.test :refer [deftest is testing]]
     [status-im.contexts.wallet.collectible.utils :as utils]
-    [status-im.contexts.wallet.networks.core :as networks]))
+    [status-im.contexts.wallet.networks.config :as networks.config]))
 
 (def token-id "0xT")
 (def contract-address "0xC")
 
-(def mainnet-chain-id (networks/get-chain-id :mainnet))
-(def arbitrum-chain-id (networks/get-chain-id :arbitrum))
-(def sepolia-chain-id (networks/get-testnet-chain-id :mainnet))
-(def sepolia-arbitrum-chain-id (networks/get-testnet-chain-id :arbitrum))
+(def mainnet-chain-id networks.config/ethereum-chain-id)
+(def arbitrum-chain-id networks.config/arbitrum-chain-id)
+(def sepolia-chain-id networks.config/sepolia-chain-id)
+(def sepolia-arbitrum-chain-id networks.config/arbitrum-sepolia-chain-id)
 
 (deftest network->chain-id-test
   (testing "get-opensea-collectible-url mainnet"

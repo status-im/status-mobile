@@ -213,10 +213,9 @@
                                                 (vals (:balances-per-chain token))))
          balance-in-only-one-network? (when networks-with-balance (= (count networks-with-balance) 1))
          test-networks-enabled?       (get-in db [:profile/profile :test-networks-enabled?])
-         network-details              (-> (get-in db
-                                                  [:wallet :networks
-                                                   (if test-networks-enabled? :test :prod)])
-                                          (network-utils/sorted-networks-with-details))
+         network-details              (get-in db
+                                              [:wallet :networks
+                                               (if test-networks-enabled? :test :prod)])
          network                      (if balance-in-only-one-network?
                                         (first (filter #(= (:chain-id %)
                                                            (:chain-id (first networks-with-balance)))
@@ -755,10 +754,9 @@
                                                 (vals (:balances-per-chain token))))
          balance-in-only-one-network? (when networks-with-balance (= (count networks-with-balance) 1))
          test-networks-enabled?       (get-in db [:profile/profile :test-networks-enabled?])
-         network-details              (-> (get-in db
+         network-details              (get-in db
                                                   [:wallet :networks
                                                    (if test-networks-enabled? :test :prod)])
-                                          (network-utils/sorted-networks-with-details))
          network                      (if balance-in-only-one-network?
                                         (first (filter #(= (:chain-id %)
                                                            (:chain-id (first networks-with-balance)))

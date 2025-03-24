@@ -6,15 +6,17 @@
     [utils.number]))
 
 (defn network->chain-id
-  ([db network]
-   (let [{:keys [test-networks-enabled?]} (:profile/profile db)]
-     (network->chain-id {:network          network
-                         :testnet-enabled? test-networks-enabled?})))
-  ([{:keys [network testnet-enabled?]}]
-   (let [network-name (keyword network)]
-     (if testnet-enabled?
-       (networks/get-testnet-chain-id network-name)
-       (networks/get-chain-id network-name)))))
+  ([db network-name]
+   (let [testnet? (get-in db [:profile/profile :test-networks-enabled?])
+         networks (get-in db [:wallet :networks (networks/get-testnet-mode-key testnet?)])]
+     (network->chain-id {:network-name network-name
+                         :networks     networks})))
+  ([{:keys [network-name networks]}]
+   (let [network-name (keyword network-name)]
+     (some->>
+       networks
+       (some #(when (= network-name (:network-name %)) %))
+       :chain-id))))
 
 (defn network-list
   [{:keys [balances-per-chain]} networks]
@@ -39,14 +41,6 @@
   (as-> address $
     (string/split $ ":")
     [(butlast $) (last $)]))
-
-(defn sorted-networks-with-details
-  [networks]
-  (->> networks
-       (map
-        (fn [network]
-          (-> network :chain-id networks/get-network-details)))
-       (sort-by (juxt :layer :short-name))))
 
 (defn network-summary
   [network token-symbol amount]
