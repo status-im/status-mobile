@@ -17,7 +17,8 @@
  (fn [{:keys [db]} [data]]
    (let [network-data          (rpc-data-store.networks/rpc->networks data)
          networks-by-id        (rpc-data-store.networks/networks-by-id network-data)
-         default-network-names (->> (networks/get-networks db)
+         default-network-names (->> (networks/get-testnet-mode-key db)
+                                    (get network-data)
                                     (map :network-name)
                                     set)]
      {:db (-> db
