@@ -1,4 +1,5 @@
-(ns utils.ethereum.chain)
+(ns utils.ethereum.chain
+  {:deprecated true})
 
 (def BSC-mainnet-chain-id 56)
 (def BSC-testnet-chain-id 97)
