@@ -260,7 +260,7 @@
 (def ^:const one-month (* one-day 31))
 
 (def ^:const create-account-link "https://status.app/help/wallet/create-wallet-accounts")
-(def ^:const mobile-upvote-link "https://status-mobile.featureupvote.com")
+(def ^:const mobile-upvote-link "https://discuss.status.app/c/features/51")
 
 (def ^:const visibility-status-unknown 0)
 (def ^:const visibility-status-automatic 1)
