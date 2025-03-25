@@ -188,7 +188,6 @@
     "category": "카테고리",
     "category-title": "카테고리 제목",
     "change-fleet": "플릿을 {{fleet}}(으)로 변경",
-    "change-log-level": "확인 후 로그 수준을 {{log-level}}(으)로 재시작",
     "change-logging-enabled": "{{enable}} 로깅하시겠습니까?",
     "change-pairing": "페어링 코드 변경",
     "change-pairing-description": "페어링 코드를 변경해도 현재 페어링에는 영향을 주지 않습니다. 그러나 새 페어링에는 새 코드가 필요합니다.",

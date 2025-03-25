@@ -147,7 +147,6 @@
     "card-reseted": "Thẻ đã được đặt lại",
     "card-unpaired": "Thẻ đã được hủy ghép nối khỏi thiết bị hiện tại",
     "change-fleet": "Thay đổi hạm đội thành {{fleet}}",
-    "change-log-level": "Xác nhận và khởi động lại ứng dụng để thay đổi cấp độ nhật ký thành {{log-level}}",
     "change-logging-enabled": "Bạn có chắc chắn muốn {{enable}} ghi nhật ký không?",
     "change-passcode": "Đổi mật khẩu",
     "change-password": "Đổi mật khẩu",

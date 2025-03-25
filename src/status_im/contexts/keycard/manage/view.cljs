@@ -51,21 +51,21 @@
     {:title            (i18n/label :t/keycard-empty)
      :description      :text
      :description-text (i18n/label :t/no-key-pair-keycard)}]
-   [rn/view {:style {:margin-horizontal 20}}
-    [quo/keycard {:blur? true}]
-    [quo/section-label
-     {:section (i18n/label :t/what-you-can-do) :container-style {:padding-vertical 8}}]
-    [quo/settings-item
-     {:title             (i18n/label :t/use-backup-keycard)
-      :image             :icon
-      :blur?             true
-      :image-props       :i/placeholder
-      :action            :arrow
-      :description       :text
-      :description-props {:text (i18n/label :t/create-backup-profile-keycard)}
-      :on-press          (fn []
-                           (rf/dispatch [:navigate-back])
-                           (rf/dispatch [:keycard/backup-on-empty-card]))}]]])
+   [quo/keycard]
+   [quo/category
+    {:list-type :settings
+     :label (i18n/label :t/what-you-can-do)
+     :blur? true
+     :data
+     [{:title             (i18n/label :t/use-backup-keycard)
+       :image             :icon
+       :image-props       :i/copy
+       :action            :arrow
+       :description       :text
+       :description-props {:text (i18n/label :t/create-backup-profile-keycard)}
+       :on-press          (fn []
+                            (rf/dispatch [:navigate-back])
+                            (rf/dispatch [:keycard/backup-on-empty-card]))}]}]])
 
 (defn not-empty-logout-view
   []
@@ -77,31 +77,29 @@
     {:title            (i18n/label :t/keycard-not-empty)
      :description      :text
      :description-text (i18n/label :t/cant-store-new-keys)}]
-   [rn/view {:style {:margin-horizontal 20}}
-    [quo/keycard {:blur? true}]
-    [quo/section-label
-     {:section (i18n/label :t/what-you-can-do) :container-style {:padding-vertical 8}}]
-    [quo/settings-item
-     {:title             (i18n/label :t/logout-login-keycard)
-      :image             :icon
-      :blur?             true
-      :image-props       :i/profile
-      :action            :arrow
-      :description       :text
-      :description-props {:text (i18n/label :t/keycard-has-keypair)}
-      :on-press          (fn []
-                           (rf/dispatch [:navigate-back])
-                           (rf/dispatch [:profile/logout]))}]
-    [quo/settings-item
-     {:title             (i18n/label :t/factory-reset)
-      :image             :icon
-      :blur?             true
-      :image-props       :i/placeholder
-      :action            :arrow
-      :description       :text
-      :description-props {:text (i18n/label :t/remove-keycard-content)}
-      :on-press          (fn []
-                           (rf/dispatch [:show-bottom-sheet
-                                         {:theme   :dark
-                                          :shell?  true
-                                          :content factory-reset/sheet}]))}]]])
+   [quo/keycard]
+   [quo/category
+    {:list-type :settings
+     :label (i18n/label :t/what-you-can-do)
+     :blur? true
+     :data
+     [{:title             (i18n/label :t/logout-login-keycard)
+       :image             :icon
+       :image-props       :i/log-out
+       :action            :arrow
+       :description       :text
+       :description-props {:text (i18n/label :t/keycard-has-keypair)}
+       :on-press          (fn []
+                            (rf/dispatch [:navigate-back])
+                            (rf/dispatch [:profile/logout]))}
+      {:title             (i18n/label :t/factory-reset)
+       :image             :icon
+       :image-props       :i/revert
+       :action            :arrow
+       :description       :text
+       :description-props {:text (i18n/label :t/remove-keycard-content)}
+       :on-press          (fn []
+                            (rf/dispatch [:show-bottom-sheet
+                                          {:theme   :dark
+                                           :shell?  true
+                                           :content factory-reset/sheet}]))}]}]])

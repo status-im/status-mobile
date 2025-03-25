@@ -34,6 +34,7 @@
 (rf/defn multiaccount-update
   "Takes effects (containing :db) + new multiaccount fields, adds all effects necessary for multiaccount update.
   Optionally, one can specify a success-event to be dispatched after fields are persisted."
+  {:events [:multiaccounts.ui/update]}
   [{:keys [db] :as cofx}
    setting setting-value
    {:keys [dont-sync? on-success] :or {on-success #()}}]

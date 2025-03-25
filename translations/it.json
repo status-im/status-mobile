@@ -188,7 +188,6 @@
     "category": "Categoria",
     "category-title": "Titolo della categoria",
     "change-fleet": "Cambia fleet in {{fleet}}",
-    "change-log-level": "Conferma e riavvia l'applicazione per cambiare il livello di log a {{log-level}}",
     "change-logging-enabled": "Sei sicuro di voler {{enable}} il logging?",
     "change-pairing": "Modifica il codice di accoppiamento",
     "change-pairing-description": "La modifica del codice di abbinamento non influisce sugli abbinamenti correnti. Tuttavia, qualsiasi nuovo abbinamento richiederà il nuovo codice.",

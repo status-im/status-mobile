@@ -158,7 +158,6 @@
     "card-unpaired": "La tarjeta se ha desvinculado del dispositivo actual",
     "category": "Categoría",
     "change-fleet": "Cambiar fleet a {{fleet}}",
-    "change-log-level": "Confirme y reinicie la aplicación para cambiar el nivel de registro a {{log-level}}",
     "change-logging-enabled": "¿Está seguro\/a de que deseas {{enable}} iniciar sesión?",
     "change-passcode": "Cambiar código de acceso",
     "change-password": "Cambiar contraseña",

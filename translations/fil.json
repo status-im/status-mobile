@@ -193,7 +193,6 @@
     "category": "Kategorya",
     "category-title": "Pamagat ng kategorya",
     "change-fleet": "Baguhin ang fleet sa{{fleet}}",
-    "change-log-level": "Kumpirmahin at i-restart ang app upang baguhin ang antas ng log sa {{log-level}}",
     "change-logging-enabled": "Sigurado ka bang gusto mo{{enable}}logging?",
     "change-pairing": "Baguhin ang pairing code",
     "change-pairing-description": "Ang pagbabago ng pairing code ay hindi nakakaapekto sa kasalukuyang mga pares. Gayunpaman, ang anumang bagong pagpapares ay mangangailangan ng bagong code.",

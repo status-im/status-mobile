@@ -196,7 +196,6 @@
     "category-title": "Titre de la catégorie",
     "change-fleet": "Changer la fleet en {{fleet}}",
     "change-group-privacy": "Modifier la confidentialité du groupe",
-    "change-log-level": "Confirmez et redémarrez l'application pour changer le niveau de journal en {{log-level}}",
     "change-logging-enabled": "Êtes-vous sûr de vouloir {{enable}} vous connecter?",
     "change-pairing": "Changer le code de couplage",
     "change-pairing-description": "Changer le code de couplage n'affecte pas les appariements déjà effectués. Cependant, tout les nouveaux appariements nécessiteront le nouveau code.",

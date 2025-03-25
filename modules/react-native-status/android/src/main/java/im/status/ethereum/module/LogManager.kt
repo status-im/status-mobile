@@ -209,6 +209,28 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
         return utils.getPublicStorageDirectory()?.absolutePath
     }
 
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    fun setLogLevel(setLogLevelRequest: String): String {
+        Log.d(TAG, "setLogLevel: $setLogLevelRequest")
+
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            endpoint = "SetLogLevel",
+            requestBody = setLogLevelRequest,
+            statusgoFunction = { Statusgo.setLogLevel(setLogLevelRequest) }
+        )
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    fun setLogEnabled(setLogEnabledRequest: String): String {
+        Log.d(TAG, "setLogEnabled: $setLogEnabledRequest")
+
+        return StatusBackendClient.executeStatusGoRequestWithResult(
+            endpoint = "SetLogEnabled",
+            requestBody = setLogEnabledRequest,
+            statusgoFunction = { Statusgo.setLogEnabled(setLogEnabledRequest) }
+        )
+    }
+
     companion object {
         private const val TAG = "LogManager"
         private const val gethLogFileName = "geth.log"

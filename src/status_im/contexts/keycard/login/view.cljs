@@ -16,21 +16,21 @@
     {:title            (i18n/label :t/keycard-empty)
      :description      :text
      :description-text (i18n/label :t/no-key-pair-keycard)}]
-   [rn/view {:style {:margin-horizontal 20}}
-    [quo/keycard {:blur? true}]
-    [quo/section-label
-     {:section (i18n/label :t/what-you-can-do) :container-style {:padding-vertical 8}}]
-    [quo/settings-item
-     {:title             (i18n/label :t/create-new-profile)
-      :image             :icon
-      :blur?             true
-      :image-props       :i/placeholder
-      :action            :arrow
-      :description       :text
-      :description-props {:text (i18n/label :t/new-key-pair-keycard)}
-      :on-press          (fn []
-                           (rf/dispatch [:navigate-back])
-                           (rf/dispatch [:keycard/create.open-empty]))}]]])
+   [quo/keycard]
+   [quo/category
+    {:list-type :settings
+     :label (i18n/label :t/what-you-can-do)
+     :blur? true
+     :data
+     [{:title             (i18n/label :t/create-new-profile)
+       :image             :icon
+       :image-props       :i/profile
+       :action            :arrow
+       :description       :text
+       :description-props {:text (i18n/label :t/new-key-pair-keycard)}
+       :on-press          (fn []
+                            (rf/dispatch [:navigate-back])
+                            (rf/dispatch [:keycard/create.open-empty]))}]}]])
 
 (defn already-added-view
   []

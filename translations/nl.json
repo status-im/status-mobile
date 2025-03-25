@@ -172,7 +172,6 @@
     "category": "Categorie",
     "category-title": "Categorie titel",
     "change-fleet": "Verander fleet in {{fleet}}",
-    "change-log-level": "Bevestig en herstart de app om het logniveau te wijzigen naar {{log-level}}",
     "change-logging-enabled": "Weet je zeker dat je loggen wilt {{enable}}?",
     "change-pairing": "Wijzig koppelcode",
     "change-pairing-description": "Het wijzigen van de koppelcode heeft geen invloed op de huidige koppelingen. Voor elke nieuwe koppeling is echter de nieuwe code vereist.",

@@ -19,48 +19,80 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     NSLog(@"SendLogs() method called");
 #endif
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error = nil;
-    NSURL *rootUrl =[Utils getRootUrl];
+    NSURL *rootUrl = [Utils getRootUrl];
+    
+    // Prepare output paths
+    NSURL *zipFilePath = [rootUrl URLByAppendingPathComponent:@"logs.zip"];
+    NSURL *logsFolderPath = [rootUrl URLByAppendingPathComponent:@"logs_"];
+    
+    [fileManager removeItemAtPath:zipFilePath.path error:nil];
+    
+    [self ensureDirectoryExists:logsFolderPath withFileManager:fileManager];
+    
+    [self saveProvidedLogs:dbJson jsLogs:jsLogs toFolder:logsFolderPath];
+    
+    [self copyExistingLogsToFolder:logsFolderPath withFileManager:fileManager];
+    
+    // Create zip archive and clean up
+    [SSZipArchive createZipFileAtPath:zipFilePath.path withContentsOfDirectory:logsFolderPath.path];
+    [fileManager removeItemAtPath:logsFolderPath.path error:nil];
+    
+    callback(@[zipFilePath.absoluteString]);
+}
 
-    NSURL *zipFile = [rootUrl URLByAppendingPathComponent:@"logs.zip"];
-    [fileManager removeItemAtPath:zipFile.path error:nil];
+- (void)ensureDirectoryExists:(NSURL *)directoryPath withFileManager:(NSFileManager *)fileManager {
+    if (![fileManager fileExistsAtPath:directoryPath.path]) {
+        NSError *error = nil;
+        [fileManager createDirectoryAtPath:directoryPath.path 
+                withIntermediateDirectories:YES 
+                                 attributes:nil 
+                                      error:&error];
+    }
+}
 
-    NSURL *logsFolderName = [rootUrl URLByAppendingPathComponent:@"logs"];
-
-    if (![fileManager fileExistsAtPath:logsFolderName.path])
-        [fileManager createDirectoryAtPath:logsFolderName.path withIntermediateDirectories:YES attributes:nil error:&error];
-
-    NSURL *dbFile = [logsFolderName URLByAppendingPathComponent:@"db.json"];
-    NSURL *jsLogsFile = [logsFolderName URLByAppendingPathComponent:@"Status.log"];
-
-    NSURL *mainGethLogsFile = [rootUrl URLByAppendingPathComponent:@"geth.log"];
-    NSURL *mainLogsFile = [logsFolderName URLByAppendingPathComponent:@"geth.log"];
-    NSURL *preLoginLogFile = [rootUrl URLByAppendingPathComponent:@"pre_login.log"];
-
-    NSURL *requestsLogFile = [rootUrl URLByAppendingPathComponent:@"api.log"];
-
+- (void)saveProvidedLogs:(NSString *)dbJson jsLogs:(NSString *)jsLogs toFolder:(NSURL *)logsFolderPath {
+    NSURL *dbFile = [logsFolderPath URLByAppendingPathComponent:@"db.json"];
+    NSURL *jsLogsFile = [logsFolderPath URLByAppendingPathComponent:@"Status.log"];
+    
     [dbJson writeToFile:dbFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
     [jsLogs writeToFile:jsLogsFile.path atomically:YES encoding:NSUTF8StringEncoding error:nil];
+}
 
-    [fileManager copyItemAtPath:mainGethLogsFile.path toPath:mainLogsFile.path error:nil];
+- (void)copyExistingLogsToFolder:(NSURL *)logsFolderPath withFileManager:(NSFileManager *)fileManager {
+    NSString *logDirectory = [self logFileDirectory];
     
-    if ([fileManager fileExistsAtPath:requestsLogFile.path]) {
-        [fileManager copyItemAtPath:requestsLogFile.path toPath:[logsFolderName URLByAppendingPathComponent:@"api.log"].path error:nil];
-    }
+    NSArray *logFileNames = @[@"geth.log", @"api.log", @"pre_login.log"];
     
-    if ([fileManager fileExistsAtPath:preLoginLogFile.path]) {
-        [fileManager copyItemAtPath:preLoginLogFile.path toPath:[logsFolderName URLByAppendingPathComponent:@"pre_login.log"].path error:nil];
+    // Copy each log file if it exists
+    for (NSString *fileName in logFileNames) {
+        NSString *sourcePath = [logDirectory stringByAppendingPathComponent:fileName];
+        if ([fileManager fileExistsAtPath:sourcePath]) {
+            NSString *destinationPath = [logsFolderPath.path stringByAppendingPathComponent:fileName];
+            [fileManager copyItemAtPath:sourcePath toPath:destinationPath error:nil];
+        }
     }
-
-    [SSZipArchive createZipFileAtPath:zipFile.path withContentsOfDirectory:logsFolderName.path];
-    [fileManager removeItemAtPath:logsFolderName.path error:nil];
-
-    callback(@[zipFile.absoluteString]);
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(logFileDirectory) {
     NSURL *rootUrl = [Utils getRootUrl];
-    return rootUrl.path;
+    NSURL *logsUrl = [rootUrl URLByAppendingPathComponent:@"logs"];
+    return logsUrl.path;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(setLogLevel:(NSString *)setLogLevelRequest) {
+    return [StatusBackendClient executeStatusGoRequestWithResult:@"SetLogLevel"
+                                                          body:setLogLevelRequest
+                                              statusgoFunction:^NSString *{
+        return StatusgoSetLogLevel(setLogLevelRequest);
+    }];
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(setLogEnabled:(NSString *)setLogEnabledRequest) {
+    return [StatusBackendClient executeStatusGoRequestWithResult:@"SetLogEnabled"
+                                                          body:setLogEnabledRequest
+                                              statusgoFunction:^NSString *{
+        return StatusgoSetLogEnabled(setLogEnabledRequest);
+    }];
 }
 
 @end

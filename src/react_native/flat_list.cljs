@@ -25,7 +25,16 @@
 
 (defn dissoc-custom-props
   [props]
-  (dissoc props :data :header :footer :empty-component :separator :render-fn :key-fn :on-drag-end-fn))
+  (dissoc props
+   :data
+   :header
+   :footer
+   :empty-component
+   :separator
+   :render-fn
+   :key-fn
+   :on-drag-end-fn
+   :render-data))
 
 (defn base-list-props
   [{:keys [key-fn data render-fn empty-component header footer separator render-data on-drag-end-fn]

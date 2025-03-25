@@ -202,7 +202,6 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
     }
 
     fun handleStatusGoResponse(response: String, source: String) {
-        //TODO(frank) we should remove sensitive data from the response
         if (response.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "$source success: $response")
         } else {

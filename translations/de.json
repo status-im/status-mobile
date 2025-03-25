@@ -188,7 +188,6 @@
     "category": "Kategorie",
     "category-title": "Titel der Kategorie",
     "change-fleet": "Fleet in {{fleet}} ändern",
-    "change-log-level": "Bestätige und starte die App neu um das Log-Level auf {{log-level}} zu setzen.",
     "change-logging-enabled": "Möchten Sie die Protokollierung {{enable}}?",
     "change-pairing": "Pairing-Code ändern",
     "change-pairing-description": "Das Ändern des Pairing-Codes hat keine Auswirkungen auf die aktuellen Pairings. Für jede neue Paarung ist jedoch der neue Code erforderlich.",

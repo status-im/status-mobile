@@ -98,7 +98,6 @@
     "card-reseted": "卡片已被重置",
     "card-unpaired": "卡片已从当前设备删除配对",
     "change-fleet": "变更组别到{{fleet}}",
-    "change-log-level": "将日志级别更改为{{log-level}}",
     "change-logging-enabled": "您确定要{{enable}}日志记录吗？",
     "change-passcode": "更改密码",
     "change-password": "更改密码",

@@ -573,3 +573,13 @@
 (defn intended-panic
   [message]
   (.intendedPanic ^js (status) message))
+
+(defn set-log-level
+  [level]
+  (log/debug "[native-module] set-log-level")
+  (.setLogLevel ^js (log-manager) (types/clj->json {:logLevel level})))
+
+(defn set-log-enabled
+  [enabled]
+  (log/debug "[native-module] set-log-enabled")
+  (.setLogEnabled ^js (log-manager) (types/clj->json {:enabled enabled})))

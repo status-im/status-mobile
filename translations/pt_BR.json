@@ -212,7 +212,6 @@
     "category-title": "Nome da categoria",
     "change-fleet": "Mude a frota para {{fleet}}",
     "change-group-privacy": "Alterar a privacidade do grupo",
-    "change-log-level": "Confirmar e reiniciar o aplicativo para alterar o nível de log para {{log-level}}",
     "change-logging-enabled": "Tem certeza de que deseja {{enable}} o registro?",
     "change-pairing": "Alterar o código de emparelhamento",
     "change-pairing-description": "Alterar o código de emparelhamento não afeta os emparelhamentos atuais. No entanto, qualquer novo emparelhamento exigirá o novo código.",

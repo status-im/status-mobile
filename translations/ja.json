@@ -235,7 +235,6 @@
     "category-title": "カテゴリー名",
     "change-fleet": "Fleetを {{fleet}} に変更する",
     "change-group-privacy": "グループのプライバシーを変更する",
-    "change-log-level": "アプリを再起動してログレベルを {{log-level}} に変更する",
     "change-logging-enabled": "本当にログを{{enable}}にしますか？",
     "change-pairing": "ペアリングコードを変更する",
     "change-pairing-description": "ペアリングコードを変更しても、現在のペアリングに影響はありません。ただし新たにペアリングする場合は新しいコードが必要になります。",
