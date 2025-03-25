@@ -14,7 +14,6 @@
     [status-im.contexts.wallet.common.utils.external-links :as external-links]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]
-    [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.item-types :as item-types]
     [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
     [status-im.contexts.wallet.tokens.events]
@@ -466,17 +465,16 @@
 (rf/reg-event-fx
  :wallet/get-ethereum-chains-success
  (fn [{:keys [db]} [data]]
-   (let [network-data
-         {:test (map #(->> %
-                           :Test
-                           data-store/rpc->network)
-                     data)
-          :prod (map #(->> %
-                           :Prod
-                           data-store/rpc->network)
-                     data)}]
-     {:fx [[:dispatch [:wallet.tokens/get-token-list]]]
-      :db (assoc-in db [:wallet :networks] network-data)})))
+   (let [network-data           (data-store/rpc->networks data)
+         test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
+         default-network-names  (->> (get network-data (if test-networks-enabled? :test :prod))
+                                     (map #(-> % :chain-id network-utils/id->network))
+                                     set)]
+     {:db (-> db
+              (assoc-in [:wallet :networks] network-data)
+              (assoc-in [:wallet :ui :network-filter :default-networks] default-network-names))
+      :fx [[:dispatch [:wallet.tokens/get-token-list]]
+           [:dispatch [:wallet/reset-selected-networks]]]})))
 
 (rf/reg-event-fx
  :wallet/find-ens
@@ -639,15 +637,19 @@
 
 (rf/reg-event-fx :wallet/reset-selected-networks
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :network-filter] db/network-filter-defaults)}))
+   (let [default-network-names (get-in db [:wallet :ui :network-filter :default-networks])]
+     {:db (-> db
+              (assoc-in [:wallet :ui :network-filter :selector-state] :default)
+              (assoc-in [:wallet :ui :network-filter :selected-networks] default-network-names))})))
 
 (rf/reg-event-fx :wallet/update-selected-networks
  (fn [{:keys [db]} [network-name]]
-   (let [selected-networks (get-in db [:wallet :ui :network-filter :selected-networks])
-         selector-state    (get-in db [:wallet :ui :network-filter :selector-state])
-         contains-network? (contains? selected-networks network-name)
-         update-fn         (if contains-network? disj conj)
-         networks-count    (count selected-networks)]
+   (let [selected-networks     (get-in db [:wallet :ui :network-filter :selected-networks])
+         selector-state        (get-in db [:wallet :ui :network-filter :selector-state])
+         contains-network?     (contains? selected-networks network-name)
+         update-fn             (if contains-network? disj conj)
+         networks-count        (count selected-networks)
+         default-network-count (count (get-in db [:wallet :ui :network-filter :default-networks]))]
      (cond (= selector-state :default)
            {:db (-> db
                     (assoc-in [:wallet :ui :network-filter :selected-networks] #{network-name})
@@ -657,7 +659,7 @@
            ;; - if user is removing the last network in the list
            ;; - if all networks is selected
            (or (and (= networks-count 1) contains-network?)
-               (and (= (inc networks-count) constants/default-network-count) (not contains-network?)))
+               (and (= (inc networks-count) default-network-count) (not contains-network?)))
            {:fx [[:dispatch [:wallet/reset-selected-networks]]]}
 
            :else

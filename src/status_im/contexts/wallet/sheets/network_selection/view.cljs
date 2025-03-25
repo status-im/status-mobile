@@ -9,7 +9,7 @@
 
 (defn- network-item
   [{:keys [network on-select-network source]}]
-  (let [{:keys [network-name chain-id]} network
+  (let [{:keys [full-name network-name chain-id]} network
         {balance-in-crypto :crypto
          balance-in-fiat   :fiat} (if (= source :swap)
                                     (rf/sub [:wallet/swap-asset-to-pay-network-balance chain-id])
@@ -17,7 +17,7 @@
         mainnet?
         (= network-name constants/mainnet-network-name)]
     [quo/network-list
-     {:label           (name network-name)
+     {:label           full-name
       :network-image   (quo.resources/get-network network-name)
       :token-value     balance-in-crypto
       :fiat-value      balance-in-fiat

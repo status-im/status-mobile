@@ -47,6 +47,7 @@
    :base     (js/require "../resources/images/networks/Base.png")
    :polygon  (js/require "../resources/images/networks/Polygon.png")
    :scroll   (js/require "../resources/images/networks/Scroll.png")
+   :status   (js/require "../resources/images/networks/Status.png")
    :taiko    (js/require "../resources/images/networks/Taiko.png")
    :unknown  (js/require "../resources/images/networks/Unknown.png")
    :xdai     (js/require "../resources/images/networks/xDAI.png")

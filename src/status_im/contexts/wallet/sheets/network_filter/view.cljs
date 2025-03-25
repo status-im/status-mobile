@@ -24,6 +24,7 @@
        :data      (mapv (fn [network]
                           (utils/make-network-item
                            {:network-name (:network-name network)
+                            :full-name    (:full-name network)
                             :color        color
                             :networks     selected-networks
                             :on-change    #(rf/dispatch

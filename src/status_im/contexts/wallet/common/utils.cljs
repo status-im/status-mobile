@@ -344,8 +344,8 @@
 
 (defn make-network-item
   "This function generates props for quo/category component item"
-  [{:keys [network-name color on-change networks label-props type blur?]}]
-  (cond-> {:title                 (string/capitalize (name network-name))
+  [{:keys [network-name full-name color on-change networks label-props type blur?]}]
+  (cond-> {:title                 full-name
            :image                 :icon-avatar
            :image-props           {:icon (resources/get-network network-name)
                                    :size :size-20}

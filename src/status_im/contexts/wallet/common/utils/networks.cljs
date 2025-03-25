@@ -10,14 +10,15 @@
 (def ^:private max-network-prefixes 2)
 
 (def id->network
-  {constants/ethereum-mainnet-chain-id constants/mainnet-network-name
-   constants/ethereum-sepolia-chain-id constants/mainnet-network-name
-   constants/optimism-mainnet-chain-id constants/optimism-network-name
-   constants/optimism-sepolia-chain-id constants/optimism-network-name
-   constants/arbitrum-mainnet-chain-id constants/arbitrum-network-name
-   constants/arbitrum-sepolia-chain-id constants/arbitrum-network-name
-   constants/base-mainnet-chain-id     constants/base-network-name
-   constants/base-sepolia-chain-id     constants/base-network-name})
+  {constants/ethereum-mainnet-chain-id       constants/mainnet-network-name
+   constants/ethereum-sepolia-chain-id       constants/mainnet-network-name
+   constants/optimism-mainnet-chain-id       constants/optimism-network-name
+   constants/optimism-sepolia-chain-id       constants/optimism-network-name
+   constants/arbitrum-mainnet-chain-id       constants/arbitrum-network-name
+   constants/arbitrum-sepolia-chain-id       constants/arbitrum-network-name
+   constants/base-mainnet-chain-id           constants/base-network-name
+   constants/base-sepolia-chain-id           constants/base-network-name
+   constants/status-network-sepolia-chain-id constants/status-network-name})
 
 (defn- get-chain-id
   [{:keys [mainnet-chain-id sepolia-chain-id testnet-enabled?]}]
@@ -54,6 +55,13 @@
      (get-chain-id
       {:mainnet-chain-id constants/base-mainnet-chain-id
        :sepolia-chain-id constants/base-sepolia-chain-id
+       :testnet-enabled? testnet-enabled?})
+
+     #{constants/status-network-name (keyword constants/status-network-short-name)}
+     (get-chain-id
+      ;; TODO: Update mainnet chain ID when Status Network Mainnet is launched
+      {:mainnet-chain-id 0
+       :sepolia-chain-id constants/status-network-sepolia-chain-id
        :testnet-enabled? testnet-enabled?}))))
 
 (defn network-list
@@ -85,13 +93,15 @@
    constants/optimism-network-name constants/optimism-short-name
    constants/arbitrum-network-name constants/arbitrum-short-name
    constants/ethereum-network-name constants/ethereum-short-name
-   constants/base-network-name     constants/base-short-name})
+   constants/base-network-name     constants/base-short-name
+   constants/status-network-name   constants/status-network-short-name})
 
 (def short-name->network
-  {constants/mainnet-short-name  constants/mainnet-network-name
-   constants/optimism-short-name constants/optimism-network-name
-   constants/arbitrum-short-name constants/arbitrum-network-name
-   constants/base-short-name     constants/base-network-name})
+  {constants/mainnet-short-name        constants/mainnet-network-name
+   constants/optimism-short-name       constants/optimism-network-name
+   constants/arbitrum-short-name       constants/arbitrum-network-name
+   constants/base-short-name           constants/base-network-name
+   constants/status-network-short-name constants/status-network-name})
 
 (defn short-names->network-preference-prefix
   [short-names]
@@ -171,6 +181,15 @@
    :view-on-block-explorer-label :t/view-on-base
    :link-to-block-explorer-label :t/share-link-to-base})
 
+(def status-network-details
+  {:source                       (resources/get-network constants/status-network-name)
+   :short-name                   constants/status-network-short-name
+   :full-name                    constants/status-network-full-name
+   :network-name                 constants/status-network-name
+   :abbreviated-name             constants/status-network-abbreviated-name
+   :view-on-block-explorer-label :t/view-on-status-explorer
+   :link-to-block-explorer-label :t/share-link-to-status-explorer})
+
 (defn get-network-details
   [chain-id]
   (as-> chain-id $
@@ -186,6 +205,9 @@
 
       #{constants/base-mainnet-chain-id constants/base-sepolia-chain-id}
       base-network-details
+
+      #{constants/status-network-sepolia-chain-id}
+      status-network-details
 
       nil)
     (when $

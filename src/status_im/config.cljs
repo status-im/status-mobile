@@ -50,6 +50,8 @@
 (def optimism-sepolia-tx-details-base-link "https://sepolia-optimistic.etherscan.io/tx")
 (def arbitrum-sepolia-tx-details-base-link "https://sepolia.arbiscan.io/tx")
 (def base-sepolia-tx-details-base-link "https://sepolia.basescan.org/tx")
+(def status-network-sepolia-chain-explorer-base-link "https://sepoliascan.status.network/address/")
+(def status-network-sepolia-tx-details-base-link "https://sepoliascan.status.network/tx")
 (def opensea-link "https://opensea.io")
 (def opensea-tesnet-link "https://testnets.opensea.io")
 

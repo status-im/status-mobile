@@ -157,7 +157,8 @@
   {:ethereum 1
    :optimism 2
    :arbitrum 3
-   :base     4})
+   :base     4
+   :status   5})
 
 (defn reset-loading-network-amounts-to-zero
   [network-amounts]

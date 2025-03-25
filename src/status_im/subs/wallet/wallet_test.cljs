@@ -3,7 +3,6 @@
     [cljs.test :refer [is testing use-fixtures]]
     [re-frame.db :as rf-db]
     [status-im.constants :as constants]
-    [status-im.contexts.wallet.db :as db]
     [status-im.subs.root]
     [test-helpers.unit :as h]
     [utils.money :as money]
@@ -203,6 +202,19 @@
            :chain-id   10
            :layer      2}]})
 
+(def ui-data
+  {:network-filter {:selected-state    :default
+                    :default-networks  #{constants/mainnet-network-name
+                                         constants/arbitrum-network-name
+                                         constants/optimism-network-name
+                                         constants/base-network-name
+                                         constants/status-network-name}
+                    :selected-networks #{constants/mainnet-network-name
+                                         constants/arbitrum-network-name
+                                         constants/optimism-network-name
+                                         constants/base-network-name
+                                         constants/status-network-name}}})
+
 (def route-data
   [{:gas-amount "25000"
     :gas-fees   {:tx-max-fees-per-gas "4"
@@ -214,7 +226,7 @@
   [sub-name]
   (testing "a map: address->balance"
     (swap! rf-db/app-db #(-> %
-                             (assoc :wallet db/defaults)
+                             (assoc-in [:wallet :ui] ui-data)
                              (assoc-in [:wallet :accounts] accounts)
                              (assoc-in [:wallet :tokens :prices-per-token]
                                        {:ETH {:usd 2000} :DAI {:usd 1}})))
@@ -232,7 +244,7 @@
   (testing "returns all accounts without balance"
     (swap! rf-db/app-db
       #(-> %
-           (assoc :wallet db/defaults)
+           (assoc-in [:wallet :ui] ui-data)
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :networks] network-data)))
     (is
@@ -320,7 +332,7 @@
   (testing "returns current account with balance base"
     (swap! rf-db/app-db
       #(-> %
-           (assoc :wallet db/defaults)
+           (assoc-in [:wallet :ui] ui-data)
            (assoc :currencies currencies)
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
@@ -551,7 +563,7 @@
   [sub-name]
   (testing "returns aggregated tokens (in quo/token-value props) and balances from all accounts"
     (swap! rf-db/app-db #(-> %
-                             (assoc :wallet db/defaults)
+                             (assoc-in [:wallet :ui] ui-data)
                              (assoc :currencies currencies)
                              (assoc-in [:wallet :accounts] accounts)
                              (assoc-in [:wallet :tokens :prices-per-token]
@@ -838,7 +850,13 @@
 (h/deftest-sub :wallet/selected-networks->chain-ids
   [sub-name]
   (testing "selected networks -> chain-ids - All networks"
-    (swap! rf-db/app-db #(assoc % :wallet db/defaults))
+    (swap! rf-db/app-db #(assoc %
+                                :wallet
+                                {:ui {:network-filter {:selected-networks
+                                                       #{constants/mainnet-network-name
+                                                         constants/arbitrum-network-name
+                                                         constants/optimism-network-name
+                                                         constants/base-network-name}}}}))
     (is
      (match? (sort [constants/ethereum-mainnet-chain-id constants/arbitrum-mainnet-chain-id
                     constants/optimism-mainnet-chain-id constants/base-mainnet-chain-id])

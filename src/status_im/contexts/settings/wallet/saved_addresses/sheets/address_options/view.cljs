@@ -10,7 +10,8 @@
 
 (defn view
   [{:keys [name address customization-color] :as address-details}]
-  (let [open-send-flow                 (rn/use-callback
+  (let [test-networks-enabled?         (rf/sub [:profile/test-networks-enabled?])
+        open-send-flow                 (rn/use-callback
                                         (fn []
                                           (rf/dispatch [:wallet/init-send-flow-for-address
                                                         {:address address
@@ -40,6 +41,11 @@
                                         #(rf/dispatch [:wallet/navigate-to-chain-explorer
                                                        {:address address
                                                         :network constants/base-network-name}])
+                                        [address])
+        open-status-chain-explorer     (rn/use-callback
+                                        #(rf/dispatch [:wallet/navigate-to-chain-explorer
+                                                       {:address address
+                                                        :network constants/status-network-name}])
                                         [address])
         open-share                     (rn/use-callback
                                         #(rf/dispatch
@@ -106,6 +112,13 @@
         :blur?               true
         :on-press            open-base-chain-explorer
         :accessibility-label :view-address-on-basescan}
+       (when test-networks-enabled?
+         {:icon                :i/link
+          :right-icon          :i/external
+          :label               (i18n/label :t/view-address-on-status-explorer)
+          :blur?               true
+          :on-press            open-status-chain-explorer
+          :accessibility-label :view-address-on-status-explorer})
        {:icon                :i/share
         :on-press            open-share
         :label               (i18n/label :t/share-address)

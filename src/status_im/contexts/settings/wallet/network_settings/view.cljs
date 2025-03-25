@@ -15,9 +15,9 @@
 
 (defn make-network-settings-item
   [{:keys [details testnet-label testnet-mode?]}]
-  (let [{:keys [network-name]} details]
+  (let [{:keys [network-name full-name]} details]
     (cond-> {:blur?       true
-             :title       (i18n/label network-name)
+             :title       full-name
              :image       :icon-avatar
              :image-props {:icon (resources/get-network network-name)
                            :size :size-20}}
@@ -38,21 +38,27 @@
 
 (defn layer-2-settings
   [{:keys [networks testnet-mode?]}]
-  [quo/category
-   {:key       :layer-2-settings
-    :label     (i18n/label :t/layer-2)
-    :data      (map make-network-settings-item
-                    [{:details       (:optimism networks)
-                      :testnet-mode? testnet-mode?
-                      :testnet-label (i18n/label :t/sepolia-active)}
-                     {:details       (:base networks)
-                      :testnet-mode? testnet-mode?
-                      :testnet-label (i18n/label :t/sepolia-active)}
-                     {:details       (:arbitrum networks)
-                      :testnet-mode? testnet-mode?
-                      :testnet-label (i18n/label :t/sepolia-active)}])
-    :blur?     true
-    :list-type :settings}])
+  (let [network-items [{:details       (:arbitrum networks)
+                        :testnet-mode? testnet-mode?
+                        :testnet-label (i18n/label :t/sepolia-active)}
+                       {:details       (:base networks)
+                        :testnet-mode? testnet-mode?
+                        :testnet-label (i18n/label :t/sepolia-active)}
+                       {:details       (:optimism networks)
+                        :testnet-mode? testnet-mode?
+                        :testnet-label (i18n/label :t/sepolia-active)}]
+        network-items (if (and testnet-mode? (not-empty (:status networks)))
+                        (conj network-items
+                              {:details       (:status networks)
+                               :testnet-mode? testnet-mode?
+                               :testnet-label (i18n/label :t/sepolia-active)})
+                        network-items)]
+    [quo/category
+     {:key       :layer-2-settings
+      :label     (i18n/label :t/layer-2)
+      :data      (map make-network-settings-item network-items)
+      :blur?     true
+      :list-type :settings}]))
 
 (defn testnet-mode-setting
   [{:keys [testnet-mode? on-enable on-disable]}]

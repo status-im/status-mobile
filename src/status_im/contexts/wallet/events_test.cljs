@@ -57,6 +57,12 @@
    "0x04ee7c47e4b68cc05dcd3377cbd5cde6be3c89fcf20a981e55e0285ed63a50f51f8b423465eee134c51bb0255e6041e9e5b006054b0fa72a7c76942a5a1a3f4e7e"
    :removed false})
 
+(def default-networks
+  #{constants/mainnet-network-name
+    constants/optimism-network-name
+    constants/arbitrum-network-name
+    constants/base-network-name})
+
 (h/deftest-event :wallet/scan-address-success
   [event-id dispatch]
   (is (match? {:wallet {:ui {:scanned-address address}}}
@@ -70,41 +76,45 @@
 
 (h/deftest-event :wallet/reset-selected-networks
   [event-id dispatch]
-  (reset! rf-db/app-db {:wallet {}})
+  (reset! rf-db/app-db {:wallet {:ui {:network-filter {:default-networks default-networks}}}})
   (is (match? {:wallet
-               {:ui {:network-filter {:selector-state :default
-                                      :selected-networks
-                                      (set constants/default-network-names)}}}}
+               {:ui {:network-filter {:default-networks  default-networks
+                                      :selector-state    :default
+                                      :selected-networks default-networks}}}}
               (:db (dispatch [event-id])))))
 
 (h/deftest-event :wallet/update-selected-networks
   [event-id dispatch]
   (testing "update-selected-networks"
     (let [network-name constants/arbitrum-network-name
-          expected-db  {:wallet {:ui {:network-filter {:selected-networks
+          expected-db  {:wallet {:ui {:network-filter {:default-networks default-networks
+                                                       :selected-networks
                                                        #{constants/optimism-network-name
                                                          network-name}
                                                        :selector-state :changed}}}}]
       (reset! rf-db/app-db
-        {:wallet {:ui {:network-filter {:selected-networks
+        {:wallet {:ui {:network-filter {:default-networks default-networks
+                                        :selected-networks
                                         #{constants/optimism-network-name}
                                         :selector-state :changed}}}})
       (is (match? expected-db (:db (dispatch [event-id network-name]))))))
 
   (testing "update-selected-networks > if all networks is already selected, update to incoming network"
     (let [network-name constants/arbitrum-network-name
-          expected-db  {:wallet {:ui {:network-filter {:selected-networks #{network-name}
+          expected-db  {:wallet {:ui {:network-filter {:default-networks  default-networks
+                                                       :selected-networks #{network-name}
                                                        :selector-state    :changed}}}}]
       (reset! rf-db/app-db
-        {:wallet {:ui {:network-filter {:selector-state :default
-                                        :selected-networks
-                                        (set constants/default-network-names)}}}})
+        {:wallet {:ui {:network-filter {:default-networks  default-networks
+                                        :selector-state    :default
+                                        :selected-networks default-networks}}}})
       (is (match? expected-db (:db (dispatch [event-id network-name]))))))
 
   (testing "update-selected-networks > reset on removing last network"
     (let [expected-fx [[:dispatch [:wallet/reset-selected-networks]]]]
       (reset! rf-db/app-db
-        {:wallet {:ui {:network-filter {:selected-networks
+        {:wallet {:ui {:network-filter {:default-networks default-networks
+                                        :selected-networks
                                         #{constants/optimism-network-name}
                                         :selector-state :changed}}}})
       (is (match? expected-fx

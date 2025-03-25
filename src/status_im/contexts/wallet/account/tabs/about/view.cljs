@@ -14,7 +14,8 @@
 (defn about-options
   []
   (let [{:keys [address] :as account} (rf/sub [:wallet/current-viewing-account])
-        share-title                   (str (:name account) " " (i18n/label :t/address))]
+        share-title                   (str (:name account) " " (i18n/label :t/address))
+        testnet-mode?                 (rf/sub [:profile/test-networks-enabled?])]
     [quo/action-drawer
      [[{:icon                :i/link
         :accessibility-label :view-on-eth
@@ -48,6 +49,15 @@
                                [:wallet/navigate-to-chain-explorer-from-bottom-sheet
                                 config/base-mainnet-chain-explorer-link
                                 address])}
+       (when testnet-mode?
+         {:icon                :i/link
+          :accessibility-label :view-on-status-explorer
+          :label               (i18n/label :t/view-on-status-explorer)
+          :right-icon          :i/external
+          :on-press            #(rf/dispatch
+                                 [:wallet/navigate-to-chain-explorer-from-bottom-sheet
+                                  config/status-network-sepolia-chain-explorer-base-link
+                                  address])})
        {:icon                :i/copy
         :accessibility-label :copy-address
         :label               (i18n/label :t/copy-address)

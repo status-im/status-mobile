@@ -29,6 +29,9 @@
     constants/base-sepolia-chain-id
     config/base-sepolia-chain-explorer-link
 
+    constants/status-network-sepolia-chain-id
+    config/status-network-sepolia-chain-explorer-base-link
+
     config/mainnet-chain-explorer-link))
 
 (defn get-base-url-for-tx-details-by-chain-id
@@ -57,6 +60,9 @@
 
     constants/base-sepolia-chain-id
     config/base-sepolia-tx-details-base-link
+
+    constants/status-network-sepolia-chain-id
+    config/status-network-sepolia-tx-details-base-link
 
     config/mainnet-tx-details-base-link))
 

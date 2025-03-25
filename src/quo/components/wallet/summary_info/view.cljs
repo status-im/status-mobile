@@ -32,7 +32,8 @@
   {:ethereum "ETH"
    :optimism "OP"
    :arbitrum "ARB"
-   :base     "ETH"})
+   :base     "ETH"
+   :status   "ETH"})
 
 (defn networks
   [networks-to-show theme]
