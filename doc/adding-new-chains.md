@@ -1,6 +1,6 @@
 # Adding new chains
 
-This doc only describes how to add new chains on the client side (for now), so make sure it's added on `status-go` first.
+This doc only describes how to add new chains on the client side, so make sure the chain is added on `status-go` first (see [eth-rpc-proxy:ADD_NEW_CHAINS.md](https://github.com/status-im/eth-rpc-proxy/blob/master/ADD_NEW_CHAINS.md))
 
 ## Steps
 1. Add the chain image (.png) to `resources/images/networks/`
