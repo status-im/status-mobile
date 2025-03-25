@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.common.activity-tab.events
   (:require [camel-snake-kebab.extras :as cske]
+            [status-im.contexts.wallet.networks.core :as networks]
             [utils.collection :as collection]
-            [utils.ethereum.chain :as chain]
             [utils.re-frame :as rf]
             [utils.transforms :as transforms]))
 
@@ -32,7 +32,7 @@
  :wallet/fetch-activities-for-current-account
  (fn [{:keys [db]}]
    (let [address   (get-in db [:wallet :current-viewing-account-address])
-         chain-ids (chain/chain-ids db)
+         chain-ids (networks/chain-ids db)
          params    [[address] chain-ids (create-default-filters) limit-per-request]]
      {:db (-> db
               (update-in [:wallet :ui :activity-tab :request] dissoc :request-id)

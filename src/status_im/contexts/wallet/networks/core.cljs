@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.networks.core
-  (:require [status-im.contexts.wallet.networks.config :as networks.config]))
+  (:require [status-im.contexts.profile.data-store :as profile]
+            [status-im.contexts.wallet.networks.config :as networks.config]))
 
 (defn new-network?
   [chain-id]
@@ -12,6 +13,10 @@
 (defn get-network-details
   [db chain-id]
   (get-in db [:wallet :networks-by-id chain-id]))
+
+(defn get-networks
+  [db testnet?]
+  (get-in db [:wallet :networks (get-testnet-mode-key testnet?)]))
 
 (defn get-block-explorer-address-url
   ([db chain-id address]
@@ -38,3 +43,10 @@
   (-> network
       :chain-id
       (= 1)))
+
+(defn chain-ids
+  [db]
+  (->> db
+       profile/testnet?
+       (get-networks db)
+       (map :chain-id)))

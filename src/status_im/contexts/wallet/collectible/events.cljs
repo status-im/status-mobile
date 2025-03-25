@@ -9,7 +9,6 @@
             [status-im.contexts.wallet.networks.core :as networks]
             [taoensso.timbre :as log]
             [utils.collection]
-            [utils.ethereum.chain :as chain]
             [utils.number :as utils.number]
             [utils.re-frame :as rf]
             [utils.transforms :as transforms]))
@@ -73,7 +72,7 @@
          data-type               (collectible-data-types :header)
          fetch-criteria          {:fetch-type            (fetch-type :fetch-if-cache-old)
                                   :max-cache-age-seconds max-cache-age-seconds}
-         chain-ids               (chain/chain-ids db)
+         chain-ids               (networks/chain-ids db)
          request-params          [request-id
                                   chain-ids
                                   [account]

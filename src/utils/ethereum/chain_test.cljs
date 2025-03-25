@@ -17,7 +17,3 @@
   (is (= (chain/chain-id->chain-keyword 1) :mainnet))
   (is (= (chain/chain-id->chain-keyword 11155111) :sepolia))
   (is (= (chain/chain-id->chain-keyword 5777) :custom)))
-
-(deftest chain-ids-test
-  (is (= (chain/chain-ids (chain-ids-db false)) [1 42161 10]))
-  (is (= (chain/chain-ids (chain-ids-db true)) [11155111 421614 11155420])))
