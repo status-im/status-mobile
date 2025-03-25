@@ -81,11 +81,16 @@ export function useSheetStyles({ scrollAmount, expandHeaderThreshold, sheetDispl
 
 export function useNameStyles({ scrollAmount, expandHeaderThreshold, textMovementThreshold }) {
   return useAnimatedStyle(() => {
-    const animationProgress = interpolate(scrollAmount.value, [textMovementThreshold, expandHeaderThreshold], [0, 40], 'clamp');
+    const animationProgress = interpolate(
+      scrollAmount.value,
+      [textMovementThreshold, expandHeaderThreshold],
+      [0, 40],
+      'clamp',
+    );
     return {
       marginRight: animationProgress,
       transform: [
-        {translateX: animationProgress},
+        { translateX: animationProgress },
         {
           translateY: interpolate(
             scrollAmount.value,
