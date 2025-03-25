@@ -6,6 +6,7 @@
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]
+    [status-im.contexts.wallet.networks.core :as networks]
     [status-im.contexts.wallet.send.transaction-settings.core :as transaction-settings]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
@@ -212,10 +213,7 @@
                                         (filter #(not= (:balance %) "0")
                                                 (vals (:balances-per-chain token))))
          balance-in-only-one-network? (when networks-with-balance (= (count networks-with-balance) 1))
-         test-networks-enabled?       (get-in db [:profile/profile :test-networks-enabled?])
-         network-details              (get-in db
-                                              [:wallet :networks
-                                               (if test-networks-enabled? :test :prod)])
+         network-details              (networks/get-networks db)
          network                      (if balance-in-only-one-network?
                                         (first (filter #(= (:chain-id %)
                                                            (:chain-id (first networks-with-balance)))
@@ -544,11 +542,7 @@
          {:keys [token tx-type collectible to-address
                  network bridge-to-chain-id]
           :or   {token updated-token}} (get-in db [:wallet :ui :send])
-         test-networks-enabled?        (get-in db [:profile/profile :test-networks-enabled?])
-         networks                      (get-in db
-                                               [:wallet :networks
-                                                (if test-networks-enabled? :test :prod)])
-         network-chain-ids             (map :chain-id networks)
+         network-chain-ids             (networks/get-chain-ids db)
          token-decimal                 (when token (:decimals token))
          token-id                      (utils/format-token-id token collectible)
          to-token-id                   ""
@@ -753,10 +747,7 @@
                                         (filter #(not= (:balance %) "0")
                                                 (vals (:balances-per-chain token))))
          balance-in-only-one-network? (when networks-with-balance (= (count networks-with-balance) 1))
-         test-networks-enabled?       (get-in db [:profile/profile :test-networks-enabled?])
-         network-details              (get-in db
-                                                  [:wallet :networks
-                                                   (if test-networks-enabled? :test :prod)])
+         network-details              (networks/get-networks db)
          network                      (if balance-in-only-one-network?
                                         (first (filter #(= (:chain-id %)
                                                            (:chain-id (first networks-with-balance)))

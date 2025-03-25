@@ -2,6 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.set :as set]
             [clojure.string :as string]
+            [status-im.contexts.wallet.networks.core :as networks]
             [utils.string]))
 
 (defn chain-id->eip155
@@ -59,16 +60,13 @@
 
 (defn get-networks-by-mode
   [db]
-  (let [test-mode? (get-in db [:profile/profile :test-networks-enabled?])
-        networks   (get-in db [:wallet :networks (if test-mode? :test :prod)])]
-    (mapv #(-> % :chain-id) networks)))
+  (->> db
+       networks/get-networks
+       (mapv #(-> % :chain-id))))
 
 (defn event-should-be-handled?
   [db {:keys [topic]}]
-  (let [testnet-mode? (get-in db [:profile/profile :test-networks-enabled?])
-        chain-ids     (->> (get-in db [:wallet :networks (if testnet-mode? :test :prod)])
-                           (map :chain-id)
-                           set)]
+  (let [chain-ids (networks/get-chain-ids db)]
     (some #(and (= (:topic %) topic)
                 (session-networks-allowed? chain-ids %))
           (:wallet-connect/sessions db))))

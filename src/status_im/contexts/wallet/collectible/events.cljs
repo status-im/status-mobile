@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [react-native.platform :as platform]
             [status-im.contexts.network.data-store :as network.data-store]
+            [status-im.contexts.profile.data-store :as profile]
             [status-im.contexts.wallet.collectible.utils :as collectible-utils]
             [status-im.contexts.wallet.data-store :as data-store]
             [status-im.contexts.wallet.networks.core :as networks]
@@ -72,7 +73,7 @@
          data-type               (collectible-data-types :header)
          fetch-criteria          {:fetch-type            (fetch-type :fetch-if-cache-old)
                                   :max-cache-age-seconds max-cache-age-seconds}
-         chain-ids               (networks/chain-ids db)
+         chain-ids               (networks/get-chain-ids db)
          request-params          [request-id
                                   chain-ids
                                   [account]
@@ -405,7 +406,7 @@
                   {:network-name           (:network-name network)
                    :token-id               token-id
                    :contract-address       contract-address
-                   :test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])})]
+                   :test-networks-enabled? (profile/testnet? db)})]
      {:fx [[:dispatch
             [:hide-bottom-sheet]]
            [:dispatch-later
@@ -425,4 +426,4 @@
               {:network-name           (:network-name network)
                :token-id               token-id
                :contract-address       contract-address
-               :test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])})]]]})))
+               :test-networks-enabled? (profile/testnet? db)})]]]})))

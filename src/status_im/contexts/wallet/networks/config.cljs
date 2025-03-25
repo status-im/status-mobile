@@ -5,26 +5,34 @@
     [quo.foundations.resources :as resources]
     [status-im.contexts.wallet.networks.validation :as validation]))
 
-(def ethereum-chain-id 1)
-(def sepolia-chain-id 11155111)
+;; NOTE: Add chain-ids below
 
-(def arbitrum-chain-id 42161)
-(def arbitrum-sepolia-chain-id 421614)
+(def ^:const ethereum-chain-id 1)
+(def ^:const sepolia-chain-id 11155111)
 
-(def optimism-chain-id 10)
-(def optimism-sepolia-chain-id 11155420)
+(def ^:const arbitrum-chain-id 42161)
+(def ^:const arbitrum-sepolia-chain-id 421614)
 
-(def base-chain-id 8453)
-(def base-sepolia-chain-id 84532)
+(def ^:const optimism-chain-id 10)
+(def ^:const optimism-sepolia-chain-id 11155420)
 
-(def status-sepolia-chain-id 1660990954)
+(def ^:const base-chain-id 8453)
+(def ^:const base-sepolia-chain-id 84532)
 
-(def new-networks
+(def ^:const status-sepolia-chain-id 1660990954)
+
+;; NOTE: if the network should be highlighted as "new" in the UI, add
+;; the chain id to `new-networks`. Otherwise, remove if no longer "new".
+
+(def ^:const new-networks
   #{base-chain-id
     base-sepolia-chain-id
     status-sepolia-chain-id})
 
-(def mainnets
+;; NOTE: add client-side chain details below for `mainnet` and `testnet`
+;; respectively.
+
+(def ^:const mainnets
   {ethereum-chain-id
    {:network-name        :mainnet
     :source              (resources/get-network :mainnet)
@@ -49,7 +57,7 @@
     :abbreviated-name    "Base"
     :block-explorer-name "Basescan"}})
 
-(def testnets
+(def ^:const testnets
   {sepolia-chain-id
    (get mainnets ethereum-chain-id)
 
@@ -68,10 +76,11 @@
     :abbreviated-name    "Stat."
     :block-explorer-name "Status Explorer"}})
 
-(def networks
+(def ^:const networks
   (merge mainnets testnets))
 
 ;; NOTE: runs schema validation over all the networks only in debug
 ;; mode to make sure the networks are defined correctly
+
 (when ^boolean js/goog.DEBUG
   (map validation/validate-network networks))

@@ -1,5 +1,6 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.events
   (:require
+    [status-im.contexts.profile.data-store :as profile]
     [status-im.contexts.wallet.data-store :as data-store]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -8,7 +9,7 @@
 (defn save-address
   [{:keys [db]}
    [{:keys [address name customization-color on-success on-error ens]}]]
-  (let [test-networks-enabled? (boolean (get-in db [:profile/profile :test-networks-enabled?]))
+  (let [test-networks-enabled? (profile/testnet? db)
         address-to-save        {:address address
                                 :name    name
                                 :colorId customization-color
@@ -65,8 +66,8 @@
 (rf/reg-event-fx :wallet/get-saved-addresses get-saved-addresses)
 
 (defn delete-saved-address-success
-  [{:keys [db]} [{:keys [address test-networks-enabled? toast-message]}]]
-  (let [db-key        (if test-networks-enabled? :test :prod)
+  [{:keys [db]} [{:keys [address toast-message]}]]
+  (let [db-key        (if (profile/testnet? db) :test :prod)
         saved-address (get-in db [:wallet :saved-addresses db-key address])]
     {:fx [[:dispatch [:wallet/reconcile-saved-addresses [(assoc saved-address :removed? true)]]]
           [:dispatch [:hide-bottom-sheet]]
@@ -93,14 +94,13 @@
 
 (defn delete-saved-address
   [{:keys [db]} [{:keys [address toast-message]}]]
-  (let [test-networks-enabled? (boolean (get-in db [:profile/profile :test-networks-enabled?]))]
+  (let [test-networks-enabled? (profile/testnet? db)]
     {:fx [[:json-rpc/call
            [{:method     "wakuext_deleteSavedAddress"
              :params     [address test-networks-enabled?]
              :on-success [:wallet/delete-saved-address-success
-                          {:address                address
-                           :test-networks-enabled? test-networks-enabled?
-                           :toast-message          toast-message}]
+                          {:address       address
+                           :toast-message toast-message}]
              :on-error   [:wallet/delete-saved-address-failed]}]]]}))
 
 (rf/reg-event-fx :wallet/delete-saved-address delete-saved-address)
@@ -145,7 +145,7 @@
 
 (defn check-remaining-capacity-for-saved-addresses
   [{:keys [db]} [{:keys [on-success on-error]}]]
-  (let [test-networks-enabled? (boolean (get-in db [:profile/profile :test-networks-enabled?]))]
+  (let [test-networks-enabled? (profile/testnet? db)]
     {:fx [[:json-rpc/call
            [{:method     "wakuext_remainingCapacityForSavedAddresses"
              :params     [test-networks-enabled?]

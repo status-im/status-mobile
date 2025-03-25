@@ -7,6 +7,7 @@
     [status-im.common.keychain.events :as keychain]
     [status-im.config :as config]
     [status-im.constants :as constants]
+    [status-im.contexts.profile.data-store :as profile]
     status-im.contexts.profile.login.effects
     [status-im.contexts.profile.rpc :as profile.rpc]
     [taoensso.timbre :as log]
@@ -270,7 +271,7 @@
 (rf/reg-event-fx
  :profile/show-testnet-mode-banner-if-enabled
  (fn [{:keys [db]}]
-   (when (and (get-in db [:profile/profile :test-networks-enabled?])
+   (when (and (profile/testnet? db)
               config/enable-alert-banner?)
      {:fx [[:dispatch
             [:alert-banners/add

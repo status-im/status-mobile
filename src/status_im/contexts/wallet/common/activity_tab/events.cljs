@@ -32,7 +32,7 @@
  :wallet/fetch-activities-for-current-account
  (fn [{:keys [db]}]
    (let [address   (get-in db [:wallet :current-viewing-account-address])
-         chain-ids (networks/chain-ids db)
+         chain-ids (networks/get-chain-ids db)
          params    [[address] chain-ids (create-default-filters) limit-per-request]]
      {:db (-> db
               (update-in [:wallet :ui :activity-tab :request] dissoc :request-id)

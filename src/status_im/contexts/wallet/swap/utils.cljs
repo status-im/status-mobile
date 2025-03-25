@@ -41,12 +41,11 @@
    about token needs to be extracted from the database.
    That happens when token is being selected on the home screen and
    it basically indicates that no account pre-selection was made."
-  [{:keys [wallet account test-networks-enabled? token-symbol]}]
-  (let [networks (get-in wallet [:networks (if test-networks-enabled? :test :prod)])
-        token    (->> account
-                      :tokens
-                      (filter #(= token-symbol (:symbol %)))
-                      first)]
+  [{:keys [networks account token-symbol]}]
+  (let [token (->> account
+                   :tokens
+                   (filter #(= token-symbol (:symbol %)))
+                   first)]
     (assoc token
            :networks
            (network-utils/network-list-with-positive-balance

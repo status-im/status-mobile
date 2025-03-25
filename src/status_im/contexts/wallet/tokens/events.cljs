@@ -20,7 +20,7 @@
 
 (defn store-token-list
   [{:keys [db]} [{:keys [data]}]]
-  (let [chain-ids                  (networks/chain-ids db)
+  (let [chain-ids                  (networks/get-chain-ids db)
         profile-currency           (get-in db [:profile/profile :currency])
         tokens                     (reduce (fn [{:keys [by-address by-symbol] :as data}
                                                 {:keys [name source version tokens]}]

@@ -4,6 +4,7 @@
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.data-store :as data-store]
             [status-im.contexts.wallet.db-path :as db-path]
+            [status-im.contexts.wallet.networks.core :as networks]
             [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
             [status-im.contexts.wallet.swap.utils :as swap-utils]
@@ -15,7 +16,6 @@
 (rf/reg-event-fx :wallet.swap/start
  (fn [{:keys [db]} [{:keys [network asset-to-receive open-new-screen? from-account] :as data}]]
    (let [{:keys [wallet]}       db
-         test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
          view-id                (:view-id db)
          root-screen?           (or (= view-id :wallet-stack) (nil? view-id))
          available-accounts     (utils/get-accounts-with-token-balance (:accounts wallet)
@@ -26,19 +26,17 @@
          asset-to-pay           (if (and (not from-account) (get-in data [:asset-to-pay :networks]))
                                   (:asset-to-pay data)
                                   (swap-utils/select-asset-to-pay-by-symbol
-                                   {:wallet                 wallet
-                                    :account                account
-                                    :test-networks-enabled? test-networks-enabled?
-                                    :token-symbol           (get-in data [:asset-to-pay :symbol])}))
+                                   {:networks     (networks/get-networks db)
+                                    :account      account
+                                    :token-symbol (get-in data [:asset-to-pay :symbol])}))
          received-asset         (if-not (nil? asset-to-receive)
                                   asset-to-receive
                                   (swap-utils/select-asset-to-pay-by-symbol
-                                   {:wallet                 wallet
-                                    :account                account
-                                    :test-networks-enabled? test-networks-enabled?
-                                    :token-symbol           (if (= (:symbol asset-to-pay) "SNT")
-                                                              "ETH"
-                                                              "SNT")}))
+                                   {:networks     (networks/get-networks db)
+                                    :account      account
+                                    :token-symbol (if (= (:symbol asset-to-pay) "SNT")
+                                                    "ETH"
+                                                    "SNT")}))
          multi-account-balance? (-> available-accounts
                                     (count)
                                     (> 1))
@@ -136,9 +134,7 @@
   (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
         {:keys [asset-to-pay asset-to-receive
                 network]}       (get-in db db-path/swap)
-        test-networks-enabled?  (get-in db [:profile/profile :test-networks-enabled?])
-        networks                ((if test-networks-enabled? :test :prod)
-                                 (get-in db [:wallet :networks]))
+        networks                (networks/get-networks db)
         network-chain-ids       (map :chain-id networks)
         pay-token-decimal       (:decimals asset-to-pay)
         pay-token-id            (:symbol asset-to-pay)

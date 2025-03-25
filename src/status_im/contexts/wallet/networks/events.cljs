@@ -15,12 +15,11 @@
 (rf/reg-event-fx
  :wallet/get-ethereum-chains-success
  (fn [{:keys [db]} [data]]
-   (let [network-data           (rpc-data-store.networks/rpc->networks data)
-         networks-by-id         (rpc-data-store.networks/networks-by-id network-data)
-         test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
-         default-network-names  (->> (get network-data (if test-networks-enabled? :test :prod))
-                                     (map :network-name)
-                                     set)]
+   (let [network-data          (rpc-data-store.networks/rpc->networks data)
+         networks-by-id        (rpc-data-store.networks/networks-by-id network-data)
+         default-network-names (->> (networks/get-networks db)
+                                    (map :network-name)
+                                    set)]
      {:db (-> db
               (assoc-in [:wallet :networks] network-data)
               (assoc-in [:wallet :networks-by-id] networks-by-id)

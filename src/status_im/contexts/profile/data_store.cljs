@@ -6,4 +6,4 @@
 
 (defn testnet?
   [db]
-  (get-in db [:profile/profile :test-networks-enabled?]))
+  (boolean (get-in db [:profile/profile :test-networks-enabled?])))

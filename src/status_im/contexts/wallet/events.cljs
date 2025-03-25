@@ -7,6 +7,7 @@
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     [status-im.contexts.network.data-store :as network.data-store]
+    [status-im.contexts.profile.data-store :as profile]
     [status-im.contexts.settings.wallet.effects]
     [status-im.contexts.settings.wallet.events]
     [status-im.contexts.wallet.common.activity-tab.events]
@@ -384,10 +385,7 @@
                                         (filter #(not= (:balance %) "0")
                                                 (vals (:balances-per-chain token))))
          balance-in-only-one-network? (when networks-with-balance (= (count networks-with-balance) 1))
-         test-networks-enabled?       (get-in db [:profile/profile :test-networks-enabled?])
-         network-details              (get-in db
-                                              [:wallet :networks
-                                               (if test-networks-enabled? :test :prod)])
+         network-details              (networks/get-networks db)
          network                      (if balance-in-only-one-network?
                                         (first (filter #(= (:chain-id %)
                                                            (:chain-id (first networks-with-balance)))
@@ -576,14 +574,8 @@
          down-chain-ids         (-> (select-keys chains
                                                  (for [[k v] chains :when (= v "down")] k))
                                     keys)
-         test-networks-enabled? (get-in db [:profile/profile :test-networks-enabled?])
-         networks               (->> (get-in db
-                                             [:wallet :networks
-                                              (if test-networks-enabled? :test :prod)])
-                                     (map :chain-id))
-         chain-ids              (->> networks
-                                     (map :chain-id)
-                                     set)
+         test-networks-enabled? (profile/testnet? db)
+         chain-ids              (networks/get-chain-ids db)
          chains-filtered        (remove #(not (contains? chain-ids %)) down-chain-ids)
          chains-down?           (and (network.data-store/online? db) (seq chains-filtered))
          chain-names            (when chains-down?

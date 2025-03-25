@@ -7,10 +7,8 @@
 
 (defn network->chain-id
   ([db network-name]
-   (let [testnet? (get-in db [:profile/profile :test-networks-enabled?])
-         networks (get-in db [:wallet :networks (networks/get-testnet-mode-key testnet?)])]
-     (network->chain-id {:network-name network-name
-                         :networks     networks})))
+   (network->chain-id {:network-name network-name
+                       :networks     (networks/get-networks db)}))
   ([{:keys [network-name networks]}]
    (let [network-name (keyword network-name)]
      (some->>

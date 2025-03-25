@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [status-im.common.json-rpc.events :as json-rpc]
             [status-im.constants :as constants]
+            [status-im.contexts.profile.data-store :as profile]
             status-im.contexts.profile.settings.effects
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
@@ -39,7 +40,7 @@
 
 (rf/reg-event-fx :profile.settings/toggle-test-networks
  (fn [{:keys [db]}]
-   (let [test-networks-disabled? (not (get-in db [:profile/profile :test-networks-enabled?]))]
+   (let [test-networks-disabled? (not (profile/testnet? db))]
      {:fx [[:ui/show-confirmation
             {:title     (i18n/label :t/testnet-mode-prompt-title)
              :content   (i18n/label :t/testnet-mode-prompt-content)
