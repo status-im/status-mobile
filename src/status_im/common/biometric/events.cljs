@@ -59,11 +59,21 @@
 
 (rf/reg-event-fx :biometric/enable enable-biometrics)
 
+(defn enable-biometrics-keycard
+  [{:keys [db]} [keycard-keys]]
+  {:db (assoc db :auth-method constants/auth-method-biometric)
+   :fx [[:dispatch [:keychain/save-keycard-keys-and-auth-method keycard-keys]]]})
+
+(rf/reg-event-fx :biometric/enable-keycard enable-biometrics-keycard)
+
 (defn disable-biometrics
   [{:keys [db]}]
-  (let [key-uid (get-in db [:profile/profile :key-uid])]
+  (let [key-uid          (get-in db [:profile/profile :key-uid])
+        keycard-profile? (not (nil? (get-in db [:profile/profile :keycard-pairing])))]
     {:db (assoc db :auth-method constants/auth-method-none)
-     :fx [[:keychain/clear-user-password key-uid]]}))
+     :fx [(if keycard-profile?
+            [:keychain/clear-keycard-keys key-uid]
+            [:keychain/clear-user-password key-uid])]}))
 
 (rf/reg-event-fx :biometric/disable disable-biometrics)
 

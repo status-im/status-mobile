@@ -50,3 +50,11 @@
    :border-radius     border-radius
    :margin-horizontal 8
    :background-color  (colors/theme-colors colors/white colors/neutral-90 theme)})
+
+(def drag-handle
+  {:height   50
+   :position :absolute
+   :top      0
+   :left     0
+   :right    0
+   :z-index  2})
