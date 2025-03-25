@@ -363,10 +363,15 @@
                       :text-movement-threshold text-movement-threshold})]
     [rn/view {:style style/community-name-and-description}
      [reanimated/view {:style name-styles}
-      [quo/text {:weight :semi-bold :size :heading-1 :number-of-lines 1}
+      [quo/text {:accessibility-label :community-title
+                 :weight              :semi-bold
+                 :size                :heading-1
+                 :number-of-lines     2}
        community-name]]
      [reanimated/view {:style [{:opacity 0} info-styles]}
-      [quo/text {:weight :regular :size :paragraph-1}
+      [quo/text {:accessibility-label :community-description
+                 :weight              :regular
+                 :size                :paragraph-1}
        community-description]]]))
 
 (defn- community-info-tags
