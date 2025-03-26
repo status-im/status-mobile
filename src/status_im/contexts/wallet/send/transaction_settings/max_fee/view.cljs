@@ -6,31 +6,31 @@
     [utils.re-frame :as rf]))
 
 (defn hint-and-status
-  [max-base-fee-from-route priority-fee entered-value]
+  [network-base-fee priority-fee entered-value]
   (cond
-    (> entered-value (* 1.1 max-base-fee-from-route)) {:hint-text (i18n/label :t/max-base-fee-higher
-                                                                              {:current
-                                                                               max-base-fee-from-route})
-                                                       :status    :warning}
-    (< entered-value priority-fee)                    {:hint-text (i18n/label :t/max-base-fee-lower
-                                                                              {:priority-fee
-                                                                               priority-fee})
-                                                       :status    :error}
-    (< entered-value (* 0.9 max-base-fee-from-route)) {:hint-text (i18n/label
-                                                                   :t/max-base-fee-lower-recommended
-                                                                   {:current max-base-fee-from-route})
-                                                       :status    :warning}
-    :else                                             {:hint-text (i18n/label
-                                                                   :t/max-base-fee-current
-                                                                   {:current max-base-fee-from-route})
-                                                       :status    :default}))
+    (> entered-value (* 1.1 network-base-fee)) {:hint-text (i18n/label :t/max-base-fee-higher
+                                                                       {:current
+                                                                        network-base-fee})
+                                                :status    :warning}
+    (< entered-value priority-fee)             {:hint-text (i18n/label :t/max-base-fee-lower
+                                                                       {:priority-fee
+                                                                        priority-fee})
+                                                :status    :error}
+    (< entered-value (* 0.9 network-base-fee)) {:hint-text (i18n/label
+                                                            :t/max-base-fee-lower-recommended
+                                                            {:current network-base-fee})
+                                                :status    :warning}
+    :else                                      {:hint-text (i18n/label
+                                                            :t/max-base-fee-current
+                                                            {:current network-base-fee})
+                                                :status    :default}))
 
 (defn view
   []
-  (let [max-base-fee-from-route (rf/sub [:wallet.send/tx-settings-max-base-fee-route])
-        max-base-fee            (rf/sub [:wallet.send/tx-settings-max-base-fee])
-        priority-fee            (rf/sub [:wallet.send/tx-settings-priority-fee])
-        conditions              (partial hint-and-status max-base-fee-from-route priority-fee)]
+  (let [network-base-fee (rf/sub [:wallet.send/tx-settings-network-base-fee-route])
+        max-base-fee     (rf/sub [:wallet.send/tx-settings-max-base-fee])
+        priority-fee     (rf/sub [:wallet.send/tx-settings-priority-fee])
+        conditions       (partial hint-and-status network-base-fee priority-fee)]
     [transaction-settings/custom-setting-screen
      {:screen-title  (i18n/label :t/max-base-fee)
       :token-sybmol  :gwei

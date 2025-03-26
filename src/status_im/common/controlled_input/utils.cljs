@@ -149,7 +149,11 @@
 
 (defn empty-value?
   [state]
-  (or (string/blank? (:value state)) (<= (value-numeric state) 0)))
+  (string/blank? (:value state)))
+
+(defn zero-or-negative-value?
+  [state]
+  (<= (value-numeric state) 0))
 
 (defn- fiat->crypto
   [value conversion-rate]

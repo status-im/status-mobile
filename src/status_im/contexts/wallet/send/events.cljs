@@ -99,7 +99,6 @@
                          :loading-suggested-routes? false
                          :enough-assets?            true)})))))
 
-
 (rf/reg-event-fx
  :wallet/suggested-routes-error
  (fn [{:keys [db]} [error-message]]

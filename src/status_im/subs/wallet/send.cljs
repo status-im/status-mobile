@@ -249,6 +249,12 @@
    (:base-fee gas-fees)))
 
 (rf/reg-sub
+ :wallet.send/tx-settings-network-base-fee-route
+ :<- [:wallet.send/tx-settings-gas-fees]
+ (fn [gas-fees]
+   (:network-base-fee gas-fees)))
+
+(rf/reg-sub
  :wallet.send/tx-settings-gas-amount-route
  :<- [:wallet/send-route]
  (fn [route]

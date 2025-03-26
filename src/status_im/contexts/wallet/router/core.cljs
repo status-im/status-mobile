@@ -95,10 +95,12 @@
   (let [{:keys [tx-base-fee tx-priority-fee
                 tx-l-1-fee tx-max-fees-per-gas
                 suggested-min-priority-fee
-                suggested-max-priority-fee]} route]
+                suggested-max-priority-fee
+                current-base-fee]} route]
     {:gas-price                  "0"
      :eip-1559-enabled           true
      :base-fee                   (to-gwei tx-base-fee)
+     :network-base-fee           (to-gwei current-base-fee)
      :tx-priority-fee            (to-gwei tx-priority-fee)
      :l-1-gas-fee                (to-gwei tx-l-1-fee)
      :tx-max-fees-per-gas        (to-gwei tx-max-fees-per-gas)
@@ -112,6 +114,7 @@
     [:gas-price :string]
     [:eip-1559-enabled :boolean]
     [:base-fee :string]
+    [:network-base-fee :string]
     [:tx-priority-fee :string]
     [:l-1-gas-fee :string]
     [:tx-max-fees-per-gas :string]
