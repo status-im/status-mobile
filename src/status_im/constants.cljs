@@ -529,3 +529,5 @@
 (def ^:const go-waku-url "https://github.com/waku-org/go-waku")
 (def ^:const status-go-url "https://github.com/status-im/status-go")
 (def ^:const status-mobile-url "https://github.com/status-im/status-mobile")
+
+(def ^:const wc-connection-string-identifier "wc")
