@@ -1,8 +1,8 @@
 (ns status-im.contexts.communities.overview.view
   (:require
     [oops.core :as oops]
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
@@ -131,7 +131,7 @@
    {collapsed?    :collapsed?
     category-name :name
     category-id   :id}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style         (style/category-divider theme)
       :blur-amount   20
@@ -225,7 +225,7 @@
 
 (defn- channel-listing
   [{:keys [community-id scroll-amount header-height set-max-scroll]}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         channels-styles        (worklets/use-channels-styles
                                 {:scroll-amount                scroll-amount
                                  :header-height                header-height
@@ -271,7 +271,7 @@
 
 (defn- header-cover-image
   [{:keys [cover-image background-color header-opacity]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style (style/header-cover-image background-color)}
      [reanimated/image {:style style/cover-image :source {:uri cover-image}}]
      [reanimated/view {:style (style/cover-image-blur-container header-opacity)}
@@ -342,7 +342,7 @@
 
 (defn- community-logo
   [{:keys [scroll-amount community-id]}]
-  (let [theme          (quo.theme/use-theme)
+  (let [theme          (quo.context/use-theme)
         logo-styles    (worklets/use-logo-styles
                         {:scroll-amount                scroll-amount
                          :expand-header-threshold      expand-header-threshold
@@ -400,7 +400,7 @@
 
 (defn- community-info
   [{:keys [scroll-amount header-height community-id]}]
-  (let [theme             (quo.theme/use-theme)
+  (let [theme             (quo.context/use-theme)
         sheet-styles      (worklets/use-sheet-styles
                            {:scroll-amount                scroll-amount
                             :expand-header-threshold      expand-header-threshold
@@ -494,7 +494,7 @@
 
 (defn- community-fetching-placeholder
   [id]
-  (let [theme     (quo.theme/use-theme)
+  (let [theme     (quo.context/use-theme)
         top-inset (safe-area/get-top)
         fetching? (rf/sub [:communities/fetching-community id])]
     [rn/view
