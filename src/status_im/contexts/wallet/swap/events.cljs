@@ -26,13 +26,13 @@
          asset-to-pay           (if (and (not from-account) (get-in data [:asset-to-pay :networks]))
                                   (:asset-to-pay data)
                                   (swap-utils/select-asset-to-pay-by-symbol
-                                   {:networks     (networks.db/get-networks db)
+                                   {:networks     (networks.db/get-active-networks db)
                                     :account      account
                                     :token-symbol (get-in data [:asset-to-pay :symbol])}))
          received-asset         (if-not (nil? asset-to-receive)
                                   asset-to-receive
                                   (swap-utils/select-asset-to-pay-by-symbol
-                                   {:networks     (networks.db/get-networks db)
+                                   {:networks     (networks.db/get-active-networks db)
                                     :account      account
                                     :token-symbol (if (= (:symbol asset-to-pay) "SNT")
                                                     "ETH"
@@ -134,7 +134,7 @@
   (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
         {:keys [asset-to-pay asset-to-receive
                 network]}       (get-in db db-path/swap)
-        networks                (networks.db/get-networks db)
+        networks                (networks.db/get-active-networks db)
         network-chain-ids       (map :chain-id networks)
         pay-token-decimal       (:decimals asset-to-pay)
         pay-token-id            (:symbol asset-to-pay)

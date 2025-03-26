@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.networks.core
   (:require [status-im.contexts.wallet.networks.config :as networks.config]
+            [status-im.contexts.wallet.networks.filter :as networks.filter]
             [utils.url :as url]))
 
 (defn get-chain-id
@@ -34,3 +35,40 @@
   (-> network
       :block-explorer-url
       (url/add-path :address address)))
+
+(defn get-networks-for-layer
+  "Returns networks for the layer (`1` or `2`)"
+  [networks layer]
+  (keep (fn [network]
+          (when (= layer (:layer network))
+            network))
+        networks))
+
+(defn get-active-networks
+  "Returns only active networks"
+  [networks]
+  (keep #(when (:active? %) %) networks))
+
+(defn get-active-chain-ids
+  "Returns only active network chain-ids"
+  [networks]
+  (->> networks
+       get-active-networks
+       (map :chain-id)
+       set))
+
+(defn get-max-active-networks
+  []
+  networks.config/max-active-networks)
+
+(defn get-filtered-networks
+  [networks network-filter]
+  (-> networks
+      (networks.filter/by-id network-filter)))
+
+(defn get-filtered-chain-ids
+  [networks network-filter]
+  (->> network-filter
+       (get-filtered-networks networks)
+       (map :chain-id)
+       set))

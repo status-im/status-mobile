@@ -24,7 +24,7 @@
 (defn- collectibles-tab
   []
   (let [updating?        (rf/sub [:wallet/home-tab-collectibles-updating?])
-        collectible-list (rf/sub [:wallet/owned-collectibles-list-in-selected-networks])]
+        collectible-list (rf/sub [:wallet/owned-collectibles-list-in-filtered-networks])]
     [collectibles/view
      {:loading?                  updating?
       :collectibles              collectible-list

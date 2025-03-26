@@ -30,11 +30,11 @@
 (rf/reg-sub
  :wallet-connect/session-proposal-network-details
  :<- [:wallet-connect/session-proposal-networks]
- :<- [:wallet/network-details]
- (fn [[session-networks network-details]]
-   (let [supported-networks       (map :chain-id network-details)
+ :<- [:wallet/networks]
+ (fn [[session-networks networks]]
+   (let [supported-networks       (map :chain-id networks)
          session-networks         (filterv #(contains? (set session-networks) (:chain-id %))
-                                           network-details)
+                                           networks)
          all-networks-in-session? (= (count supported-networks) (count session-networks))]
      {:session-networks         session-networks
       :all-networks-in-session? all-networks-in-session?})))

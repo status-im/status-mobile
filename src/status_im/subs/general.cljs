@@ -1,7 +1,6 @@
 (ns status-im.subs.general
   (:require
     [clojure.string :as string]
-    [legacy.status-im.utils.build :as build]
     [re-frame.core :as re-frame]
     [status-im.subs.chat.utils :as chat.utils]
     [utils.ethereum.chain :as chain]))
@@ -89,14 +88,6 @@
 (defn- node-version
   [web3-node-version]
   (or web3-node-version "N/A"))
-
-(re-frame/reg-sub
- :get-app-short-version
- (fn [_] build/app-short-version))
-
-(re-frame/reg-sub
- :get-commit-hash
- (fn [_] build/commit-hash))
 
 (re-frame/reg-sub
  :get-app-node-version

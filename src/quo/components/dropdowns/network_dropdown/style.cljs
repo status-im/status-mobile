@@ -27,3 +27,14 @@
 (def new-chain-indicator
   {:position :absolute
    :right    0})
+
+(def single-network-container
+  {:flex-direction  :row
+   :align-items     :center
+   :justify-content :center
+   :margin-right    4})
+
+(def filtered-container
+  {:flex-direction  :row
+   :align-items     :center
+   :justify-content :center})

@@ -11,7 +11,7 @@
     [utils.re-frame :as rf]))
 
 (defn chain-explorer-options
-  [address network-details]
+  [address networks]
   (map (fn [{:keys [chain-id block-explorer-name]}]
          {:icon                :i/link
           :accessibility-label :view-on-block-explorer
@@ -20,15 +20,15 @@
           :right-icon          :i/external
           :on-press            #(rf/dispatch
                                  [:wallet/navigate-to-chain-explorer chain-id address])})
-       network-details))
+       networks))
 
 (defn about-options
   []
   (let [{:keys [address] :as account} (rf/sub [:wallet/current-viewing-account])
-        network-details               (rf/sub [:wallet/network-details])
+        networks                      (rf/sub [:wallet/active-networks])
         share-title                   (str (:name account) " " (i18n/label :t/address))]
     [quo/action-drawer
-     [(concat (chain-explorer-options address network-details)
+     [(concat (chain-explorer-options address networks)
               [{:icon                :i/copy
                 :accessibility-label :copy-address
                 :label               (i18n/label :t/copy-address)

@@ -10,12 +10,6 @@
   {:padding-top    12
    :padding-bottom 2})
 
-(defn right-counter-text
-  [blur? theme]
-  {:color (if blur?
-            (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
-            (colors/theme-colors colors/neutral-40 colors/neutral-50 theme))})
-
 (defn right-tag-icon-color
   [blur? theme]
   (if blur?

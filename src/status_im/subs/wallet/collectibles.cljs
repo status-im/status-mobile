@@ -53,9 +53,16 @@
        collectible-utils/sort-collectibles-by-name)))
 
 (re-frame/reg-sub
- :wallet/current-viewing-account-collectibles-in-selected-networks
+ :wallet/current-viewing-account-collectibles-in-active-networks
  :<- [:wallet/current-viewing-account-collectibles]
- :<- [:wallet/selected-networks->chain-ids]
+ :<- [:wallet/active-chain-ids]
+ (fn [[collectibles chain-ids]]
+   (filter-collectibles-in-chains collectibles chain-ids)))
+
+(re-frame/reg-sub
+ :wallet/current-viewing-account-collectibles-in-filtered-networks
+ :<- [:wallet/current-viewing-account-collectibles]
+ :<- [:wallet/filtered-chain-ids]
  (fn [[collectibles chain-ids]]
    (filter-collectibles-in-chains collectibles chain-ids)))
 
@@ -79,11 +86,30 @@
           (collectible-utils/sort-collectibles-by-name)))))
 
 (re-frame/reg-sub
- :wallet/owned-collectibles-list-in-selected-networks
+ :wallet/owned-collectibles-list-in-filtered-networks
  :<- [:wallet/owned-collectibles-list]
- :<- [:wallet/selected-networks->chain-ids]
+ :<- [:wallet/filtered-chain-ids]
  (fn [[all-collectibles chain-ids]]
    (filter-collectibles-in-chains all-collectibles chain-ids)))
+
+(re-frame/reg-sub
+ :wallet/owned-collectibles-list-in-active-networks
+ :<- [:wallet/owned-collectibles-list]
+ :<- [:wallet/active-chain-ids]
+ (fn [[all-collectibles chain-ids]]
+   (filter-collectibles-in-chains all-collectibles chain-ids)))
+
+(re-frame/reg-sub
+ :wallet/collectibles-by-network
+ :<- [:wallet/owned-collectibles-list-in-active-networks]
+ (fn [collectibles]
+   (group-by (comp :chain-id :contract-id :id) collectibles)))
+
+(re-frame/reg-sub
+ :wallet/current-account-collectibles-by-network
+ :<- [:wallet/current-viewing-account-collectibles-in-active-networks]
+ (fn [collectibles]
+   (group-by (comp :chain-id :contract-id :id) collectibles)))
 
 (re-frame/reg-sub
  :wallet/current-viewing-account-collectibles-filtered

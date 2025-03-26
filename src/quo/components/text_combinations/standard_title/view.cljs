@@ -1,6 +1,7 @@
 (ns quo.components.text-combinations.standard-title.view
   (:require [clojure.string :as string]
             [quo.components.buttons.button.view :as button]
+            [quo.components.counter.fraction-counter.view :as fraction-counter]
             [quo.components.markdown.text :as text]
             [quo.components.tags.tag :as tag]
             [quo.components.text-combinations.standard-title.style :as style]
@@ -8,24 +9,15 @@
             [react-native.core :as rn]
             [utils.number]))
 
-(defn- get-counter-number
-  [n]
-  (let [parsed-number (utils.number/parse-int n)]
-    (if (< n 10)
-      (str "0" parsed-number)
-      parsed-number)))
-
 (defn- right-counter
-  [{:keys [blur? counter-left counter-right]}]
-  (let [theme (quo.context/use-theme)]
-    [rn/view {:style style/right-counter}
-     [text/text
-      {:size   :paragraph-2
-       :weight :regular
-       :style  (style/right-counter-text blur? theme)}
-      (str (get-counter-number counter-left)
-           "/"
-           (get-counter-number counter-right))]]))
+  [{:keys [blur? counter-left counter-right counter-suffix show-counter-warning?]}]
+  [rn/view {:style style/right-counter}
+   [fraction-counter/view
+    {:blur?                 blur?
+     :show-counter-warning? show-counter-warning?
+     :left-value            counter-left
+     :right-value           counter-right
+     :suffix                counter-suffix}]])
 
 (defn- right-action
   [{:keys [customization-color on-press icon]

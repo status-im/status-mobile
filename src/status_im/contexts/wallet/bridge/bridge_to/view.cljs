@@ -15,7 +15,7 @@
 (defn- bridge-token-component
   []
   (fn [{:keys [chain-id network-name]} token]
-    (let [network          (rf/sub [:wallet/network-details-by-chain-id chain-id])
+    (let [network          (rf/sub [:wallet/network-by-id chain-id])
           currency         (rf/sub [:profile/currency])
           currency-symbol  (rf/sub [:profile/currency-symbol])
           prices-per-token (rf/sub [:wallet/prices-per-token])
@@ -42,16 +42,14 @@
 
 (defn view
   []
-  (let [network-details  (rf/sub [:wallet/network-details])
-        account          (rf/sub [:wallet/current-viewing-account])
+  (let [account          (rf/sub [:wallet/current-viewing-account])
         token            (rf/sub [:wallet/wallet-send-token])
         network          (rf/sub [:wallet/send-network])
         network-name     (:full-name network)
         token-symbol     (:symbol token)
         tokens           (:tokens account)
-        mainnet          (first network-details)
-        layer-2-networks (filter #(not= (:chain-id %) (:chain-id network))
-                                 (rest network-details))
+        mainnet          (rf/sub [:wallet/eth-mainnet-network])
+        layer-2-networks (rf/sub [:wallet/layer-2-networks])
         account-token    (some #(when (= token-symbol (:symbol %)) %) tokens)
         account-token    (when account-token
                            (assoc account-token

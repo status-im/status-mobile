@@ -5,7 +5,6 @@
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
-            [status-im.contexts.wallet.networks.core :as networks]
             [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.missing-keypair.view :as missing-keypair]
             [status-im.subs.wallet.add-account.address-to-watch]
@@ -13,25 +12,6 @@
             [utils.money :as money]
             [utils.number]
             [utils.security.core :as security]))
-
-(defn- filter-networks
-  [chain-ids network-details]
-  (filter (fn [{:keys [chain-id]}]
-            (contains? chain-ids chain-id))
-          network-details))
-
-(defn- assoc-network-preferences-names
-  [network-details account testnet?]
-  (let [{:keys [prod-preferred-chain-ids
-                test-preferred-chain-ids]} account
-        current-chain-ids                  (if testnet?
-                                             test-preferred-chain-ids
-                                             prod-preferred-chain-ids)
-        network-preferences-names          (->> network-details
-                                                (filter-networks current-chain-ids)
-                                                (map :network-name)
-                                                (set))]
-    (assoc account :network-preferences-names network-preferences-names)))
 
 (rf/reg-sub
  :wallet/ui
@@ -47,11 +27,6 @@
  :wallet/last-updates-per-address
  :<- [:wallet/ui]
  :-> :last-updates-per-address)
-
-(rf/reg-sub
- :wallet/show-new-chain-indicator?
- :<- [:wallet/ui]
- :-> :show-new-chain-indicator?)
 
 (rf/reg-sub
  :wallet/latest-update
@@ -128,16 +103,6 @@
  :-> :new-keypair)
 
 (rf/reg-sub
- :wallet/network-filter
- :<- [:wallet/ui]
- :-> :network-filter)
-
-(rf/reg-sub
- :wallet/selected-networks
- :<- [:wallet/network-filter]
- :-> :selected-networks)
-
-(rf/reg-sub
  :wallet/current-viewing-account-address
  :<- [:wallet]
  :-> :current-viewing-account-address)
@@ -181,7 +146,7 @@
 (rf/reg-sub
  :wallet/wallet-send-token
  :<- [:wallet/wallet-send]
- :<- [:wallet/network-details]
+ :<- [:wallet/active-networks]
  (fn [[wallet-send networks]]
    (let [token                  (:token wallet-send)
          enabled-from-chain-ids (->> networks
@@ -301,14 +266,6 @@
    (= (get-in keypairs [selected-keypair-uid :type])
       :profile)))
 
-(rf/reg-sub
- :wallet/selected-networks->chain-ids
- :<- [:wallet/selected-networks]
- :<- [:wallet/network-details]
- (fn [[selected-networks networks]]
-   (set (map (partial networks/get-chain-id networks)
-             selected-networks))))
-
 (defn- format-settings-keypair-accounts
   [accounts
    {:keys [networks size]
@@ -369,15 +326,16 @@
  :-> :derivation-path-state)
 
 (rf/reg-sub
- :wallet/accounts
+ :wallet/accounts-by-address
  :<- [:wallet]
- :<- [:wallet/network-details]
- :<- [:profile/test-networks-enabled?]
- (fn [[wallet network-details test-networks-enabled?]]
-   (->> wallet
-        :accounts
+ :-> :accounts)
+
+(rf/reg-sub
+ :wallet/accounts
+ :<- [:wallet/accounts-by-address]
+ (fn [accounts-by-address]
+   (->> accounts-by-address
         vals
-        (map #(assoc-network-preferences-names network-details % test-networks-enabled?))
         (sort-by :position))))
 
 (rf/reg-sub
@@ -401,10 +359,10 @@
            set))
 
 (rf/reg-sub
- :wallet/balances-in-selected-networks
+ :wallet/balances-in-active-networks
  :<- [:wallet/accounts]
  :<- [:profile/currency]
- :<- [:wallet/selected-networks->chain-ids]
+ :<- [:wallet/filtered-chain-ids]
  :<- [:wallet/prices-per-token]
  (fn [[accounts currency chain-ids prices-per-token]]
    (zipmap (map :address accounts)
@@ -416,9 +374,44 @@
                 accounts))))
 
 (rf/reg-sub
+ :wallet/balances-by-network
+ :<- [:wallet/accounts]
+ :<- [:profile/currency]
+ :<- [:wallet/active-chain-ids]
+ :<- [:wallet/prices-per-token]
+ (fn [[accounts currency chain-ids prices-per-token]]
+   (zipmap chain-ids
+           (map (fn [chain-id]
+                  (->> accounts
+                       (reduce (fn [acc {:keys [tokens]}]
+                                 (-> (utils/calculate-balance-from-tokens {:currency currency
+                                                                           :tokens tokens
+                                                                           :chain-ids [chain-id]
+                                                                           :prices-per-token
+                                                                           prices-per-token})
+                                     (money/add acc)))
+                               (money/bignumber 0))))
+                chain-ids))))
+
+(rf/reg-sub
+ :wallet/current-account-balances-by-network
+ :<- [:wallet/current-viewing-account]
+ :<- [:profile/currency]
+ :<- [:wallet/active-chain-ids]
+ :<- [:wallet/prices-per-token]
+ (fn [[current-account currency chain-ids prices-per-token]]
+   (zipmap chain-ids
+           (map (fn [chain-id]
+                  (utils/calculate-balance-from-tokens {:currency         currency
+                                                        :tokens           (:tokens current-account)
+                                                        :chain-ids        [chain-id]
+                                                        :prices-per-token prices-per-token}))
+                chain-ids))))
+
+(rf/reg-sub
  :wallet/account-cards-data
  :<- [:wallet/accounts]
- :<- [:wallet/balances-in-selected-networks]
+ :<- [:wallet/balances-in-active-networks]
  :<- [:wallet/tokens-loading]
  :<- [:network/online?]
  :<- [:profile/currency-symbol]
@@ -454,7 +447,7 @@
  :wallet/current-viewing-account
  :<- [:wallet/accounts]
  :<- [:wallet/current-viewing-account-address]
- :<- [:wallet/balances-in-selected-networks]
+ :<- [:wallet/balances-in-active-networks]
  :<- [:profile/currency-symbol]
  (fn [[accounts current-viewing-account-address balances currency-symbol]]
    (let [balance           (get balances current-viewing-account-address)
@@ -468,7 +461,7 @@
  :wallet/current-viewing-account-or-default
  :<- [:wallet/accounts]
  :<- [:wallet/current-viewing-account-address]
- :<- [:wallet/balances-in-selected-networks]
+ :<- [:wallet/balances-in-active-networks]
  :<- [:profile/currency-symbol]
  (fn [[accounts current-viewing-account-address balances currency-symbol]]
    (let [account           (or (utils/get-account-by-address accounts current-viewing-account-address)
@@ -493,16 +486,16 @@
    (get keypairs key-uid)))
 
 (rf/reg-sub
- :wallet/current-viewing-account-tokens-in-selected-networks
+ :wallet/current-viewing-account-tokens-in-active-networks
  :<- [:wallet/current-viewing-account]
- :<- [:wallet/selected-networks->chain-ids]
+ :<- [:wallet/filtered-chain-ids]
  (fn [[{:keys [tokens]} chain-ids]]
    (utils/filter-tokens-in-chains tokens chain-ids)))
 
 (rf/reg-sub
  :wallet/current-viewing-account-tokens-filtered
  :<- [:wallet/current-viewing-account-or-default]
- :<- [:wallet/network-details]
+ :<- [:wallet/filtered-networks]
  :<- [:wallet/wallet-send]
  :<- [:profile/currency]
  :<- [:wallet/prices-per-token]
@@ -571,7 +564,7 @@
 (rf/reg-sub
  :wallet/token-by-symbol
  :<- [:wallet/current-viewing-account-or-default]
- :<- [:wallet/network-details]
+ :<- [:wallet/networks]
  (fn [[{:keys [tokens]} networks] [_ token-symbol chain-ids]]
    (->> (utils/tokens-with-balance tokens networks chain-ids)
         (filter #(= (string/lower-case (:symbol %))
@@ -582,7 +575,7 @@
  :wallet/token-by-symbol-from-first-available-account-with-balance
  :<- [:wallet/operable-accounts]
  :<- [:wallet/current-viewing-account-or-default]
- :<- [:wallet/network-details]
+ :<- [:wallet/networks]
  (fn [[accounts {:keys [tokens]} networks] [_ token-symbol chain-ids]]
    (when token-symbol
      (or
@@ -675,16 +668,16 @@
    (utils/aggregate-tokens-for-all-accounts accounts)))
 
 (rf/reg-sub
- :wallet/aggregated-tokens-in-selected-networks
+ :wallet/aggregated-tokens-in-active-networks
  :<- [:wallet/aggregated-tokens]
- :<- [:wallet/selected-networks->chain-ids]
+ :<- [:wallet/filtered-chain-ids]
  (fn [[aggregated-tokens chain-ids]]
    (utils/filter-tokens-in-chains aggregated-tokens chain-ids)))
 
 (rf/reg-sub
  :wallet/current-viewing-account-token-values
  :<- [:wallet/current-viewing-account]
- :<- [:wallet/current-viewing-account-tokens-in-selected-networks]
+ :<- [:wallet/current-viewing-account-tokens-in-active-networks]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  :<- [:wallet/prices-per-token]
@@ -699,7 +692,7 @@
 
 (rf/reg-sub
  :wallet/aggregated-token-values-and-balance
- :<- [:wallet/aggregated-tokens-in-selected-networks]
+ :<- [:wallet/aggregated-tokens-in-active-networks]
  :<- [:profile/customization-color]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
@@ -737,19 +730,6 @@
    (map (fn [{:keys [color] :as account}]
           (assoc account :customization-color color))
         accounts)))
-
-(rf/reg-sub
- :wallet/preferred-chains-for-address
- :<- [:wallet/accounts]
- :<- [:wallet/network-details]
- :<- [:profile/test-networks-enabled?]
- (fn [[accounts network-details test-networks-enabled?] [_ address]]
-   (let [preferred-chains-ids (some #(when (= (:address %) address)
-                                       (if test-networks-enabled?
-                                         (:test-preferred-chain-ids %)
-                                         (:prod-preferred-chain-ids %)))
-                                    accounts)]
-     (filter #(preferred-chains-ids (:chain-id %)) network-details))))
 
 (rf/reg-sub
  :wallet/transactions

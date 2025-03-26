@@ -1,5 +1,4 @@
 (ns quo.core
-  (:refer-clojure :exclude [filter])
   (:require
     quo.components.animated-header-flatlist.view
     quo.components.avatars.account-avatar.view
@@ -33,6 +32,9 @@
     quo.components.code.snippet.view
     quo.components.colors.color-picker.view
     quo.components.colors.color.view
+    quo.components.common.dot-separator
+    quo.components.common.list.view
+    quo.components.common.new-feature-gradient
     quo.components.common.notification-dot.view
     quo.components.common.separator.view
     quo.components.community.banner.view
@@ -47,6 +49,7 @@
     quo.components.community.icon
     quo.components.counter.collectible-counter.view
     quo.components.counter.counter.view
+    quo.components.counter.fraction-counter.view
     quo.components.counter.step.view
     quo.components.dividers.date
     quo.components.dividers.divider-label.view
@@ -194,9 +197,14 @@
     quo.components.wallet.transaction-progress.view
     quo.components.wallet.transaction-summary.view
     quo.components.wallet.wallet-activity.view
-    quo.components.wallet.wallet-overview.view))
+    quo.components.wallet.wallet-overview.view)
+  (:refer-clojure :exclude [filter]))
 
+;; Common
 (def separator quo.components.common.separator.view/separator)
+(def new-feature-gradient quo.components.common.new-feature-gradient/view)
+(def item-list quo.components.common.list.view/view)
+(def dot-separator quo.components.common.dot-separator/view)
 
 ;;;; Avatar
 (def account-avatar quo.components.avatars.account-avatar.view/view)
@@ -263,6 +271,7 @@
 
 ;;;; Counter
 (def collectible-counter quo.components.counter.collectible-counter.view/view)
+(def fraction-counter quo.components.counter.fraction-counter.view/view)
 (def counter quo.components.counter.counter.view/view)
 (def step #'quo.components.counter.step.view/view)
 

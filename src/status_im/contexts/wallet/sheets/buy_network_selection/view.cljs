@@ -46,9 +46,8 @@
   []
   (let [provider         (rf/sub [:wallet/wallet-buy-crypto-provider])
         account          (rf/sub [:wallet/wallet-buy-crypto-account])
-        network-details  (rf/sub [:wallet/network-details])
-        mainnet-network  (first network-details)
-        layer-2-networks (rest network-details)
+        mainnet-network  (rf/sub [:wallet/eth-mainnet-network])
+        layer-2-networks (rf/sub [:wallet/layer-2-networks])
         render-fn        (rn/use-callback (fn [network]
                                             [network-item
                                              {:network network

@@ -3,21 +3,14 @@
     [cljs.test :refer [is testing use-fixtures]]
     [re-frame.db :as rf-db]
     [status-im.contexts.wallet.db-path :as db-path]
-    [status-im.contexts.wallet.networks.config :as networks.config]
     [status-im.subs.root]
     [test-helpers.unit :as h]
+    [tests.wallet-test-data :as test-data]
     [utils.money :as money]
     [utils.re-frame :as rf]))
 
 (use-fixtures :each
               {:before #(reset! rf-db/app-db {})})
-
-(def mainnet-chain-id networks.config/ethereum-chain-id)
-(def optimism-chain-id networks.config/optimism-chain-id)
-(def arbitrum-chain-id networks.config/arbitrum-chain-id)
-(def mainnet-name (get-in networks.config/mainnets [mainnet-chain-id :network-name]))
-(def optimism-name (get-in networks.config/mainnets [optimism-chain-id :network-name]))
-(def arbitrum-name (get-in networks.config/mainnets [arbitrum-chain-id :network-name]))
 
 (def ^:private currencies
   {:usd {:id         :usd
@@ -29,97 +22,95 @@
          :token?     false}})
 
 (def ^:private accounts-with-tokens
-  {:0x1 {:tokens                    [{:symbol             "ETH"
-                                      :balances-per-chain {1 {:raw-balance "100"}}}
-                                     {:symbol             "SNT"
-                                      :balances-per-chain {1 {:raw-balance "100"}}}]
-         :network-preferences-names #{}
-         :customization-color       nil
-         :operable?                 true
-         :operable                  :fully
-         :address                   "0x1"}
-   :0x2 {:tokens                    [{:symbol             "SNT"
-                                      :balances-per-chain {1 {:raw-balance "200"}}}]
-         :network-preferences-names #{}
-         :customization-color       nil
-         :operable?                 true
-         :operable                  :partially
-         :address                   "0x2"}})
+  {:0x1 {:tokens              [{:symbol             "ETH"
+                                :balances-per-chain {1 {:raw-balance "100"}}}
+                               {:symbol             "SNT"
+                                :balances-per-chain {1 {:raw-balance "100"}}}]
+         :customization-color nil
+         :operable?           true
+         :operable            :fully
+         :address             "0x1"}
+   :0x2 {:tokens              [{:symbol             "SNT"
+                                :balances-per-chain {1 {:raw-balance "200"}}}]
+         :customization-color nil
+         :operable?           true
+         :operable            :partially
+         :address             "0x2"}})
 
 (def tokens-0x1
   [{:decimals           0
     :symbol             "ETH"
     :name               "Ether"
-    :balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
-                                                          "2")
-                                            :has-error   false}
-                         optimism-chain-id {:raw-balance (money/bignumber
-                                                          "1")
-                                            :has-error   false}}}
+    :balances-per-chain {test-data/mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                    "2")
+                                                      :has-error   false}
+                         test-data/optimism-chain-id {:raw-balance (money/bignumber
+                                                                    "1")
+                                                      :has-error   false}}}
    {:decimals           0
     :symbol             "DAI"
     :name               "Dai Stablecoin"
-    :balances-per-chain {mainnet-chain-id
+    :balances-per-chain {test-data/mainnet-chain-id
                          {:raw-balance (money/bignumber
                                         "1")
                           :has-error   false}
-                         optimism-chain-id
+                         test-data/optimism-chain-id
                          {:raw-balance (money/bignumber
                                         "1.5")
                           :has-error   false}
-                         arbitrum-chain-id
+                         test-data/arbitrum-chain-id
                          {:raw-balance nil :has-error false}}}])
 
 (def tokens-0x2
   [{:decimals           0
     :symbol             "ETH"
     :name               "Ether"
-    :balances-per-chain {mainnet-chain-id
+    :balances-per-chain {test-data/mainnet-chain-id
                          {:raw-balance (money/bignumber
                                         "2.5")
                           :has-error   false}
-                         optimism-chain-id {:raw-balance (money/bignumber
-                                                          "3")
-                                            :has-error   false}
-                         arbitrum-chain-id {:raw-balance (money/bignumber
-                                                          "<nil>")
-                                            :has-error   false}}}
+                         test-data/optimism-chain-id {:raw-balance (money/bignumber
+                                                                    "3")
+                                                      :has-error   false}
+                         test-data/arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                    "<nil>")
+                                                      :has-error   false}}}
    {:decimals           0
     :symbol             "DAI"
     :name               "Dai Stablecoin"
-    :balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
-                                                          "1")
-                                            :has-error   false}
-                         optimism-chain-id {:raw-balance (money/bignumber "0")
-                                            :has-error   false}
-                         arbitrum-chain-id {:raw-balance (money/bignumber
-                                                          "<nil>")
-                                            :has-error   false}}}])
+    :balances-per-chain {test-data/mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                    "1")
+                                                      :has-error   false}
+                         test-data/optimism-chain-id {:raw-balance (money/bignumber "0")
+                                                      :has-error   false}
+                         test-data/arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                    "<nil>")
+                                                      :has-error   false}}}])
 
 (def tokens-0x3
   [{:decimals           0
     :symbol             "ETH"
     :name               "Ether"
-    :balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
-                                                          "5")
-                                            :has-error   false}
-                         optimism-chain-id {:raw-balance (money/bignumber
-                                                          "2")
-                                            :has-error   false}
-                         arbitrum-chain-id {:raw-balance (money/bignumber
-                                                          "<nil>")
-                                            :has-error   false}}}
+    :balances-per-chain {test-data/mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                    "5")
+                                                      :has-error   false}
+                         test-data/optimism-chain-id {:raw-balance (money/bignumber
+                                                                    "2")
+                                                      :has-error   false}
+                         test-data/arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                    "<nil>")
+                                                      :has-error   false}}}
    {:decimals           0
     :symbol             "DAI"
     :name               "Dai Stablecoin"
-    :balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
-                                                          "1")
-                                            :has-error   false}
-                         optimism-chain-id {:raw-balance (money/bignumber "0")
-                                            :has-error   false}
-                         arbitrum-chain-id {:raw-balance (money/bignumber
-                                                          "<nil>")
-                                            :has-error   false}}}])
+    :balances-per-chain {test-data/mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                    "1")
+                                                      :has-error   false}
+                         test-data/optimism-chain-id {:raw-balance (money/bignumber "0")
+                                                      :has-error   false}
+                         test-data/arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                    "<nil>")
+                                                      :has-error   false}}}])
 
 (def accounts
   {"0x1" {:path                     "m/44'/60'/0'/0/0"
@@ -189,43 +180,6 @@
           :removed                  false
           :tokens                   tokens-0x3}})
 
-(def network-data
-  {:test [{:test?            true
-           :short-name       "eth"
-           :network-name     :mainnet
-           :related-chain-id 1
-           :layer            1}
-          {:test?            true
-           :short-name       "arb1"
-           :network-name     :arbitrum
-           :related-chain-id 42161
-           :layer            2}
-          {:test?            true
-           :short-name       "oeth"
-           :network-name     :optimism
-           :related-chain-id 10
-           :layer            2}]
-   :prod [{:test?        false
-           :short-name   "eth"
-           :network-name :mainnet
-           :chain-id     1
-           :layer        1}
-          {:test?        false
-           :short-name   "arb1"
-           :network-name :arbitrum
-           :chain-id     42161
-           :layer        2}
-          {:test?        false
-           :short-name   "oeth"
-           :network-name :optimism
-           :chain-id     10
-           :layer        2}]})
-
-(def ui-data
-  {:network-filter {:selected-state    :default
-                    :default-networks  #{mainnet-name arbitrum-name optimism-name}
-                    :selected-networks #{mainnet-name arbitrum-name optimism-name}}})
-
 (def route-data
   [{:gas-amount "25000"
     :gas-fees   {:tx-max-fees-per-gas "4"
@@ -233,12 +187,11 @@
                  :l-1-gas-fee         "0"}
     :from       {:native-currency-symbol "ETH"}}])
 
-(h/deftest-sub :wallet/balances-in-selected-networks
+(h/deftest-sub :wallet/balances-in-active-networks
   [sub-name]
   (testing "a map: address->balance"
     (swap! rf-db/app-db #(-> %
-                             (assoc-in [:wallet :ui] ui-data)
-                             (assoc-in [:wallet :networks] network-data)
+                             (test-data/add-networks-to-db)
                              (assoc-in [:wallet :accounts] accounts)
                              (assoc-in [:wallet :tokens :prices-per-token]
                                        {:ETH {:usd 2000} :DAI {:usd 1}})))
@@ -256,80 +209,76 @@
   (testing "returns all accounts without balance"
     (swap! rf-db/app-db
       #(-> %
-           (assoc-in [:wallet :ui] ui-data)
            (assoc-in [:wallet :accounts] accounts)
-           (assoc-in [:wallet :networks] network-data)))
+           (test-data/add-networks-to-db)))
     (is
      (match?
-      (list {:path                      "m/44'/60'/0'/0/0"
-             :emoji                     "😃"
-             :key-uid                   "0x2f5ea39"
-             :address                   "0x1"
-             :wallet                    false
-             :name                      "Account One"
-             :type                      :generated
-             :watch-only?               false
-             :operable?                 true
-             :chat                      false
-             :test-preferred-chain-ids  #{5 420 421613}
-             :color                     :blue
-             :hidden                    false
-             :prod-preferred-chain-ids  #{1 10 42161}
-             :network-preferences-names #{:mainnet :arbitrum :optimism}
-             :position                  0
-             :clock                     1698945829328
-             :created-at                1698928839000
-             :operable                  :fully
-             :mixedcase-address         "0x7bcDfc75c431"
-             :public-key                "0x04371e2d9d66b82f056bc128064"
-             :removed                   false
-             :tokens                    tokens-0x1}
-            {:path                      "m/44'/60'/0'/0/1"
-             :emoji                     "💎"
-             :key-uid                   "0x2f5ea39"
-             :address                   "0x2"
-             :wallet                    false
-             :name                      "Account Two"
-             :type                      :generated
-             :watch-only?               false
-             :operable?                 true
-             :chat                      false
-             :test-preferred-chain-ids  #{5 420 421613}
-             :color                     :purple
-             :hidden                    false
-             :prod-preferred-chain-ids  #{1 10 42161}
-             :network-preferences-names #{:mainnet :arbitrum :optimism}
-             :position                  1
-             :clock                     1698945829328
-             :created-at                1698928839000
-             :operable                  :fully
-             :mixedcase-address         "0x7bcDfc75c431"
-             :public-key                "0x04371e2d9d66b82f056bc128064"
-             :removed                   false
-             :tokens                    tokens-0x2}
-            {:path                      ""
-             :emoji                     "🎉"
-             :key-uid                   "0x2f5ea39"
-             :address                   "0x3"
-             :wallet                    false
-             :name                      "Watched Account 1"
-             :type                      :watch
-             :watch-only?               true
-             :operable?                 true
-             :chat                      false
-             :test-preferred-chain-ids  #{0}
-             :color                     :magenta
-             :hidden                    false
-             :prod-preferred-chain-ids  #{0}
-             :network-preferences-names #{}
-             :position                  2
-             :clock                     1698945829328
-             :created-at                1698928839000
-             :operable                  :fully
-             :mixedcase-address         "0x7bcDfc75c431"
-             :public-key                "0x"
-             :removed                   false
-             :tokens                    tokens-0x3})
+      (list {:path                     "m/44'/60'/0'/0/0"
+             :emoji                    "😃"
+             :key-uid                  "0x2f5ea39"
+             :address                  "0x1"
+             :wallet                   false
+             :name                     "Account One"
+             :type                     :generated
+             :watch-only?              false
+             :operable?                true
+             :chat                     false
+             :test-preferred-chain-ids #{5 420 421613}
+             :color                    :blue
+             :hidden                   false
+             :prod-preferred-chain-ids #{1 10 42161}
+             :position                 0
+             :clock                    1698945829328
+             :created-at               1698928839000
+             :operable                 :fully
+             :mixedcase-address        "0x7bcDfc75c431"
+             :public-key               "0x04371e2d9d66b82f056bc128064"
+             :removed                  false
+             :tokens                   tokens-0x1}
+            {:path                     "m/44'/60'/0'/0/1"
+             :emoji                    "💎"
+             :key-uid                  "0x2f5ea39"
+             :address                  "0x2"
+             :wallet                   false
+             :name                     "Account Two"
+             :type                     :generated
+             :watch-only?              false
+             :operable?                true
+             :chat                     false
+             :test-preferred-chain-ids #{5 420 421613}
+             :color                    :purple
+             :hidden                   false
+             :prod-preferred-chain-ids #{1 10 42161}
+             :position                 1
+             :clock                    1698945829328
+             :created-at               1698928839000
+             :operable                 :fully
+             :mixedcase-address        "0x7bcDfc75c431"
+             :public-key               "0x04371e2d9d66b82f056bc128064"
+             :removed                  false
+             :tokens                   tokens-0x2}
+            {:path                     ""
+             :emoji                    "🎉"
+             :key-uid                  "0x2f5ea39"
+             :address                  "0x3"
+             :wallet                   false
+             :name                     "Watched Account 1"
+             :type                     :watch
+             :watch-only?              true
+             :operable?                true
+             :chat                     false
+             :test-preferred-chain-ids #{0}
+             :color                    :magenta
+             :hidden                   false
+             :prod-preferred-chain-ids #{0}
+             :position                 2
+             :clock                    1698945829328
+             :created-at               1698928839000
+             :operable                 :fully
+             :mixedcase-address        "0x7bcDfc75c431"
+             :public-key               "0x"
+             :removed                  false
+             :tokens                   tokens-0x3})
       (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/current-viewing-account-address
@@ -344,39 +293,37 @@
   (testing "returns current account with balance base"
     (swap! rf-db/app-db
       #(-> %
-           (assoc-in [:wallet :ui] ui-data)
            (assoc :currencies currencies)
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
            (assoc-in [:wallet :tokens :prices-per-token]
                      {:ETH {:usd 2000} :DAI {:usd 1}})
-           (assoc-in [:wallet :networks] network-data)))
+           (test-data/add-networks-to-db)))
 
     (let [result (rf/sub [sub-name])]
       (is
-       (match? {:path                      "m/44'/60'/0'/0/0"
-                :emoji                     "😃"
-                :key-uid                   "0x2f5ea39"
-                :address                   "0x1"
-                :wallet                    false
-                :name                      "Account One"
-                :type                      :generated
-                :watch-only?               false
-                :operable?                 true
-                :chat                      false
-                :test-preferred-chain-ids  #{5 420 421613}
-                :color                     :blue
-                :hidden                    false
-                :prod-preferred-chain-ids  #{1 10 42161}
-                :network-preferences-names #{:mainnet :arbitrum :optimism}
-                :position                  0
-                :clock                     1698945829328
-                :created-at                1698928839000
-                :operable                  :fully
-                :mixedcase-address         "0x7bcDfc75c431"
-                :public-key                "0x04371e2d9d66b82f056bc128064"
-                :removed                   false
-                :tokens                    tokens-0x1}
+       (match? {:path                     "m/44'/60'/0'/0/0"
+                :emoji                    "😃"
+                :key-uid                  "0x2f5ea39"
+                :address                  "0x1"
+                :wallet                   false
+                :name                     "Account One"
+                :type                     :generated
+                :watch-only?              false
+                :operable?                true
+                :chat                     false
+                :test-preferred-chain-ids #{5 420 421613}
+                :color                    :blue
+                :hidden                   false
+                :prod-preferred-chain-ids #{1 10 42161}
+                :position                 0
+                :clock                    1698945829328
+                :created-at               1698928839000
+                :operable                 :fully
+                :mixedcase-address        "0x7bcDfc75c431"
+                :public-key               "0x04371e2d9d66b82f056bc128064"
+                :removed                  false
+                :tokens                   tokens-0x1}
                (dissoc result :balance :formatted-balance)))
 
       (is (money/equal-to (:balance result) (money/bignumber 6002.5)))
@@ -413,56 +360,54 @@
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :current-viewing-account-address] "0x2")
-           (assoc-in [:wallet :networks] network-data)))
+           (test-data/add-networks-to-db)))
     (is
      (match?
       (list
-       {:path                      "m/44'/60'/0'/0/0"
-        :emoji                     "😃"
-        :key-uid                   "0x2f5ea39"
-        :address                   "0x1"
-        :wallet                    false
-        :name                      "Account One"
-        :type                      :generated
-        :watch-only?               false
-        :operable?                 true
-        :chat                      false
-        :test-preferred-chain-ids  #{5 420 421613}
-        :color                     :blue
-        :hidden                    false
-        :prod-preferred-chain-ids  #{1 10 42161}
-        :network-preferences-names #{:mainnet :arbitrum :optimism}
-        :position                  0
-        :clock                     1698945829328
-        :created-at                1698928839000
-        :operable                  :fully
-        :mixedcase-address         "0x7bcDfc75c431"
-        :public-key                "0x04371e2d9d66b82f056bc128064"
-        :removed                   false
-        :tokens                    tokens-0x1}
-       {:path                      ""
-        :emoji                     "🎉"
-        :key-uid                   "0x2f5ea39"
-        :address                   "0x3"
-        :wallet                    false
-        :name                      "Watched Account 1"
-        :type                      :watch
-        :watch-only?               true
-        :operable?                 true
-        :chat                      false
-        :test-preferred-chain-ids  #{0}
-        :color                     :magenta
-        :hidden                    false
-        :prod-preferred-chain-ids  #{0}
-        :network-preferences-names #{}
-        :position                  2
-        :clock                     1698945829328
-        :created-at                1698928839000
-        :operable                  :fully
-        :mixedcase-address         "0x7bcDfc75c431"
-        :public-key                "0x"
-        :removed                   false
-        :tokens                    tokens-0x3})
+       {:path                     "m/44'/60'/0'/0/0"
+        :emoji                    "😃"
+        :key-uid                  "0x2f5ea39"
+        :address                  "0x1"
+        :wallet                   false
+        :name                     "Account One"
+        :type                     :generated
+        :watch-only?              false
+        :operable?                true
+        :chat                     false
+        :test-preferred-chain-ids #{5 420 421613}
+        :color                    :blue
+        :hidden                   false
+        :prod-preferred-chain-ids #{1 10 42161}
+        :position                 0
+        :clock                    1698945829328
+        :created-at               1698928839000
+        :operable                 :fully
+        :mixedcase-address        "0x7bcDfc75c431"
+        :public-key               "0x04371e2d9d66b82f056bc128064"
+        :removed                  false
+        :tokens                   tokens-0x1}
+       {:path                     ""
+        :emoji                    "🎉"
+        :key-uid                  "0x2f5ea39"
+        :address                  "0x3"
+        :wallet                   false
+        :name                     "Watched Account 1"
+        :type                     :watch
+        :watch-only?              true
+        :operable?                true
+        :chat                     false
+        :test-preferred-chain-ids #{0}
+        :color                    :magenta
+        :hidden                   false
+        :prod-preferred-chain-ids #{0}
+        :position                 2
+        :clock                    1698945829328
+        :created-at               1698928839000
+        :operable                 :fully
+        :mixedcase-address        "0x7bcDfc75c431"
+        :public-key               "0x"
+        :removed                  false
+        :tokens                   tokens-0x3})
       (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/accounts-without-watched-accounts
@@ -471,58 +416,56 @@
     (swap! rf-db/app-db
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
-           (assoc-in [:wallet :networks] network-data)))
+           (test-data/add-networks-to-db)))
     (is
      (match?
       (list
-       {:path                      "m/44'/60'/0'/0/0"
-        :emoji                     "😃"
-        :key-uid                   "0x2f5ea39"
-        :address                   "0x1"
-        :wallet                    false
-        :name                      "Account One"
-        :type                      :generated
-        :watch-only?               false
-        :operable?                 true
-        :chat                      false
-        :test-preferred-chain-ids  #{5 420 421613}
-        :color                     :blue
-        :customization-color       :blue
-        :hidden                    false
-        :prod-preferred-chain-ids  #{1 10 42161}
-        :network-preferences-names #{:mainnet :arbitrum :optimism}
-        :position                  0
-        :clock                     1698945829328
-        :created-at                1698928839000
-        :operable                  :fully
-        :mixedcase-address         "0x7bcDfc75c431"
-        :public-key                "0x04371e2d9d66b82f056bc128064"
-        :removed                   false
-        :tokens                    tokens-0x1}
-       {:path                      "m/44'/60'/0'/0/1"
-        :emoji                     "💎"
-        :key-uid                   "0x2f5ea39"
-        :address                   "0x2"
-        :wallet                    false
-        :name                      "Account Two"
-        :type                      :generated
-        :watch-only?               false
-        :operable?                 true
-        :chat                      false
-        :test-preferred-chain-ids  #{5 420 421613}
-        :color                     :purple
-        :customization-color       :purple
-        :hidden                    false
-        :prod-preferred-chain-ids  #{1 10 42161}
-        :network-preferences-names #{:mainnet :arbitrum :optimism}
-        :position                  1
-        :clock                     1698945829328
-        :created-at                1698928839000
-        :operable                  :fully
-        :mixedcase-address         "0x7bcDfc75c431"
-        :public-key                "0x04371e2d9d66b82f056bc128064"
-        :removed                   false
-        :tokens                    tokens-0x2})
+       {:path                     "m/44'/60'/0'/0/0"
+        :emoji                    "😃"
+        :key-uid                  "0x2f5ea39"
+        :address                  "0x1"
+        :wallet                   false
+        :name                     "Account One"
+        :type                     :generated
+        :watch-only?              false
+        :operable?                true
+        :chat                     false
+        :test-preferred-chain-ids #{5 420 421613}
+        :color                    :blue
+        :customization-color      :blue
+        :hidden                   false
+        :prod-preferred-chain-ids #{1 10 42161}
+        :position                 0
+        :clock                    1698945829328
+        :created-at               1698928839000
+        :operable                 :fully
+        :mixedcase-address        "0x7bcDfc75c431"
+        :public-key               "0x04371e2d9d66b82f056bc128064"
+        :removed                  false
+        :tokens                   tokens-0x1}
+       {:path                     "m/44'/60'/0'/0/1"
+        :emoji                    "💎"
+        :key-uid                  "0x2f5ea39"
+        :address                  "0x2"
+        :wallet                   false
+        :name                     "Account Two"
+        :type                     :generated
+        :watch-only?              false
+        :operable?                true
+        :chat                     false
+        :test-preferred-chain-ids #{5 420 421613}
+        :color                    :purple
+        :customization-color      :purple
+        :hidden                   false
+        :prod-preferred-chain-ids #{1 10 42161}
+        :position                 1
+        :clock                    1698945829328
+        :created-at               1698928839000
+        :operable                 :fully
+        :mixedcase-address        "0x7bcDfc75c431"
+        :public-key               "0x04371e2d9d66b82f056bc128064"
+        :removed                  false
+        :tokens                   tokens-0x2})
       (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/aggregated-tokens
@@ -539,10 +482,9 @@
   [sub-name]
   (testing "returns aggregated tokens (in quo/token-value props) and balances from all accounts"
     (swap! rf-db/app-db #(-> %
-                             (assoc-in [:wallet :ui] ui-data)
                              (assoc :currencies currencies)
                              (assoc-in [:wallet :accounts] accounts)
-                             (assoc-in [:wallet :networks] network-data)
+                             (test-data/add-networks-to-db)
                              (assoc-in [:wallet :tokens :prices-per-token]
                                        {:ETH {:usd 2000} :DAI {:usd 1}})))
     (let [{:keys [formatted-balance tokens]} (rf/sub [sub-name])]
@@ -555,20 +497,17 @@
     (swap! rf-db/app-db
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
-           (assoc-in [:wallet :networks] network-data)))
+           (test-data/add-networks-to-db)))
     (is
      (match? [(-> accounts
                   (get "0x1")
-                  (assoc :customization-color :blue)
-                  (assoc :network-preferences-names #{:mainnet :arbitrum :optimism}))
+                  (assoc :customization-color :blue))
               (-> accounts
                   (get "0x2")
-                  (assoc :customization-color :purple)
-                  (assoc :network-preferences-names #{:mainnet :arbitrum :optimism}))
+                  (assoc :customization-color :purple))
               (-> accounts
                   (get "0x3")
-                  (assoc :customization-color :magenta)
-                  (assoc :network-preferences-names #{}))]
+                  (assoc :customization-color :magenta))]
              (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/watch-only-accounts
@@ -577,11 +516,9 @@
     (swap! rf-db/app-db
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
-           (assoc-in [:wallet :networks] network-data)))
+           (test-data/add-networks-to-db)))
     (is
-     (match? [(-> accounts
-                  (get "0x3")
-                  (assoc :network-preferences-names #{}))]
+     (match? [(get accounts "0x3")]
              (rf/sub [sub-name])))))
 
 (def chat-account
@@ -815,7 +752,7 @@
     (swap! rf-db/app-db
       #(-> %
            (assoc-in [:wallet :accounts] accounts)
-           (assoc-in [:wallet :networks] network-data)
+           (test-data/add-networks-to-db)
            (assoc-in [:wallet :current-viewing-account-address] "0x2")
            (assoc :currencies currencies)
            (assoc-in [:wallet :tokens :prices-per-token]
@@ -824,57 +761,31 @@
     (is (match? (count (rf/sub [sub-name ""])) 2))
     (is (match? (count (rf/sub [sub-name "et"])) 2))))
 
-(h/deftest-sub :wallet/selected-networks->chain-ids
+(h/deftest-sub :wallet/current-viewing-account-tokens-in-active-networks
   [sub-name]
-  (testing "selected networks -> chain-ids - All networks"
-    (swap! rf-db/app-db #(assoc %
-                                :wallet
-                                {:networks network-data
-                                 :ui       {:network-filter {:selected-networks #{mainnet-name
-                                                                                  arbitrum-name
-                                                                                  optimism-name}}}}))
-    (is
-     (match? #{mainnet-chain-id arbitrum-chain-id optimism-chain-id}
-             (rf/sub [sub-name]))))
-  (testing "selected networks -> chain-ids - specific network"
-    (swap! rf-db/app-db #(-> %
-                             (assoc-in [:wallet :networks] network-data)
-                             (assoc-in
-                              [:wallet :ui :network-filter :selected-networks]
-                              #{optimism-name})))
-    (is
-     (match? (sort [optimism-chain-id])
-             (sort (rf/sub [sub-name]))))))
-
-
-(h/deftest-sub :wallet/current-viewing-account-tokens-in-selected-networks
-  [sub-name]
-  (testing "current account tokens in selected networks"
+  (testing "current account tokens in active networks"
     (swap! rf-db/app-db
       #(-> %
-           (assoc-in [:wallet :ui :network-filter :selected-networks] #{arbitrum-name})
            (assoc-in [:wallet :accounts] accounts)
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
            (assoc-in [:wallet :tokens :prices-per-token]
                      {:ETH {:usd 2000} :DAI {:usd 1}})
-           (assoc-in [:wallet :networks] network-data)))
-
+           (test-data/add-active-networks-to-db [test-data/arbitrum-chain-id])))
     (let [result (rf/sub [sub-name])
           token  (nth result 1)
           chains (-> token
                      :balances-per-chain
                      keys)]
       (is (match? (count chains) 1))
-      (is (match? (first chains) arbitrum-chain-id)))))
+      (is (match? (first chains) test-data/arbitrum-chain-id)))))
 
-(h/deftest-sub :wallet/aggregated-tokens-in-selected-networks
+(h/deftest-sub :wallet/aggregated-tokens-in-active-networks
   [sub-name]
   (testing "aggregated tokens in selected networks"
     (swap! rf-db/app-db
       #(-> %
-           (assoc-in [:wallet :ui :network-filter :selected-networks] #{optimism-name})
            (assoc-in [:wallet :accounts] accounts)
-           (assoc-in [:wallet :networks] network-data)))
+           (test-data/add-active-networks-to-db [test-data/arbitrum-chain-id])))
 
     (let [result (rf/sub [sub-name])
           token  (first result)
@@ -882,7 +793,7 @@
                      :balances-per-chain
                      keys)]
       (is (match? (count chains) 1))
-      (is (match? (first chains) optimism-chain-id)))))
+      (is (match? (first chains) test-data/arbitrum-chain-id)))))
 
 (h/deftest-sub :wallet/wallet-send-fee-fiat-formatted
   [sub-name]
@@ -909,74 +820,74 @@
         {"0x1" {:address "0x1"
                 :watch-only? false
                 :tokens
-                [{:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}
-                                       optimism-chain-id {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}
-                                       arbitrum-chain-id {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}}}
-                 {:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}
-                                       optimism-chain-id {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}
-                                       arbitrum-chain-id {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}}}]}
+                [{:balances-per-chain {test-data/mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}
+                                       test-data/optimism-chain-id {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}
+                                       test-data/arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}}}
+                 {:balances-per-chain {test-data/mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}
+                                       test-data/optimism-chain-id {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}
+                                       test-data/arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}}}]}
          "0x2" {:address "0x2"
                 :watch-only? false
                 :tokens
-                [{:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}
-                                       optimism-chain-id {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}
-                                       arbitrum-chain-id {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}}}
-                 {:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}
-                                       optimism-chain-id {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}
-                                       arbitrum-chain-id {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}}}]}
+                [{:balances-per-chain {test-data/mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}
+                                       test-data/optimism-chain-id {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}
+                                       test-data/arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}}}
+                 {:balances-per-chain {test-data/mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}
+                                       test-data/optimism-chain-id {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}
+                                       test-data/arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}}}]}
 
          "0x3"
          {:address     "0x3"
           :watch-only? true
-          :tokens      [{:balances-per-chain {mainnet-chain-id  {:raw-balance
-                                                                 (money/bignumber
-                                                                  "2")
-                                                                 :has-error false}
-                                              optimism-chain-id {:raw-balance
-                                                                 (money/bignumber
-                                                                  "1")
-                                                                 :has-error false}
-                                              arbitrum-chain-id {:raw-balance
-                                                                 (money/bignumber
-                                                                  "0")
-                                                                 :has-error false}}}
-                        {:balances-per-chain {mainnet-chain-id  {:raw-balance
-                                                                 (money/bignumber
-                                                                  "0")
-                                                                 :has-error false}
-                                              optimism-chain-id {:raw-balance
-                                                                 (money/bignumber
-                                                                  "2")
-                                                                 :has-error false}
-                                              arbitrum-chain-id {:raw-balance
-                                                                 (money/bignumber
-                                                                  "0")
-                                                                 :has-error
-                                                                 false}}}]}}))
+          :tokens      [{:balances-per-chain {test-data/mainnet-chain-id  {:raw-balance
+                                                                           (money/bignumber
+                                                                            "2")
+                                                                           :has-error false}
+                                              test-data/optimism-chain-id {:raw-balance
+                                                                           (money/bignumber
+                                                                            "1")
+                                                                           :has-error false}
+                                              test-data/arbitrum-chain-id {:raw-balance
+                                                                           (money/bignumber
+                                                                            "0")
+                                                                           :has-error false}}}
+                        {:balances-per-chain {test-data/mainnet-chain-id  {:raw-balance
+                                                                           (money/bignumber
+                                                                            "0")
+                                                                           :has-error false}
+                                              test-data/optimism-chain-id {:raw-balance
+                                                                           (money/bignumber
+                                                                            "2")
+                                                                           :has-error false}
+                                              test-data/arbitrum-chain-id {:raw-balance
+                                                                           (money/bignumber
+                                                                            "0")
+                                                                           :has-error
+                                                                           false}}}]}}))
     (is (true? (rf/sub [sub-name]))))
   (testing "returns false if the balance is not zero in all non-watched accounts"
     (swap! rf-db/app-db
@@ -985,45 +896,45 @@
         {"0x1" {:address "0x1"
                 :watch-only? false
                 :tokens
-                [{:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
-                                                                        "2")
-                                                          :has-error   false}
-                                       optimism-chain-id {:raw-balance (money/bignumber
-                                                                        "1")
-                                                          :has-error   false}
-                                       arbitrum-chain-id {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}}}
-                 {:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}
-                                       optimism-chain-id {:raw-balance (money/bignumber
-                                                                        "2")
-                                                          :has-error   false}
-                                       arbitrum-chain-id {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}}}]}
+                [{:balances-per-chain {test-data/mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                                  "2")
+                                                                    :has-error   false}
+                                       test-data/optimism-chain-id {:raw-balance (money/bignumber
+                                                                                  "1")
+                                                                    :has-error   false}
+                                       test-data/arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}}}
+                 {:balances-per-chain {test-data/mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}
+                                       test-data/optimism-chain-id {:raw-balance (money/bignumber
+                                                                                  "2")
+                                                                    :has-error   false}
+                                       test-data/arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}}}]}
          "0x2" {:address "0x2"
                 :watch-only? true
                 :tokens
-                [{:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
-                                                                        "2")
-                                                          :has-error   false}
-                                       optimism-chain-id {:raw-balance (money/bignumber
-                                                                        "1")
-                                                          :has-error   false}
-                                       arbitrum-chain-id {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}}}
-                 {:balances-per-chain {mainnet-chain-id  {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}
-                                       optimism-chain-id {:raw-balance (money/bignumber
-                                                                        "2")
-                                                          :has-error   false}
-                                       arbitrum-chain-id {:raw-balance (money/bignumber
-                                                                        "0")
-                                                          :has-error   false}}}]}}))
+                [{:balances-per-chain {test-data/mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                                  "2")
+                                                                    :has-error   false}
+                                       test-data/optimism-chain-id {:raw-balance (money/bignumber
+                                                                                  "1")
+                                                                    :has-error   false}
+                                       test-data/arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}}}
+                 {:balances-per-chain {test-data/mainnet-chain-id  {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}
+                                       test-data/optimism-chain-id {:raw-balance (money/bignumber
+                                                                                  "2")
+                                                                    :has-error   false}
+                                       test-data/arbitrum-chain-id {:raw-balance (money/bignumber
+                                                                                  "0")
+                                                                    :has-error   false}}}]}}))
     (is (false? (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/selected-keypair-keycard?

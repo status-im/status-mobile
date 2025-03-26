@@ -36,7 +36,7 @@
 
 (defn- info
   [{:keys [chain-id account]}]
-  (let [{:keys [network-name]} (rf/sub [:wallet/network-details-by-chain-id chain-id])
+  (let [{:keys [network-name]} (rf/sub [:wallet/network-by-id chain-id])
         subtitle               (some-> network-name
                                        name
                                        string/capitalize)]

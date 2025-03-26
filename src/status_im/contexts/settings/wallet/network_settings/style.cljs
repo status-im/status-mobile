@@ -1,9 +1,11 @@
 (ns status-im.contexts.settings.wallet.network-settings.style)
 
 (def title-container
-  {:flex               0
+  {:padding-vertical   12
    :padding-horizontal 20
-   :padding-vertical   12})
+   :flex-direction     :row
+   :justify-content    :space-between
+   :align-items        :center})
 
 (defn page-wrapper
   [inset-top]
@@ -12,11 +14,10 @@
 
 (defn settings-container
   [inset-bottom]
-  {:flex           1
-   :padding-bottom inset-bottom})
+  {:padding-bottom (+ inset-bottom 8)})
 
 (def networks-container
-  {:flex 1})
+  {:padding-top 4})
 
 (def advanced-settings-container
-  {:flex-shrink 0})
+  {:padding-bottom 4})

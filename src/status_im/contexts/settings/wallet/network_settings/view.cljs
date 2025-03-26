@@ -5,6 +5,7 @@
             [react-native.safe-area :as safe-area]
             [status-im.contexts.settings.wallet.network-settings.style :as style]
             [status-im.contexts.settings.wallet.network-settings.testnet-mode.view :as testnet]
+            [status-im.contexts.wallet.networks.core :as networks]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -13,97 +14,67 @@
   (rf/dispatch [:navigate-back]))
 
 (defn make-network-settings-item
-  [{:keys [details testnet-label testnet-mode?]}]
-  (let [{:keys [full-name source]} details]
-    (cond-> {:blur?       true
-             :title       full-name
-             :image       :icon-avatar
-             :image-props {:icon source
-                           :size :size-20}}
-      testnet-mode? (assoc
-                     :label       :text
-                     :label-props testnet-label))))
+  [customization-color network]
+  (let [{:keys [full-name source active? deactivatable? chain-id]} network]
+    {:blur?        true
+     :action       :selector
+     :action-props {:type                :toggle
+                    :blur?               false
+                    :customization-color customization-color
+                    :disabled?           (not deactivatable?)
+                    :checked?            active?
+                    :on-change           #(rf/dispatch
+                                           [:wallet/toggle-network-active
+                                            chain-id])}
+     :title        full-name
+     :image        :icon-avatar
+     :image-props  {:icon source
+                    :size :size-20}}))
 
-(defn mainnet-settings
-  [{:keys [networks testnet-mode?]}]
-  [quo/category
-   {:key       :mainnet-settings
-    :data      [(make-network-settings-item
-                 {:details       (:mainnet networks)
-                  :testnet-mode? testnet-mode?
-                  :testnet-label (i18n/label :t/sepolia-active)})]
-    :blur?     true
-    :list-type :settings}])
-
-(defn layer-2-settings
-  [{:keys [networks testnet-mode?]}]
-  (let [network-items (->> networks
-                           keys
-                           (filter #(not= :mainnet %))
-                           (map (fn [network-name]
-                                  {:details       (get networks network-name)
-                                   :testnet-mode? testnet-mode?
-                                   :testnet-label (i18n/label :t/sepolia-active)})))]
+(defn networks-list
+  []
+  (let [networks            (rf/sub [:wallet/networks])
+        customization-color (rf/sub [:profile/customization-color])]
     [quo/category
      {:key       :layer-2-settings
-      :label     (i18n/label :t/layer-2)
-      :data      (map make-network-settings-item network-items)
+      :data      (mapv (partial make-network-settings-item customization-color) networks)
       :blur?     true
       :list-type :settings}]))
 
-(defn testnet-mode-setting
-  [{:keys [testnet-mode? on-enable on-disable]}]
-  (let [on-change-testnet (rn/use-callback
-                           (fn []
-                             (if-not testnet-mode? (on-enable) (on-disable)))
-                           [testnet-mode? on-enable on-disable])]
-    {:blur?        true
-     :title        (i18n/label :t/testnet-mode)
-     :action       :selector
-     :image        :icon
-     :image-props  :i/settings
-     :action-props {:on-change on-change-testnet
-                    :checked?  (boolean testnet-mode?)}}))
-
-(defn advanced-settings
-  [{:keys [testnet-mode? enable-testnet disable-testnet]}]
-  [quo/category
-   {:key       :advanced-settings
-    :label     (i18n/label :t/advanced)
-    :data      [(testnet-mode-setting {:testnet-mode? testnet-mode?
-                                       :on-enable     enable-testnet
-                                       :on-disable    disable-testnet})]
-    :blur?     true
-    :list-type :settings}])
-
 (defn on-change-testnet
-  [{:keys [enable? blur? theme]}]
+  [theme]
   (rf/dispatch [:show-bottom-sheet
                 {:content (fn [] [testnet/view
-                                  {:enable? enable?
-                                   :blur?   blur?}])
+                                  {:blur? true}])
                  :theme   theme
-                 :shell?  blur?}]))
+                 :shell?  true}]))
+
+(defn advanced-settings
+  []
+  (let [theme            (quo.context/use-theme)
+        testnet-mode?    (rf/sub [:profile/test-networks-enabled?])
+        on-press-testnet (rn/use-callback
+                          (fn []
+                            (if-not testnet-mode?
+                              (on-change-testnet theme)
+                              (on-change-testnet theme)))
+                          [theme])]
+    [quo/category
+     {:key       :advanced-settings
+      :data      [{:blur?        true
+                   :title        (i18n/label :t/testnet-mode)
+                   :action       :selector
+                   :image        :icon
+                   :image-props  :i/settings
+                   :action-props {:on-change on-press-testnet
+                                  :checked?  (boolean testnet-mode?)}}]
+      :blur?     true
+      :list-type :settings}]))
 
 (defn view
   []
-  (let [blur?            true
-        insets           (safe-area/get-insets)
-        theme            (quo.context/use-theme)
-        networks-by-name (rf/sub [:wallet/network-details-by-network-name])
-        testnet-mode?    (rf/sub [:profile/test-networks-enabled?])
-        enable-testnet   (rn/use-callback
-                          (fn []
-                            (on-change-testnet {:theme   theme
-                                                :blur?   blur?
-                                                :enable? true}))
-                          [theme])
-        disable-testnet  (rn/use-callback
-                          (fn []
-                            (on-change-testnet {:theme   theme
-                                                :blur?   blur?
-                                                :enable? false}))
-                          [theme])]
+  (let [insets               (safe-area/get-insets)
+        active-network-count (count (rf/sub [:wallet/active-chain-ids]))]
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper (:top insets))}
@@ -112,21 +83,21 @@
        :background :blur
        :icon-name  :i/arrow-left
        :on-press   navigate-back}]
-     [quo/standard-title
-      {:title               (i18n/label :t/network-settings)
-       :container-style     style/title-container
-       :accessibility-label :network-settings-header}]
-     [rn/view {:style (style/settings-container (:bottom insets))}
-      (when networks-by-name
-        [rn/view {:style style/networks-container}
-         [mainnet-settings
-          {:networks      networks-by-name
-           :testnet-mode? testnet-mode?}]
-         [layer-2-settings
-          {:networks      networks-by-name
-           :testnet-mode? testnet-mode?}]])
+     [rn/view {:style style/title-container}
+      [quo/standard-title
+       {:title               (i18n/label :t/network-settings)
+        :blur?               true
+        :accessibility-label :network-settings-header}]
+      [quo/fraction-counter
+       {:blur?                 true
+        :show-counter-warning? true
+        :left-value            active-network-count
+        :right-value           (networks/get-max-active-networks)
+        :suffix                (i18n/label :t/active)}]]
+     [rn/scroll-view
+      {:style                   {:flex 1}
+       :content-container-style (style/settings-container (:bottom insets))}
       [rn/view {:style style/advanced-settings-container}
-       [advanced-settings
-        {:testnet-mode?   testnet-mode?
-         :enable-testnet  enable-testnet
-         :disable-testnet disable-testnet}]]]]))
+       [advanced-settings]]
+      [rn/view {:style style/networks-container}
+       [networks-list]]]]))

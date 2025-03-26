@@ -1,8 +1,8 @@
 (ns status-im.contexts.centralized-metrics.tracking-test
   (:require
     [cljs.test :refer-macros [deftest is testing]]
-    [legacy.status-im.utils.build :as build]
     [react-native.platform :as platform]
+    [status-im.app-build.core :as build]
     [status-im.contexts.centralized-metrics.tracking :as tracking]))
 
 (def platform-os platform/os)

@@ -1,9 +1,7 @@
 (ns status-im.contexts.wallet.common.utils
   (:require [clojure.string :as string]
-            [quo.foundations.resources :as resources]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
-            [status-im.contexts.wallet.networks.core :as networks]
             [utils.address]
             [utils.money :as money]
             [utils.number :as number]
@@ -321,43 +319,9 @@
                            :fiat-change            formatted-fiat-change
                            :percentage-change      percentage-change}}))
 
-(defn make-network-item
-  "This function generates props for quo/category component item"
-  [{:keys [chain-id network-name full-name color on-change networks label-props type blur?]}]
-  (cond-> {:title                 full-name
-           :image                 :icon-avatar
-           :image-props           {:icon (resources/get-network network-name)
-                                   :size :size-20}
-           ;; Remove the following line for v2.35
-           :show-new-feature-tag? (networks/new-network? chain-id)
-           :action                :selector
-           :action-props          {:type                (or type :checkbox)
-                                   :blur?               blur?
-                                   :customization-color color
-                                   :checked?            (contains? networks network-name)
-                                   :on-change           on-change}}
-
-    label-props
-    (assoc :label       :text
-           :label-props label-props)))
-
 (defn filter-tokens-in-chains
   [tokens chain-ids]
   (map #(update % :balances-per-chain select-keys chain-ids) tokens))
-
-(defn calculate-balances-per-chain
-  [{:keys [tokens currency currency-symbol prices-per-token]}]
-  (->
-    (reduce (fn [acc {:keys [balances-per-chain decimals] :as token}]
-              (let [currency-value         (get-market-value currency token prices-per-token)
-                    fiat-balance-per-chain (update-vals balances-per-chain
-                                                        #(-> (money/token->unit (:raw-balance %)
-                                                                                decimals)
-                                                             (money/crypto->fiat currency-value)))]
-                (merge-with money/add acc fiat-balance-per-chain)))
-            {}
-            tokens)
-    (update-vals #(prettify-balance currency-symbol %))))
 
 (defn format-token-id
   [token collectible]

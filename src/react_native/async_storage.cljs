@@ -52,14 +52,15 @@
                 (log/error "[async-storage]" error)))))
 
 (defn get-item
-  [k cb]
-  (-> ^js async-storage
-      (.getItem (str k))
-      (.then (fn [^js data]
-               (-> data
-                   js->clj
-                   transit->clj
-                   cb)))
-      (.catch (fn [error]
-                (cb nil)
-                (log/error "[async-storage]" error)))))
+  ([k] (get-item k identity))
+  ([k cb]
+   (-> ^js async-storage
+       (.getItem (str k))
+       (.then (fn [^js data]
+                (-> data
+                    js->clj
+                    transit->clj
+                    cb)))
+       (.catch (fn [error]
+                 (cb nil)
+                 (log/error "[async-storage]" error))))))

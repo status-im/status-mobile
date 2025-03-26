@@ -201,11 +201,12 @@
       shown-name]]))
 
 (defn- wallet-networks-center
-  [{:keys [networks networks-on-press show-new-chain-indicator? background
+  [{:keys [networks networks-filtered? networks-on-press show-new-chain-indicator? background
            center-content-container-style]}]
   [reanimated/view {:style center-content-container-style}
    [network-dropdown/view
     {:state                     :default
+     :networks-filtered?        networks-filtered?
      :on-press                  networks-on-press
      :blur?                     (= background :blur)
      :show-new-chain-indicator? show-new-chain-indicator?}

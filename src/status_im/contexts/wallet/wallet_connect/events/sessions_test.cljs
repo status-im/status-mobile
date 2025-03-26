@@ -3,14 +3,10 @@
     [cljs.test :refer-macros [is are testing]]
     matcher-combinators.test
     [re-frame.db :as rf-db]
-    [status-im.contexts.wallet.networks.config :as networks.config]
     status-im.contexts.wallet.wallet-connect.events.session-responses
     status-im.contexts.wallet.wallet-connect.events.sessions
-    [test-helpers.unit :as h]))
-
-(def ethereum-chain-id networks.config/ethereum-chain-id)
-(def optimism-chain-id networks.config/optimism-chain-id)
-(def sepolia-chain-id networks.config/sepolia-chain-id)
+    [test-helpers.unit :as h]
+    [tests.wallet-test-data :as test-data]))
 
 (defn- find-fx
   [fx name]
@@ -27,11 +23,13 @@
 (h/deftest-event :wallet-connect/on-session-delete
   [event-id dispatch]
   (testing "successfully deletes the session"
-    (reset! rf-db/app-db {:profile/profile         {:test-networks-enabled? false}
-                          :wallet                  {:networks {:prod [{:chain-id ethereum-chain-id}
-                                                                      {:chain-id optimism-chain-id}]}}
-                          :wallet-connect/sessions [{:topic  "topic"
-                                                     :chains ["eip155:1"]}]})
+    (swap! rf-db/app-db (fn [db]
+                          (-> db
+                              (test-data/add-networks-to-db)
+                              (assoc :profile/profile {:test-networks-enabled? false})
+                              (assoc :wallet-connect/sessions
+                                     [{:topic  "topic"
+                                       :chains ["eip155:1"]}]))))
     (let [fx             (:fx (dispatch [event-id
                                          {:topic  "topic"
                                           :chains ["eip155:1"]}]))
@@ -45,11 +43,13 @@
   (testing "ignore the deletion if session topic not found"
     (let [topic-1 "topic-1"
           topic-2 "topic-2"]
-      (reset! rf-db/app-db {:profile/profile         {:test-networks-enabled? false}
-                            :wallet                  {:networks {:prod [{:chain-id ethereum-chain-id}
-                                                                        {:chain-id optimism-chain-id}]}}
-                            :wallet-connect/sessions [{:topic  topic-1
-                                                       :chains ["eip155:1"]}]})
+      (swap! rf-db/app-db (fn [db]
+                            (-> db
+                                (test-data/add-networks-to-db)
+                                (assoc :profile/profile {:test-networks-enabled? false})
+                                (assoc :wallet-connect/sessions
+                                       [{:topic  topic-1
+                                         :chains ["eip155:1"]}]))))
       (is (match? nil
                   (dispatch [event-id
                              {:topic  topic-2
@@ -57,10 +57,13 @@
 
   (testing "ignore the deletion if the event is for the wrong network mode (testnet/mainnet)"
     (let [topic "topic"]
-      (reset! rf-db/app-db {:profile/profile         {:test-networks-enabled? true}
-                            :wallet                  {:networks {:test [{:chain-id sepolia-chain-id}]}}
-                            :wallet-connect/sessions [{:topic  topic
-                                                       :chains ["eip155:1"]}]})
+      (swap! rf-db/app-db (fn [db]
+                            (-> db
+                                (test-data/add-networks-to-db)
+                                (assoc :profile/profile {:test-networks-enabled? true})
+                                (assoc :wallet-connect/sessions
+                                       [{:topic  topic
+                                         :chains ["eip155:1"]}]))))
       (is (match? nil
                   (dispatch [event-id
                              {:topic  topic

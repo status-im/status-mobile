@@ -30,14 +30,16 @@
            show-dapps-button?  false
            type                :no-title}}]
   (let [{:keys [color emoji watch-only?]} (rf/sub [:wallet/current-viewing-account])
-        networks                          (rf/sub [:wallet/selected-network-details])
+        networks                          (rf/sub [:wallet/filtered-networks])
         sending-collectible?              (rf/sub [:wallet/sending-collectible?])
         show-new-chain-indicator?         (rf/sub [:wallet/show-new-chain-indicator?])
-        on-press-networks                 (rn/use-callback
-                                           (fn []
-                                             (rf/dispatch [:wallet/hide-new-chain-indicator])
-                                             (rf/dispatch [:show-bottom-sheet
-                                                           {:content network-filter/view}])))]
+        networks-filtered?                (rf/sub [:wallet/network-filter?])
+        on-press-networks                 (fn []
+                                            (if networks-filtered?
+                                              (rf/dispatch [:wallet/reset-network-balances-filter])
+                                              (do (rf/dispatch [:wallet/mark-new-networks-as-seen])
+                                                  (rf/dispatch [:show-bottom-sheet
+                                                                {:content network-filter/view}]))))]
     [quo/page-nav
      {:type                      type
       :icon-name                 icon-name
@@ -46,6 +48,7 @@
       :on-press                  on-press
       :accessibility-label       accessibility-label
       :networks                  networks
+      :networks-filtered?        networks-filtered?
       :align-center?             true
       :networks-on-press         on-press-networks
       :show-new-chain-indicator? show-new-chain-indicator?

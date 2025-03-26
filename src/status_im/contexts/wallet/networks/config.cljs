@@ -5,6 +5,9 @@
     [quo.foundations.resources :as resources]
     [status-im.contexts.wallet.networks.validation :as validation]))
 
+;; NOTE: this value comes from status-go, as it supports up to 5 networks simultaneously.
+(def ^:const max-active-networks 5)
+
 ;; NOTE: Add chain-ids below
 
 (def ^:const ethereum-chain-id 1)
@@ -21,13 +24,14 @@
 
 (def ^:const status-sepolia-chain-id 1660990954)
 
-;; NOTE: if the network should be highlighted as "new" in the UI, add
-;; the chain id to `new-networks`. Otherwise, remove if no longer "new".
+;; NOTE: Add a chain to `new-networks` to:
+;;         1. highlight it as "new" in the UI
+;;         2. add a "new feature" dot to places where we show networks
 
 (def ^:const new-networks
-  #{base-chain-id
-    base-sepolia-chain-id
-    status-sepolia-chain-id})
+  #{status-sepolia-chain-id
+    base-chain-id
+    base-sepolia-chain-id})
 
 ;; NOTE: add client-side chain details below for `mainnet` and `testnet`
 ;; respectively.

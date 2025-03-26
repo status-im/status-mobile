@@ -4,13 +4,14 @@
             [react-native.linear-gradient :as linear-gradient]))
 
 (defn view
-  [{:keys [style accessibility-label]}]
+  [{:keys [style accessibility-label]} & children]
   (let [theme (quo.context/use-theme)]
-    [linear-gradient/linear-gradient
-     {:style               style
-      :accessibility-label accessibility-label
-      :colors              [(colors/resolve-color :yellow theme)
-                            colors/new-feature-gradient-pink]
-      :use-angle           true
-      :angle               78
-      :angle-center        {:x 0.5 :y 0.5}}]))
+    (into [linear-gradient/linear-gradient
+           {:style               style
+            :accessibility-label accessibility-label
+            :colors              [(colors/resolve-color :yellow theme)
+                                  colors/new-feature-gradient-pink]
+            :use-angle           true
+            :angle               78
+            :angle-center        {:x 0.5 :y 0.5}}]
+          children)))

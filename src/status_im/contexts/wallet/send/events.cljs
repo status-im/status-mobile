@@ -186,13 +186,6 @@
               :flow-id        :wallet-send-flow}]]]})))
 
 (rf/reg-event-fx
- :wallet/update-receiver-networks
- (fn [{:keys [db]} [selected-networks]]
-   (let [amount (get-in db (conj db-path/send :amount))]
-     {:db (update-in db db-path/send assoc :receiver-networks selected-networks)
-      :fx [[:dispatch [:wallet/start-get-suggested-routes {:amount amount}]]]})))
-
-(rf/reg-event-fx
  :wallet/set-token-to-send
  (fn [{:keys [db]}
       [{:keys [token-symbol token network stack-id start-flow? owners] :as params} entry-point]]
@@ -218,7 +211,7 @@
                                         (filter #(not= (:balance %) "0")
                                                 (vals (:balances-per-chain token))))
          balance-in-only-one-network? (when networks-with-balance (= (count networks-with-balance) 1))
-         network-details              (networks.db/get-networks db)
+         network-details              (networks.db/get-active-networks db)
          network                      (if balance-in-only-one-network?
                                         (first (filter #(= (:chain-id %)
                                                            (:chain-id (first networks-with-balance)))
@@ -556,7 +549,7 @@
          {:keys [token tx-type collectible to-address
                  network bridge-to-chain-id]
           :or   {token updated-token}} (get-in db db-path/send)
-         network-chain-ids             (networks.db/get-chain-ids db)
+         network-chain-ids             (networks.db/get-active-chain-ids db)
          token-decimal                 (when token (:decimals token))
          token-id                      (utils/format-token-id token collectible)
          to-token-id                   ""
@@ -763,11 +756,11 @@
                                         (filter #(not= (:balance %) "0")
                                                 (vals (:balances-per-chain token))))
          balance-in-only-one-network? (when networks-with-balance (= (count networks-with-balance) 1))
-         network-details              (networks.db/get-networks db)
+         networks                     (networks.db/get-active-networks db)
          network                      (if balance-in-only-one-network?
                                         (first (filter #(= (:chain-id %)
                                                            (:chain-id (first networks-with-balance)))
-                                                       network-details))
+                                                       networks))
                                         network)]
      {:db (cond-> db
             network      (update-in db-path/send assoc :network network)

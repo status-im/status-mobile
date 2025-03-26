@@ -133,14 +133,3 @@
    (-> (wallet-rpc/sign-message message address (security/safe-unmask-data password))
        (promesa/then on-success)
        (promesa/catch on-error))))
-
-(rf/reg-fx
- :effects.wallet/retrieve-base-chain-indicator-shown
- (fn []
-   (async-storage/get-item :base-chain-indicator-shown
-                           #(rf/dispatch [:wallet/retrieve-new-chain-indicator (not %)]))))
-
-(rf/reg-fx
- :effects.wallet/set-base-chain-indicator-shown
- (fn [flag]
-   (async-storage/set-item! :base-chain-indicator-shown flag)))

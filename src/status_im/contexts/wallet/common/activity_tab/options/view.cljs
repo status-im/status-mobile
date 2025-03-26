@@ -9,7 +9,7 @@
 (defn view
   [{:keys   [chain-id]
     tx-hash :hash}]
-  (let [{:keys [block-explorer-name] :as network} (rf/sub [:wallet/network-details-by-chain-id chain-id])
+  (let [{:keys [block-explorer-name] :as network} (rf/sub [:wallet/network-by-id chain-id])
         tx-details-link-on-block-explorer         (networks/get-block-explorer-tx-url network tx-hash)
         open-tx-on-block-explorer                 (rn/use-callback
                                                    #(rf/dispatch [:browser.ui/open-url

@@ -16,13 +16,12 @@
 
 (rf/reg-sub
  :wallet-connect/sessions-for-current-account-and-networks
- :<- [:wallet/network-details]
+ ;; NOTE: using all chain-ids (as opposed to only the active ones) for showing sessions,
+ ;; so that we don't end up hiding sessions if the session network(s) are deactivated
+ :<- [:wallet/chain-ids]
  :<- [:wallet-connect/sessions-for-current-account]
- (fn [[networks sessions]]
-   (let [chain-ids (->> networks
-                        (map :chain-id)
-                        set)]
-     (filter
-      (partial networks/session-networks-allowed? chain-ids)
-      sessions))))
+ (fn [[chain-ids sessions]]
+   (filter
+    (partial networks/session-networks-allowed? chain-ids)
+    sessions)))
 

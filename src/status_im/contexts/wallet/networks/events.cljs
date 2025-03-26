@@ -1,32 +1,74 @@
 (ns status-im.contexts.wallet.networks.events
   (:require [re-frame.core :as rf]
+            [status-im.contexts.profile.db :as profile.db]
+            [status-im.contexts.settings.wallet.network-settings.max-active-networks-sheet :as
+             max-active-networks-sheet]
             [status-im.contexts.wallet.networks.db :as networks.db]
-            [status-im.contexts.wallet.rpc-data-store.networks :as rpc-data-store.networks]))
+            [status-im.contexts.wallet.networks.effects]
+            [status-im.contexts.wallet.rpc-data-store.networks :as rpc-data-store.networks]
+            [utils.debounce :as debounce]))
 
 (rf/reg-event-fx
- :wallet/get-ethereum-chains
+ :wallet/get-networks
  (fn [_]
-   {:json-rpc/call
-    [{:method     "wallet_getEthereumChains"
-      :params     []
-      :on-success [:wallet/get-ethereum-chains-success]
-      :on-error   [:wallet/log-rpc-error {:event :wallet/get-ethereum-chains}]}]}))
+   {:fx [[:effects.wallet/get-networks
+          {:on-success [:wallet/get-networks-success]
+           :on-error   [:wallet/log-rpc-error {:event :wallet/get-networks}]}]]}))
 
 (rf/reg-event-fx
- :wallet/get-ethereum-chains-success
+ :wallet/get-networks-success
  (fn [{:keys [db]} [data]]
-   (let [network-data          (rpc-data-store.networks/rpc->networks data)
-         networks-by-id        (rpc-data-store.networks/networks-by-id network-data)
-         default-network-names (->> (networks.db/get-testnet-mode-key db)
-                                    (get network-data)
-                                    (map :network-name)
-                                    set)]
+   (let [networks (rpc-data-store.networks/rpc->networks data)]
      {:db (-> db
-              (assoc-in [:wallet :networks] network-data)
-              (assoc-in [:wallet :networks-by-id] networks-by-id)
-              (assoc-in [:wallet :ui :network-filter :default-networks] default-network-names))
-      :fx [[:dispatch [:wallet.tokens/get-token-list]]
-           [:dispatch [:wallet/reset-selected-networks]]]})))
+              (assoc-in [:wallet :networks/chain-ids-by-mode]
+                        (rpc-data-store.networks/network-chain-ids networks))
+              (assoc-in [:wallet :networks/by-id]
+                        (rpc-data-store.networks/networks-by-id networks)))
+      :fx [[:dispatch [:wallet/on-networks-loaded]]]})))
+
+(rf/reg-event-fx
+ :wallet/on-networks-loaded
+ (fn [_]
+   {:fx [[:dispatch [:wallet.tokens/get-token-list]]
+         [:dispatch [:wallet/check-new-networks-seen]]]}))
+
+(rf/reg-event-fx :wallet/toggle-network-active
+ (fn [{:keys [db]} [chain-id]]
+   (let [{:keys [active? deactivatable?]} (networks.db/get-network-details db chain-id)
+         max-active-reached?              (networks.db/max-active-networks-reached? db)
+         should-activate?                 (not active?)]
+     (if (and should-activate? max-active-reached?)
+       {:fx [[:dispatch
+              [:show-bottom-sheet
+               {:content max-active-networks-sheet/view
+                :theme   (:theme db)
+                :shell?  true}]]]}
+       (when deactivatable?
+         {:fx [[:dispatch
+                [:wallet/update-network-active chain-id should-activate?]]
+               [:effects.wallet/set-network-active
+                {:chain-id   chain-id
+                 :active?    should-activate?
+                 :on-success #(when-not active?
+                                (debounce/debounce-and-dispatch
+                                 [:wallet/on-active-networks-change]
+                                 500))
+                 :on-error   #(rf/dispatch
+                               [:wallet/update-network-active chain-id active?])}]]})))))
+
+(rf/reg-event-fx :wallet/on-active-networks-change
+ (fn [_]
+   {:fx [[:dispatch [:wallet/reload-cached-balances]]
+         [:dispatch [:wallet/reload-collectibles]]
+         [:dispatch [:wallet.tokens/reset-tokens]]
+         [:dispatch [:wallet.tokens/get-token-list]]
+         [:dispatch [:wallet/check-new-networks-seen]]]}))
+
+(rf/reg-event-fx :wallet/update-network-active
+ (fn [{:keys [db]} [chain-id active?]]
+   {:db (assoc-in db
+         [:wallet :networks/by-id chain-id :active?]
+         active?)}))
 
 (rf/reg-event-fx
  :wallet/navigate-to-chain-explorer
@@ -34,3 +76,47 @@
    (let [explorer-link (networks.db/get-block-explorer-address-url db chain-id address)]
      {:fx [[:dispatch [:hide-bottom-sheet]]
            [:dispatch [:browser.ui/open-url explorer-link]]]})))
+
+(rf/reg-event-fx
+ :wallet/toggle-testnet-mode
+ (fn [{:keys [db]}]
+   (let [testnet? (profile.db/testnet? db)]
+     {:fx [[:dispatch
+            [:profile.settings/profile-update :test-networks-enabled? (not testnet?)
+             {:on-success #(rf/dispatch
+                            [:wallet/toggle-testnet-mode-success (not testnet?)])}]]]})))
+
+(rf/reg-event-fx
+ :wallet/toggle-testnet-mode-success
+ (fn [{:keys [db]} [testnet?]]
+   {:db (assoc-in db [:profile/profile :test-networks-enabled?] testnet?)
+    :fx [[:dispatch [:wallet/on-active-networks-change]]]}))
+
+(rf/reg-event-fx
+ :wallet/mark-new-networks-as-seen
+ (fn [{:keys [db]}]
+   {:db (assoc-in db [:wallet :ui :networks/new-marked-as-seen?] true)
+    :fx [[:effects.wallet/store-new-networks-as-seen
+          {:chain-ids (networks.db/get-new-chain-ids db)}]]}))
+
+(rf/reg-event-fx
+ :wallet/check-new-networks-seen
+ (fn [{:keys [db]}]
+   {:fx [[:effects.wallet/new-networks-seen?
+          {:chain-ids  (networks.db/get-new-chain-ids db)
+           :on-success #(rf/dispatch [:wallet/update-new-networks-seen %])}]]}))
+
+(rf/reg-event-fx
+ :wallet/update-new-networks-seen
+ (fn [{:keys [db]} [new-networks-seen?]]
+   {:db (assoc-in db [:wallet :ui :networks/new-marked-as-seen?] new-networks-seen?)}))
+
+(rf/reg-event-fx
+ :wallet/filter-network-balances
+ (fn [{:keys [db]} [network-filter]]
+   {:db (update-in db [:wallet :ui :networks/network-filter] merge network-filter)}))
+
+(rf/reg-event-fx
+ :wallet/reset-network-balances-filter
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet :ui] dissoc :networks/network-filter)}))

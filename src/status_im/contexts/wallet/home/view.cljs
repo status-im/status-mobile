@@ -145,7 +145,8 @@
   (let [selected-tab                   (rf/sub [:wallet/home-tab])
         account-list-ref               (rn/use-ref-atom nil)
         tokens-loading?                (rf/sub [:wallet/home-tokens-loading?])
-        networks                       (rf/sub [:wallet/selected-network-details])
+        networks                       (rf/sub [:wallet/filtered-networks])
+        networks-filtered?             (rf/sub [:wallet/network-filter?])
         account-cards-data             (rf/sub [:wallet/account-cards-data])
         cards                          (conj account-cards-data (new-account-card-data))
         [init-loaded? set-init-loaded] (rn/use-state false)
@@ -154,9 +155,12 @@
         show-new-chain-indicator?      (rf/sub [:wallet/show-new-chain-indicator?])
         on-press-network-selector      (rn/use-callback
                                         (fn []
-                                          (rf/dispatch [:wallet/hide-new-chain-indicator])
-                                          (rf/dispatch [:show-bottom-sheet
-                                                        {:content network-filter/view}])))]
+                                          (if networks-filtered?
+                                            (rf/dispatch [:wallet/reset-network-balances-filter])
+                                            (do (rf/dispatch [:wallet/mark-new-networks-as-seen])
+                                                (rf/dispatch [:show-bottom-sheet
+                                                              {:content network-filter/view}]))))
+                                        [networks-filtered?])]
     (rn/use-effect (fn []
                      (when (and @account-list-ref (pos? (count cards)))
                        (.scrollToOffset ^js @account-list-ref
@@ -183,6 +187,7 @@
                                    :metrics                   :none
                                    :balance                   formatted-balance
                                    :networks                  networks
+                                   :networks-filtered?        networks-filtered?
                                    :dropdown-on-press         on-press-network-selector
                                    :show-new-chain-indicator? (when (not-empty networks)
                                                                 show-new-chain-indicator?)}]

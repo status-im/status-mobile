@@ -34,7 +34,7 @@
                               :message prepared-hash}]
        :size                :size-48
        :track-text          slide-button-text
-       :disabled?           (and (not prepared-hash) disabled?)
+       :disabled?           (or (not prepared-hash) disabled?)
        :customization-color customization-color
        :on-success          on-auth-success
        :on-fail             on-auth-fail

@@ -72,51 +72,6 @@
   (is (match? {:wallet {:ui {}}}
               (:db (dispatch [event-id])))))
 
-(h/deftest-event :wallet/reset-selected-networks
-  [event-id dispatch]
-  (reset! rf-db/app-db {:wallet {:ui {:network-filter {:default-networks default-networks}}}})
-  (is (match? {:wallet
-               {:ui {:network-filter {:default-networks  default-networks
-                                      :selector-state    :default
-                                      :selected-networks default-networks}}}}
-              (:db (dispatch [event-id])))))
-
-(h/deftest-event :wallet/update-selected-networks
-  [event-id dispatch]
-  (testing "update-selected-networks"
-    (let [network-name arbitrum-name
-          expected-db  {:wallet {:ui {:network-filter {:default-networks default-networks
-                                                       :selected-networks
-                                                       #{optimism-name
-                                                         network-name}
-                                                       :selector-state :changed}}}}]
-      (reset! rf-db/app-db
-        {:wallet {:ui {:network-filter {:default-networks default-networks
-                                        :selected-networks
-                                        #{optimism-name}
-                                        :selector-state :changed}}}})
-      (is (match? expected-db (:db (dispatch [event-id network-name]))))))
-
-  (testing "update-selected-networks > if all networks is already selected, update to incoming network"
-    (let [network-name arbitrum-name
-          expected-db  {:wallet {:ui {:network-filter {:default-networks  default-networks
-                                                       :selected-networks #{network-name}
-                                                       :selector-state    :changed}}}}]
-      (reset! rf-db/app-db
-        {:wallet {:ui {:network-filter {:default-networks  default-networks
-                                        :selector-state    :default
-                                        :selected-networks default-networks}}}})
-      (is (match? expected-db (:db (dispatch [event-id network-name]))))))
-
-  (testing "update-selected-networks > reset on removing last network"
-    (let [expected-fx [[:dispatch [:wallet/reset-selected-networks]]]]
-      (reset! rf-db/app-db
-        {:wallet {:ui {:network-filter {:default-networks  default-networks
-                                        :selected-networks #{optimism-name}
-                                        :selector-state    :changed}}}})
-      (is (match? expected-fx
-                  (:fx (dispatch [event-id optimism-name])))))))
-
 (h/deftest-event :wallet/get-wallet-token-for-all-accounts
   [event-id dispatch]
   (let [address-1 "0x1"

@@ -3,8 +3,9 @@
             [clojure.set]
             [clojure.string :as string]
             [react-native.platform :as platform]
-            [status-im.contexts.network.data-store :as network.data-store]
+            [status-im.contexts.network.db :as network.db]
             [status-im.contexts.profile.db :as profile.db]
+            [status-im.contexts.wallet.account.db :as account.db]
             [status-im.contexts.wallet.collectible.utils :as collectible-utils]
             [status-im.contexts.wallet.data-store :as data-store]
             [status-im.contexts.wallet.networks.db :as networks.db]
@@ -73,7 +74,7 @@
          data-type               (collectible-data-types :header)
          fetch-criteria          {:fetch-type            (fetch-type :fetch-if-cache-old)
                                   :max-cache-age-seconds max-cache-age-seconds}
-         chain-ids               (networks.db/get-chain-ids db)
+         chain-ids               (networks.db/get-active-chain-ids db)
          request-params          [request-id
                                   chain-ids
                                   [account]
@@ -145,9 +146,46 @@
 (rf/reg-event-fx :wallet/request-collectibles-for-account request-collectibles-for-account)
 
 (rf/reg-event-fx
+ :wallet/reload-collectibles
+ (fn [{:keys [db]}]
+   (let [n-pending-requests  (get-in db [:wallet :ui :collectibles :pending-requests] 0)
+         addresses           (account.db/get-accounts-addresses db)
+         chain-ids           (networks.db/get-active-chain-ids db)
+         request-id          (last (get-unique-collectible-request-id 1))
+         collectibles-filter nil
+         offset              0
+         fetch-criteria      {:fetch-type            (fetch-type :fetch-if-not-cached)
+                              :max-cache-age-seconds max-cache-age-seconds}
+         data-type           (collectible-data-types :header)
+         request-params      [request-id
+                              chain-ids
+                              addresses
+                              collectibles-filter
+                              offset
+                              collectibles-request-batch-size
+                              data-type
+                              fetch-criteria]]
+     {:db (-> db
+              (assoc-in [:wallet :ui :collectibles :pending-requests] (inc n-pending-requests))
+              (update-in [:wallet :accounts]
+                         update-vals
+                         #(dissoc %
+                           :collectibles
+                           :has-more-collectibles?
+                           :current-collectible-idx)))
+      :fx [[:json-rpc/call
+            [{:method   "wallet_getOwnedCollectiblesAsync"
+              :params   request-params
+              :on-error (fn [error]
+                          (log/error "failed to request collectibles for account"
+                                     {:event  :wallet/request-new-collectibles-for-account
+                                      :error  error
+                                      :params request-params}))}]]]})))
+
+(rf/reg-event-fx
  :wallet/request-collectibles-for-current-viewing-account
  (fn [{:keys [db]} _]
-   (when (network.data-store/online? db)
+   (when (network.db/online? db)
      (let [current-viewing-account (-> db :wallet :current-viewing-account-address)]
        {:fx [[:dispatch [:wallet/request-collectibles-for-account current-viewing-account]]]}))))
 

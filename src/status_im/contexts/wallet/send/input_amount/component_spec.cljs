@@ -13,7 +13,7 @@
 
 (def sub-mocks
   {:profile/profile                              {:currency :usd}
-   :wallet/selected-network-details              [{:source           525
+   :wallet/active-networks                       [{:source           525
                                                    :short-name       "eth"
                                                    :network-name     :mainnet
                                                    :chain-id         1

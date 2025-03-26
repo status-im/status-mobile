@@ -1,7 +1,8 @@
 (ns status-im.contexts.wallet.tokens.events-test
   (:require
     [cljs.test :refer [deftest is testing]]
-    [status-im.contexts.wallet.tokens.events :as tokens.events]))
+    [status-im.contexts.wallet.tokens.events :as tokens.events]
+    [tests.wallet-test-data :as test-data]))
 
 (def eth
   {:address  "0x0000000000000000000000000000000000000000"
@@ -38,87 +39,69 @@
 
 (deftest store-token-list-test
   (testing "response contains one list, and `chain-id` is equal to the one that's in the database"
-    (let [cofx {:db {:wallet {:networks {:prod [{:chain-id 1}]}}}}
+    (let [cofx {:db (test-data/add-active-networks-to-db {} [test-data/mainnet-chain-id])}
           data [{:name    "native"
                  :source  "native"
                  :version "1.0.0"
                  :tokens  [eth snt]}]]
       (is
        (match?
-        (:db (tokens.events/store-token-list cofx [{:data data}]))
-        {:wallet {:networks {:prod [{:chain-id 1}]}
-                  :tokens   {:sources [{:name         "native"
-                                        :source       "native"
-                                        :version      "1.0.0"
-                                        :tokens-count 2}]
-                             :by-address '({:address      "0x0000000000000000000000000000000000000000"
-                                            :decimals     18
-                                            :key          "1-0x0000000000000000000000000000000000000000"
-                                            :community-id nil
-                                            :symbol       "ETH"
-                                            :sources      ["native"]
-                                            :name         "Ether"
-                                            :type         :erc20
-                                            :verified?    true
-                                            :chain-id     1
-                                            :image        nil}
-                                           {:address      "0x0000000000000000000000000000000000000001"
-                                            :decimals     18
-                                            :key          "1-0x0000000000000000000000000000000000000001"
-                                            :community-id nil
-                                            :symbol       "SNT"
-                                            :sources      ["native"]
-                                            :name         "Status Network Token"
-                                            :type         :erc20
-                                            :verified?    true
-                                            :chain-id     1
-                                            :image        nil})
-                             :by-symbol '({:address      "0x0000000000000000000000000000000000000000"
-                                           :decimals     18
-                                           :key          "1-ETH"
-                                           :community-id nil
-                                           :symbol       "ETH"
-                                           :sources      ["native"]
-                                           :name         "Ether"
-                                           :type         :erc20
-                                           :verified?    true
-                                           :chain-id     1
-                                           :image        nil}
-                                          {:address      "0x0000000000000000000000000000000000000001"
-                                           :decimals     18
-                                           :key          "1-SNT"
-                                           :community-id nil
-                                           :symbol       "SNT"
-                                           :sources      ["native"]
-                                           :name         "Status Network Token"
-                                           :type         :erc20
-                                           :verified?    true
-                                           :chain-id     1
-                                           :image        nil})
-                             :supported-chains-by-symbol {"ETH" #{1} "SNT" #{1}}}
-                  :ui       {:loading {:token-list    false
-                                       :market-values true
-                                       :details       true
-                                       :prices        true}}}}))))
-  (testing "response contains one list, and `chain-id` is NOT equal to the one that's in the database"
-    (let [cofx {:db {:wallet {:networks {:prod [{:chain-id 2}]}}}}
-          data [{:name    "native"
-                 :source  "native"
-                 :version "1.0.0"
-                 :tokens  [eth snt]}]]
-      (is (match? (-> (tokens.events/store-token-list cofx [{:data data}])
-                      :db
-                      :wallet
-                      :tokens)
-                  {:sources                    [{:name         "native"
-                                                 :source       "native"
-                                                 :version      "1.0.0"
-                                                 :tokens-count 2}]
-                   :by-address                 nil
-                   :by-symbol                  nil
-                   :supported-chains-by-symbol {}}))))
+        (-> cofx
+            (tokens.events/store-token-list [{:data data}])
+            (get-in [:db :wallet :tokens]))
+        {:sources                    [{:name         "native"
+                                       :source       "native"
+                                       :version      "1.0.0"
+                                       :tokens-count 2}]
+         :by-address                 '({:address      "0x0000000000000000000000000000000000000000"
+                                        :decimals     18
+                                        :key          "1-0x0000000000000000000000000000000000000000"
+                                        :community-id nil
+                                        :symbol       "ETH"
+                                        :sources      ["native"]
+                                        :name         "Ether"
+                                        :type         :erc20
+                                        :verified?    true
+                                        :chain-id     1
+                                        :image        nil}
+                                       {:address      "0x0000000000000000000000000000000000000001"
+                                        :decimals     18
+                                        :key          "1-0x0000000000000000000000000000000000000001"
+                                        :community-id nil
+                                        :symbol       "SNT"
+                                        :sources      ["native"]
+                                        :name         "Status Network Token"
+                                        :type         :erc20
+                                        :verified?    true
+                                        :chain-id     1
+                                        :image        nil})
+         :by-symbol                  '({:address      "0x0000000000000000000000000000000000000000"
+                                        :decimals     18
+                                        :key          "1-ETH"
+                                        :community-id nil
+                                        :symbol       "ETH"
+                                        :sources      ["native"]
+                                        :name         "Ether"
+                                        :type         :erc20
+                                        :verified?    true
+                                        :chain-id     1
+                                        :image        nil}
+                                       {:address      "0x0000000000000000000000000000000000000001"
+                                        :decimals     18
+                                        :key          "1-SNT"
+                                        :community-id nil
+                                        :symbol       "SNT"
+                                        :sources      ["native"]
+                                        :name         "Status Network Token"
+                                        :type         :erc20
+                                        :verified?    true
+                                        :chain-id     1
+                                        :image        nil})
+         :supported-chains-by-symbol {"ETH" #{test-data/mainnet-chain-id}
+                                      "SNT" #{test-data/mainnet-chain-id}}}))))
+
   (testing "response contains two lists"
-    (let [cofx {:db {:wallet {:networks {:prod [{:chain-id 1}]}}}}
+    (let [cofx {:db (test-data/add-active-networks-to-db {} [test-data/mainnet-chain-id])}
           data [{:name    "native"
                  :source  "native"
                  :version "1.0.0"
@@ -209,7 +192,7 @@
                                         :image        nil})
          :supported-chains-by-symbol {"ETH" #{1} "SNT" #{1} "ANOTHER1" #{1}}}))))
   (testing "second list contains a token that replaces the one that was added before"
-    (let [cofx {:db {:wallet {:networks {:prod [{:chain-id 1}]}}}}
+    (let [cofx {:db (test-data/add-active-networks-to-db {} [test-data/mainnet-chain-id])}
           data [{:name    "native"
                  :source  "native"
                  :version "1.0.0"
@@ -274,6 +257,7 @@
                                         :name         "Another Token 2"
                                         :type         :erc20
                                         :verified?    false
+
                                         :chain-id     1
                                         :image        nil})
          :supported-chains-by-symbol {"ETH" #{1} "ANOTHER1" #{1}}})))))

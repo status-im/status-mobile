@@ -12,6 +12,4 @@
               (some #(= stack-id %) shell.constants/stacks-ids))
      (some-> @state/selected-stack-id-shared-value
              (reanimated/set-shared-value (name stack-id)))
-     (utils/change-selected-stack stack-id)
-     (when-not (= stack-id :screen/wallet-stack)
-       (rf/dispatch [:wallet/reset-selected-networks])))))
+     (utils/change-selected-stack stack-id))))

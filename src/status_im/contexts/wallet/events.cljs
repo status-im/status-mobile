@@ -6,10 +6,11 @@
     [clojure.string :as string]
     [react-native.platform :as platform]
     [status-im.constants :as constants]
-    [status-im.contexts.network.data-store :as network.data-store]
+    [status-im.contexts.network.db :as network.db]
     [status-im.contexts.profile.db :as profile.db]
     [status-im.contexts.settings.wallet.effects]
     [status-im.contexts.settings.wallet.events]
+    [status-im.contexts.wallet.account.db :as account.db]
     [status-im.contexts.wallet.common.activity-tab.events]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
@@ -152,7 +153,7 @@
          navigate-to-account (:navigate-to-account wallet-db)]
      {:db (update-in db [:wallet :accounts] reconcile-accounts wallet-accounts)
       :fx (concat (when (or (data-store/tokens-never-loaded? db)
-                            (network.data-store/online? db))
+                            (network.db/online? db))
                     refresh-accounts-fx-dispatches)
                   [(when new-account?
                      [:dispatch [:wallet/navigate-to-new-account navigate-to-account]])])})))
@@ -226,6 +227,15 @@
             :params     [addresses true]
             :on-success [:wallet/store-wallet-token addresses]
             :on-error   [:wallet/get-wallet-token-for-accounts-failed addresses]}]]]}))
+
+(rf/reg-event-fx :wallet/reload-cached-balances
+ (fn [{:keys [db]}]
+   (let [addresses (account.db/get-accounts-addresses db)]
+     {:fx [[:json-rpc/call
+            [{:method     "wallet_fetchOrGetCachedWalletBalances"
+              :params     [addresses false]
+              :on-success [:wallet/store-wallet-token addresses]
+              :on-error   [:wallet/get-wallet-token-for-accounts-failed addresses]}]]]})))
 
 (rf/reg-event-fx
  :wallet/get-wallet-token-for-accounts-failed
@@ -360,7 +370,7 @@
 
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]}
-      [{:keys [token token-symbol stack-id network owners network-details start-flow?] :as params}]]
+      [{:keys [token token-symbol stack-id network owners networks start-flow?] :as params}]]
    (let [{:keys [wallet]}             db
          unique-owner                 (when (= (count owners) 1)
                                         (first owners))
@@ -368,7 +378,7 @@
                                         (let [token (utils/get-token-from-account db
                                                                                   token-symbol
                                                                                   unique-owner)]
-                                          (utils/token-with-balance token network-details))
+                                          (utils/token-with-balance token networks))
                                         token)
          missing-recipient?           (-> db db/send :to-address nil?)
          to-address                   (or unique-owner
@@ -385,11 +395,11 @@
                                         (filter #(not= (:balance %) "0")
                                                 (vals (:balances-per-chain token))))
          balance-in-only-one-network? (when networks-with-balance (= (count networks-with-balance) 1))
-         network-details              (networks.db/get-networks db)
+         networks                     (networks.db/get-active-networks db)
          network                      (if balance-in-only-one-network?
                                         (first (filter #(= (:chain-id %)
                                                            (:chain-id (first networks-with-balance)))
-                                                       network-details))
+                                                       networks))
                                         network)]
      {:db (cond-> db
             :always            (update-in db-path/send assoc :tx-type :tx/bridge)
@@ -545,7 +555,7 @@
 (rf/reg-event-fx :wallet/initialize
  (fn []
    {:fx [[:dispatch [:wallet/start-wallet]]
-         [:dispatch [:wallet/get-ethereum-chains]]
+         [:dispatch [:wallet/get-networks]]
          [:dispatch [:wallet/get-accounts]]
          [:dispatch [:wallet/get-keypairs]]
          [:dispatch [:wallet/get-saved-addresses]]
@@ -575,11 +585,11 @@
                                                  (for [[k v] chains :when (= v "down")] k))
                                     keys)
          test-networks-enabled? (profile.db/testnet? db)
-         chain-ids              (networks.db/get-chain-ids db)
+         chain-ids              (networks.db/get-active-chain-ids db)
          chains-filtered        (remove #(not
                                           (contains? chain-ids %))
                                         down-chain-ids)
-         chains-down?           (and (network.data-store/online? db) (seq chains-filtered))
+         chains-down?           (and (network.db/online? db) (seq chains-filtered))
          chain-names            (when chains-down?
                                   (->> (map (partial networks.db/get-network-details db)
                                             chains-filtered)
@@ -596,37 +606,6 @@
      ;; Context: https://github.com/status-im/status-mobile/issues/21054
 
      {:db (assoc-in db [:wallet :statuses :blockchains] chains)})))
-
-(rf/reg-event-fx :wallet/reset-selected-networks
- (fn [{:keys [db]}]
-   (let [default-network-names (get-in db [:wallet :ui :network-filter :default-networks])]
-     {:db (-> db
-              (assoc-in [:wallet :ui :network-filter :selector-state] :default)
-              (assoc-in [:wallet :ui :network-filter :selected-networks] default-network-names))})))
-
-(rf/reg-event-fx :wallet/update-selected-networks
- (fn [{:keys [db]} [network-name]]
-   (let [selected-networks     (get-in db [:wallet :ui :network-filter :selected-networks])
-         selector-state        (get-in db [:wallet :ui :network-filter :selector-state])
-         contains-network?     (contains? selected-networks network-name)
-         update-fn             (if contains-network? disj conj)
-         networks-count        (count selected-networks)
-         default-network-count (count (get-in db [:wallet :ui :network-filter :default-networks]))]
-     (cond (= selector-state :default)
-           {:db (-> db
-                    (assoc-in [:wallet :ui :network-filter :selected-networks] #{network-name})
-                    (assoc-in [:wallet :ui :network-filter :selector-state] :changed))}
-
-           ;; reset the list
-           ;; - if user is removing the last network in the list
-           ;; - if all networks is selected
-           (or (and (= networks-count 1) contains-network?)
-               (and (= (inc networks-count) default-network-count) (not contains-network?)))
-           {:fx [[:dispatch [:wallet/reset-selected-networks]]]}
-
-           :else
-           {:db
-            (update-in db [:wallet :ui :network-filter :selected-networks] update-fn network-name)}))))
 
 (rf/reg-event-fx
  :wallet/get-crypto-on-ramps-success
@@ -772,15 +751,3 @@
                  :wallet.swap/transaction-success
                  :wallet/transaction-success)
                sent-transactions])]]})))
-
-(rf/reg-event-fx
- :wallet/retrieve-new-chain-indicator
- (fn [{:keys [db]} [flag]]
-   {:db (assoc-in db [:wallet :ui :show-new-chain-indicator?] flag)}))
-
-(rf/reg-event-fx
- :wallet/hide-new-chain-indicator
- (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :show-new-chain-indicator?] false)
-    :fx [[:effects.wallet/set-base-chain-indicator-shown true]]}))
-

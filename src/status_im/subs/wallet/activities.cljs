@@ -155,11 +155,11 @@
  :<- [:wallet/all-activities]
  :<- [:wallet/tokens-by-symbol]
  :<- [:wallet/current-viewing-account-address]
- :<- [:wallet/network-details]
+ :<- [:wallet/networks-by-id]
  :<- [:wallet/accounts-and-saved-addresses]
- (fn [[activities tokens-by-symbol current-address network-details accounts-and-saved-addresses]]
+ (fn [[activities tokens-by-symbol current-address networks-by-id accounts-and-saved-addresses]]
    (let [context    {:tokens-by-symbol             tokens-by-symbol
-                     :chain-id->network-details    (collection/index-by :chain-id network-details)
+                     :chain-id->network-details    networks-by-id
                      :accounts-and-saved-addresses accounts-and-saved-addresses}
          activities (->> (get activities current-address)
                          vals

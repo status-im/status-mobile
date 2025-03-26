@@ -1,11 +1,17 @@
 (ns status-im.contexts.wallet.tokens.events
-  (:require [re-frame.core :as rf]
+  (:require [clojure.set :as set]
+            [re-frame.core :as rf]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.networks.db :as networks.db]
             [status-im.contexts.wallet.tokens.data :as tokens-data]
             [status-im.contexts.wallet.tokens.effects]
             [taoensso.timbre :as log]
             [utils.address]))
+
+(rf/reg-event-fx
+ :wallet.tokens/reset-tokens
+ (fn [{:keys [db]}]
+   {:db (update-in db [:wallet] dissoc :tokens)}))
 
 (rf/reg-event-fx
  :wallet.tokens/get-token-list
@@ -20,7 +26,7 @@
 
 (defn store-token-list
   [{:keys [db]} [{:keys [data]}]]
-  (let [chain-ids                  (networks.db/get-chain-ids db)
+  (let [chain-ids                  (networks.db/get-active-chain-ids db)
         profile-currency           (get-in db [:profile/profile :currency])
         tokens                     (reduce (fn [{:keys [by-address by-symbol] :as data}
                                                 {:keys [name source version tokens]}]
@@ -55,15 +61,10 @@
                                            #{}
                                            by-symbol-vals)
         supported-chains-by-symbol (reduce
-                                    (fn [result
-                                         {token-symbol :symbol
-                                          :keys        [chain-id]}]
-                                      (if (contains? result token-symbol)
-                                        (update result token-symbol conj chain-id)
-                                        (assoc result token-symbol #{chain-id})))
+                                    (fn [result token]
+                                      (update result (:symbol token) set/union #{(:chain-id token)}))
                                     {}
                                     by-symbol-vals)]
-
     {:fx [[:effects.wallet.tokens/fetch-market-values
            {:symbols    symbols
             :currency   profile-currency

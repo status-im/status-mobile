@@ -29,7 +29,7 @@
   []
   (let [updating?               (rf/sub [:wallet/current-viewing-account-collectibles-updating?])
         collectible-list        (rf/sub
-                                 [:wallet/current-viewing-account-collectibles-in-selected-networks])
+                                 [:wallet/current-viewing-account-collectibles-in-filtered-networks])
         current-account-address (rf/sub [:wallet/current-viewing-account-address])]
     [collectibles/view
      {:loading?                  updating?

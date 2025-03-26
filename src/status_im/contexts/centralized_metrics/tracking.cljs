@@ -1,8 +1,8 @@
 (ns status-im.contexts.centralized-metrics.tracking
   (:require
     [clojure.string]
-    [legacy.status-im.utils.build :as build]
     [react-native.platform :as platform]
+    [status-im.app-build.core :as build]
     [status-im.navigation.screens :as screens]))
 
 (defn key-value-event

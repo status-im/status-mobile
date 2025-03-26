@@ -9,6 +9,8 @@
        network-data
        {:isTest                 :testnet?
         :chainId                :chain-id
+        :isActive               :active?
+        :isDeactivatable        :deactivatable?
         :relatedChainId         :related-chain-id
         :layer                  :layer
         :shortName              :short-name
@@ -27,6 +29,8 @@
      [:isTest boolean?]
      [:chainId int?]
      [:relatedChainId int?]
+     [:isActive boolean?]
+     [:isDeactivatable boolean?]
      [:layer [:enum 1 2]]
      [:shortName string?]
      [:chainColor string?]
@@ -39,6 +43,8 @@
     [:testnet? boolean?]
     [:chain-id int?]
     [:related-chain-id int?]
+    [:active? boolean?]
+    [:deactivatable? boolean?]
     [:layer [:enum 1 2]]
     [:short-name string?]
     [:chain-color string?]
@@ -58,24 +64,19 @@
 
 (defn rpc->networks
   [networks-data]
-  (let [networks
-        (reduce
-         (fn [result {:keys [Prod Test]}]
-           (cond-> result
-             Prod (update :prod (fnil conj []) (make-network Prod))
-             Test (update :test (fnil conj []) (make-network Test))))
-         {:prod [] :test []}
-         networks-data)]
-    {:prod (->> networks
-                :prod
-                sort-networks)
-     :test (->> networks
-                :test
-                sort-networks)}))
+  (map make-network networks-data))
+
+(defn network-chain-ids
+  [networks]
+  (let [{:keys [testnet production]}
+        (group-by #(if (:testnet? %) :testnet :production) networks)]
+    {:prod (->> production
+                sort-networks
+                (map :chain-id))
+     :test (->> testnet
+                sort-networks
+                (map :chain-id))}))
 
 (defn networks-by-id
   [networks]
-  (->> networks
-       vals
-       (apply concat)
-       (into {} (map (juxt :chain-id identity)))))
+  (into {} (map (juxt :chain-id identity)) networks))

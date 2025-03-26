@@ -28,15 +28,6 @@
                       :chain-id 1}
         :token-id    "some-id"}})
 
-(h/deftest-event :wallet/update-receiver-networks
-  [event-id dispatch]
-  (testing "reciever networks changed"
-    (let [selected-networks-before [:ethereum :optimism :arbitrum]
-          selected-networks-after  [:ethereum :optimism]
-          expected-db              (make-send-structure {:receiver-networks selected-networks-after})]
-      (reset! rf-db/app-db (make-send-structure {:receiver-networks selected-networks-before}))
-      (is (match? expected-db (:db (dispatch [event-id selected-networks-after])))))))
-
 (h/deftest-event :wallet/set-token-to-send
   [event-id dispatch]
   (let [token-symbol      "ETH"

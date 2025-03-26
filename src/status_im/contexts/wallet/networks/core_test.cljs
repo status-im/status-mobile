@@ -2,7 +2,7 @@
   (:require
     [cljs.test :refer-macros [deftest is testing]]
     [status-im.contexts.wallet.networks.core :as sut]
-    [status-im.contexts.wallet.networks.test-data :as test-data]))
+    [tests.wallet-test-data :as test-data]))
 
 (deftest eth-mainnet?-test
   (testing "returns true if network is mainnet ethereum"
@@ -20,10 +20,10 @@
 
 (deftest get-block-explorer-address-url-test
   (testing "returns the block-explorer address url"
-    (is (match? "https://optimism.block-explorer/address/0x123"
+    (is (match? "https://opt.block-explorer.com/address/0x123"
                 (sut/get-block-explorer-address-url test-data/optimism "0x123")))))
 
 (deftest get-block-explorer-tx-url-test
   (testing "returns the block-explorer transaction url"
-    (is (match? "https://sepolia.block-explorer/tx/0x123"
-                (sut/get-block-explorer-tx-url test-data/sepolia "0x123")))))
+    (is (match? "https://eth.block-explorer.com/tx/0x123"
+                (sut/get-block-explorer-tx-url test-data/mainnet "0x123")))))

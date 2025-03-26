@@ -6,6 +6,7 @@
     [status-im.subs.root]
     [status-im.subs.wallet.collectibles]
     [test-helpers.unit :as h]
+    [tests.wallet-test-data :as test-data]
     [utils.re-frame :as rf]))
 
 (h/deftest-sub :wallet/all-activities
@@ -23,6 +24,7 @@
     (swap! rf-db/app-db
       (fn [db]
         (-> db
+            (test-data/add-networks-to-db)
             (assoc-in [:wallet :tokens :by-symbols]
                       (list {:symbol "ETH" :decimals 18}
                             {:symbol "DAI" :decimals 18}

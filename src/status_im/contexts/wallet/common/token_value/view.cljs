@@ -86,7 +86,7 @@
         token-owners        (rf/sub [:wallet/operable-addresses-with-token-symbol token-symbol])
         testnet-mode?       (rf/sub [:profile/test-networks-enabled?])
         account-owns-token? (rf/sub [:wallet/current-account-owns-token token-symbol])
-        network-details     (rf/sub [:wallet/network-details])
+        networks            (rf/sub [:wallet/active-networks])
         token-owned?        (if selected-account account-owns-token? (seq token-owners))
         asset-to-receive    (rf/sub [:wallet/token-by-symbol-from-first-available-account-with-balance
                                      (swap-utils/default-asset-to-receive token-symbol)])
@@ -123,8 +123,8 @@
                                        asset-to-receive)))
                  (when token-owned?
                    (action-bridge (assoc params
-                                         :network-details
-                                         network-details
+                                         :networks
+                                         networks
                                          :bridge-disabled?
                                          (send-utils/bridge-disabled? token-symbol))))]))]]))
 

@@ -7,6 +7,7 @@
     [status-im.subs.root]
     [status-im.subs.wallet.send]
     [test-helpers.unit :as h]
+    [tests.wallet-test-data :as test-data]
     [utils.money :as money]
     [utils.re-frame :as rf]))
 
@@ -209,30 +210,45 @@
         (update-in db db-path/send assoc :token token-mock)))
     (is (match? "2" (rf/sub [sub-name (money/bignumber "1.9999999")])))))
 
-(def ^:private mainnet-network
-  {:short-name       "eth"
-   :network-name     :mainnet
-   :abbreviated-name "Eth."
-   :full-name        "Mainnet"
-   :chain-id         1
-   :related-chain-id 1
-   :layer            1})
-
 (h/deftest-sub :wallet/bridge-to-network-details
   [sub-name]
   (testing "returns the network details for bridge transactions"
     (swap! rf-db/app-db
       (fn [db]
         (-> db
-            (assoc-in [:wallet :networks] {:prod [mainnet-network]})
+            (test-data/add-networks-to-db)
             (assoc-in [:profile/profile :test-networks-enabled?] false)
-            (assoc-in db-path/send {:bridge-to-chain-id 1}))))
-    (is (match? mainnet-network (rf/sub [sub-name]))))
+            (assoc-in db-path/send {:bridge-to-chain-id test-data/mainnet-chain-id}))))
+    (is (match? test-data/mainnet (rf/sub [sub-name]))))
 
   (testing "returns nil if not on the bridge flow"
     (swap! rf-db/app-db
       (fn [db]
         (-> db
-            (assoc-in [:wallet :networks] {:prod [mainnet-network]})
+            (test-data/add-networks-to-db)
             (assoc-in [:profile/profile :test-networks-enabled?] false))))
     (is (match? nil (rf/sub [sub-name])))))
+
+(h/deftest-sub :wallet/send-network-values
+  [sub-name]
+  (testing "network values for the from account are returned correctly"
+    (swap! rf-db/app-db #(-> %
+                             (test-data/add-networks-to-db)
+                             (assoc-in
+                              [:wallet :ui :send]
+                              {:from-values-by-chain {test-data/mainnet-chain-id 100}
+                               :to-values-by-chain   {test-data/arbitrum-chain-id 100}
+                               :token-display-name   "ETH"})))
+    (is
+     (match? {:mainnet {:amount "100" :token-symbol "ETH"}} (rf/sub [sub-name false]))))
+
+  (testing "network values for the to account are returned correctly"
+    (swap! rf-db/app-db #(-> %
+                             (test-data/add-networks-to-db)
+                             (assoc-in
+                              [:wallet :ui :send]
+                              {:from-values-by-chain {test-data/mainnet-chain-id 100}
+                               :to-values-by-chain   {test-data/arbitrum-chain-id 100}
+                               :token-display-name   "ARB1"})))
+    (is
+     (match? {:arbitrum {:amount "100" :token-symbol "ARB1"}} (rf/sub [sub-name true])))))

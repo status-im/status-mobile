@@ -8,8 +8,8 @@
     [utils.re-frame :as rf]))
 
 (defn chain-explorer-options
-  [address network-details]
-  (->> network-details
+  [address networks]
+  (->> networks
        (map (fn [{:keys [chain-id block-explorer-name]}]
               {:icon                :i/link
                :right-icon          :i/external
@@ -21,7 +21,7 @@
 
 (defn view
   [{:keys [name address customization-color] :as address-details}]
-  (let [network-details                (rf/sub [:wallet/network-details])
+  (let [networks                       (rf/sub [:wallet/active-networks])
         open-send-flow                 (rn/use-callback
                                         (fn []
                                           (rf/dispatch [:wallet/init-send-flow-for-address
@@ -75,7 +75,7 @@
          :blur?               true
          :on-press            open-send-flow
          :accessibility-label :send-to-user}]
-       (chain-explorer-options address network-details)
+       (chain-explorer-options address networks)
        [{:icon                :i/share
          :on-press            open-share
          :label               (i18n/label :t/share-address)

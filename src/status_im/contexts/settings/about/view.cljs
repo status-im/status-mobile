@@ -1,6 +1,7 @@
 (ns status-im.contexts.settings.about.view
   (:require [quo.core :as quo]
             [react-native.core :as rn]
+            [status-im.app-build.core :as build]
             [status-im.constants :as constants]
             [status-im.contexts.settings.about.style :as style]
             [status-im.contexts.settings.common.header :as header]
@@ -70,12 +71,10 @@
 
 (defn- app-info
   []
-  (let [app-version  (rf/sub [:get-app-short-version])
-        commit-hash  (rf/sub [:get-commit-hash])
-        node-version (rf/sub [:get-app-node-version])]
+  (let [node-version (rf/sub [:get-app-node-version])]
     [rn/view {:style style/app-info-container}
-     [info-item {:title (i18n/label :t/version) :info app-version}]
-     [info-item {:title (i18n/label :t/app-commit) :info commit-hash}]
+     [info-item {:title (i18n/label :t/version) :info build/app-short-version}]
+     [info-item {:title (i18n/label :t/app-commit) :info build/commit-hash}]
      [info-item {:title (i18n/label :t/node-version) :info node-version}]]))
 
 (defn category

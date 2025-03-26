@@ -25,7 +25,8 @@
                bars))
 
 (defn- view-info-top
-  [{:keys [state balance networks dropdown-on-press dropdown-state show-new-chain-indicator?]}]
+  [{:keys [state balance networks networks-filtered? dropdown-on-press dropdown-state
+           show-new-chain-indicator?]}]
   (let [theme (quo.context/use-theme)]
     [rn/view {:style style/container-info-top}
      (if (= state :loading)
@@ -37,6 +38,7 @@
         balance])
      [network-dropdown/view
       {:state                     (or dropdown-state :default)
+       :networks-filtered?        networks-filtered?
        :blur?                     true
        :on-press                  dropdown-on-press
        :show-new-chain-indicator? show-new-chain-indicator?}

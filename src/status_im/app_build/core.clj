@@ -1,9 +1,10 @@
-(ns legacy.status-im.utils.build
+(ns status-im.app-build.core
   (:require
     [clojure.java.io :as io]
     [clojure.java.shell :as shell]
     [clojure.string :as string]))
 
+;; TEST
 (defmacro get-build-no
   []
   (-> (shell/sh "bash" "./scripts/version/build_no.sh")
