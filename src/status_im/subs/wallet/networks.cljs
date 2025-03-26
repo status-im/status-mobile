@@ -41,7 +41,7 @@
 (re-frame/reg-sub
  :wallet/network-name-from-chain-id
  :<- [:wallet/networks-by-id]
- (fn [[networks [_ chain-id]]]
+ (fn [networks [_ chain-id]]
    (-> networks (get chain-id) :network-name)))
 
 (re-frame/reg-sub
