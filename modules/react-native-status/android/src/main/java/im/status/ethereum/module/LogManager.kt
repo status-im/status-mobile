@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.core.content.FileProvider
@@ -201,6 +202,29 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
             dbFile.delete()
             statusLogFile.delete()
             zipFile.deleteOnExit()
+        }
+    }
+
+    // workaround for android since react-native-share is not working for zip files, for iOS we use react-native-share
+    @ReactMethod
+    fun shareLogs(fileUri: String, callback: Callback) {
+        Log.d(TAG, "shareLogs: $fileUri")
+        
+        try {
+            val uri = Uri.parse(fileUri)
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "application/zip"
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.putExtra(Intent.EXTRA_STREAM, uri)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            
+            val chooser = Intent.createChooser(intent, "Share Logs")
+            chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            reactContext.startActivity(chooser)
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "Error sharing file: ${e.message}")
+            callback.invoke(e.message)
         }
     }
 
