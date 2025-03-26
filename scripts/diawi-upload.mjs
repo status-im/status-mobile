@@ -10,8 +10,10 @@ import FormData from 'form-data'
 
 const UPLOAD_URL = 'https://upload.diawi.com/'
 const STATUS_URL = 'https://upload.diawi.com/status'
-const POLL_MAX_COUNT = 10
-const POLL_INTERVAL_MS = 700
+const DIAWI_TOKEN = process.env.DIAWI_TOKEN
+const LOG_LEVEL = process.env.VERBOSE ? 'verbose' : 'info'
+const POLL_MAX_COUNT = process.env.POLL_MAX_COUNT ? process.env.POLL_MAX_COUNT : 120
+const POLL_INTERVAL_MS = process.env.POLL_INTERVAL_MS ? process.env.POLL_INTERVAL_MS : 500
 
 const sleep = (ms) => {
   return new Promise((resolve, reject) => {
@@ -90,15 +92,16 @@ const pollStatus = async (jobId, token) => {
     }
     await sleep(interval)
   }
+  log.error('pollStatus', 'Failed to poll status after %d retries.', POLL_MAX_COUNT)
+  process.exit(1)
 }
 
 const main = async () => {
-  const token = process.env.DIAWI_TOKEN
   const targetFile = process.argv[2]
   const comment = process.argv[3]
-  log.level = process.env.VERBOSE ? 'verbose' : 'info'
+  log.level = LOG_LEVEL
 
-  if (token === undefined) {
+  if (DIAWI_TOKEN === undefined) {
     log.error('main', 'No DIAWI_TOKEN env var provided!')
     process.exit(1)
   }
@@ -108,10 +111,10 @@ const main = async () => {
   }
 
   log.info('main', 'Uploading: %s', targetFile)
-  let jobId = await uploadIpa(targetFile, comment, token)
+  let jobId = await uploadIpa(targetFile, comment, DIAWI_TOKEN)
 
   log.info('main', 'Polling upload job status: %s', jobId)
-  let uploadMeta = await pollStatus(jobId, token)
+  let uploadMeta = await pollStatus(jobId, DIAWI_TOKEN)
 
   console.log(uploadMeta)
 }
