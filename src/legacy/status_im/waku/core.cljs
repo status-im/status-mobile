@@ -122,7 +122,7 @@
   [cofx id]
   (rf/merge cofx
             (delete id)
-            (navigation/navigate-back)))
+            (navigation/navigate-back nil)))
 
 (rf/defn toggle-light-client
   {:events [:wakuv2.ui/toggle-light-client]}

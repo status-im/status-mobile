@@ -1,14 +1,14 @@
 (ns status-im.contexts.keycard.pin.enter.view
   (:require [quo.core :as quo]
+            [quo.theme]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
             [status-im.contexts.keycard.pin.view :as keycard.pin]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.i18n :as i18n]))
 
 (defn view
   []
-  (let [{:keys [on-complete title]} (rf/sub [:get-screen-params])]
+  (let [{:keys [on-complete title]} (quo.theme/use-screen-params)]
     [rn/view {:style {:padding-bottom 12 :flex 1}}
      [quo/page-nav
       {:icon-name :i/close

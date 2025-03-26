@@ -55,24 +55,27 @@
   [screen-key]
   (reagent.core/reactify-component
    (fn []
-     (let [screen-details              (get (if js/goog.DEBUG
-                                              (get-screens)
-                                              screens)
-                                            (keyword screen-key))
-           qualified-screen-details    (get (if js/goog.DEBUG
-                                              (get-screens)
-                                              screens)
-                                            (keyword "screen" screen-key))
-           {:keys [component options]} (or qualified-screen-details screen-details)
+     (let [screen-details                   (get (if js/goog.DEBUG
+                                                   (get-screens)
+                                                   screens)
+                                                 (keyword screen-key))
+           qualified-screen-details         (get (if js/goog.DEBUG
+                                                   (get-screens)
+                                                   screens)
+                                                 (keyword "screen" screen-key))
+           ;; Todo: Remove qualifier check once #22358 is fixed
+           {:keys [component options name]} (or qualified-screen-details screen-details)
+           screen-params                    (rf/sub [:get-screen-params name])
            {:keys [insets sheet? theme
-                   skip-background?]}  options
-           alert-banners-top-margin    (rf/sub [:alert-banners/top-margin])
-           background-color            (or (get-in options [:layout :backgroundColor])
-                                           (when sheet? :transparent))
-           app-theme                   (rf/sub [:theme])
-           theme                       (or theme app-theme)]
+                   skip-background?]}       options
+           alert-banners-top-margin         (rf/sub [:alert-banners/top-margin])
+           background-color                 (or (get-in options [:layout :backgroundColor])
+                                                (when sheet? :transparent))
+           app-theme                        (rf/sub [:theme])
+           theme                            (or theme app-theme)]
        ^{:key (str "root" screen-key @reloader/cnt)}
-       [quo.theme/provider theme
+       [quo.theme/provider
+        {:theme theme :screen-id name :screen-params screen-params}
         [rn/view
          {:style (wrapped-screen-style (assoc
                                         insets
@@ -91,14 +94,20 @@
 (def bottom-sheet
   (reagent/reactify-component
    (fn []
-     (let [app-theme                (rf/sub [:theme])
-           {:keys [sheets hide?]}   (rf/sub [:bottom-sheet])
-           sheet                    (last sheets)
-           {:keys [theme]}          sheet
-           insets                   (safe-area/get-insets)
-           keyboard-vertical-offset (- (max 20 (:bottom insets)))]
+     (let [app-theme                 (rf/sub [:theme])
+           view-id                   (rf/sub [:view-id])
+           {:keys [sheets hide?]}    (rf/sub [:bottom-sheet])
+           sheet                     (last sheets)
+           {:keys [theme screen-id]} sheet
+           screen-id-value           (or screen-id view-id)
+           screen-params             (rf/sub [:get-screen-params screen-id-value])
+           insets                    (safe-area/get-insets)
+           keyboard-vertical-offset  (- (max 20 (:bottom insets)))]
        ^{:key (str "sheet" @reloader/cnt)}
-       [quo.theme/provider (or theme app-theme)
+       [quo.theme/provider
+        {:theme         (or theme app-theme)
+         :screen-id     screen-id-value
+         :screen-params screen-params}
         [inactive]
         [rn/keyboard-avoiding-view
          {:style                    {:position :relative :flex 1}
@@ -114,7 +123,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "alert-banner" @reloader/cnt)}
-     [quo.theme/provider :dark
+     [quo.theme/provider {:theme :dark}
       [alert-banner/view]])))
 
 (def nfc-sheet-comp
@@ -122,7 +131,7 @@
    (fn []
      (let [app-theme (rf/sub [:theme])]
        ^{:key (str "nfc-sheet-" @reloader/cnt)}
-       [quo.theme/provider app-theme
+       [quo.theme/provider {:theme app-theme}
         [rn/keyboard-avoiding-view
          {:style {:position :relative :flex 1}}
          [keycard.sheet/android-view]]]))))

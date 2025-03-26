@@ -1,16 +1,30 @@
 (ns quo.theme
   (:require
     ["react" :as react]
+    [oops.core :as oops]
     [react-native.core :as rn]))
 
-(defonce ^:private theme-context (react/createContext :light))
+(defonce ^:private context (react/createContext nil))
 
 (defn provider
-  [theme & children]
-  (into [:> (.-Provider theme-context) {:value theme}]
+  [data & children]
+  (into [:> (.-Provider context) {:value #js {:cljData data}}]
         children))
 
 (defn use-theme
   "A hook that returns the current theme keyword."
   []
-  (keyword (rn/use-context theme-context)))
+  (if-let [data (rn/use-context context)]
+    (:theme (oops/oget data :cljData))
+    :light))
+
+(defn use-screen-id
+  "A hook that returns the current screen id."
+  []
+  (when-let [data (rn/use-context context)]
+    (:screen-id (oops/oget data :cljData))))
+
+(defn use-screen-params
+  []
+  (when-let [data (rn/use-context context)]
+    (:screen-params (oops/oget data :cljData))))

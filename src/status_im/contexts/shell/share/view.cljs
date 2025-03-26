@@ -1,6 +1,7 @@
 (ns status-im.contexts.shell.share.view
   (:require
     [quo.core :as quo]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.contexts.shell.share.profile.view :as profile-view]
@@ -11,7 +12,7 @@
 
 (defn- header
   []
-  (let [{:keys [status]} (rf/sub [:get-screen-params])]
+  (let [{:keys [status]} (quo.theme/use-screen-params)]
     [:<>
      [rn/view {:style style/header-row}
       [quo/button
@@ -45,7 +46,7 @@
   []
   (let [{:keys [initial-tab hide-tab-selector?]
          :or   {initial-tab        :profile
-                hide-tab-selector? false}} (rf/sub [:get-screen-params])
+                hide-tab-selector? false}} (quo.theme/use-screen-params)
         [selected-tab set-selected-tab]    (rn/use-state initial-tab)]
     [rn/view {:style {:padding-top (safe-area/get-top)}}
      [header]

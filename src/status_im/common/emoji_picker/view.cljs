@@ -4,7 +4,7 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
@@ -14,8 +14,7 @@
     [status-im.common.emoji-picker.style :as style]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [utils.debounce :as debounce]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.i18n :as i18n]))
 
 (defn- on-press-category
   [{:keys [id index active-category scroll-ref]}]
@@ -171,7 +170,7 @@
 
 (defn view
   [_]
-  (let [{:keys [on-select]}       (rf/sub [:get-screen-params])
+  (let [{:keys [on-select]}       (quo.theme/use-screen-params)
         scroll-ref                (atom nil)
         set-scroll-ref            #(reset! scroll-ref %)
         search-text               (reagent/atom "")

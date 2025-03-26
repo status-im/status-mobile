@@ -3,7 +3,7 @@
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -32,8 +32,9 @@
                              (on-reset)))]
     (fn []
       (let [theme                                      (quo.theme/use-theme)
+
             {:keys [public-key address]}               (rf/sub [:profile/profile])
-            {:keys [password current-derivation-path]} (rf/sub [:get-screen-params])
+            {:keys [password current-derivation-path]} (quo.theme/use-screen-params)
             primary-name                               (first (rf/sub
                                                                [:contacts/contact-two-names-by-identity
                                                                 public-key]))

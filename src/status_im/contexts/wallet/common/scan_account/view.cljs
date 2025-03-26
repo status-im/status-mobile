@@ -1,14 +1,14 @@
 (ns status-im.contexts.wallet.common.scan-account.view
   (:require
+    [quo.theme]
     [status-im.common.scan-qr-code.view :as scan-qr-code]
     [utils.address :as utils-address]
     [utils.debounce :as debounce]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.i18n :as i18n]))
 
 (defn view
   []
-  (let [{:keys [on-result]} (rf/sub [:get-screen-params])]
+  (let [{:keys [on-result]} (quo.theme/use-screen-params)]
     [scan-qr-code/view
      {:title           (i18n/label :t/scan-qr)
       :subtitle        (i18n/label :t/scan-an-address-qr-code)

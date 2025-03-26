@@ -146,7 +146,7 @@
 
 (defmethod footer-item-view :status
   [{:keys [label subtype blur? theme]} _ _]
-  [quo.theme/provider theme
+  [quo.theme/provider {:theme theme}
    [status-tags/status-tag
     {:size   :small
      :label  label

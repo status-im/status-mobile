@@ -80,7 +80,7 @@
                         [avatar-container
                          {:multiline? (and header body)}
                          user-avatar])]
-    [quo.theme/provider theme
+    [quo.theme/provider {:theme theme}
      [notification-container
       {:avatar          avatar
        :header          header

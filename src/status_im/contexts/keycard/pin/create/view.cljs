@@ -1,15 +1,15 @@
 (ns status-im.contexts.keycard.pin.create.view
   (:require [clojure.string :as string]
             [quo.core :as quo]
+            [quo.theme]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
             [status-im.constants :as constants]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.i18n :as i18n]))
 
 (defn view
   []
-  (let [{:keys [on-complete title repeat-stage-title]} (rf/sub [:get-screen-params])
+  (let [{:keys [on-complete title repeat-stage-title]} (quo.theme/use-screen-params)
         [pin set-pin]                                  (rn/use-state "")
         [first-pin set-first-pin]                      (rn/use-state "")
         [error? set-error]                             (rn/use-state false)

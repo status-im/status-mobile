@@ -1,7 +1,7 @@
 (ns quo.components.wallet.network-routing.component-spec
   (:require [oops.core :as oops]
             [quo.components.wallet.network-routing.view :as network-routing]
-            quo.theme
+            [quo.theme]
             [reagent.core :as reagent]
             [test-helpers.component :as h]))
 
@@ -22,7 +22,7 @@
         ;; Fires on-layout callback since the total width is required
         (h/fire-event :layout component #js {:nativeEvent #js {:layout #js {:width 1000}}})
         ;; Update props to trigger rerender, otherwise it won't be updated
-        (rerender-fn [quo.theme/provider :light
+        (rerender-fn [quo.theme/provider {:theme :light}
                       [network-routing/view (assoc default-props :requesting-data? true)]])
         ;; Check number of networks rendered
         (->> (js->clj (h/query-all-by-label-text :network-routing-bar))

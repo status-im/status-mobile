@@ -1,7 +1,7 @@
 (ns status-im.contexts.shell.home-stack.view
   (:require
     [legacy.status-im.ui.screens.browser.stack :as browser.stack]
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.home.view :as chat]
@@ -36,15 +36,16 @@
      [:<>])])
 
 (defn lazy-screen
-  [stack-id shared-values]
+  [stack-id shared-values theme]
   (when (load-stack? stack-id)
-    [f-stack-view stack-id shared-values]))
+    [quo.theme/provider {:theme theme :screen-id stack-id}
+     [f-stack-view stack-id shared-values]]))
 
 (defn view
   [shared-values]
   (let [theme (quo.theme/use-theme)]
     [rn/view {:style (style/home-stack theme)}
-     [lazy-screen :communities-stack shared-values]
-     [lazy-screen :chats-stack shared-values]
-     [lazy-screen :browser-stack shared-values]
-     [lazy-screen :wallet-stack shared-values]]))
+     [lazy-screen :communities-stack shared-values theme]
+     [lazy-screen :chats-stack shared-values theme]
+     [lazy-screen :browser-stack shared-values theme]
+     [lazy-screen :wallet-stack shared-values theme]]))

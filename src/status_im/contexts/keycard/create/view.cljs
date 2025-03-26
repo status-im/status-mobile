@@ -1,5 +1,6 @@
 (ns status-im.contexts.keycard.create.view
   (:require [quo.core :as quo]
+            [quo.theme]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
             [status-im.common.resources :as resources]
@@ -18,7 +19,7 @@
 
 (defn ready-to-add
   []
-  (let [{:keys [on-continue]} (rf/sub [:get-screen-params])]
+  (let [{:keys [on-continue]} (quo.theme/use-screen-params)]
     [:<>
      [quo/page-nav
       {:icon-name  :i/close
@@ -42,7 +43,7 @@
 
 (defn ready-to-generate
   []
-  (let [{:keys [on-continue]} (rf/sub [:get-screen-params])]
+  (let [{:keys [on-continue]} (quo.theme/use-screen-params)]
     [:<>
      [quo/page-nav
       {:icon-name :i/close
@@ -61,7 +62,7 @@
 
 (defn not-empty-view
   []
-  (let [{:keys [on-login]} (rf/sub [:get-screen-params])]
+  (let [{:keys [on-login]} (quo.theme/use-screen-params)]
     [:<>
      [quo/page-nav
       {:icon-name :i/close
@@ -97,7 +98,7 @@
 
 (defn empty-view
   []
-  (let [{:keys [on-create on-import]} (rf/sub [:get-screen-params])]
+  (let [{:keys [on-create on-import]} (quo.theme/use-screen-params)]
     [:<>
      [quo/page-nav
       {:icon-name :i/close

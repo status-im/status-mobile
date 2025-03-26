@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
+    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.common.validation.general :as validators]
@@ -38,7 +39,7 @@
 
 (defn view
   []
-  (let [{:keys [workflow]}                (rf/sub [:get-screen-params])
+  (let [{:keys [workflow]}                (quo.theme/use-screen-params)
         customization-color               (rf/sub [:profile/customization-color])
         [key-pair-name set-key-pair-name] (rn/use-state "")
         [error set-error]                 (rn/use-state nil)

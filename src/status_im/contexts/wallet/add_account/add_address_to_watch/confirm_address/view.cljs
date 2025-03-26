@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
@@ -15,7 +16,7 @@
 
 (defn view
   []
-  (let [{:keys [address]} (rf/sub [:get-screen-params])
+  (let [{:keys [address]} (quo.theme/use-screen-params)
         placeholder       (i18n/label :t/default-watched-address-placeholder)
         account-name      (reagent/atom "")
         account-color     (reagent/atom (rand-nth colors/account-colors))

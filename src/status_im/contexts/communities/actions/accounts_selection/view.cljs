@@ -54,7 +54,7 @@
 
 (defn view
   []
-  (let [{id :community-id}                (rf/sub [:get-screen-params])
+  (let [{id :community-id}                (quo.theme/use-screen-params)
         {:keys [name images joined]}      (rf/sub [:communities/community id])
         has-permissions?                  (rf/sub [:communities/has-permissions? id])
         airdrop-account                   (rf/sub [:communities/airdrop-account id])

@@ -113,7 +113,7 @@
          {:color           colors/white-opa-40
           :container-style style/watched-account-icon}])]
      [share-button {:on-press on-share-press}]]
-    [quo.theme/provider :light
+    [quo.theme/provider {:theme :light}
      [qr-code/view
       {:qr-image-uri        qr-image-uri
        :size                (style/qr-code-size component-width)
@@ -144,7 +144,7 @@
         props                 (-> props
                                   (assoc :component-width (or provided-width calculated-width))
                                   (clojure.set/rename-keys {:type :share-qr-type}))]
-    [quo.theme/provider :dark
+    [quo.theme/provider {:theme :dark}
      [rn/view
       {:accessibility-label :share-qr-code
        :style               style/outer-container

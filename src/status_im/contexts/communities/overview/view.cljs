@@ -364,6 +364,6 @@
 
 (defn view
   [id]
-  (let [id (or id (rf/sub [:get-screen-params :community-overview]))]
+  (let [id (or id (quo.theme/use-screen-params))]
     [rn/view {:style style/community-overview-container}
      [community-card-page-view id]]))

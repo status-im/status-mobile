@@ -1,5 +1,6 @@
 (ns status-im.contexts.keycard.authorise.view
   (:require [quo.core :as quo]
+            [quo.theme]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
             [status-im.common.resources :as resources]
@@ -12,7 +13,7 @@
   (let [profile-name         (rf/sub [:profile/name])
         profile-picture      (rf/sub [:profile/image])
         customization-color  (rf/sub [:profile/customization-color])
-        {:keys [on-success]} (rf/sub [:get-screen-params])]
+        {:keys [on-success]} (quo.theme/use-screen-params)]
     [:<>
      [quo/page-nav
       {:icon-name :i/close

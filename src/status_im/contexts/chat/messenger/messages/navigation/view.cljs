@@ -91,6 +91,7 @@
   (let [{:keys [chat-id chat-type]
          :as   chat}           (rf/sub [:chats/current-chat-chat-view])
         top-insets             (safe-area/get-top)
+        screen-id              (quo.theme/use-screen-id)
         navigation-view-height (+ top-insets messages.constants/top-bar-height)]
     [rn/view {:style (style/navigation-view navigation-view-height)}
      [header-background
@@ -103,13 +104,7 @@
         :background          :blur
         :size                32
         :accessibility-label :back-button
-        :on-press            (fn []
-                               (rf/dispatch [:navigate-back])
-                               ;; In IOS view-id might be incorrect (if screen closed using swipe),
-                               ;; so we can't rely on `:navigate-back` to close the chat.
-                               ;; https://github.com/status-im/status-mobile/pull/21643#issuecomment-248896204451
-                               (when platform/ios?
-                                 (rf/dispatch [:chat/close])))}
+        :on-press            #(rf/dispatch [:navigate-back screen-id])}
        (if (= chat-type constants/community-chat-type) :i/arrow-left :i/close)]
       [header-content-container chat]
       [quo/button

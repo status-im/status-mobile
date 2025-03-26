@@ -50,7 +50,7 @@
   (rf/dispatch
    [:show-bottom-sheet
     {:content (fn []
-                [quo.theme/provider :dark
+                [quo.theme/provider {:theme :dark}
                  [privacy/privacy-statement]])
      :shell?  true}]))
 

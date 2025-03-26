@@ -77,8 +77,7 @@
 
 (defn view
   []
-  (let [{:keys [chat-id community-id]} (rf/sub [:get-screen-params
-                                                :screen/chat.view-channel-members-and-details])
+  (let [{:keys [chat-id community-id]} (quo.theme/use-screen-params)
         {:keys [description chat-name emoji muted chat-type color]
          :as   chat}                   (rf/sub [:chats/chat-by-id chat-id])
         pins-count                     (rf/sub [:chats/pin-messages-count chat-id])

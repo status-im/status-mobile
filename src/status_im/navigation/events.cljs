@@ -50,10 +50,13 @@
 
 (rf/defn navigate-back
   {:events [:navigate-back]}
-  [{:keys [db]}]
+  [{:keys [db]} screen-id]
   {:fx [[:navigate-back nil]
-        ;; Required for navigating back using the Android hardware back button
-        (when (and platform/android? (= (:view-id db) :chat))
+        (when (or
+               ;; Closing chat using UI buttons in chat screen (screen-id is known)
+               (= screen-id :chat)
+               ;; Support chat closing using android hardware back button
+               (and platform/android? (= (:view-id db) :chat)))
           [:dispatch [:chat/close]])]})
 
 (rf/defn navigate-back-to

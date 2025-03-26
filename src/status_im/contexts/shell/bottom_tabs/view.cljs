@@ -1,7 +1,7 @@
 (ns status-im.contexts.shell.bottom-tabs.view
   (:require
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
@@ -40,7 +40,7 @@
                                            (gesture/on-start
                                             (fn [_event]
                                               (rf/dispatch [:messages-home/select-tab :tab/recent]))))]
-    [quo.theme/provider :dark
+    [quo.theme/provider {:theme :dark}
      [reanimated/view
       {:style (style/bottom-tabs-container (:bottom-tabs-height shared-values))}
       [rn/view {:style (style/bottom-tabs)}

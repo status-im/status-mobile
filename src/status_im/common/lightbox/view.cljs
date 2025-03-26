@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [oops.core :as oops]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.orientation :as orientation]
@@ -140,7 +141,7 @@
 (defn- f-lightbox
   []
   (let [{:keys [images index bottom-text-component on-options-press]}
-        (rf/sub [:get-screen-params])
+        (quo.theme/use-screen-params)
         props
         (utils/init-props)
         state

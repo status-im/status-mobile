@@ -6,7 +6,7 @@
     [quo.components.markdown.text :as text]
     [quo.components.notifications.count-down-circle :as count-down-circle]
     [quo.components.notifications.toast.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
@@ -81,7 +81,7 @@
                                 :i/incorrect
                                 :i/incorrect-dark)
                     :neutral  icon)]
-    [quo.theme/provider theme
+    [quo.theme/provider {:theme theme}
      [toast-container
       {:left            (cond user
                               [user-avatar/user-avatar user]

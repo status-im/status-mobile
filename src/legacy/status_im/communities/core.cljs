@@ -30,7 +30,7 @@
   {:events [::people-invited]}
   [cofx response-js]
   (rf/merge cofx
-            (navigation/navigate-back)
+            (navigation/navigate-back nil)
             (handle-response response-js)))
 
 (rf/defn member-banned

@@ -53,7 +53,7 @@
   [{:keys [public-key]
     :as   item}]
   (let [user-selected?         (rf/sub [:is-contact-selected? public-key])
-        {:keys [id]}           (rf/sub [:get-screen-params])
+        {:keys [id]}           (quo.theme/use-screen-params)
         community-members-keys (set (rf/sub [:communities/community-members id]))
         community-member?      (boolean (community-members-keys public-key))
         on-toggle              (fn []
@@ -77,7 +77,7 @@
     (rn/use-unmount #(rf/dispatch [:group-chat/clear-contacts]))
     (let [theme                   (quo.theme/use-theme)
           customization-color     (rf/sub [:profile/customization-color])
-          {:keys [id]}            (rf/sub [:get-screen-params])
+          {:keys [id]}            (quo.theme/use-screen-params)
           contacts                (rf/sub [:contacts/filtered-active-sections])
           selected                (rf/sub [:group/selected-contacts])
           {:keys [name images]}   (rf/sub [:communities/community id])

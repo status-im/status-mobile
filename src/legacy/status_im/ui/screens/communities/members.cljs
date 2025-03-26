@@ -7,8 +7,8 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.components.unviewed-indicator :as unviewed-indicator]
+    [quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
     [status-im.constants :as constants]
     [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
@@ -108,9 +108,11 @@
        :title (i18n/label :t/membership-requests)}]
      [quo/separator {:style {:margin-vertical 8}}]]))
 
-(defn members
+(defn view
   []
-  (let [{:keys [community-id]} (rf/sub [:get-screen-params])]
+  (let [{:keys [community-id]} (quo.theme/use-screen-params)]
+    (rn/use-mount
+     #(rf/dispatch [:community/fetch-requests-to-join community-id]))
     (fn []
       (let [my-public-key (rf/sub [:multiaccount/public-key])
             {:keys [permissions
@@ -137,13 +139,3 @@
                          :admin?            admin}
            :key-fn      identity
            :render-fn   render-member}]]))))
-
-(defn legacy-members-container
-  []
-  (reagent/create-class
-   {:display-name        "community-members-view"
-    :component-did-mount (fn []
-                           (rf/dispatch [:community/fetch-requests-to-join
-                                         (get (rf/sub [:get-screen-params])
-                                              :community-id)]))
-    :reagent-render      members}))

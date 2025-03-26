@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
+    [quo.theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -21,7 +22,7 @@
 
 (defn view
   []
-  (let [keypair                       (rf/sub [:get-screen-params])
+  (let [keypair                       (quo.theme/use-screen-params)
         blur?                         true
         insets                        (safe-area/get-insets)
         customization-color           (rf/sub [:profile/customization-color])

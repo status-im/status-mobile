@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.constants :as constants]
@@ -250,7 +251,7 @@
 
 (defn view
   []
-  (let [{id :community-id} (rf/sub [:get-screen-params])
+  (let [{id :community-id} (quo.theme/use-screen-params)
 
         color (rf/sub [:communities/community-color id])
 

@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
+    [quo.theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -117,7 +118,7 @@
 
 (defn view
   []
-  (let [view-id                             (rf/sub [:view-id])
+  (let [screen-id                           (quo.theme/use-screen-id)
         profile-color                       (rf/sub [:profile/customization-color])
         accounts-addresses                  (rf/sub [:wallet/addresses])
         saved-addresses-addresses           (rf/sub [:wallet/saved-addresses-addresses])
@@ -182,7 +183,7 @@
                                        :on-press            navigate-back
                                        :margin-top          (safe-area/get-top)
                                        :accessibility-label :add-address-to-save-page-nav}]
-       :footer                       (when (= view-id :screen/settings.add-address-to-save)
+       :footer                       (when (= screen-id :screen/settings.add-address-to-save)
                                        [quo/button
                                         {:customization-color profile-color
                                          :disabled?           button-disabled?

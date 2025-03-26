@@ -53,7 +53,7 @@
   (let [theme                      (quo.theme/use-theme)
         selected-participants      (rf/sub [:group-chat/selected-participants])
         deselected-members         (rf/sub [:group-chat/deselected-members])
-        chat-id                    (rf/sub [:get-screen-params :screen/group-add-manage-members])
+        chat-id                    (quo.theme/use-screen-params)
         {:keys [admins] :as group} (rf/sub [:chats/chat-by-id chat-id])
         current-pk                 (rf/sub [:multiaccount/public-key])
         admin?                     (get admins current-pk)]
@@ -124,7 +124,7 @@
 
 (defn view
   []
-  (let [chat-id         (rf/sub [:get-screen-params :screen/group-details])
+  (let [chat-id         (quo.theme/use-screen-params)
         {:keys [admins chat-id chat-name color muted contacts image]
          :as   group}   (rf/sub [:chats/chat-by-id chat-id])
         members         (rf/sub [:contacts/group-members-sections chat-id])

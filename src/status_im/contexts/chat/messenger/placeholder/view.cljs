@@ -16,10 +16,11 @@
 (defn view
   [on-layout-done?]
   (let [theme       (quo.theme/use-theme)
+        screen-id   (quo.theme/use-screen-id)
         chat-exist? (rf/sub [:chats/current-chat-exist?])]
     [rn/view {:style (style/container theme @on-layout-done?)}
      (when-not chat-exist?
        [quo/page-nav
         {:icon-name :i/arrow-left
-         :on-press  #(rf/dispatch [:navigate-back])}])
+         :on-press  #(rf/dispatch [:navigate-back screen-id])}])
      [loading-skeleton]]))

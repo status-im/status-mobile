@@ -18,7 +18,7 @@
 (defn view
   []
   (let [{:keys [address name customization-color ens
-                ens? edit?]}              (rf/sub [:get-screen-params])
+                ens? edit?]}              (quo.theme/use-screen-params)
         [address-label set-address-label] (rn/use-state (or name ""))
         [address-color set-address-color] (rn/use-state (or customization-color
                                                             (rand-nth colors/account-colors)))

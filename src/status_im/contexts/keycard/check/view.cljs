@@ -1,5 +1,6 @@
 (ns status-im.contexts.keycard.check.view
   (:require [quo.core :as quo]
+            [quo.theme]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
             [status-im.common.resources :as resources]
@@ -28,7 +29,7 @@
 
 (defn view
   []
-  (let [{:keys [on-press]} (rf/sub [:get-screen-params])]
+  (let [{:keys [on-press]} (quo.theme/use-screen-params)]
     [:<>
      [quo/page-nav
       {:icon-name  :i/arrow-left

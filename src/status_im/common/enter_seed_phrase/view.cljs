@@ -5,6 +5,7 @@
     [oops.core :as oops]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
+    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -238,7 +239,7 @@
 
 (defn view
   []
-  (let [{:keys [on-success onboarding-flow?]} (rf/sub [:get-screen-params])]
+  (let [{:keys [on-success onboarding-flow?]} (quo.theme/use-screen-params)]
     (rn/use-unmount
      (fn []
        (rf/dispatch [:enter-seed-phrase/clear-error])

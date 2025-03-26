@@ -4,7 +4,7 @@
   (:require ["@testing-library/react-native" :as rtl]
             [camel-snake-kebab.core :as camel-snake-kebab]
             [oops.core :as oops]
-            [quo.theme :as quo.theme]
+            [quo.theme]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]))
@@ -56,7 +56,13 @@
   ([component]
    (render-with-theme-provider component :light))
   ([component theme]
-   (rtl/render (reagent/as-element [quo.theme/provider theme component]))))
+   (rtl/render (reagent/as-element [quo.theme/provider {:theme theme} component]))))
+
+(defn render-with-context-provider
+  ([component]
+   (render-with-theme-provider component :light))
+  ([component context]
+   (rtl/render (reagent/as-element [quo.theme/provider context component]))))
 
 (defn wait-for
   ([condition] (wait-for condition {}))
