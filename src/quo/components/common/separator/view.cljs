@@ -1,12 +1,12 @@
 (ns quo.components.common.separator.view
   (:require
+    [quo.context]
     [quo.foundations.colors :as quo.colors]
-    [quo.theme]
     [react-native.core :as rn]))
 
 (defn separator
   [{:keys [style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style
       (merge

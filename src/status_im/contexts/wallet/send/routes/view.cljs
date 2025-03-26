@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.send.routes.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.contexts.wallet.common.utils :as common-utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]

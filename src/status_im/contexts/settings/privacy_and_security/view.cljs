@@ -1,7 +1,7 @@
 (ns status-im.contexts.settings.privacy-and-security.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]

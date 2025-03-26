@@ -3,12 +3,12 @@
     [quo.components.list-items.preview-list.view :as preview-list]
     [quo.components.markdown.text :as text]
     [quo.components.tags.network-tags.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [title networks status blur? container-style] :or {status :default}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style (merge (style/container {:status status
                                       :theme  theme

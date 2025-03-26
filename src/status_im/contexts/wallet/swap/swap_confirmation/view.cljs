@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.swap.swap-confirmation.view
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
@@ -84,7 +84,7 @@
 
 (defn- pay-section
   []
-  (let [theme             (quo.theme/use-theme)
+  (let [theme             (quo.context/use-theme)
         asset-to-pay      (rf/sub [:wallet/swap-asset-to-pay])
         network           (rf/sub [:wallet/swap-network])
         pay-amount        (rf/sub [:wallet/swap-pay-amount-raw])
@@ -104,7 +104,7 @@
 
 (defn- receive-section
   []
-  (let [theme                 (quo.theme/use-theme)
+  (let [theme                 (quo.context/use-theme)
         asset-to-receive      (rf/sub [:wallet/swap-asset-to-receive])
         network               (rf/sub [:wallet/swap-network])
         receive-amount        (rf/sub [:wallet/swap-receive-amount-raw])
@@ -178,7 +178,7 @@
 (defn footer
   []
   (let [provider (rf/sub [:wallet/swap-proposal-provider])
-        theme    (quo.theme/use-theme)
+        theme    (quo.context/use-theme)
         on-press (rn/use-callback #(when provider
                                      (rf/dispatch [:open-modal :screen/pdf-viewer
                                                    {:uri (:terms-and-conditions-url provider)}]))

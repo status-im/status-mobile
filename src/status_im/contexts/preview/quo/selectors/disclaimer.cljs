@@ -1,7 +1,7 @@
 (ns status-im.contexts.preview.quo.selectors.disclaimer
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
@@ -21,7 +21,7 @@
                              :customization-color :blue})]
     (fn []
       (let [{:keys [blur? checked? text icon customization-color]} @state
-            theme                                                  (quo.theme/use-theme)
+            theme                                                  (quo.context/use-theme)
             blur?                                                  (if (= :light theme) false blur?)]
         [preview/preview-container
          {:state                     state

@@ -1,13 +1,13 @@
 (ns status-im.contexts.chat.group.update.view
   (:require
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [status-im.contexts.chat.group.common.group-edit :as group-edit]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn view
   [{:keys [close]}]
-  (let [chat-id                         (quo.theme/use-screen-params)
+  (let [chat-id                         (quo.context/use-screen-params)
         {:keys [chat-name color image]} (rf/sub [:chats/chat-by-id chat-id])
         contacts                        (rf/sub [:contacts/contacts-by-chat chat-id])]
     [group-edit/view

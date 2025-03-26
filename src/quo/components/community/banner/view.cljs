@@ -2,8 +2,8 @@
   (:require
     [quo.components.community.banner.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]))
 
 (defn- card-title-and-description
@@ -28,7 +28,7 @@
 
 (defn view
   [{:keys [title description on-press accessibility-label banner style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/pressable
      {:on-press            on-press
       :accessibility-label accessibility-label

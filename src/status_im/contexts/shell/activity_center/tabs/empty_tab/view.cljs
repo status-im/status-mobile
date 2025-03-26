@@ -1,7 +1,7 @@
 (ns status-im.contexts.shell.activity-center.tabs.empty-tab.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
     [status-im.contexts.shell.activity-center.notification-types :as types]
@@ -22,7 +22,7 @@
 
 (defn empty-tab
   []
-  (let [theme       (quo.theme/use-theme)
+  (let [theme       (quo.context/use-theme)
         filter-type (rf/sub [:activity-center/filter-type])
         description (get empty-tab-description filter-type nil)]
     [rn/view {:style style/empty-container}

@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.messenger.messages.view
   (:require
     [clojure.string :as string]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -28,7 +28,7 @@
 
 (defn- chat-screen
   [on-layout-done?]
-  (let [theme                    (quo.theme/use-theme)
+  (let [theme                    (quo.context/use-theme)
         layout-height            (rn/use-ref-atom 0)
         distance-from-list-top   (reanimated/use-shared-value 0)
         chat-list-scroll-y       (reanimated/use-shared-value 0)

@@ -1,8 +1,8 @@
 (ns status-im.contexts.communities.actions.addresses-for-permissions.view
   (:require
     [clojure.string :as string]
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.constants :as constants]
@@ -251,7 +251,7 @@
 
 (defn view
   []
-  (let [{id :community-id} (quo.theme/use-screen-params)
+  (let [{id :community-id} (quo.context/use-screen-params)
 
         color (rf/sub [:communities/community-color id])
 

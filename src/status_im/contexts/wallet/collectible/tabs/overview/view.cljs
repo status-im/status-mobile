@@ -1,9 +1,9 @@
 (ns status-im.contexts.wallet.collectible.tabs.overview.view
   (:require
     [clojure.string :as string]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.resources :as quo.resources]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.contexts.wallet.collectible.tabs.overview.style :as style]
     [utils.i18n :as i18n]

@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.send.select-address.tabs.view
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
     [status-im.contexts.wallet.common.utils :as utils]
@@ -108,7 +108,7 @@
 
 (defn view
   [{:keys [selected-tab]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     (case selected-tab
       :tab/recent      [recent-transactions theme]
       :tab/saved       [saved-addresses theme]

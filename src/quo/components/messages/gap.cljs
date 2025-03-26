@@ -3,8 +3,8 @@
     [oops.core :refer [oget]]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]))
 
 ;;; helpers
@@ -35,7 +35,7 @@
 ;;;; borders
 (defn hborder
   [{:keys [type style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/image
      {:source      (get-image :horizontal theme)
       :resize-mode :repeat
@@ -54,7 +54,7 @@
 
 (defn vborder
   [type body-height]
-  (let [theme  (quo.theme/use-theme)
+  (let [theme  (quo.context/use-theme)
         height @body-height
         img    (get-image :vertical theme)]
     (when (and img height)
@@ -74,7 +74,7 @@
 ;;;; others
 (defn circle
   []
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:width         9
       :height        9
@@ -86,7 +86,7 @@
 
 (defn timestamp
   [s]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [text/text
      {:size  :label
       :style {:text-transform :none
@@ -102,7 +102,7 @@
 ;;;; timeline/body
 (defn timeline
   []
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:flex            0
       :margin-right    20
@@ -140,7 +140,7 @@
            style
            on-press
            warning-label]}]
-  (let [theme                         (quo.theme/use-theme)
+  (let [theme                         (quo.context/use-theme)
         [body-height set-body-height] (rn/use-state nil)
         on-layout                     (rn/use-callback #(set-body-height
                                                          (oget % "nativeEvent.layout.height")))]

@@ -1,7 +1,7 @@
 (ns status-im.common.confirmation-drawer.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.confirmation-drawer.style :as style]
@@ -39,7 +39,7 @@
       (let [{:keys [group-chat chat-id public-key color chat-type
                     profile-picture name]} context
             id                             (or chat-id public-key)
-            theme                          (quo.theme/use-theme)
+            theme                          (quo.context/use-theme)
             [primary-name _]               (when-not (or group-chat
                                                          (= chat-type constants/public-chat-type))
                                              (rf/sub [:contacts/contact-two-names-by-identity id]))

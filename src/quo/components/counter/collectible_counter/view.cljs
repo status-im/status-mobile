@@ -2,7 +2,7 @@
   (:require
     [quo.components.counter.collectible-counter.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
@@ -21,7 +21,7 @@
 (defn- view-internal
   [{:keys [value accessibility-label container-style]
     :as   props}]
-  (let [theme         (quo.theme/use-theme)
+  (let [theme         (quo.context/use-theme)
         default-props {:status :default
                        :size   :size-32}
         props         (merge default-props props)]

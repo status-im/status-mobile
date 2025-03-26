@@ -1,9 +1,9 @@
 (ns status-im.contexts.wallet.send.transaction-confirmation.view
   (:require
     [clojure.string :as string]
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.events-helper :as events-helper]
@@ -205,7 +205,7 @@
 (defn- transaction-details
   [{:keys [max-fees to-network
            transaction-type route-loaded?]}]
-  (let [theme                     (quo.theme/use-theme)
+  (let [theme                     (quo.context/use-theme)
         loading-suggested-routes? (rf/sub [:wallet/wallet-send-loading-suggested-routes?])
         estimated-time            (rf/sub [:wallet/send-estimated-time])
         enough-assets?            (rf/sub [:wallet/send-enough-assets?])
@@ -251,7 +251,7 @@
 
 (defn view
   [_]
-  (let [theme                     (quo.theme/use-theme)
+  (let [theme                     (quo.context/use-theme)
         send-transaction-data     (rf/sub [:wallet/wallet-send])
         {:keys [token-display-name collectible amount
                 route

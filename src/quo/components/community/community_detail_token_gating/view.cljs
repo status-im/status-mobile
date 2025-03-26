@@ -5,8 +5,8 @@
             [quo.components.markdown.text :as text]
             [quo.components.tags.collectible-tag.view :as collectible-tag]
             [quo.components.tags.token-tag.view :as token-tag]
+            [quo.context]
             [quo.foundations.colors :as colors]
-            [quo.theme]
             [react-native.core :as rn]
             [utils.i18n :as i18n]))
 
@@ -29,7 +29,7 @@
 
 (defn- tokens-row
   [{:keys [tokens divider? first?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [:<>
      [rn/view
       {:style (style/token-row first?)}

@@ -1,7 +1,7 @@
 (ns status-im.contexts.preview.quo.empty-state.empty-state
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [reagent.core :as reagent]
     [status-im.common.resources :as resources]
     [status-im.contexts.preview.quo.preview :as preview]))
@@ -24,7 +24,7 @@
 
 (defn view
   []
-  (let [theme (quo.theme/use-theme)
+  (let [theme (quo.context/use-theme)
         state (reagent/atom {:image             :no-contacts
                              :title             "A big friendly title"
                              :description       "Some cool description will be here"

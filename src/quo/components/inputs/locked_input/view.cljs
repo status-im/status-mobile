@@ -3,8 +3,8 @@
     [quo.components.icon :as icons]
     [quo.components.inputs.locked-input.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn- info-box
@@ -29,7 +29,7 @@
 
   :value - string (default nil) - value to display in the info box"
   [{:keys [label icon container-style]} value]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style container-style}
      (when label
        [text/text

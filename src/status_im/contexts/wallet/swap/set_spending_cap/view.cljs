@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.swap.set-spending-cap.view
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.resources :as resources]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [status-im.common.events-helper :as events-helper]
     [status-im.common.floating-button-page.view :as floating-button-page]
@@ -60,7 +60,7 @@
 
 (defn- spending-cap-section
   []
-  (let [theme            (quo.theme/use-theme)
+  (let [theme            (quo.context/use-theme)
         asset-to-pay     (rf/sub [:wallet/swap-asset-to-pay])
         pay-amount       (rf/sub [:wallet/swap-pay-amount-raw])
         pay-token-symbol (:symbol asset-to-pay)]
@@ -80,7 +80,7 @@
 
 (defn- account-section
   []
-  (let [theme            (quo.theme/use-theme)
+  (let [theme            (quo.context/use-theme)
         asset-to-pay     (rf/sub [:wallet/swap-asset-to-pay])
         account          (rf/sub [:wallet/current-viewing-account])
         pay-amount       (rf/sub [:wallet/swap-pay-amount])
@@ -120,7 +120,7 @@
 
 (defn- token-section
   []
-  (let [theme             (quo.theme/use-theme)
+  (let [theme             (quo.context/use-theme)
         asset-to-pay      (rf/sub [:wallet/swap-asset-to-pay])
         network           (rf/sub [:wallet/swap-network])
         pay-token-symbol  (:symbol asset-to-pay)
@@ -146,7 +146,7 @@
 
 (defn- spender-contract-section
   []
-  (let [theme                    (quo.theme/use-theme)
+  (let [theme                    (quo.context/use-theme)
         network                  (rf/sub [:wallet/swap-network])
         provider                 (rf/sub [:wallet/swap-proposal-provider])
         spender-contract-address (or (rf/sub [:wallet/swap-proposal-approval-contract-address])
@@ -230,7 +230,7 @@
 (defn- footer
   []
   (let [provider (rf/sub [:wallet/swap-proposal-provider])
-        theme    (quo.theme/use-theme)
+        theme    (quo.context/use-theme)
         on-press (rn/use-callback #(when provider
                                      (rf/dispatch [:open-url (:terms-and-conditions-url provider)]))
                                   [provider])]

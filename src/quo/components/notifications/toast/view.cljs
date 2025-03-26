@@ -6,7 +6,7 @@
     [quo.components.markdown.text :as text]
     [quo.components.notifications.count-down-circle :as count-down-circle]
     [quo.components.notifications.toast.style :as style]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
@@ -22,7 +22,7 @@
 
 (defn toast-undo-action
   [{:keys [undo-duration undo-on-press]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [toast-action-container
      {:on-press            undo-on-press
       :accessibility-label :toast-undo-action
@@ -37,7 +37,7 @@
 
 (defn toast-container
   [{:keys [left title text right container-style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style (merge (style/box-container theme) container-style)}
      [blur/view
       {:style         style/blur-container
@@ -72,7 +72,7 @@
    "
   [{:keys [type icon title text action undo-duration undo-on-press container-style theme user]
     :or   {type :neutral icon :i/placeholder}}]
-  (let [theme     (or theme (quo.theme/use-theme))
+  (let [theme     (or theme (quo.context/use-theme))
         icon-name (case type
                     :positive (if (= theme :light)
                                 :i/correct
@@ -81,7 +81,7 @@
                                 :i/incorrect
                                 :i/incorrect-dark)
                     :neutral  icon)]
-    [quo.theme/provider {:theme theme}
+    [quo.context/provider {:theme theme}
      [toast-container
       {:left            (cond user
                               [user-avatar/user-avatar user]

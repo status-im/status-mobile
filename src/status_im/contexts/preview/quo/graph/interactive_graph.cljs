@@ -2,9 +2,9 @@
   (:require
     [goog.string :as gstring]
     [quo.components.graph.utils :as utils]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
@@ -113,7 +113,7 @@
 (defn f-view
   [state]
   (fn []
-    (let [theme (quo.theme/use-theme)]
+    (let [theme (quo.context/use-theme)]
       (rn/use-effect (fn []
                        (let [time-frame    (:time-frame @state)
                              data          (generate-data time-frame)
@@ -135,7 +135,7 @@
 
 (defn view
   []
-  (let [theme         (quo.theme/use-theme)
+  (let [theme         (quo.context/use-theme)
         data          (generate-data :1-week)
         highest-value (utils/find-highest-value data)
         lowest-value  (utils/find-lowest-value data)

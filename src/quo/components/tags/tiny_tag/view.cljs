@@ -2,12 +2,12 @@
   (:require
     [quo.components.markdown.text :as text]
     [quo.components.tags.tiny-tag.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [label] :as props}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/main}
      [rn/view {:style (style/inner props theme)}
       [text/text

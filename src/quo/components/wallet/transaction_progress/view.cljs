@@ -6,8 +6,8 @@
             [quo.components.wallet.confirmation-progress.view :as confirmation-progress]
             [quo.components.wallet.transaction-progress.schema :as component-schema]
             [quo.components.wallet.transaction-progress.style :as style]
+            [quo.context :as quo.context]
             [quo.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [schema.core :as schema]
             [utils.i18n :as i18n]))
@@ -172,7 +172,7 @@
 (defn- view-internal
   [{:keys [title on-press accessibility-label tag-photo tag-name tag-number networks]
     :or   {accessibility-label :transaction-progress}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/pressable
      {:on-press            on-press
       :accessibility-label accessibility-label}

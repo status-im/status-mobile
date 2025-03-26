@@ -1,8 +1,8 @@
 (ns quo.components.avatars.icon-avatar
   (:require
     [quo.components.icon :as icons]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (def ^:private sizes
@@ -19,7 +19,7 @@
   [{:keys [size icon color opacity border? blur?]
     :or   {opacity 20
            size    :size-32}}]
-  (let [theme                                       (quo.theme/use-theme)
+  (let [theme                                       (quo.context/use-theme)
         {component-size :component icon-size :icon} (get sizes size)
         circle-color                                (colors/resolve-color color theme opacity)
         icon-color                                  (colors/resolve-color color theme)]

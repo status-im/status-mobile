@@ -1,6 +1,6 @@
 (ns status-im.contexts.keycard.backup.view
-  (:require [quo.core :as quo]
-            [quo.theme]
+  (:require [quo.context]
+            [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
             [status-im.common.resources :as resources]
@@ -10,7 +10,7 @@
 
 (defn ready-to-add
   []
-  (let [{:keys [on-press]} (quo.theme/use-screen-params)]
+  (let [{:keys [on-press]} (quo.context/use-screen-params)]
     [:<>
      [quo/page-nav
       {:icon-name :i/close
@@ -45,7 +45,7 @@
 
 (defn not-empty-view
   []
-  (let [{:keys [on-press]} (quo.theme/use-screen-params)]
+  (let [{:keys [on-press]} (quo.context/use-screen-params)]
     [:<>
      [quo/page-nav
       {:icon-name :i/close

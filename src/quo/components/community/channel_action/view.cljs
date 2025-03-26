@@ -4,12 +4,12 @@
     [quo.components.counter.counter.view :as counter]
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [big? customization-color label counter-value icon on-press accessibility-label disabled?]}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))]

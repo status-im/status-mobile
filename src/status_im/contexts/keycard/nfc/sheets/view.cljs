@@ -1,7 +1,7 @@
 (ns status-im.contexts.keycard.nfc.sheets.view
-  (:require [quo.core :as quo]
+  (:require quo.context
+            [quo.core :as quo]
             [quo.foundations.colors :as colors]
-            quo.theme
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [status-im.common.resources :as resources]
@@ -39,7 +39,7 @@
         steps                                         (rf/sub [:keycard/steps])
         [was-connected-once? set-was-connected-once?] (rn/use-state false)
         {:keys [on-close theme hide? success?]}       (rf/sub [:keycard/connection-sheet-opts])
-        theme                                         (or theme (quo.theme/use-theme))
+        theme                                         (or theme (quo.context/use-theme))
         {window-height :height}                       (rn/get-window)
         bg-opacity                                    (reanimated/use-shared-value 0)
         translate-y                                   (reanimated/use-shared-value window-height)

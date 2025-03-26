@@ -3,14 +3,14 @@
     [quo.components.icon :as icon]
     [quo.components.list-items.quiz-item.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
 (defn view
   [{:keys [state number word on-press] :as props}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/pressable
      {:style    (style/container props theme)
       :on-press on-press}

@@ -1,9 +1,9 @@
 (ns status-im.contexts.communities.overview.view
   (:require
     [oops.core :as oops]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -291,7 +291,7 @@
                                           (swap! categories-heights select-keys categories)
                                           (reset! first-channel-height height))]
     (fn [id joined name images]
-      (let [theme                 (quo.theme/use-theme)
+      (let [theme                 (quo.context/use-theme)
             cover                 {:uri (get-in images [:banner :uri])}
             logo                  {:uri (get-in images [:large :uri])}
             collapsed?            (and initial-joined? joined)
@@ -332,7 +332,7 @@
 
 (defn- community-fetching-placeholder
   [id]
-  (let [theme     (quo.theme/use-theme)
+  (let [theme     (quo.context/use-theme)
         top-inset (safe-area/get-top)
         fetching? (rf/sub [:communities/fetching-community id])]
     [rn/view
@@ -364,6 +364,6 @@
 
 (defn view
   [id]
-  (let [id (or id (quo.theme/use-screen-params))]
+  (let [id (or id (quo.context/use-screen-params))]
     [rn/view {:style style/community-overview-container}
      [community-card-page-view id]]))

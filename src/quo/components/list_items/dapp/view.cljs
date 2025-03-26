@@ -3,13 +3,13 @@
     [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.list-items.dapp.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]))
 
 (defn view
   [{:keys [dapp on-press right-component accessibility-label] :as props}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))]

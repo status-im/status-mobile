@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.account.share-address.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
@@ -41,7 +41,7 @@
                                   :qr-size     qr-size
                                   :error-level :highest})
 
-            {:keys [status]}    (quo.theme/use-screen-params)
+            {:keys [status]}    (quo.context/use-screen-params)
             title               (case status
                                   :share   (i18n/label :t/share-address)
                                   :receive (i18n/label :t/receive)

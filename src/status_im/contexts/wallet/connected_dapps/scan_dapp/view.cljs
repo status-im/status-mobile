@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.connected-dapps.scan-dapp.view
-  (:require [quo.core :as quo]
+  (:require [quo.context]
+            [quo.core :as quo]
             [quo.foundations.resources :as quo.resources]
-            [quo.theme]
             [react-native.core :as rn]
             [react-native.hooks :as hooks]
             [status-im.common.scan-qr-code.view :as scan-qr-code]

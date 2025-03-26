@@ -2,8 +2,8 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.confirm-backup.style :as style]
@@ -104,7 +104,7 @@
         {:keys [on-success
                 on-try-again
                 masked-seed-phrase
-                theme shell?]} (quo.theme/use-screen-params)
+                theme shell?]} (quo.context/use-screen-params)
         unmasked-seed-phrase   (security/safe-unmask-data masked-seed-phrase)
         random-phrase          (reagent/atom [])]
     (fn []

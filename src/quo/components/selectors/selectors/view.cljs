@@ -2,13 +2,13 @@
   (:require
     [quo.components.icon :as icons]
     [quo.components.selectors.selectors.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn- base-selector
   [{:keys [default-checked? checked? disabled? blur? customization-color on-change container-style
            label-prefix outer-style-fn inner-style-fn icon-style-fn]}]
-  (let [theme                   (quo.theme/use-theme)
+  (let [theme                   (quo.context/use-theme)
         customization-color     (if customization-color customization-color :blue)
         controlled-component?   (some? checked?)
         [internal-checked?

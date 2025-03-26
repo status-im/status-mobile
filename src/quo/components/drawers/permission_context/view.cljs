@@ -9,8 +9,8 @@
     [quo.components.markdown.text :as text]
     [quo.components.tags.number-tag.view :as number-tag]
     [quo.components.tags.token-tag.view :as token-tag]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.shadow :as shadow]
@@ -69,7 +69,7 @@
 
 (defn- view-internal
   [{:keys [on-press blur? container-style] :as props}]
-  (let [theme        (quo.theme/use-theme)
+  (let [theme        (quo.context/use-theme)
         context-type (:type props)]
     [shadow/view
      {:offset       [0 4]

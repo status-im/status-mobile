@@ -2,13 +2,13 @@
   (:require
     [quo.components.common.separator.view :as separator]
     [quo.components.markdown.text :as text]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]))
 
 (defn date
   [value]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:padding-top    8
       :padding-bottom 12

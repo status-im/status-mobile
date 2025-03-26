@@ -3,8 +3,8 @@
     [clojure.string :as string]
     [quo.components.icons.icons :as icons]
     [quo.components.icons.svg :as icons.svg]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn- valid-color?
@@ -52,5 +52,5 @@
 (defn icon
   ([icon-name] (icon icon-name nil))
   ([icon-name params]
-   (let [theme (quo.theme/use-theme)]
+   (let [theme (quo.context/use-theme)]
      (memoized-icon params icon-name theme))))

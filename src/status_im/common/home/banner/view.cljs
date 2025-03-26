@@ -1,9 +1,9 @@
 (ns status-im.common.home.banner.view
   (:require
     [oops.core :as oops]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -31,7 +31,7 @@
 (defn- banner-card-blur-layer
   [scroll-shared-value child]
   (let [open-sheet? (-> (rf/sub [:bottom-sheet]) :sheets seq)
-        theme       (quo.theme/use-theme)]
+        theme       (quo.context/use-theme)]
     [reanimated/view {:style (style/banner-card-blur-layer scroll-shared-value theme)}
      [quo/blur
       {:style         style/fill-space
@@ -71,7 +71,7 @@
 
 (defn animated-banner
   [{:keys [scroll-ref tabs selected-tab on-tab-change scroll-shared-value content customization-color]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [:<>
      [banner-card-blur-layer scroll-shared-value
       [banner-card-hiding-layer

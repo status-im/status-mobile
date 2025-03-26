@@ -4,13 +4,13 @@
     [quo.components.markdown.text :as text]
     [quo.components.selectors.disclaimer.style :as style]
     [quo.components.selectors.selectors.view :as selectors]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [checked? blur? accessibility-label container-style on-change icon customization-color]} label]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/pressable
      {:on-press            (when on-change
                              #(on-change (not checked?)))

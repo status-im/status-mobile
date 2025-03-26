@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.sheets.network-preferences.view
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.wallet.common.utils :as utils]
@@ -35,7 +35,7 @@
                                                 @network-preferences-names-state))]
     (fn [{:keys [on-save on-change blur? button-label first-section-warning-label
                  second-section-warning-label title description]}]
-      (let [theme                            (quo.theme/use-theme)
+      (let [theme                            (quo.context/use-theme)
             network-details                  (rf/sub [:wallet/network-details])
             first-section-networks           (filter (fn [network]
                                                        (if receiver-preferred-networks

@@ -5,8 +5,8 @@
     [quo.components.icon :as icons]
     [quo.components.list-items.community.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn- logo-component
@@ -117,7 +117,7 @@
   "
   [{:keys [members type info tokens locked? title subtitle logo blur? customization-color
            on-press on-long-press on-press-info container-style unread-count]}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))]

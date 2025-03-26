@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.messenger.photo-selector.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.linear-gradient :as linear-gradient]
@@ -68,7 +68,7 @@
 
 (defn render-image
   [item index _ {:keys [window-width selected]}]
-  (let [theme               (quo.theme/use-theme)
+  (let [theme               (quo.context/use-theme)
         customization-color (rf/sub [:profile/customization-color])
         item-selected?      (some #(= (:uri item) (:uri %)) @selected)]
     [rn/touchable-opacity

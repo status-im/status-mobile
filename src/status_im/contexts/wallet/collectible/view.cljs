@@ -1,9 +1,9 @@
 (ns status-im.contexts.wallet.collectible.view
   (:require
     [oops.core :as oops]
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [react-native.platform :as platform]
@@ -38,7 +38,7 @@
 
 (defn cta-buttons
   [{:keys [chain-id token-id contract-address collectible watch-only?]}]
-  (let [theme         (quo.theme/use-theme)
+  (let [theme         (quo.context/use-theme)
         on-press-send (rn/use-callback
                        (fn []
                          (rf/dispatch [:wallet/clean-send-data])
@@ -137,7 +137,7 @@
 
 (defn- gradient-layer
   [image-uri]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/gradient-layer}
      [rn/image
       {:style       style/image-background
@@ -253,7 +253,7 @@
 (defn view
   [_]
   (let [{:keys [top]}      (safe-area/get-insets)
-        theme              (quo.theme/use-theme)
+        theme              (quo.context/use-theme)
         title-bottom-coord (rn/use-ref-atom 0)
         set-title-bottom   (rn/use-callback
                             (fn [_ y _ height]

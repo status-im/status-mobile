@@ -8,8 +8,8 @@
     [quo.components.markdown.text :as text]
     [quo.components.selectors.selectors.view :as selectors]
     [quo.components.wallet.keypair.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
@@ -40,7 +40,7 @@
 
 (defn title-view
   [{:keys [details action selected? type blur? customization-color on-options-press]}]
-  (let [theme               (quo.theme/use-theme)
+  (let [theme               (quo.context/use-theme)
         {:keys [full-name]} details]
     [rn/view
      {:style               style/title-container
@@ -95,7 +95,7 @@
 
 (defn view
   [{:keys [accounts action container-style selected? on-press] :as props}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/pressable
      {:style          (style/container (assoc props
                                               :selected?       selected?

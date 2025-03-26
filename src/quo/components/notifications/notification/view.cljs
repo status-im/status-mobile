@@ -4,7 +4,7 @@
     [quo.components.blur.view :as blur]
     [quo.components.markdown.text :as text]
     [quo.components.notifications.notification.style :as style]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]))
 
 (defn header-container
@@ -63,7 +63,7 @@
 
 (defn notification
   [{title-text :title :keys [avatar user header title-weight text body container-style theme]}]
-  (let [context-theme (quo.theme/use-theme)
+  (let [context-theme (quo.context/use-theme)
         theme         (or theme context-theme)
         body          (or body (when text [message text theme]))
         header        (or header
@@ -80,7 +80,7 @@
                         [avatar-container
                          {:multiline? (and header body)}
                          user-avatar])]
-    [quo.theme/provider {:theme theme}
+    [quo.context/provider {:theme theme}
      [notification-container
       {:avatar          avatar
        :header          header

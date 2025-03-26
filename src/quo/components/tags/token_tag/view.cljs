@@ -5,7 +5,7 @@
     [quo.components.markdown.text :as text]
     [quo.components.tags.token-tag.style :as style]
     [quo.components.utilities.token.view :as token]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]))
 
@@ -19,7 +19,7 @@
     - :token-symbol - string"
   [{:keys [options size blur? token-value token-img-src token-symbol]
     :or   {size :size-24}}]
-  (let [theme                 (quo.theme/use-theme)
+  (let [theme                 (quo.context/use-theme)
         [container-width
          set-container-width] (rn/use-state 0)
         on-layout             (rn/use-callback #(set-container-width

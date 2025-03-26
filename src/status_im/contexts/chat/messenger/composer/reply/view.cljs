@@ -1,9 +1,9 @@
 (ns status-im.contexts.chat.messenger.composer.reply.view
   (:require
     [clojure.string :as string]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [react-native.reanimated :as reanimated]
@@ -104,7 +104,7 @@
    in-chat-input? pin? recording-audio? input-ref]
   (let [[primary-name _]   (rf/sub [:contacts/contact-two-names-by-identity from])
         current-public-key (rf/sub [:multiaccount/public-key])
-        theme              (quo.theme/use-theme)
+        theme              (quo.context/use-theme)
         content-type       (or content-type contentType)
         text               (get-quoted-text-with-mentions (or parsed-text (:parsed-text content)))]
     [rn/view

@@ -5,9 +5,9 @@
     [quo.components.markdown.text :as text]
     [quo.components.wallet.network-bridge.schema :as network-bridge-schema]
     [quo.components.wallet.network-bridge.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
@@ -32,7 +32,7 @@
 
 (defn view-internal
   [{:keys [network status amount container-style on-press on-long-press] :as args}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     (if (= status :edit)
       [network-bridge-add (assoc args :theme theme)]
       [rn/pressable

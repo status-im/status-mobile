@@ -1,8 +1,8 @@
 (ns legacy.status-im.ui.components.topbar
   (:require
     [legacy.status-im.ui.components.core :as quo]
+    [quo.context]
     [quo.foundations.colors :as quo.colors]
-    [quo.theme]
     [re-frame.core :as re-frame]
     [react-native.safe-area :as safe-area]))
 
@@ -33,7 +33,7 @@
     :or   {border-bottom? true
            new-ui?        false}
     :as   props}]
-  (let [theme      (quo.theme/use-theme)
+  (let [theme      (quo.context/use-theme)
         navigation (if (= navigation :none)
                      nil
                      [(default-navigation modal? navigation)])]

@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.send.input-amount.view
   (:require
     [clojure.string :as string]
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.controlled-input.utils :as controlled-input]

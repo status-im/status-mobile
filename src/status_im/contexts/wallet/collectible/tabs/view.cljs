@@ -1,5 +1,5 @@
 (ns status-im.contexts.wallet.collectible.tabs.view
-  (:require [quo.theme]
+  (:require [quo.context]
             [status-im.contexts.wallet.collectible.tabs.about.view :as about]
             [status-im.contexts.wallet.collectible.tabs.activity.view :as activity]
             [status-im.contexts.wallet.collectible.tabs.overview.view :as overview]))

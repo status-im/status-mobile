@@ -3,8 +3,8 @@
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
     [quo.components.settings.reorder-item.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]))
 
@@ -13,7 +13,7 @@
     [title subtitle image image-size right-text right-icon on-press]}
    blur?
    drag]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/touchable-opacity
      {:on-press      on-press
       :on-long-press drag

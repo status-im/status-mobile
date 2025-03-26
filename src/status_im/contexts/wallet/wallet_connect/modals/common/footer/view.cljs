@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.wallet-connect.modals.common.footer.view
-  (:require [quo.core :as quo]
+  (:require [quo.context]
+            [quo.core :as quo]
             [quo.foundations.colors :as colors]
-            [quo.theme]
             [react-native.core :as rn]
             [status-im.common.standard-authentication.core :as standard-authentication]
             [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
@@ -43,7 +43,7 @@
 (defn view
   [{:keys [warning-label slide-button-text error-state]} & children]
   (let [offline? (rf/sub [:network/offline?])
-        theme    (quo.theme/use-theme)]
+        theme    (quo.context/use-theme)]
     [:<>
      (when (or offline? error-state)
        [quo/alert-banner

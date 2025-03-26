@@ -1,7 +1,7 @@
 (ns status-im.contexts.communities.actions.accounts-selection.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.common.standard-authentication.core :as standard-auth]
@@ -21,7 +21,7 @@
 
 (defn- bottom-authentication
   [{:keys [id]}]
-  (let [theme                     (quo.theme/use-theme)
+  (let [theme                     (quo.context/use-theme)
         can-edit-addresses?       (rf/sub [:communities/can-edit-shared-addresses? id])
         revealed-accounts         (rf/sub [:communities/accounts-to-reveal id])
         {:keys [color]}           (rf/sub [:communities/community id])
@@ -54,7 +54,7 @@
 
 (defn view
   []
-  (let [{id :community-id}                (quo.theme/use-screen-params)
+  (let [{id :community-id}                (quo.context/use-screen-params)
         {:keys [name images joined]}      (rf/sub [:communities/community id])
         has-permissions?                  (rf/sub [:communities/has-permissions? id])
         airdrop-account                   (rf/sub [:communities/airdrop-account id])

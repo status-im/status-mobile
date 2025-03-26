@@ -1,8 +1,8 @@
 (ns status-im.contexts.onboarding.share-usage.learn-more-sheet
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.privacy.view :as privacy]
     [utils.i18n :as i18n]

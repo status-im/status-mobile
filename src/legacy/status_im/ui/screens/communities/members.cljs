@@ -7,7 +7,7 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.ui.components.topbar :as topbar]
     [legacy.status-im.ui.components.unviewed-indicator :as unviewed-indicator]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [status-im.constants :as constants]
     [status-im.contexts.profile.utils :as profile.utils]
@@ -110,7 +110,7 @@
 
 (defn view
   []
-  (let [{:keys [community-id]} (quo.theme/use-screen-params)]
+  (let [{:keys [community-id]} (quo.context/use-screen-params)]
     (rn/use-mount
      #(rf/dispatch [:community/fetch-requests-to-join community-id]))
     (fn []

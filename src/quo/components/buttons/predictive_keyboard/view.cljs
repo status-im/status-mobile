@@ -3,8 +3,8 @@
     [quo.components.buttons.button.view :as button]
     [quo.components.buttons.predictive-keyboard.style :as style]
     [quo.components.info.info-message.view :as info-message]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]))
 
@@ -35,7 +35,7 @@
    - `on-press` Callback called when a word is pressed `(fn [word])`
    - `theme` :light or :dark, received from with-theme HOC."
   [{:keys [type blur? text words on-press container-style] :or {container-style {}}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [linear-gradient/linear-gradient
      {:style               (assoc container-style :flex-direction :row)
       :accessibility-label :predictive-keyboard

@@ -1,7 +1,7 @@
 (ns status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-seed-phrase.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -17,7 +17,7 @@
            seed-phrase
            set-incorrect-seed-phrase
            focus-input]}]
-  (let [keypair             (quo.theme/use-screen-params)
+  (let [keypair             (quo.context/use-screen-params)
         customization-color (rf/sub [:profile/customization-color])
         show-errors         (rn/use-callback
                              (fn [_error]
@@ -57,7 +57,7 @@
 
 (defn view
   []
-  (let [keypair (quo.theme/use-screen-params)]
+  (let [keypair (quo.context/use-screen-params)]
     [quo/overlay {:type :shell}
      [enter-seed-phrase/screen
       {:keypair         keypair

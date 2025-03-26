@@ -1,6 +1,6 @@
 (ns status-im.contexts.profile.contact.view
-  (:require [quo.foundations.colors :as colors]
-            [quo.theme]
+  (:require [quo.context]
+            [quo.foundations.colors :as colors]
             [react-native.reanimated :as reanimated]
             [status-im.common.scroll-page.view :as scroll-page]
             [status-im.contexts.profile.contact.actions.view :as actions]
@@ -16,7 +16,7 @@
   []
   (let [{:keys [customization-color]} (rf/sub [:contacts/current-contact])
         scroll-y                      (reanimated/use-shared-value 0)
-        theme                         (quo.theme/use-theme)]
+        theme                         (quo.context/use-theme)]
     [:<>
      [scroll-page/scroll-page
       {:navigate-back?   true

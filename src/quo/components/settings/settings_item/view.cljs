@@ -13,14 +13,14 @@
     [quo.components.tags.context-tag.view :as context-tag]
     [quo.components.tags.status-tags :as status-tags]
     [quo.components.utilities.token.view :as token]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
 (defn status-description
   [{:keys [description-props blur?]}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         {:keys [online? text]} description-props]
     [rn/view {:style style/status-container}
      [rn/view {:style (style/status-dot online? blur?)}]
@@ -31,7 +31,7 @@
 
 (defn text-description
   [{:keys [description-props blur?]}]
-  (let [theme               (quo.theme/use-theme)
+  (let [theme               (quo.context/use-theme)
         {:keys [text icon]} description-props]
     [rn/view
      {:style (style/sub-container :center)}
@@ -60,7 +60,7 @@
 
 (defn image-component
   [{:keys [image image-props description tag blur?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style (style/image-container description tag image)}
      (case image

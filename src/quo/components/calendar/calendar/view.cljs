@@ -6,13 +6,13 @@
     [quo.components.calendar.calendar.utils :as utils]
     [quo.components.calendar.calendar.weekdays-header.view :as weekdays-header]
     [quo.components.calendar.calendar.years-list.view :as years-list]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [utils.number :as utils.number]))
 
 (defn view
   [{:keys [on-change start-date end-date]}]
-  (let [theme                               (quo.theme/use-theme)
+  (let [theme                               (quo.context/use-theme)
         [selected-year set-selected-year]   (rn/use-state (utils/current-year))
         [selected-month set-selected-month] (rn/use-state (utils/current-month))
         on-change-year                      (rn/use-callback #(set-selected-year %))

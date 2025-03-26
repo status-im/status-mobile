@@ -4,15 +4,15 @@
             [quo.components.buttons.button.view :as button]
             [quo.components.icon :as icon]
             [quo.components.markdown.text :as text]
+            [quo.context]
             [quo.foundations.colors :as colors]
-            [quo.theme]
             [react-native.core :as rn]
             [react-native.linear-gradient :as linear-gradient]
             [schema.core :as schema]))
 
 (defn- view-internal
   [{:keys [action? text button-text text-number-of-lines container-style on-button-press]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:accessibility-label :alert-banner
       :style               (style/alert-banner-container theme)}

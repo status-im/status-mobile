@@ -5,7 +5,7 @@
     [quo.components.tags.context-tag.view :as context-tag]
     [quo.components.wallet.transaction-summary.schema :as component-schema]
     [quo.components.wallet.transaction-summary.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
@@ -72,7 +72,7 @@
            third-tag-prefix fourth-tag-prefix fifth-tag max-fees
            nonce input-data]
     :as   props}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style               (style/container theme)
       :accessibility-label :transaction-summary}

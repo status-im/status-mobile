@@ -2,9 +2,9 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [status-im.common.resources :as resources]
@@ -16,7 +16,7 @@
 
 (defn- empty-list
   []
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [quo/empty-state
      {:title           (i18n/label :t/no-saved-addresses)
       :description     (i18n/label :t/you-like-to-type-43-characters)
@@ -25,7 +25,7 @@
 
 (defn- empty-result
   []
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [quo/empty-state
      {:title           (i18n/label :t/nothing-found)
       :description     (i18n/label :t/try-to-search-something-else)

@@ -3,7 +3,7 @@
     [quo.components.links.internal-link-card.schema :as component-schema]
     [quo.components.links.internal-link-card.user.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [schema.core :as schema]))
@@ -57,7 +57,7 @@
 
 (defn view-internal
   [{:keys [title loading? icon on-press subtitle emoji-hash customization-color size]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     (if loading?
       [rn/pressable
        {:accessibility-label :internal-link-card

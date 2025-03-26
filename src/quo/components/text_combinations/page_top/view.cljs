@@ -10,7 +10,7 @@
             [quo.components.tags.context-tag.view :as context-tag]
             [quo.components.text-combinations.page-top.style :as style]
             [quo.components.text-combinations.standard-title.view :as standard-title]
-            [quo.theme]
+            [quo.context]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
             [utils.number]))
@@ -122,7 +122,7 @@
   [{:keys  [description title input blur? input-props container-style]
     emojis :emoji-dash
     :as    props}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style container-style}
      [rn/view {:style style/top-container}
       (when (or title input)

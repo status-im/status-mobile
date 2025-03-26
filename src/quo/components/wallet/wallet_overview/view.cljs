@@ -5,7 +5,7 @@
     [quo.components.markdown.text :as text]
     [quo.components.wallet.wallet-overview.schema :as component-schema]
     [quo.components.wallet.wallet-overview.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
@@ -26,7 +26,7 @@
 
 (defn- view-info-top
   [{:keys [state balance networks dropdown-on-press dropdown-state show-new-chain-indicator?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/container-info-top}
      (if (= state :loading)
        (loading-bars [{:width 201 :height 20 :margin 0}] theme)
@@ -68,7 +68,7 @@
 (defn- view-info-bottom
   [{:keys [state time-frame metrics date begin-date end-date
            currency-change percentage-change]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/container-info-bottom}
      (when (= state :loading)
        [rn/view

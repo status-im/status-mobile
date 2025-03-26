@@ -1,8 +1,8 @@
 (ns status-im.navigation.view
   (:require
     [legacy.status-im.ui.screens.popover.views :as popover]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -74,7 +74,7 @@
            app-theme                        (rf/sub [:theme])
            theme                            (or theme app-theme)]
        ^{:key (str "root" screen-key @reloader/cnt)}
-       [quo.theme/provider
+       [quo.context/provider
         {:theme theme :screen-id name :screen-params screen-params}
         [rn/view
          {:style (wrapped-screen-style (assoc
@@ -104,7 +104,7 @@
            insets                    (safe-area/get-insets)
            keyboard-vertical-offset  (- (max 20 (:bottom insets)))]
        ^{:key (str "sheet" @reloader/cnt)}
-       [quo.theme/provider
+       [quo.context/provider
         {:theme         (or theme app-theme)
          :screen-id     screen-id-value
          :screen-params screen-params}
@@ -123,7 +123,7 @@
   (reagent/reactify-component
    (fn []
      ^{:key (str "alert-banner" @reloader/cnt)}
-     [quo.theme/provider {:theme :dark}
+     [quo.context/provider {:theme :dark}
       [alert-banner/view]])))
 
 (def nfc-sheet-comp
@@ -131,7 +131,7 @@
    (fn []
      (let [app-theme (rf/sub [:theme])]
        ^{:key (str "nfc-sheet-" @reloader/cnt)}
-       [quo.theme/provider {:theme app-theme}
+       [quo.context/provider {:theme app-theme}
         [rn/keyboard-avoiding-view
          {:style {:position :relative :flex 1}}
          [keycard.sheet/android-view]]]))))

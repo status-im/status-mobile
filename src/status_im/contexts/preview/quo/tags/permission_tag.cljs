@@ -1,8 +1,8 @@
 (ns status-im.contexts.preview.quo.tags.permission-tag
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.resources :as resources]
@@ -171,7 +171,7 @@
   []
   (let [state (reagent/atom {:size 32})]
     (fn []
-      (let [theme (quo.theme/use-theme)]
+      (let [theme (quo.context/use-theme)]
         [preview/preview-container
          {:state                     state
           :component-container-style {:margin-bottom 40}

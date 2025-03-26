@@ -1,8 +1,8 @@
 (ns status-im.contexts.chat.group.details.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.safe-area :as safe-area]
@@ -50,10 +50,10 @@
 
 (defn add-manage-members
   [{:keys [on-scroll]}]
-  (let [theme                      (quo.theme/use-theme)
+  (let [theme                      (quo.context/use-theme)
         selected-participants      (rf/sub [:group-chat/selected-participants])
         deselected-members         (rf/sub [:group-chat/deselected-members])
-        chat-id                    (quo.theme/use-screen-params)
+        chat-id                    (quo.context/use-screen-params)
         {:keys [admins] :as group} (rf/sub [:chats/chat-by-id chat-id])
         current-pk                 (rf/sub [:multiaccount/public-key])
         admin?                     (get admins current-pk)]
@@ -124,7 +124,7 @@
 
 (defn view
   []
-  (let [chat-id         (quo.theme/use-screen-params)
+  (let [chat-id         (quo.context/use-screen-params)
         {:keys [admins chat-id chat-name color muted contacts image]
          :as   group}   (rf/sub [:chats/chat-by-id chat-id])
         members         (rf/sub [:contacts/group-members-sections chat-id])

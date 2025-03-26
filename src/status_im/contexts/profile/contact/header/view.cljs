@@ -1,8 +1,8 @@
 (ns status-im.contexts.profile.contact.header.view
   (:require [clojure.string :as string]
+            [quo.context]
             [quo.core :as quo]
             [quo.foundations.colors :as colors]
-            [quo.theme]
             [react-native.core :as rn]
             [status-im.common.not-implemented]
             [status-im.common.scalable-avatar.view :as avatar]
@@ -32,7 +32,7 @@
         full-name           (profile.utils/displayed-name contact)
         profile-picture     (profile.utils/photo contact)
         online?             (rf/sub [:visibility-status-updates/online? public-key])
-        theme               (quo.theme/use-theme)
+        theme               (quo.context/use-theme)
         contact-status      (rn/use-memo
                              (fn []
                                (cond

@@ -1,8 +1,8 @@
 (ns status-im.contexts.communities.home.view
   (:require
     [oops.core :as oops]
+    [quo.context :as quo.context]
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im.common.home.banner.view :as common.banner]
@@ -84,7 +84,7 @@
   []
   (let [flat-list-ref                   (rn/use-ref-atom nil)
         set-flat-list-ref               (rn/use-callback #(reset! flat-list-ref %))
-        theme                           (quo.theme/use-theme)
+        theme                           (quo.context/use-theme)
         customization-color             (rf/sub [:profile/customization-color])
         selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
         {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])

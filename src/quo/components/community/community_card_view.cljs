@@ -3,12 +3,12 @@
     [quo.components.community.community-view :as community-view]
     [quo.components.community.icon :as icon]
     [quo.components.community.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn- loading-card-view
   [{:keys [width]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style (style/loading-card width theme)}
      [rn/view (style/loading-cover-container theme)]
      [rn/view (style/loading-content-container theme)
@@ -33,7 +33,7 @@
 
 (defn- community-card-view
   [{:keys [community on-press width]}]
-  (let [theme                                                              (quo.theme/use-theme)
+  (let [theme                                                              (quo.context/use-theme)
         {:keys [name description locked? images cover status tokens tags]} community]
     [rn/pressable
      {:accessibility-label :community-card-item

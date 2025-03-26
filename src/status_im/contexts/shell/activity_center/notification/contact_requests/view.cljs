@@ -1,7 +1,7 @@
 (ns status-im.contexts.shell.activity-center.notification.contact-requests.view
   (:require
+    quo.context
     [quo.core :as quo]
-    quo.theme
     [react-native.core :as rn]
     [status-im.constants :as constants]
     [status-im.contexts.shell.activity-center.notification.common.style :as common-style]
@@ -168,7 +168,7 @@
   (let [{:keys [author message last-message]} notification
         {:keys [public-key]}                  (rf/sub [:multiaccount/contact])
         {:keys [contact-request-state]}       (or message last-message)
-        theme                                 (quo.theme/use-theme)]
+        theme                                 (quo.context/use-theme)]
     [swipeable props
      (cond
        (= public-key author)

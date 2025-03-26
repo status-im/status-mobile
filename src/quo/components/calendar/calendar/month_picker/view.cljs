@@ -4,13 +4,13 @@
     [quo.components.calendar.calendar.month-picker.style :as style]
     [quo.components.calendar.calendar.month-picker.utils :as utils]
     [quo.components.markdown.text :as text]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [utils.number :as utils.number]))
 
 (defn view
   [{:keys [year month on-change]}]
-  (let [theme (quo.theme/use-theme)
+  (let [theme (quo.context/use-theme)
         year  (utils.number/parse-int year)
         month (utils.number/parse-int month)]
     [rn/view

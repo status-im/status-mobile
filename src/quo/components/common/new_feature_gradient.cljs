@@ -1,11 +1,11 @@
 (ns quo.components.common.new-feature-gradient
-  (:require [quo.foundations.colors :as colors]
-            [quo.theme]
+  (:require [quo.context]
+            [quo.foundations.colors :as colors]
             [react-native.linear-gradient :as linear-gradient]))
 
 (defn view
   [{:keys [style accessibility-label]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [linear-gradient/linear-gradient
      {:style               style
       :accessibility-label accessibility-label

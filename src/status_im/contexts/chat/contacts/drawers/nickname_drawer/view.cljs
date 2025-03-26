@@ -1,9 +1,9 @@
 (ns status-im.contexts.chat.contacts.drawers.nickname-drawer.view
   (:require
     [clojure.string :as string]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -30,7 +30,7 @@
   (let [{:keys [primary-name nickname public-key]} contact
         entered-nickname                           (reagent/atom (or nickname ""))
         photo-path                                 (rf/sub [:chats/photo-path public-key])
-        theme                                      (quo.theme/use-theme)
+        theme                                      (quo.context/use-theme)
         insets                                     (safe-area/get-insets)]
     (fn [{:keys [title description accessibility-label
                  close-button-text]}]

@@ -9,8 +9,8 @@
             [quo.components.wallet.account-permissions.style :as style]
             [quo.components.wallet.address-text.view :as address-text]
             [quo.components.wallet.required-tokens.view :as required-tokens]
+            [quo.context :as quo.context]
             [quo.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [schema.core :as schema]
             [utils.i18n :as i18n]))
@@ -55,7 +55,7 @@
      [name address emoji]
      :as account} :account
     :or {customization-color :blue}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style               (merge (style/container theme) container-style)
       :accessibility-label :wallet-account-permissions}

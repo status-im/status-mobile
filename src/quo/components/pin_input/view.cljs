@@ -1,14 +1,14 @@
 (ns quo.components.pin-input.view
   (:require [quo.components.markdown.text :as text]
             [quo.components.pin-input.pin.view :as pin]
+            quo.context
             [quo.foundations.colors :as colors]
-            quo.theme
             [react-native.core :as rn]))
 
 (defn view
   [{:keys [number-of-pins number-of-filled-pins error? info info-error?]
     :or   {number-of-pins 6 number-of-filled-pins 0}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style {:align-items :center}}
      [rn/view {:style {:flex-direction :row}}
       (for [i (range 1 (inc number-of-pins))]

@@ -1,8 +1,8 @@
 (ns status-im.contexts.chat.messenger.messages.content.text.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [status-im.contexts.chat.messenger.messages.content.link-preview.view :as link-preview]
@@ -152,7 +152,7 @@
 (defn render-parsed-text
   [{:keys [content chat-id edited-at style-override on-layout]}]
   ^{:key (:parsed-text content)}
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style               style-override
       :on-layout           on-layout

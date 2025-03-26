@@ -4,7 +4,7 @@
     [quo.components.buttons.button.view :as button]
     [quo.components.markdown.text :as text]
     [quo.components.settings.accounts.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn card-background
@@ -31,7 +31,7 @@
 
 (defn account
   [{:keys [account-name account-address avatar-icon customization-color on-press-menu]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/card}
      [card-background
       {:customization-color customization-color

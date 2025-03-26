@@ -1,6 +1,6 @@
 (ns status-im.contexts.settings.wallet.keypairs-and-accounts.view
-  (:require [quo.core :as quo]
-            [quo.theme]
+  (:require [quo.context]
+            [quo.core :as quo]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.contexts.settings.wallet.keypairs-and-accounts.actions.view :as actions]
@@ -45,7 +45,7 @@
     :as          item}
    _ _
    {:keys [profile-picture compressed-key customization-color]}]
-  (let [theme            (quo.theme/use-theme)
+  (let [theme            (quo.context/use-theme)
         default-keypair? (= keypair-type :profile)
         shortened-key    (when default-keypair?
                            (utils/get-shortened-compressed-key compressed-key))

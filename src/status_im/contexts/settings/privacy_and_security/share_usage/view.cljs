@@ -1,8 +1,8 @@
 (ns status-im.contexts.settings.privacy-and-security.share-usage.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.events-helper :as events-helper]
@@ -50,7 +50,7 @@
   (rf/dispatch
    [:show-bottom-sheet
     {:content (fn []
-                [quo.theme/provider {:theme :dark}
+                [quo.context/provider {:theme :dark}
                  [privacy/privacy-statement]])
      :shell?  true}]))
 

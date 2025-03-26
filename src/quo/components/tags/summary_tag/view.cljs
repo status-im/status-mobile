@@ -6,8 +6,8 @@
     [quo.components.markdown.text :as text]
     [quo.components.tags.summary-tag.style :as style]
     [quo.components.utilities.token.view :as token]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn- left-view
@@ -61,7 +61,7 @@
   [{:keys [label customization-color type container-style]
     :as   props
     :or   {customization-color colors/neutral-80-opa-5}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:accessibility-label :container
       :style               (merge (style/main (assoc props :customization-color customization-color)

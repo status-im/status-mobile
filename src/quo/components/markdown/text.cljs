@@ -1,8 +1,8 @@
 (ns quo.components.markdown.text
   (:require
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
     [quo.foundations.typography :as typography]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.utils :as rn.utils]))
 
@@ -32,7 +32,7 @@
 
 (defn- text-view
   [props & children]
-  (let [theme (quo.theme/use-theme)
+  (let [theme (quo.context/use-theme)
         style (text-style props theme)]
     (into [rn/text
            (merge {:style style}

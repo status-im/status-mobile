@@ -1,7 +1,7 @@
 (ns status-im.contexts.communities.actions.channel-view-details.view
   (:require [clojure.string :as string]
+            [quo.context]
             [quo.core :as quo]
-            [quo.theme]
             [react-native.core :as rn]
             [status-im.common.contact-list-item.view :as contact-list-item]
             [status-im.common.contact-list.view :as contact-list]
@@ -77,11 +77,11 @@
 
 (defn view
   []
-  (let [{:keys [chat-id community-id]} (quo.theme/use-screen-params)
+  (let [{:keys [chat-id community-id]} (quo.context/use-screen-params)
         {:keys [description chat-name emoji muted chat-type color]
          :as   chat}                   (rf/sub [:chats/chat-by-id chat-id])
         pins-count                     (rf/sub [:chats/pin-messages-count chat-id])
-        theme                          (quo.theme/use-theme)]
+        theme                          (quo.context/use-theme)]
     (rn/use-mount (fn []
                     (rf/dispatch [:pin-message/load-pin-messages chat-id])))
     [:<>

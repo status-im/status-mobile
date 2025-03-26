@@ -1,9 +1,9 @@
 (ns status-im.contexts.wallet.sheets.account-options.view
   (:require [clojure.string :as string]
             [oops.core :as oops]
+            quo.context
             [quo.core :as quo]
             [quo.foundations.colors :as colors]
-            quo.theme
             [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
@@ -104,7 +104,7 @@
   []
   (let [options-height (reagent/atom 0)]
     (fn []
-      (let [theme                  (quo.theme/use-theme)
+      (let [theme                  (quo.context/use-theme)
             accounts               (rf/sub [:wallet/operable-accounts-without-current-viewing-account])
             show-account-selector? (pos? (count accounts))]
         [:<>

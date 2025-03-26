@@ -1,8 +1,8 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.add-address-to-save.view
   (:require
     [clojure.string :as string]
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -118,7 +118,7 @@
 
 (defn view
   []
-  (let [screen-id                           (quo.theme/use-screen-id)
+  (let [screen-id                           (quo.context/use-screen-id)
         profile-color                       (rf/sub [:profile/customization-color])
         accounts-addresses                  (rf/sub [:wallet/addresses])
         saved-addresses-addresses           (rf/sub [:wallet/saved-addresses-addresses])

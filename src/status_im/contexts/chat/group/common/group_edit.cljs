@@ -1,6 +1,6 @@
 (ns status-im.contexts.chat.group.common.group-edit
-  (:require [quo.core :as quo]
-            [quo.theme]
+  (:require [quo.context]
+            [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.avatar-picture-picker.view :as avatar-picture-picker]
             [status-im.common.floating-button-page.view :as floating-button-page]
@@ -41,7 +41,7 @@
 (defn view
   [{:keys [default-group-name default-group-color default-group-image contacts
            submit-button-label submit-event back-button-icon chat-id close on-success editing-group?]}]
-  (let [theme                         (quo.theme/use-theme)
+  (let [theme                         (quo.context/use-theme)
         {window-width :width}         (rn/get-window)
         contacts-count                (count contacts)
         [group-name set-group-name]   (rn/use-state default-group-name)

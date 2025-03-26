@@ -1,8 +1,8 @@
 (ns status-im.contexts.preview.quo.notifications.activity-logs
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]
@@ -119,7 +119,7 @@
                              :unread?        true
                              :items          []})]
     (fn []
-      (let [theme (quo.theme/use-theme)
+      (let [theme (quo.context/use-theme)
             {:keys [button-1-type
                     button-1-label
                     button-2-type
@@ -174,7 +174,7 @@
           {:flex    1
            :padding 16}
           [preview/customizer state descriptor theme]]
-         [quo.theme/provider {:theme :dark}
+         [quo.context/provider {:theme :dark}
           [rn/view
            {:background-color colors/neutral-90
             :flex-direction   :row

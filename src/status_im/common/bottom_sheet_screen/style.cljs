@@ -1,7 +1,7 @@
 (ns status-im.common.bottom-sheet-screen.style
   (:require
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.reanimated :as reanimated]
     [status-im.constants :as constants]))
 

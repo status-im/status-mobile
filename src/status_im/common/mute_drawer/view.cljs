@@ -1,7 +1,7 @@
 (ns status-im.common.mute-drawer.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.mute-drawer.style :as style]
     [status-im.constants :as constants]
@@ -24,7 +24,7 @@
 
 (defn mute-drawer
   [{:keys [id accessibility-label muted? chat-type community?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:accessibility-label accessibility-label}
      [quo/text
       {:weight :medium

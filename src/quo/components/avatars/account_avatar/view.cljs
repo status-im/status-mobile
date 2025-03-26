@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as string]
     [quo.components.avatars.account-avatar.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn view
@@ -21,7 +21,7 @@
     :or   {size  style/default-size
            emoji "🍑"}
     :as   opts}]
-  (let [theme      (quo.theme/use-theme)
+  (let [theme      (quo.context/use-theme)
         emoji-size (style/get-emoji-size size)]
     [rn/view
      {:accessible          true

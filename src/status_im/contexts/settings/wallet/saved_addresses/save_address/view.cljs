@@ -1,9 +1,9 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.save-address.view
   (:require
     [clojure.string :as string]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
@@ -18,7 +18,7 @@
 (defn view
   []
   (let [{:keys [address name customization-color ens
-                ens? edit?]}              (quo.theme/use-screen-params)
+                ens? edit?]}              (quo.context/use-screen-params)
         [address-label set-address-label] (rn/use-state (or name ""))
         [address-color set-address-color] (rn/use-state (or customization-color
                                                             (rand-nth colors/account-colors)))

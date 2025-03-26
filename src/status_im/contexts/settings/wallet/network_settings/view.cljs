@@ -1,7 +1,7 @@
 (ns status-im.contexts.settings.wallet.network-settings.view
-  (:require [quo.core :as quo]
+  (:require [quo.context]
+            [quo.core :as quo]
             [quo.foundations.resources :as resources]
-            [quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.contexts.settings.wallet.network-settings.style :as style]
@@ -98,7 +98,7 @@
   []
   (let [blur?            true
         insets           (safe-area/get-insets)
-        theme            (quo.theme/use-theme)
+        theme            (quo.context/use-theme)
         networks-by-name (rf/sub [:wallet/network-details-by-network-name])
         testnet-mode?    (rf/sub [:profile/test-networks-enabled?])
         enable-testnet   (rn/use-callback

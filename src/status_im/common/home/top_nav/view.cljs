@@ -1,8 +1,8 @@
 (ns status-im.common.home.top-nav.view
   (:require
     [cljs-time.core :as t]
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.home.top-nav.style :as style]
     [status-im.constants :as constants]
@@ -48,7 +48,7 @@
                                            ; https://github.com/status-im/status-mobile/issues/17102
                                            :unread-indicator/new  :mention
                                            nil)
-        screen-id                        (quo.theme/use-screen-id)
+        screen-id                        (quo.context/use-screen-id)
         initial-share-tab                (if (= :wallet-stack screen-id) :wallet :profile)]
     [quo/top-nav
      {:avatar-on-press          #(rf/dispatch [:open-modal :settings])

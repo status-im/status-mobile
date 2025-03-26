@@ -2,8 +2,8 @@
   (:require
     [quo.components.graph.interactive-graph.style :as style]
     [quo.components.graph.utils :as utils]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.charts :as charts]
     [react-native.core :as rn]
     [reagent.core :as reagent]))
@@ -49,7 +49,7 @@
   [{:keys [data state customization-color reference-value reference-prefix decimal-separator]
     :or   {reference-prefix  "$"
            decimal-separator :dot}}]
-  (let [theme                            (quo.theme/use-theme)
+  (let [theme                            (quo.context/use-theme)
         [inspecting? set-inspecting]     (rn/use-state false)
         data                             (if (> (count data) max-data-points)
                                            (utils/downsample-data data max-data-points)

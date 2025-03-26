@@ -4,8 +4,8 @@
     [quo.components.settings.category.style :as style]
     [quo.components.settings.reorder-item.types :as types]
     [quo.components.settings.reorder-item.view :as reorder-item]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.draggable-flatlist :as draggable-flatlist]))
 
@@ -13,7 +13,7 @@
 
 (defn reorder-category
   [{:keys [label data blur? container-style]}]
-  (let [theme                     (quo.theme/use-theme)
+  (let [theme                     (quo.context/use-theme)
         [atom-data set-atom-data] (rn/use-state data)
         render-fn                 (rn/use-callback
                                    (fn [item _ _ _ _ drag]

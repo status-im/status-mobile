@@ -1,7 +1,7 @@
 (ns status-im.common.standard-authentication.slide-auth
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -11,7 +11,7 @@
            auth-button-icon-left size blur? container-style disabled? dependencies
            sign-payload]
     :or   {container-style {:flex 1}}}]
-  (let [theme              (quo.theme/use-theme)
+  (let [theme              (quo.context/use-theme)
         slider-icon        (rf/sub [:standard-auth/slider-icon])
         on-slider-complete (rn/use-callback
                             (fn []

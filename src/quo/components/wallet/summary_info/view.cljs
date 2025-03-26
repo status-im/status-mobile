@@ -7,9 +7,9 @@
     [quo.components.utilities.token.view :as token]
     [quo.components.wallet.summary-info.schema :as summary-info-schema]
     [quo.components.wallet.summary-info.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
@@ -54,7 +54,7 @@
 
 (defn- view-internal
   [{:keys [type account-props network-props token-props networks-to-show]}]
-  (let [theme   (quo.theme/use-theme)
+  (let [theme   (quo.context/use-theme)
         address (or (:address account-props) (:address token-props))]
     [rn/view
      {:style (style/container (boolean networks-to-show) theme)}

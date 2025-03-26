@@ -3,8 +3,8 @@
     [clojure.string :as string]
     [quo.components.browser.browser-input.style :as style]
     [quo.components.icon :as icon]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]))
 
@@ -77,7 +77,7 @@
                              (reset! ref r)
                              (when get-ref (get-ref r)))
                            [get-ref])
-        theme             (quo.theme/use-theme)
+        theme             (quo.context/use-theme)
         [state set-state] (rn/use-state :default)
         [value set-value] (rn/use-state default-value)
         on-clear          (rn/use-callback

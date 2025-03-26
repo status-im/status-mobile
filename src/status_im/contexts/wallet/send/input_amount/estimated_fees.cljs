@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.send.input-amount.estimated-fees
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.not-implemented :as not-implemented]
     [status-im.contexts.wallet.send.input-amount.style :as style]
@@ -44,7 +44,7 @@
 
 (defn view
   [{:keys [not-enough-asset? loading-routes? fees]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/estimated-fees-container}
      (when (ff/enabled? ::ff/wallet.advanced-sending)
        [rn/view {:style style/estimated-fees-content-container}

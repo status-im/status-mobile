@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.sheets.select-asset.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.contexts.wallet.sheets.select-asset.asset-list.view :as asset-list]
     [status-im.contexts.wallet.sheets.select-asset.style :as style]
@@ -34,7 +34,7 @@
 
 (defn- account-view
   [{:keys [emoji name color]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [quo/context-tag
      {:theme               theme
       :type                :account

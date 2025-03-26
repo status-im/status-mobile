@@ -4,7 +4,7 @@
     [quo.components.dividers.divider-label.style :as style]
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn- view-internal
@@ -23,7 +23,7 @@
   [{:keys [counter? counter-value chevron chevron-icon tight? blur? on-press container-style]
     :or   {tight? true}}
    label]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/pressable
      {:on-press            on-press
       :accessibility-label :divider-label

@@ -1,8 +1,8 @@
 (ns quo.components.tabs.segmented-tab
   (:require
     [quo.components.tabs.tab.view :as tab]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (def themes-for-blur
@@ -16,7 +16,7 @@
 (defn segmented-control
   [{:keys [data size blur? container-style item-container-style
            active-item-container-style default-active on-change]}]
-  (let [theme               (quo.theme/use-theme)
+  (let [theme               (quo.context/use-theme)
         [active-tab-id
          set-active-tab-id] (rn/use-state default-active)
         on-press            (rn/use-callback

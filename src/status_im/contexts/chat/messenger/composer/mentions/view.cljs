@@ -1,6 +1,6 @@
 (ns status-im.contexts.chat.messenger.composer.mentions.view
   (:require
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
@@ -21,7 +21,7 @@
   [layout-height]
   (let [suggestions             (rf/sub [:chat/mention-suggestions])
         suggestions?            (seq suggestions)
-        theme                   (quo.theme/use-theme)
+        theme                   (quo.context/use-theme)
         opacity                 (reanimated/use-shared-value (if suggestions? 1 0))
         [suggestions-state
          set-suggestions-state] (rn/use-state suggestions)

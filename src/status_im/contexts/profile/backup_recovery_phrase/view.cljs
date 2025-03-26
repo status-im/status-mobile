@@ -2,8 +2,8 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.profile.backup-recovery-phrase.style :as style]
@@ -52,7 +52,7 @@
                               :2 false
                               :3 false})
         {:keys [on-success masked-seed-phrase
-                revealed?]} (quo.theme/use-screen-params)
+                revealed?]} (quo.context/use-screen-params)
         revealed?           (reagent/atom revealed?)
         customization-color (rf/sub [:profile/customization-color])
         seed-phrase         (reagent/atom (if masked-seed-phrase
@@ -62,7 +62,7 @@
                                               (string/split #"\s"))
                                             []))]
     (fn []
-      (let [theme (quo.theme/use-theme)]
+      (let [theme (quo.context/use-theme)]
         (rn/use-mount
          (fn []
            (when-not masked-seed-phrase

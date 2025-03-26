@@ -1,8 +1,8 @@
 (ns status-im.contexts.preview.status-im.main
   (:refer-clojure :exclude [filter])
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.common :as common]
@@ -41,7 +41,7 @@
 
 (defn- main-screen
   []
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [:<>
      [common/navigation-bar {:title "Status IM components"}]
      [rn/scroll-view {:style (style/main theme)}

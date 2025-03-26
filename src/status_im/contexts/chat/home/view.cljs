@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.home.view
   (:require
     [oops.core :as oops]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
@@ -121,7 +121,7 @@
 
 (defn- banner-data
   [profile-link]
-  (let [screen-id (quo.theme/use-screen-id)]
+  (let [screen-id (quo.context/use-screen-id)]
     {:title-props
      {:beta?               true
       :label               (i18n/label :t/messages)
@@ -135,7 +135,7 @@
 
 (defn view
   []
-  (let [theme                           (quo.theme/use-theme)
+  (let [theme                           (quo.context/use-theme)
         scroll-ref                      (rn/use-ref-atom nil)
         set-scroll-ref                  (rn/use-callback #(reset! scroll-ref %))
         {:keys [universal-profile-url]} (rf/sub [:profile/profile])

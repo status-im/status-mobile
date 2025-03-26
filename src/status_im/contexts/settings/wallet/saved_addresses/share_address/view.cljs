@@ -1,7 +1,7 @@
 (ns status-im.contexts.settings.wallet.saved-addresses.share-address.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [status-im.contexts.settings.wallet.saved-addresses.share-address.style :as style]
@@ -32,7 +32,7 @@
 
 (defn view
   []
-  (let [{:keys [name address customization-color]} (quo.theme/use-screen-params)
+  (let [{:keys [name address customization-color]} (quo.context/use-screen-params)
         share-title                                (str name " " (i18n/label :t/address))
         qr-url                                     address
         qr-media-server-uri                        (rn/use-memo

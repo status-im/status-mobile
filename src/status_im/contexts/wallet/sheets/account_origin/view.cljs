@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.sheets.account-origin.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.constants :as const]
     [status-im.contexts.wallet.sheets.account-origin.style :as style]

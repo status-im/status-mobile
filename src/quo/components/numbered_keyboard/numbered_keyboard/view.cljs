@@ -2,7 +2,7 @@
   (:require
     [quo.components.numbered-keyboard.keyboard-key.view :as keyboard-key]
     [quo.components.numbered-keyboard.numbered-keyboard.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn keyboard-item
@@ -21,7 +21,7 @@
   (fn [{:keys [disabled? blur? left-action delete-key? on-press on-delete on-long-press-delete
                container-style]
         :or   {left-action :none}}]
-    (let [theme (quo.theme/use-theme)]
+    (let [theme (quo.context/use-theme)]
       [rn/view
        {:style (merge style/container
                       container-style)}

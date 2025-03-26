@@ -2,8 +2,8 @@
   (:require
     [quo.components.counter.counter.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.number]))
 
@@ -11,7 +11,7 @@
   [{:keys [type customization-color container-style accessibility-label max-value]
     :or   {max-value 99 customization-color :blue}}
    value]
-  (let [theme (quo.theme/use-theme)
+  (let [theme (quo.context/use-theme)
         type  (or type :default)
         value (utils.number/parse-int value)
         label (if (> value max-value)

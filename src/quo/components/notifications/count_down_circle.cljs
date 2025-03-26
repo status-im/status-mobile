@@ -1,8 +1,8 @@
 (ns quo.components.notifications.count-down-circle
   (:require
     [goog.string :as gstring]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.svg :as svg]))
 
@@ -50,7 +50,7 @@
 
 (defn circle-timer
   [{:keys [color duration size stroke-width trail-color rotation initial-remaining-time]}]
-  (let [theme                           (quo.theme/use-theme)
+  (let [theme                           (quo.context/use-theme)
         rotation                        (or rotation :clockwise)
         duration                        (or duration 4)
         stroke-width                    (or stroke-width 1)

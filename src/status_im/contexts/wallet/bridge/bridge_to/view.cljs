@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.bridge.bridge-to.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.resources :as quo.resources]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.bridge.bridge-to.style :as style]

@@ -2,8 +2,8 @@
   (:require
     [quo.components.loaders.skeleton-list.constants :as constants]
     [quo.components.loaders.skeleton-list.style :as style]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.masked-view :as masked-view]
     [react-native.reanimated :as reanimated]
@@ -58,7 +58,7 @@
 
 (defn- f-animated-skeleton-view
   [{:keys [style color skeleton-height animated? translate-x window-width] :as data}]
-  (let [theme         (quo.theme/use-theme)
+  (let [theme         (quo.context/use-theme)
         loading-color (colors/theme-colors colors/neutral-10 colors/neutral-60 theme)]
     (rn/use-effect
      (fn []
@@ -88,7 +88,7 @@
 
 (defn view
   [{:keys [content blur? parent-height animated?] :as props}]
-  (let [theme                   (quo.theme/use-theme)
+  (let [theme                   (quo.context/use-theme)
         {window-width :width}   (rn/get-window)
         translate-x             (reanimated/use-shared-value (- window-width))
         animated-gradient-style (reanimated/apply-animations-to-style

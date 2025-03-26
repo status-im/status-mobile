@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.add-account.create-account.import-private-key.view
   (:require
     [clojure.string :as string]
+    [quo.context :as quo.context]
     [quo.core :as quo]
-    [quo.theme :as theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
@@ -107,7 +107,7 @@
 
 (defn view
   []
-  (let [theme                       (theme/use-theme)
+  (let [theme                       (quo.context/use-theme)
         customization-color         (rf/sub [:profile/customization-color])
         private-key                 (rf/sub [:wallet/import-private-key])
         public-address              (rf/sub [:wallet/public-address])

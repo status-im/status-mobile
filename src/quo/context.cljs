@@ -1,4 +1,4 @@
-(ns quo.theme
+(ns quo.context
   (:require
     ["react" :as react]
     [oops.core :as oops]
@@ -25,6 +25,7 @@
     (:screen-id (oops/oget data :cljData))))
 
 (defn use-screen-params
+  "A hook that returns the current screen params"
   []
   (when-let [data (rn/use-context context)]
     (:screen-params (oops/oget data :cljData))))

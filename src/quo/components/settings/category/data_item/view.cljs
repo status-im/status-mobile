@@ -3,12 +3,12 @@
     [quo.components.markdown.text :as text]
     [quo.components.settings.category.style :as style]
     [quo.components.settings.data-item.view :as data-item]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [label data container-style blur?]}]
-  (let [theme     (quo.theme/use-theme)
+  (let [theme     (quo.context/use-theme)
         last-item (rn/use-memo #(last data) [data])]
     [rn/view {:style [(style/container label) container-style]}
      (when label

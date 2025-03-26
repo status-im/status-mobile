@@ -1,8 +1,8 @@
 (ns status-im.common.scroll-page.view
   (:require
     [oops.core :as oops]
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
@@ -28,7 +28,7 @@
 (defn f-scroll-page-header
   [{:keys [scroll-height height page-nav-right-section-buttons sticky-header
            top-nav title-colum navigate-back? collapsed? page-nav-props overlay-shown?]}]
-  (let [theme               (quo.theme/use-theme)
+  (let [theme               (quo.context/use-theme)
         input-range         [0 10]
         output-range        [-208 -45]
         y                   (reanimated/use-shared-value scroll-height)
@@ -106,7 +106,7 @@
                  collapsed? height top-nav title-colum background-color navigate-back? page-nav-props
                  overlay-shown? sticky-header children-style]}
          children]
-      (let [theme (quo.theme/use-theme)]
+      (let [theme (quo.context/use-theme)]
         [:<>
          [f-scroll-page-header
           {:scroll-height  @scroll-height

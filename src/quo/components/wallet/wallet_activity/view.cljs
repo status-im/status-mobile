@@ -5,7 +5,7 @@
     [quo.components.tags.context-tag.view :as context-tag]
     [quo.components.wallet.wallet-activity.schema :as component-schema]
     [quo.components.wallet.wallet-activity.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]
     [schema.core :as schema]
@@ -117,7 +117,7 @@
   [{:keys [state blur? first-tag second-tag third-tag fourth-tag on-press
            second-tag-prefix third-tag-prefix fourth-tag-prefix]
     :as   props}]
-  (let [theme         (quo.theme/use-theme)
+  (let [theme         (quo.context/use-theme)
         [pressed?
          set-pressed] (rn/use-state false)
         on-press-in   (rn/use-callback #(set-pressed true))

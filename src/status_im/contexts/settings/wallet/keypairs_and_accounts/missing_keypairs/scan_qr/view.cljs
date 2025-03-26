@@ -1,6 +1,6 @@
 (ns status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.scan-qr.view
   (:require
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [status-im.common.scan-qr-code.view :as scan-qr-code]
     [status-im.contexts.communities.events]
@@ -10,7 +10,7 @@
 
 (defn view
   []
-  (let [keypairs-key-uids (quo.theme/use-screen-params)
+  (let [keypairs-key-uids (quo.context/use-screen-params)
         on-success-scan   (rn/use-callback (fn [scanned-text]
                                              (rf/dispatch [:wallet/success-keypair-qr-scan
                                                            scanned-text

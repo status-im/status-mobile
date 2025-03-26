@@ -2,8 +2,8 @@
   (:require
     [quo.components.colors.color.style :as style]
     [quo.components.icon :as icon]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn- feng-shui
@@ -17,7 +17,7 @@
 (defn view
   [{:keys [color selected? on-press blur? idx window-width]
     :as   props}]
-  (let [theme     (quo.theme/use-theme)
+  (let [theme     (quo.context/use-theme)
         border?   (and (not blur?) (not selected?))
 
         hex-color (if (= :feng-shui color)

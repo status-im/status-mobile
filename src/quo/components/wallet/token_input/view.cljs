@@ -7,7 +7,7 @@
     [quo.components.utilities.token.view :as token]
     [quo.components.wallet.token-input.schema :as component-schema]
     [quo.components.wallet.token-input.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
@@ -22,7 +22,7 @@
 (defn input-section
   [{:keys [token-symbol on-token-press value error? on-swap currency-symbol show-token-icon?
            swappable?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/pressable
      {:style    {:width          "100%"
                  :flex-direction :row}
@@ -64,7 +64,7 @@
            swappable?]
     :or   {show-token-icon? true
            swappable?       true}}]
-  (let [theme (quo.theme/use-theme)
+  (let [theme (quo.context/use-theme)
         width (:width (rn/get-window))]
     [rn/view {:style (merge (style/main-container width) container-style)}
      [rn/view {:style style/amount-container}

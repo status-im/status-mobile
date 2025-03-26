@@ -6,9 +6,9 @@
     [quo.components.wallet.account-card.properties :as properties]
     [quo.components.wallet.account-card.schema :as component-schema]
     [quo.components.wallet.account-card.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
     [quo.foundations.customization-colors :as customization-colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [schema.core :as schema]))
@@ -102,7 +102,7 @@
 (defn- user-account
   [{:keys [name balance percentage-value loading? amount customization-color type emoji metrics?
            on-press]}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))
@@ -160,7 +160,7 @@
 
 (defn- add-account-view
   [{:keys [on-press metrics?]}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))]

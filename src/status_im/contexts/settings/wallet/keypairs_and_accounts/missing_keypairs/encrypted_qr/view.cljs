@@ -1,8 +1,8 @@
 (ns status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.encrypted-qr.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [status-im.common.qr-codes.view :as qr-codes]
@@ -20,7 +20,7 @@
 
 (defn view
   []
-  (let [{:keys [key-uid]}             (quo.theme/use-screen-params)
+  (let [{:keys [key-uid]}             (quo.context/use-screen-params)
         {:keys [customization-color]} (rf/sub [:profile/profile-with-image])
         [code set-code]               (rn/use-state nil)
         valid-connection-string?      (rn/use-memo #(sync-utils/valid-connection-string? code) [code])

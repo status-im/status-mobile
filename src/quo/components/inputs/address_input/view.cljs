@@ -3,8 +3,8 @@
     [quo.components.buttons.button.view :as button]
     [quo.components.icon :as icon]
     [quo.components.inputs.address-input.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.platform :as platform]
@@ -56,7 +56,7 @@
   [{:keys [default-value blur? on-change-text on-blur on-focus on-clear on-scan on-paste
            on-detect-ens on-detect-address on-detect-unclassified address-regex ens-regex
            valid-ens-or-address? container-style]}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         [status set-status]    (rn/use-state :default)
         [value set-value]      (rn/use-state nil)
         [focused? set-focused] (rn/use-state false)

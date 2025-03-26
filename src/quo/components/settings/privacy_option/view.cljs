@@ -4,8 +4,8 @@
     [quo.components.markdown.text :as text]
     [quo.components.selectors.selectors.view :as selectors]
     [quo.components.settings.privacy-option.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn- bullet
@@ -53,7 +53,7 @@
   [{:keys [active? header footer list-items icon on-select on-toggle]
     :or   {icon    :i/world
            active? false}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/pressable
      {:on-press            on-select
       :accessibility-label :privacy-option-card

@@ -10,7 +10,7 @@
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.components.navigation.page-nav.style :as style]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [utils.worklets.profile-header :as header-worklet]))
@@ -116,7 +116,7 @@
 (defn- dropdown-center
   [{:keys [background dropdown-on-press dropdown-selected? dropdown-text
            center-content-container-style]}]
-  (let [theme          (quo.theme/use-theme)
+  (let [theme          (quo.context/use-theme)
         dropdown-type  (cond
                          (= background :photo)                      :grey
                          (and (= theme :dark) (= background :blur)) :grey
@@ -133,7 +133,7 @@
 
 (defn- token-center
   [{:keys [background token-logo token-name token-abbreviation center-content-container-style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [reanimated/view {:style center-content-container-style}
      [rn/image {:style style/token-logo :source token-logo}]
      [text/text
@@ -151,7 +151,7 @@
 
 (defn- channel-center
   [{:keys [background channel-emoji channel-name channel-icon center-content-container-style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [reanimated/view {:style center-content-container-style}
      [rn/text {:style style/channel-emoji}
       channel-emoji]
@@ -165,7 +165,7 @@
 
 (defn- title-description-center
   [{:keys [background picture title description center-content-container-style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [reanimated/view {:style center-content-container-style}
      (when picture
        [rn/view {:style style/group-avatar-picture}

@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.home.add-new-contact.views
   (:require [clojure.string :as string]
+            [quo.context]
             [quo.core :as quo]
-            [quo.theme]
             [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
             [status-im.common.floating-button-page.view :as floating-button-page]
@@ -15,7 +15,7 @@
   [public-key]
   (let [{:keys [primary-name compressed-key]} (rf/sub [:contacts/contact-by-identity public-key])
         photo-path                            (rf/sub [:chats/photo-path public-key])
-        theme                                 (quo.theme/use-theme)]
+        theme                                 (quo.context/use-theme)]
     (when primary-name
       [rn/view style/found-user
        [quo/text
@@ -119,7 +119,7 @@
   []
   (let [{:keys [public-key ens state msg]} (rf/sub [:contacts/new-identity])
         customization-color                (rf/sub [:profile/customization-color])
-        theme                              (quo.theme/use-theme)]
+        theme                              (quo.context/use-theme)]
     [floating-button-page/view
      {:header-container-style {:margin-top 8}
       :header                 [quo/page-nav

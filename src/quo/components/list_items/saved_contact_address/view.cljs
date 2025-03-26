@@ -6,8 +6,8 @@
     [quo.components.list-items.saved-contact-address.schema :as component-schema]
     [quo.components.list-items.saved-contact-address.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]
     [utils.address :as address]
@@ -15,7 +15,7 @@
 
 (defn- account
   [{:keys [emoji name address customization-color]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:accessibility-label :account-container
       :style               style/account-container}
@@ -40,7 +40,7 @@
     :or   {customization-color :blue
            accounts            []
            active-state?       true}}]
-  (let [theme             (quo.theme/use-theme)
+  (let [theme             (quo.context/use-theme)
         [state set-state] (rn/use-state :default)
         active?           (rn/use-ref-atom false)
         timer             (rn/use-ref-atom nil)

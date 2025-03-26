@@ -1,7 +1,7 @@
 (ns status-im.contexts.preview.quo.community.list-item
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [reagent.core :as reagent]
     [status-im.common.resources :as resources]
     [status-im.contexts.preview.quo.community.data :as data]
@@ -94,7 +94,7 @@
                              :active-count        112100
                              :unread-count        5})]
     (fn []
-      (let [theme (quo.theme/use-theme)]
+      (let [theme (quo.context/use-theme)]
         [preview/preview-container {:state state :descriptor (descriptors @state theme)}
          [quo/community-list
           (merge @state

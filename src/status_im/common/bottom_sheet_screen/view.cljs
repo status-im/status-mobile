@@ -1,7 +1,7 @@
 (ns status-im.common.bottom-sheet-screen.view
   (:require
     [oops.core :as oops]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
@@ -50,7 +50,7 @@
                               (js/setTimeout #(reset! animating? false) ms))
         on-scroll-update    #(on-scroll % curr-scroll)]
     (fn [{:keys [content skip-background?]}]
-      (let [theme                    (quo.theme/use-theme)
+      (let [theme                    (quo.context/use-theme)
             {:keys [top] :as insets} (safe-area/get-insets)
             alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
             padding-top              (+ alert-banners-top-margin

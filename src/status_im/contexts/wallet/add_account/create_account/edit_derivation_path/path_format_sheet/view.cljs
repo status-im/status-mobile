@@ -1,13 +1,13 @@
 (ns status-im.contexts.wallet.add-account.create-account.edit-derivation-path.path-format-sheet.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [status-im.constants :as constants]
     [utils.i18n :as i18n]))
 
 (defn view
   []
-  (let [{:keys [customization-color]} (quo.theme/use-screen-params)]
+  (let [{:keys [customization-color]} (quo.context/use-screen-params)]
     [:<>
      [quo/drawer-top {:title (i18n/label :t/path-format)}]
      [quo/action-drawer

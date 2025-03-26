@@ -1,7 +1,7 @@
 (ns status-im.common.alert-banner.view
-  (:require [quo.core :as quo]
+  (:require quo.context
+            [quo.core :as quo]
             [quo.foundations.colors :as colors]
-            quo.theme
             [react-native.core :as rn]
             [react-native.hole-view :as hole-view]
             [react-native.safe-area :as safe-area]
@@ -42,7 +42,7 @@
   []
   (let [banners       (rf/sub [:alert-banners])
         hide-banners? (rf/sub [:alert-banners/hide?])
-        theme         (quo.theme/use-theme)
+        theme         (quo.context/use-theme)
         banners-count (count banners)
         alert-banner  (:alert banners)
         error-banner  (:error banners)

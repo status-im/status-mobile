@@ -7,8 +7,8 @@
     [quo.components.counter.counter.view :as counter]
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn notification-view
@@ -50,7 +50,7 @@
    bottom-sheet?
    {:keys [name muted unviewed-messages-count unviewed-mentions-count status
            images tokens locked? style]}]
-  (let [theme            (quo.theme/use-theme)
+  (let [theme            (quo.context/use-theme)
         unread-messages? (pos? unviewed-messages-count)]
     [rn/touchable-highlight
      (merge {:underlay-color (colors/theme-colors

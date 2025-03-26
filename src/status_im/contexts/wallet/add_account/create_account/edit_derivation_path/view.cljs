@@ -1,9 +1,9 @@
 (ns status-im.contexts.wallet.add-account.create-account.edit-derivation-path.view
   (:require
     [clojure.string :as string]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -31,10 +31,10 @@
                            (when on-reset
                              (on-reset)))]
     (fn []
-      (let [theme                                      (quo.theme/use-theme)
+      (let [theme                                      (quo.context/use-theme)
 
             {:keys [public-key address]}               (rf/sub [:profile/profile])
-            {:keys [password current-derivation-path]} (quo.theme/use-screen-params)
+            {:keys [password current-derivation-path]} (quo.context/use-screen-params)
             primary-name                               (first (rf/sub
                                                                [:contacts/contact-two-names-by-identity
                                                                 public-key]))

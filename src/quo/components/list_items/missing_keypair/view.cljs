@@ -6,14 +6,14 @@
     [quo.components.list-items.missing-keypair.style :as style]
     [quo.components.list-items.preview-list.view :as preview-list]
     [quo.components.markdown.text :as text]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
 (defn- internal-view
   [{{:keys [accounts name type]} :keypair
     :keys                        [keypair blur? on-options-press]}]
-  (let [theme                    (quo.theme/use-theme)
+  (let [theme                    (quo.context/use-theme)
         on-keypair-options-press (rn/use-callback
                                   (fn [event]
                                     (on-options-press event keypair))

@@ -12,8 +12,8 @@
             [quo.components.list-items.approval-info.style :as style]
             [quo.components.markdown.text :as text]
             [quo.components.tags.tiny-tag.view :as tiny-tag]
+            quo.context
             [quo.foundations.colors :as colors]
-            quo.theme
             [react-native.core :as rn]
             [schema.core :as schema]))
 
@@ -72,7 +72,7 @@
   [{:keys [type avatar-props label description blur? unlimited-icon? container-style
            on-option-press on-avatar-press on-button-press button-label button-icon tag-label
            option-icon]}]
-  (let [theme        (quo.theme/use-theme)
+  (let [theme        (quo.context/use-theme)
         description? (not (string/blank? description))]
     [rn/view
      {:style               (merge (style/container description? blur? theme) container-style)

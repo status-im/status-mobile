@@ -1,9 +1,9 @@
 (ns status-im.contexts.wallet.add-account.create-account.view
   (:require
     [clojure.string :as string]
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -110,7 +110,7 @@
     (fn [{:keys [account-color set-account-color]}]
       [:<>
        [quo/divider-line]
-       (let [theme (quo.theme/use-theme)]
+       (let [theme (quo.context/use-theme)]
          [rn/view {:style style/color-picker-container}
           [quo/text
            {:size   :paragraph-2

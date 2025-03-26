@@ -3,7 +3,7 @@
     [quo.components.calendar.calendar-year.view :as calendar-year]
     [quo.components.calendar.calendar.utils :as utils]
     [quo.components.calendar.calendar.years-list.style :as style]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]))
 
@@ -32,7 +32,7 @@
 
 (defn view
   [{:keys [on-change-year year]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style (style/container-years theme)}
      [rn/flat-list

@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.sheets.select-account.view
-  (:require [quo.core :as quo]
-            quo.theme
+  (:require quo.context
+            [quo.core :as quo]
             [react-native.gesture :as gesture]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.sheets.select-account.style :as style]

@@ -1,9 +1,9 @@
 (ns status-im.contexts.chat.home.contact-request.view
   (:require
     [clojure.string :as string]
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [status-im.contexts.chat.home.contact-request.style :as style]
     [status-im.contexts.shell.activity-center.notification-types :as notification-types]
@@ -36,7 +36,7 @@
 
 (defn view
   [{:keys [requests]}]
-  (let [theme               (quo.theme/use-theme)
+  (let [theme               (quo.context/use-theme)
         customization-color (rf/sub [:profile/customization-color])]
     [rn/touchable-opacity
      {:active-opacity      1

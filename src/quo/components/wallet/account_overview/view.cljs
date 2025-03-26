@@ -4,8 +4,8 @@
     [quo.components.markdown.text :as text]
     [quo.components.wallet.account-overview.schema :as component-schema]
     [quo.components.wallet.account-overview.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
@@ -98,7 +98,7 @@
   [{:keys [state account time-frame time-frame-string time-frame-to-string account-name current-value
            percentage-change currency-change metrics customization-color container-style]
     :or   {customization-color :blue}}]
-  (let [theme             (quo.theme/use-theme)
+  (let [theme             (quo.context/use-theme)
         time-frame-string (time-string time-frame time-frame-string)
         up?               (= metrics :positive)]
     [rn/view {:style (merge container-style style/account-overview-wrapper)}

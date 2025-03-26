@@ -2,12 +2,12 @@
   (:require
     [quo.components.icon :as icon]
     [quo.components.selectors.filter.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [blur? customization-color on-press-out pressed?]}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         [pressed? set-pressed] (rn/use-state pressed?)
         on-press-out           (fn []
                                  (set-pressed (not pressed?))

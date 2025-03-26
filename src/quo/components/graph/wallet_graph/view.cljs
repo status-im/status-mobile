@@ -2,9 +2,9 @@
   (:require
     [quo.components.graph.utils :as utils]
     [quo.components.graph.wallet-graph.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
-    [quo.theme :as quo.theme]
     [react-native.charts :as charts]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
@@ -30,7 +30,7 @@
 
 (defn view
   [{:keys [data state time-frame customization-color]}]
-  (let [theme           (quo.theme/use-theme)
+  (let [theme           (quo.context/use-theme)
         max-data-points (time-frame->max-data-points time-frame)
         data            (if (and (not= time-frame :empty) (> (count data) max-data-points))
                           (utils/downsample-data data max-data-points)

@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.messenger.menus.pinned-messages.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im.common.resources :as resources]
@@ -25,7 +25,7 @@
 
 (defn empty-pinned-messages-state
   []
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/no-pinned-messages-container}
      [quo/empty-state
       {:blur?       false

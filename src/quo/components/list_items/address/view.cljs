@@ -4,8 +4,8 @@
     [quo.components.list-items.address.schema :as component-schema]
     [quo.components.list-items.address.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]
     [utils.address :as address]))
@@ -40,7 +40,7 @@
 (defn- internal-view
   [{:keys [networks address customization-color on-press active-state? blur?]
     :or   {customization-color :blue}}]
-  (let [theme             (quo.theme/use-theme)
+  (let [theme             (quo.context/use-theme)
         [state set-state] (rn/use-state :default)
         active?           (rn/use-ref-atom false)
         timer             (rn/use-ref-atom nil)

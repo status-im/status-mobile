@@ -6,14 +6,14 @@
     [quo.components.list-items.token-value.style :as style]
     [quo.components.markdown.text :as text]
     [quo.components.utilities.token.view :as token]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
 (defn- internal-view
   [{:keys [customization-color status token metrics? values on-press on-long-press token-name]}]
-  (let [theme                 (quo.theme/use-theme)
+  (let [theme                 (quo.context/use-theme)
         [state set-state]     (rn/use-state :default)
         bg-opacity            (case state
                                 :active  10

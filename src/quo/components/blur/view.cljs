@@ -1,6 +1,6 @@
 (ns quo.components.blur.view
-  (:require [quo.foundations.colors :as colors]
-            [quo.theme]
+  (:require [quo.context]
+            [quo.foundations.colors :as colors]
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [react-native.platform :as platform]))
@@ -8,7 +8,7 @@
 (defn- view-android
   ([props] (view-android props nil))
   ([{:keys [style]} child]
-   (let [theme (quo.theme/use-theme)]
+   (let [theme (quo.context/use-theme)]
      [rn/view
       {:style [style
                {:pointer-events   :box-none

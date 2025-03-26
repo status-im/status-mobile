@@ -1,7 +1,7 @@
 (ns quo.foundations.gradients
   (:require
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.linear-gradient :as linear-gradient]))
 
 (defn- gradient-colors
@@ -25,7 +25,7 @@
 
 (defn view
   [{:keys [color-index container-style] :or {color-index 1}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [linear-gradient/linear-gradient
      {:style               (merge {:border-radius 16} container-style)
       :accessibility-label :gradient-overlay
