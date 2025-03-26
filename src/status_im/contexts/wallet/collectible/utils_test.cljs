@@ -9,7 +9,7 @@
 (def mainnet-name :mainnet)
 (def arbitrum-name :arbitrum)
 
-(deftest network->chain-id-test
+(deftest get-opensea-collectible-url-test
   (testing "get-opensea-collectible-url mainnet"
     (is (= (utils/get-opensea-collectible-url {:network-name     mainnet-name
                                                :contract-address contract-address

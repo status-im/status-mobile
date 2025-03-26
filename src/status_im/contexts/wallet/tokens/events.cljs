@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.tokens.events
   (:require [re-frame.core :as rf]
             [status-im.constants :as constants]
-            [status-im.contexts.wallet.networks.core :as networks]
+            [status-im.contexts.wallet.networks.db :as networks.db]
             [status-im.contexts.wallet.tokens.data :as tokens-data]
             [status-im.contexts.wallet.tokens.effects]
             [taoensso.timbre :as log]
@@ -20,7 +20,7 @@
 
 (defn store-token-list
   [{:keys [db]} [{:keys [data]}]]
-  (let [chain-ids                  (networks/get-chain-ids db)
+  (let [chain-ids                  (networks.db/get-chain-ids db)
         profile-currency           (get-in db [:profile/profile :currency])
         tokens                     (reduce (fn [{:keys [by-address by-symbol] :as data}
                                                 {:keys [name source version tokens]}]

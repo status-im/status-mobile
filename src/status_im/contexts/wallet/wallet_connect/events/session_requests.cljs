@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [native-module.core :as native-module]
             [status-im.constants :as constants]
-            [status-im.contexts.wallet.networks.core :as networks]
+            [status-im.contexts.wallet.networks.db :as networks.db]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks.utils]
@@ -160,10 +160,10 @@
  :wallet-connect/wrong-typed-data-chain-id
  (fn [{:keys [db]} [{:keys [expected-chain-id wrong-chain-id]}]]
    (let [wrong-network-name    (->> wrong-chain-id
-                                    (networks/get-network-details db)
+                                    (networks.db/get-network-details db)
                                     :full-name)
          expected-network-name (->> expected-chain-id
-                                    (networks/get-network-details db)
+                                    (networks.db/get-network-details db)
                                     :full-name)
          toast-message         (i18n/label :t/wallet-connect-typed-data-wrong-chain-id-warning
                                            {:wrong-chain    (or wrong-network-name

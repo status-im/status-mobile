@@ -4,10 +4,10 @@
             [clojure.string :as string]
             [react-native.platform :as platform]
             [status-im.contexts.network.data-store :as network.data-store]
-            [status-im.contexts.profile.data-store :as profile]
+            [status-im.contexts.profile.db :as profile.db]
             [status-im.contexts.wallet.collectible.utils :as collectible-utils]
             [status-im.contexts.wallet.data-store :as data-store]
-            [status-im.contexts.wallet.networks.core :as networks]
+            [status-im.contexts.wallet.networks.db :as networks.db]
             [taoensso.timbre :as log]
             [utils.collection]
             [utils.number :as utils.number]
@@ -73,7 +73,7 @@
          data-type               (collectible-data-types :header)
          fetch-criteria          {:fetch-type            (fetch-type :fetch-if-cache-old)
                                   :max-cache-age-seconds max-cache-age-seconds}
-         chain-ids               (networks/get-chain-ids db)
+         chain-ids               (networks.db/get-chain-ids db)
          request-params          [request-id
                                   chain-ids
                                   [account]
@@ -401,12 +401,12 @@
 
 (rf/reg-event-fx :wallet/share-collectible
  (fn [{:keys [db]} [{:keys [title token-id contract-address chain-id]}]]
-   (let [network (networks/get-network-details db chain-id)
+   (let [network (networks.db/get-network-details db chain-id)
          uri     (collectible-utils/get-opensea-collectible-url
                   {:network-name           (:network-name network)
                    :token-id               token-id
                    :contract-address       contract-address
-                   :test-networks-enabled? (profile/testnet? db)})]
+                   :test-networks-enabled? (profile.db/testnet? db)})]
      {:fx [[:dispatch
             [:hide-bottom-sheet]]
            [:dispatch-later
@@ -418,7 +418,7 @@
 (rf/reg-event-fx
  :wallet/navigate-to-opensea
  (fn [{:keys [db]} [chain-id token-id contract-address]]
-   (let [network (networks/get-network-details db chain-id)]
+   (let [network (networks.db/get-network-details db chain-id)]
      {:fx [[:dispatch [:hide-bottom-sheet]]
            [:dispatch
             [:browser.ui/open-url
@@ -426,4 +426,4 @@
               {:network-name           (:network-name network)
                :token-id               token-id
                :contract-address       contract-address
-               :test-networks-enabled? (profile/testnet? db)})]]]})))
+               :test-networks-enabled? (profile.db/testnet? db)})]]]})))

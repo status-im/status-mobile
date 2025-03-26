@@ -3,7 +3,3 @@
 (defn accepted-terms?
   [accounts]
   (some :hasAcceptedTerms accounts))
-
-(defn testnet?
-  [db]
-  (boolean (get-in db [:profile/profile :test-networks-enabled?])))

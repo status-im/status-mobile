@@ -7,16 +7,15 @@
     [react-native.platform :as platform]
     [status-im.constants :as constants]
     [status-im.contexts.network.data-store :as network.data-store]
-    [status-im.contexts.profile.data-store :as profile]
+    [status-im.contexts.profile.db :as profile.db]
     [status-im.contexts.settings.wallet.effects]
     [status-im.contexts.settings.wallet.events]
     [status-im.contexts.wallet.common.activity-tab.events]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]
     [status-im.contexts.wallet.db-path :as db-path]
     [status-im.contexts.wallet.item-types :as item-types]
-    [status-im.contexts.wallet.networks.core :as networks]
+    [status-im.contexts.wallet.networks.db :as networks.db]
     status-im.contexts.wallet.networks.events
     [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
     [status-im.contexts.wallet.tokens.events]
@@ -385,7 +384,7 @@
                                         (filter #(not= (:balance %) "0")
                                                 (vals (:balances-per-chain token))))
          balance-in-only-one-network? (when networks-with-balance (= (count networks-with-balance) 1))
-         network-details              (networks/get-networks db)
+         network-details              (networks.db/get-networks db)
          network                      (if balance-in-only-one-network?
                                         (first (filter #(= (:chain-id %)
                                                            (:chain-id (first networks-with-balance)))
@@ -472,7 +471,7 @@
    (let [ens      (if (string/includes? input ".")
                     input
                     (str input domain))
-         chain-id (network-utils/network->chain-id db :mainnet)]
+         chain-id (networks.db/get-chain-id db :mainnet)]
      {:fx [[:json-rpc/call
             [{:method     "ens_addressOf"
               :params     [chain-id ens]
@@ -574,12 +573,14 @@
          down-chain-ids         (-> (select-keys chains
                                                  (for [[k v] chains :when (= v "down")] k))
                                     keys)
-         test-networks-enabled? (profile/testnet? db)
-         chain-ids              (networks/get-chain-ids db)
-         chains-filtered        (remove #(not (contains? chain-ids %)) down-chain-ids)
+         test-networks-enabled? (profile.db/testnet? db)
+         chain-ids              (networks.db/get-chain-ids db)
+         chains-filtered        (remove #(not
+                                          (contains? chain-ids %))
+                                        down-chain-ids)
          chains-down?           (and (network.data-store/online? db) (seq chains-filtered))
          chain-names            (when chains-down?
-                                  (->> (map (partial networks/get-network-details db)
+                                  (->> (map (partial networks.db/get-network-details db)
                                             chains-filtered)
                                        (map :full-name)
                                        distinct
@@ -646,7 +647,7 @@
 (rf/reg-event-fx
  :wallet/resolve-ens
  (fn [{db :db} [{:keys [ens on-success on-error]}]]
-   (let [chain-id (network-utils/network->chain-id db :mainnet)]
+   (let [chain-id (networks.db/get-chain-id db :mainnet)]
      {:fx [[:json-rpc/call
             [{:method     "ens_addressOf"
               :params     [chain-id ens]

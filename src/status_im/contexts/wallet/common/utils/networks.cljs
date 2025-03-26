@@ -1,20 +1,8 @@
 (ns status-im.contexts.wallet.common.utils.networks
   (:require
     [clojure.string :as string]
-    [status-im.contexts.wallet.networks.core :as networks]
     [utils.money :as money]
     [utils.number]))
-
-(defn network->chain-id
-  ([db network-name]
-   (network->chain-id {:network-name network-name
-                       :networks     (networks/get-networks db)}))
-  ([{:keys [network-name networks]}]
-   (let [network-name (keyword network-name)]
-     (some->>
-       networks
-       (some #(when (= network-name (:network-name %)) %))
-       :chain-id))))
 
 (defn network-list
   [{:keys [balances-per-chain]} networks]

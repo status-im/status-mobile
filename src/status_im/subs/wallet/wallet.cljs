@@ -5,6 +5,7 @@
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
+            [status-im.contexts.wallet.networks.core :as networks]
             [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.missing-keypair.view :as missing-keypair]
             [status-im.subs.wallet.add-account.address-to-watch]
@@ -327,9 +328,7 @@
  :<- [:wallet/selected-networks]
  :<- [:wallet/network-details]
  (fn [[selected-networks networks]]
-   (set (map #(network-utils/network->chain-id
-               {:network-name %
-                :networks     networks})
+   (set (map (partial networks/get-chain-id networks)
              selected-networks))))
 
 (defn- format-settings-keypair-accounts
