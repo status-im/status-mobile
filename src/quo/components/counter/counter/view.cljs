@@ -8,7 +8,7 @@
     [utils.number]))
 
 (defn view
-  [{:keys [type customization-color container-style accessibility-label max-value]
+  [{:keys [type customization-color container-style accessibility-label max-value blur?]
     :or   {max-value 99 customization-color :blue}}
    value]
   (let [theme (quo.context/use-theme)
@@ -24,6 +24,7 @@
       :style               (style/container
                             {:label               label
                              :type                type
+                             :blur?               blur?
                              :customization-color customization-color
                              :theme               theme
                              :container-style     container-style

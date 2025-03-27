@@ -5,10 +5,10 @@
             [utils.re-frame :as rf]))
 
 (defn items
-  [mnemonic?]
-  [(when mnemonic?
+  [mnemonic on-backup-seed-press]
+  [(when mnemonic
      [{:title            (i18n/label :t/back-up-seed-phrase)
-       :on-press         #(rf/dispatch [:open-modal :screen/backup-seed])
+       :on-press         (on-backup-seed-press mnemonic)
        :image-props      :i/seed
        :image            :icon
        :label            :icon

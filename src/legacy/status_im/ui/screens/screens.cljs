@@ -13,7 +13,6 @@
     [legacy.status-im.ui.screens.notifications-settings.views :as notifications-settings]
     [legacy.status-im.ui.screens.pairing.views :as pairing]
     [legacy.status-im.ui.screens.peers-stats :as peers-stats]
-    [legacy.status-im.ui.screens.profile.seed.views :as profile.seed]
     [legacy.status-im.ui.screens.profile.user.views :as profile.user]
     [legacy.status-im.ui.screens.progress.views :as progress]
     [legacy.status-im.ui.screens.rpc-usage-info :as rpc-usage-info]
@@ -122,9 +121,6 @@
     :options   {:topBar (topbar-options :t/backup-settings)
                 :insets {:top? true}}
     :component backup-settings/backup-settings}
-   {:name      :screen/backup-seed
-    :options   {:insets {:top? platform/android? :bottom? true}}
-    :component profile.seed/backup-seed}
    {:name      :screen/default-sync-period-settings
     :options   {:topBar (topbar-options :t/default-sync-period)
                 :insets {:top? true}}

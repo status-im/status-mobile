@@ -3,10 +3,7 @@
 (def buttons-container
   {:padding-horizontal 20
    :padding-vertical   12
-   :position           :absolute
-   :bottom             0
-   :left               0
-   :right              0})
+   :margin-top         :auto})
 
 (defn buttons-inner-container
   [margin-bottom]

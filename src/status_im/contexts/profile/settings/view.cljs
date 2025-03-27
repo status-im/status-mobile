@@ -11,7 +11,8 @@
             [status-im.contexts.profile.utils :as profile.utils]
             [status-im.feature-flags :as ff]
             [utils.debounce :as debounce]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.security.core :as security]))
 
 (defn show-settings-item?
   [{:keys [feature-flag]}]
@@ -49,16 +50,41 @@
   [_ index]
   #js {:length 100 :offset (* 100 index) :index index})
 
+(defn- navigate-to-backup-challenge
+  [masked-seed-phrase]
+  (rf/dispatch
+   [:open-modal :screen/confirm-backup-on-shell
+    {:masked-seed-phrase masked-seed-phrase
+     :on-try-again       (fn []) ;; Needed due to impl. checks
+     :on-success         (fn []
+                           (rf/dispatch [:dismiss-modal :screen/backup-recovery-phrase-on-shell])
+                           (rf/dispatch [:dismiss-modal :screen/confirm-backup-on-shell])
+                           (rf/dispatch [:my-profile/finish]))
+     :back-button?       true
+     :shell?             true}]))
+
+(defn navigate-to-backup-seed
+  [mnemonic]
+  (fn []
+    (rf/dispatch
+     [:open-modal
+      :screen/backup-recovery-phrase-on-shell
+      {:back-button?       true
+       :shell?             true
+       :masked-seed-phrase (security/mask-data mnemonic)
+       :on-success         navigate-to-backup-challenge}])))
+
 (defn view
   []
-  (let [theme                      (quo.context/use-theme)
-        insets                     (safe-area/get-insets)
-        customization-color        (rf/sub [:profile/customization-color])
-        scroll-y                   (reanimated/use-shared-value 0)
-        profile                    (rf/sub [:profile/profile])
-        recovery-phrase-backed-up? (rf/sub [:profile/recovery-phrase-backed-up?])
-        full-name                  (profile.utils/displayed-name profile)
-        on-scroll                  (rn/use-callback #(scroll-handler % scroll-y))]
+  (let [theme                (quo.context/use-theme)
+        insets               (safe-area/get-insets)
+        customization-color  (rf/sub [:profile/customization-color])
+        scroll-y             (reanimated/use-shared-value 0)
+        profile              (rf/sub [:profile/profile])
+        mnemonic             (rf/sub [:profile/mnemonic])
+        full-name            (profile.utils/displayed-name profile)
+        on-scroll            (rn/use-callback #(scroll-handler % scroll-y))
+        on-backup-seed-press (rn/use-callback #(navigate-to-backup-seed mnemonic))]
     [quo/overlay {:type :shell}
      [rn/view
       {:style (style/navigation-wrapper {:customization-color customization-color
@@ -82,7 +108,7 @@
                                                                      profile)}}])}]}]]
      [rn/flat-list
       {:header                          [settings.header/view {:scroll-y scroll-y}]
-       :data                            (settings.items/items (not recovery-phrase-backed-up?))
+       :data                            (settings.items/items mnemonic on-backup-seed-press)
        :shows-vertical-scroll-indicator false
        :render-fn                       settings-category-view
        :get-item-layout                 get-item-layout

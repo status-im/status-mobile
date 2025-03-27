@@ -304,7 +304,6 @@
    (get profiles key-uid)))
 
 (re-frame/reg-sub
- :profile/recovery-phrase-backed-up?
+ :profile/mnemonic
  :<- [:profile/profile]
- (fn [profile]
-   (not (boolean (seq (:mnemonic profile))))))
+ :-> :mnemonic)

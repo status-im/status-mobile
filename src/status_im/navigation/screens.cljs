@@ -1217,6 +1217,11 @@
      :options   {:insets {:top? true :bottom? true}}
      :component backup-recovery-phrase/view}
 
+    {:name      :screen/backup-recovery-phrase-on-shell
+     :metrics   {:track? true}
+     :options   options/transparent-modal-screen-options
+     :component backup-recovery-phrase/view}
+
     {:name      :screen/backup-recovery-phrase-dark
      :metrics   {:track? true}
      :options   {:theme  :dark
@@ -1227,6 +1232,11 @@
      :metrics   {:track? true}
      :options   {:insets {:top? true :bottom? true}
                  :theme  :dark}
+     :component wallet-confirm-backup/view}
+
+    {:name      :screen/confirm-backup-on-shell
+     :metrics   {:track? true}
+     :options   options/transparent-modal-screen-options
      :component wallet-confirm-backup/view}
 
     {:name      :screen/use-recovery-phrase

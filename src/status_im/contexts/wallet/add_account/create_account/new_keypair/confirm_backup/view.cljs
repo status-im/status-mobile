@@ -6,6 +6,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
+    [status-im.common.events-helper :as events-helper]
     [status-im.contexts.wallet.add-account.create-account.new-keypair.confirm-backup.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -32,52 +33,72 @@
     [(subvec result 0 2) (subvec result 2 4)]))
 
 (defn- cheat-warning
-  [on-try-again]
+  [on-try-again shell?]
   (let [customization-color (rf/sub [:profile/customization-color])]
     [:<>
      [quo/drawer-top {:title (i18n/label :t/do-not-cheat)}]
-     [quo/text
-      {:style style/cheat-description}
+     [quo/text {:style style/cheat-description}
       (i18n/label :t/do-not-cheat-description)]
      [quo/bottom-actions
-      {:button-one-label (i18n/label :t/see-recovery-phrase-again)
+      {:actions          :one-action
+       :button-one-label (i18n/label :t/see-recovery-phrase-again)
        :button-one-props {:customization-color customization-color
                           :on-press            (fn []
                                                  (rf/dispatch [:hide-bottom-sheet])
                                                  (rf/dispatch [:navigate-back])
                                                  (when on-try-again
-                                                   (on-try-again)))}}]]))
+                                                   (on-try-again)))}
+       :blur?            shell?}]]))
 
 (defn- button
-  [{:keys [word margin-right on-press]}]
+  [{:keys [word margin-right on-press shell?]}]
   [quo/button
    {:type            :grey
     :on-press        #(on-press word)
-    :container-style (style/button margin-right)} word])
+    :container-style (style/button margin-right)
+    :background      (when shell? :blur)}
+   word])
 
 (defn- buttons-row
-  [{:keys [margin-bottom options] :as params}]
+  [{:keys [margin-bottom options shell?] :as params}]
   [rn/view {:style (style/buttons-inner-container margin-bottom)}
    [button
     (assoc params
            :word         (first options)
-           :margin-right 12)]
-   [button (assoc params :word (second options))]])
+           :margin-right 12
+           :shell?       shell?)]
+   [button
+    (assoc params
+           :word   (second options)
+           :shell? shell?)]])
 
 (defn- complete-backup-sheet
-  [on-success on-try-again]
+  [on-success on-try-again shell?]
   (let [customization-color    (rf/sub [:profile/customization-color])
-        [checked? set-checked] (rn/use-state false)]
+        [checked? set-checked] (rn/use-state false)
+        change-checked         (rn/use-callback #(set-checked not))]
     [:<>
      [quo/drawer-top {:title (i18n/label :t/complete-backup)}]
      [quo/text
       {:style style/cheat-description}
       (i18n/label :t/ensure-written-recovery)]
-     [quo/disclaimer
-      {:checked?        checked?
-       :container-style {:margin-horizontal 20}
-       :on-change       #(set-checked (not checked?))}
-      (i18n/label :t/written-seed-ready)]
+     [rn/view
+      {:style {:flex-direction     :row
+               :padding-horizontal 20
+               :padding-top        8
+               :padding-bottom     12
+               :column-gap         8}}
+      [quo/selectors
+       {:type                :checkbox
+        :checked?            checked?
+        :customization-color customization-color
+        :on-change           change-checked
+        :blur?               shell?}]
+      [rn/pressable
+       {:style    {:flex 1}
+        :on-press change-checked}
+       [quo/text (i18n/label :t/written-seed-ready)]]]
+
      [quo/bottom-actions
       {:actions          :two-actions
        :button-one-label (i18n/label :t/done)
@@ -92,7 +113,8 @@
                                       (rf/dispatch [:hide-bottom-sheet])
                                       (when on-try-again
                                         (rf/dispatch [:navigate-back])
-                                        (on-try-again)))}}]]))
+                                        (on-try-again)))}
+       :blur?            shell?}]]))
 
 (defn view
   []
@@ -100,10 +122,10 @@
         quiz-index             (reagent/atom 0)
         incorrect-count        (reagent/atom 0)
         show-error?            (reagent/atom false)
-
         {:keys [on-success
                 on-try-again
                 masked-seed-phrase
+                back-button?
                 theme shell?]} (quo.context/use-screen-params)
         unmasked-seed-phrase   (security/safe-unmask-data masked-seed-phrase)
         random-phrase          (reagent/atom [])]
@@ -125,26 +147,37 @@
                                                   (reset! show-error? false)
                                                   (when (and on-success (= @quiz-index questions-count))
                                                     (rf/dispatch [:show-bottom-sheet
-                                                                  {:theme   theme
-                                                                   :shell?  shell?
+                                                                  {:theme (if (or shell? shell?)
+                                                                            :dark
+                                                                            theme)
+                                                                   :hide-on-background-press? false
+                                                                   :shell? shell?
                                                                    :content (fn [] [complete-backup-sheet
                                                                                     on-success
-                                                                                    on-try-again])}])))
+                                                                                    on-try-again
+                                                                                    shell?])}])))
                                                 (do
                                                   (when (> @incorrect-count 0)
                                                     (rf/dispatch [:show-bottom-sheet
-                                                                  {:theme   theme
+                                                                  {:theme   (if shell?
+                                                                              :dark
+                                                                              theme)
                                                                    :shell?  shell?
                                                                    :content (fn []
                                                                               [cheat-warning
-                                                                               on-try-again])}]))
+                                                                               on-try-again
+                                                                               shell?])}]))
                                                   (reset! incorrect-count (inc @incorrect-count))
                                                   (reset! show-error? true))))]
-          [rn/view {:style {:flex 1}}
+
+          [quo/overlay
+           {:type    (when shell? :shell)
+            :insets? true}
            [quo/page-nav
-            {:icon-name           :i/close
-             :on-press            #(rf/dispatch [:navigate-back])
-             :accessibility-label :top-bar}]
+            (cond-> {:icon-name           (if back-button? :i/arrow-left :i/close)
+                     :on-press            events-helper/navigate-back
+                     :accessibility-label :top-bar}
+              shell? (assoc :background :blur))]
            [quo/page-top
             {:title            (i18n/label :t/confirm-backup)
              :description      :text
@@ -170,14 +203,17 @@
                                           :word     (get unmasked-seed-phrase num)
                                           :number   (inc num)
                                           :on-press #(when (= @quiz-index index)
-                                                       (reset! show-error? false))}])
+                                                       (reset! show-error? false))
+                                          :blur?    shell?}])
              :separator               [rn/view {:style {:height 8}}]
              :content-container-style {:padding-horizontal 20}}]
            [rn/view {:style style/buttons-container}
             [buttons-row
              {:on-press      on-button-press
               :margin-bottom 12
-              :options       options-row-0}]
+              :options       options-row-0
+              :shell?        shell?}]
             [buttons-row
              {:on-press on-button-press
-              :options  options-row-1}]]])))))
+              :options  options-row-1
+              :shell?   shell?}]]])))))

@@ -6,8 +6,9 @@
     [react-native.safe-area :as safe-area]))
 
 (defn view
-  [{:keys [type container-style top-inset?]} & children]
-  (let [top-style (when top-inset? {:padding-top (safe-area/get-top)})]
+  [{:keys [type container-style top-inset? bottom-inset? insets?]} & children]
+  (let [top-style    (when (or insets? top-inset?) {:padding-top (safe-area/get-top)})
+        bottom-style (when (or insets? bottom-inset?) {:padding-bottom (safe-area/get-bottom)})]
     [rn/view {:style (style/overlay-background type)}
      (if (= type :shell)
        [blur/view
@@ -17,8 +18,8 @@
          :overlay-color :transparent
          :style         style/container}
         (into [rn/view
-               {:style (merge style/blur-container top-style container-style)}]
+               {:style [style/blur-container top-style bottom-style container-style]}]
               children)]
        (into [rn/view
-              {:style (merge style/container top-style container-style)}]
+              {:style [style/blur-container top-style bottom-style container-style]}]
              children))]))
