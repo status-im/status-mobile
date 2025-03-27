@@ -77,12 +77,12 @@
 
 (deftest transaction-gas-fees-test
   (testing "returns the gas fees correctly"
-    (let [expected {:gas-price                "0"
-                    :eip-1559-enabled         true
-                    :base-fee                 "0.0005"
-                    :max-priority-fee-per-gas "0.0001"
-                    :l-1-gas-fee              "0.0002"
-                    :tx-max-fees-per-gas      "0.08"}]
+    (let [expected {:gas-price           "0"
+                    :eip-1559-enabled    true
+                    :base-fee            "0.0005"
+                    :tx-priority-fee     "0.0001"
+                    :l-1-gas-fee         "0.0002"
+                    :tx-max-fees-per-gas "0.08"}]
       (is (match? expected
                   (-> default-route
                       (assoc :tx-base-fee         (money/to-hex 500000)

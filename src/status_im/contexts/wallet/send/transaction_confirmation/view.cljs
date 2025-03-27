@@ -12,7 +12,6 @@
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
     [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
-    [status-im.feature-flags :as ff]
     [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -285,10 +284,6 @@
         enough-assets?            (rf/sub [:wallet/send-enough-assets?])
         no-routes-found?          (rf/sub [:wallet/no-routes-found?])]
     (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clean-route-data-for-collectible-tx]))
-    (rn/use-mount
-     (fn []
-       (when (ff/enabled? ::ff/wallet.transaction-params)
-         (rf/dispatch [:wallet/init-tx-settings]))))
     [rn/view {:style {:flex 1}}
      [floating-button-page/view
       {:footer-container-padding 0

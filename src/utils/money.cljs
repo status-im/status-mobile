@@ -143,7 +143,8 @@
 
 (defn to-hex
   [^js bn]
-  (str "0x" (to-string bn 16)))
+  (when bn
+    (str "0x" (to-string bn 16))))
 
 (defn from-hex
   [hex-str]
@@ -195,8 +196,9 @@
     (greater-than-or-equals balance amount)))
 
 (defn- add*
-  [bn1 n2]
-  (.add ^js bn1 n2))
+  [n1 n2]
+  (when-let [[^js bn1 ^js bn2] (->bignumbers n1 n2)]
+    (.add ^js bn1 bn2)))
 
 (def add
   "Add with defaults, this version is able to receive `nil` and takes them as 0."

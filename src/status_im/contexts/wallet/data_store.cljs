@@ -213,6 +213,9 @@
 
 (defn new->old-route-path
   [new-path]
+  (tap> {:new-path (-> new-path
+                       (dissoc :to-chain)
+                       (dissoc :from-chain))})
   (let [to-bignumber (fn [k] (-> new-path k money/bignumber))]
     {:approval-fee              (to-bignumber :approval-fee)
      :approval-l-1-fee          (to-bignumber :approval-l-1-fee)
@@ -227,14 +230,16 @@
      :approval-required         (:approval-required new-path)
      :to                        (:to-chain new-path)
      :approval-amount-required  (:approval-amount-required new-path)
-     ;;  :cost () ;; tbd not used on desktop
      :gas-amount                (:tx-gas-amount new-path)
      :router-input-params-uuid  (:router-input-params-uuid new-path)
      :gas-fees                  (router/transaction-gas-fees new-path)
      :estimated-time            (router/transaction-estimated-time new-path)
      :approval-estimated-time   (router/approval-estimated-time new-path)
      :fees-by-mode              (router/transaction-fees-by-mode new-path)
-     :tx-fee-mode               (router/transaction-fee-mode new-path)}))
+     :tx-fee-mode               (router/transaction-fee-mode new-path)
+     :nonce                     (router/nonce-field new-path :tx-nonce)
+     :suggested-tx-nonce        (router/nonce-field new-path :suggested-tx-nonce)
+     :suggested-tx-gas-amount   (:suggested-tx-gas-amount new-path)}))
 
 (schema/=> new->old-route-path
   [:=>

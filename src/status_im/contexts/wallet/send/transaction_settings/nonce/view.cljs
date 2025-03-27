@@ -11,14 +11,15 @@
 
 (defn view
   []
-  (let [{:keys [last-transaction current]} (rf/sub [:wallet/tx-settings-nonce])
-        suggested-nonce                    (inc last-transaction)
-        [input-state set-input-state]      (rn/use-state (controlled-input/set-value-numeric
-                                                          controlled-input/init-state
-                                                          current))
-        input-value                        (controlled-input/input-value input-state)
-        warning?                           (> (controlled-input/value-numeric input-state)
-                                              suggested-nonce)]
+  (let [current                       (rf/sub [:wallet.send/tx-settings-nonce])
+        suggested-nonce               (rf/sub [:wallet.send/tx-settings-suggested-nonce])
+        last-tx-nonce                 (dec suggested-nonce)
+        [input-state set-input-state] (rn/use-state (controlled-input/set-value-numeric
+                                                     controlled-input/init-state
+                                                     current))
+        input-value                   (controlled-input/input-value input-state)
+        warning?                      (> (controlled-input/value-numeric input-state)
+                                         suggested-nonce)]
     [rn/view
      {:style {:flex 1}}
      [quo/page-nav
@@ -41,7 +42,10 @@
       [quo/input
        {:type          :text
         :label         (i18n/label :t/type-nonce)
-        :label-right   (i18n/label :t/last-transaction-is {:number last-transaction})
+        :label-right   (i18n/label :t/last-transaction-is
+                                   {:number (if (< last-tx-nonce 0)
+                                              "-"
+                                              last-tx-nonce)})
         :editable      false
         :default-value input-value
         :clearable?    true
@@ -60,7 +64,7 @@
        :button-one-label (i18n/label :t/save-changes)
        :button-one-props {:disabled? (controlled-input/empty-value? input-state)
                           :on-press  (fn []
-                                       (rf/dispatch [:wallet/set-nonce
+                                       (rf/dispatch [:wallet.send/set-nonce
                                                      (controlled-input/value-numeric input-state)])
                                        (rf/dispatch [:navigate-back])
                                        (rf/dispatch [:show-bottom-sheet

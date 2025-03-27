@@ -139,6 +139,7 @@
                                          (money/crypto->fiat token-balance conversion-rate)))
         input-value                   (controlled-input/input-value input-state)
         valid-input?                  (not (or (controlled-input/empty-value? input-state)
+                                               (controlled-input/zero-or-negative-value? input-state)
                                                (controlled-input/input-error input-state)))
         amount-in-crypto              (if crypto-currency?
                                         input-value

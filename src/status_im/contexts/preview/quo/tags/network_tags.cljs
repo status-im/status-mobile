@@ -18,6 +18,7 @@
   [{:type    :select
     :key     :status
     :options [{:key :error}
+              {:key :warning}
               {:key :default}]}
    {:type :text
     :key  :title}
