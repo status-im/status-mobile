@@ -61,12 +61,21 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 - (void)copyExistingLogsToFolder:(NSURL *)logsFolderPath withFileManager:(NSFileManager *)fileManager {
     NSString *logDirectory = [self logFileDirectory];
     
-    NSArray *logFileNames = @[@"geth.log", @"api.log", @"pre_login.log"];
+    // Get all files in the log directory
+    NSError *error = nil;
+    NSArray *fileList = [fileManager contentsOfDirectoryAtPath:logDirectory error:&error];
+    if (error) {
+        NSLog(@"Error reading log directory: %@", error);
+        return;
+    }
     
-    // Copy each log file if it exists
-    for (NSString *fileName in logFileNames) {
+    for (NSString *fileName in fileList) {
         NSString *sourcePath = [logDirectory stringByAppendingPathComponent:fileName];
-        if ([fileManager fileExistsAtPath:sourcePath]) {
+        BOOL isDirectory;
+        
+        // Only copy files, skip directories
+        [fileManager fileExistsAtPath:sourcePath isDirectory:&isDirectory];
+        if (!isDirectory) {
             NSString *destinationPath = [logsFolderPath.path stringByAppendingPathComponent:fileName];
             [fileManager copyItemAtPath:sourcePath toPath:destinationPath error:nil];
         }

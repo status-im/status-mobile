@@ -85,14 +85,6 @@
   ([callback]
    (.acceptTerms ^js (account-manager) callback)))
 
-(defn prepare-dir-and-update-config
-  [key-uid config callback]
-  (log/debug "[native-module] prepare-dir-and-update-config")
-  (.prepareDirAndUpdateConfig ^js (account-manager)
-                              key-uid
-                              config
-                              #(callback (types/json->clj %))))
-
 (defn login-account
   "NOTE: beware, the password has to be sha3 hashed"
   [{:keys [keyUid] :as request}]

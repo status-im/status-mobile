@@ -43,24 +43,6 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
         )
     }
 
-    private fun updateConfig(jsonConfigString: String, absRootDirPath: String, keystoreDirPath: String): String {
-        val jsonConfig = JSONObject(jsonConfigString)
-        // when doing local pair syncing, backend will provide default data dir
-        val dataDirPath = jsonConfig.optString("DataDir","")
-        val logEnabled = jsonConfig.getBoolean("LogEnabled")
-        val gethLogFile = if (logEnabled) logManager.prepareLogsFile(reactContext) else null
-        val gethLogDirPath = gethLogFile?.parent
-
-        Log.d(TAG, "log dir: $gethLogDirPath log name: $gethLogFileName")
-
-        jsonConfig.put("DataDir", dataDirPath)
-        jsonConfig.put("KeyStoreDir", keystoreDirPath)
-        jsonConfig.put("LogDir", gethLogDirPath)
-        jsonConfig.put("LogFile", gethLogFileName)
-
-        return jsonConfig.toString()
-    }
-
     private fun copyDirectory(sourceLocation: File, targetLocation: File) {
         if (sourceLocation.isDirectory) {
             if (!targetLocation.exists() && !targetLocation.mkdirs()) {
@@ -82,98 +64,6 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
                     input.copyTo(output)
                 }
             }
-        }
-    }
-
-    private fun prepareDirAndUpdateConfig(jsonConfigString: String, keyUID: String): String {
-        val absRootDirPath = utils.getNoBackupDirectory()
-        val dataFolder = getTestnetDataDir(absRootDirPath)
-        Log.d(TAG, "Starting Geth node in folder: $dataFolder")
-
-        try {
-            File(dataFolder).mkdir()
-        } catch (e: Exception) {
-            Log.e(TAG, "error making folder: $dataFolder", e)
-        }
-
-        val ropstenFlagPath = utils.pathCombine(absRootDirPath, "ropsten_flag")
-        val ropstenFlag = File(ropstenFlagPath)
-        if (!ropstenFlag.exists()) {
-            try {
-                val chaindDataFolderPath = utils.pathCombine(dataFolder, "StatusIM/lightchaindata")
-                val lightChainFolder = File(chaindDataFolderPath)
-                if (lightChainFolder.isDirectory) {
-                    lightChainFolder.listFiles()?.forEach { it.delete() }
-                }
-                lightChainFolder.delete()
-                ropstenFlag.createNewFile()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-
-        val testnetDataDir = dataFolder
-        val oldKeystoreDir = utils.pathCombine(testnetDataDir, "keystore")
-        val newKeystoreDir = utils.pathCombine(absRootDirPath, "keystore")
-        val oldKeystore = File(oldKeystoreDir)
-        if (oldKeystore.exists()) {
-            try {
-                val newKeystore = File(newKeystoreDir)
-                copyDirectory(oldKeystore, newKeystore)
-
-                if (oldKeystore.isDirectory) {
-                    oldKeystore.listFiles()?.forEach { it.delete() }
-                }
-                oldKeystore.delete()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-
-        return try {
-            val multiaccountKeystoreDir = utils.pathCombine("/keystore", keyUID)
-            val updatedJsonConfigString = updateConfig(jsonConfigString, absRootDirPath, multiaccountKeystoreDir)
-
-            prettyPrintConfig(updatedJsonConfigString)
-
-            updatedJsonConfigString
-        } catch (e: JSONException) {
-            Log.e(TAG, "updateConfig failed: ${e.message}")
-            ""
-        }
-    }
-
-    @ReactMethod
-    fun prepareDirAndUpdateConfig(keyUID: String, config: String, callback: Callback) {
-        Log.d(TAG, "prepareDirAndUpdateConfig")
-        val finalConfig = prepareDirAndUpdateConfig(config, keyUID)
-        callback.invoke(finalConfig)
-    }
-
-    @ReactMethod
-    fun saveAccountAndLoginWithKeycard(
-        multiaccountData: String,
-        password: String,
-        settings: String,
-        config: String,
-        accountsData: String,
-        chatKey: String
-    ) {
-        try {
-            Log.d(TAG, "saveAccountAndLoginWithKeycard")
-            val keyUID = utils.getKeyUID(multiaccountData)
-            val finalConfig = prepareDirAndUpdateConfig(config, keyUID)
-            val result = Statusgo.saveAccountAndLoginWithKeycard(
-                multiaccountData,
-                password,
-                settings,
-                finalConfig,
-                accountsData,
-                chatKey
-            )
-            utils.handleStatusGoResponse(result, "saveAccountAndLoginWithKeycard")
-        } catch (e: JSONException) {
-            Log.e(TAG, "JSON conversion failed: ${e.message}")
         }
     }
 
@@ -232,7 +122,7 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
         Log.d(TAG, "initializeApplication")
         val jsonParams = JSONObject(request)
         // for ios, the log dir will be the same as the root data dir, status-go will default to root data dir if logDir is not provided
-        jsonParams.put("logDir", utils.getPublicStorageDirectory()?.absolutePath)
+        jsonParams.put("logDir", utils.getLogDirectory()?.absolutePath)
         val jsonString = jsonParams.toString()
         StatusBackendClient.executeStatusGoRequestWithCallback(
             "InitializeApplication",
@@ -381,7 +271,6 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
 
     companion object {
         private const val TAG = "AccountManager"
-        private const val gethLogFileName = "geth.log"
 
         private fun prettyPrintConfig(config: String) {
             Log.d(TAG, "startNode() with config (see below)")

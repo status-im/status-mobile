@@ -26,49 +26,6 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
 
     override fun getName() = "LogManager"
 
-    private fun getRequestLogFile(): File {
-        val pubDirectory = utils.getPublicStorageDirectory()
-        return File(pubDirectory, requestsLogFileName)
-    }
-
-    private fun getGethLogFile(): File {
-        val pubDirectory = utils.getPublicStorageDirectory()
-        return File(pubDirectory, gethLogFileName)
-    }
-
-    private fun getPreLoginLogFile(): File {
-        val pubDirectory = utils.getPublicStorageDirectory()
-        return File(pubDirectory, preLoginLogFileName)
-    }
-
-    fun prepareLogsFile(context: Context): File? {
-        val logFile = getGethLogFile()
-
-        try {
-            logFile.setReadable(true)
-            val parent = logFile.parentFile
-            if (!parent?.canWrite()!!) {
-                return null
-            }
-            if (!parent.exists()) {
-                parent.mkdirs()
-            }
-            logFile.createNewFile()
-            logFile.setWritable(true)
-            Log.d(TAG, "Can write ${logFile.canWrite()}")
-            val gethLogUri = Uri.fromFile(logFile)
-
-            val gethLogFilePath = logFile.absolutePath
-            Log.d(TAG, gethLogFilePath)
-
-            return logFile
-        } catch (e: Exception) {
-            Log.d(TAG, "Can't create geth.log file! ${e.message}")
-        }
-
-        return null
-    }
-
     private fun showErrorMessage(message: String) {
         val activity = currentActivity
 
@@ -160,9 +117,6 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
 
         val zipFile = File(logsTempDir, logsZipFileName)
         val statusLogFile = File(logsTempDir, statusLogFileName)
-        val gethLogFile = getGethLogFile()
-        val requestLogFile = getRequestLogFile()
-        val preLoginLogFile = getPreLoginLogFile()
 
         try {
             if (zipFile.exists() || zipFile.createNewFile()) {
@@ -178,13 +132,22 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
             dumpAdbLogsTo(FileOutputStream(statusLogFile))
 
             val errorList = Stack<String>()
-            val filesToZip = mutableListOf(dbFile, gethLogFile, statusLogFile)
-            if (requestLogFile.exists()) {
-                filesToZip.add(requestLogFile)
+            val filesToZip = mutableListOf<File>(dbFile, statusLogFile)
+            
+            // Get all files from the log directory
+            val logDirectory = utils.getLogDirectory()
+            if (logDirectory != null && logDirectory.exists()) {
+                val logFiles = logDirectory.listFiles()
+                if (logFiles != null) {
+                    for (file in logFiles) {
+                        if (file.isFile) {
+                            Log.d(TAG, "Adding log file: ${file.name}")
+                            filesToZip.add(file)
+                        }
+                    }
+                }
             }
-            if (preLoginLogFile.exists()) {
-                filesToZip.add(preLoginLogFile)
-            }
+            
             val zipped = zip(filesToZip.toTypedArray(), zipFile, errorList)
             if (zipped && zipFile.exists()) {
                 zipFile.setReadable(true, false)
@@ -230,7 +193,7 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun logFileDirectory(): String? {
-        return utils.getPublicStorageDirectory()?.absolutePath
+        return utils.getLogDirectory()?.absolutePath
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
@@ -257,10 +220,7 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
 
     companion object {
         private const val TAG = "LogManager"
-        private const val gethLogFileName = "geth.log"
         private const val statusLogFileName = "Status.log"
-        private const val requestsLogFileName = "api.log"
-        private const val preLoginLogFileName = "pre_login.log"
         private const val logsZipFileName = "Status-debug-logs.zip"
     }
 }
