@@ -261,6 +261,12 @@
    (:gas-amount (first route))))
 
 (rf/reg-sub
+ :wallet.send/tx-settings-suggested-tx-gas-amount
+ :<- [:wallet/send-route]
+ (fn [route]
+   (:suggested-tx-gas-amount (first route))))
+
+(rf/reg-sub
  :wallet.send/tx-settings-fee-mode
  :<- [:wallet/send-route]
  :<- [:wallet.send/user-fee-mode-settings]

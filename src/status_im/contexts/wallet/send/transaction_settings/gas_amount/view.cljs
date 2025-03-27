@@ -6,35 +6,35 @@
     [utils.re-frame :as rf]))
 
 (defn hint-and-status
-  [gas-amount-from-route {:keys [low high]} entered-value]
+  [suggested-gas-amount {:keys [low high]} entered-value]
   (cond
-    (> entered-value high)                          {:hint-text (i18n/label :t/gas-amount-higher
-                                                                            {:high high})
-                                                     :status    :error}
-    (> entered-value (* 1.1 gas-amount-from-route)) {:hint-text (i18n/label :t/gas-amount-higher-than
-                                                                            {:current
-                                                                             gas-amount-from-route})
-                                                     :status    :warning}
+    (> entered-value high)                         {:hint-text (i18n/label :t/gas-amount-higher
+                                                                           {:high high})
+                                                    :status    :error}
+    (> entered-value (* 1.1 suggested-gas-amount)) {:hint-text (i18n/label :t/gas-amount-higher-than
+                                                                           {:current
+                                                                            suggested-gas-amount})
+                                                    :status    :warning}
 
-    (< entered-value low)                           {:hint-text (i18n/label :t/gas-amount-lower
-                                                                            {:low low})
-                                                     :status    :error}
-    (< entered-value (* 0.9 gas-amount-from-route)) {:hint-text (i18n/label :t/gas-amount-lower-than
-                                                                            {:current
-                                                                             gas-amount-from-route})
-                                                     :status    :warning}
-    :else                                           {:hint-text (i18n/label :t/current-units
-                                                                            {:current
-                                                                             gas-amount-from-route})
-                                                     :status    :default}))
+    (< entered-value low)                          {:hint-text (i18n/label :t/gas-amount-lower
+                                                                           {:low low})
+                                                    :status    :error}
+    (< entered-value (* 0.9 suggested-gas-amount)) {:hint-text (i18n/label :t/gas-amount-lower-than
+                                                                           {:current
+                                                                            suggested-gas-amount})
+                                                    :status    :warning}
+    :else                                          {:hint-text (i18n/label :t/current-units
+                                                                           {:current
+                                                                            suggested-gas-amount})
+                                                    :status    :default}))
 
 (defn view
   []
-  (let [spectrum              {:low  21000
-                               :high 7920027}
-        gas-amount            (rf/sub [:wallet.send/tx-settings-gas-amount])
-        gas-amount-from-route (rf/sub [:wallet.send/tx-settings-gas-amount-route])
-        conditions            (partial hint-and-status gas-amount-from-route spectrum)]
+  (let [spectrum             {:low  21000
+                              :high 7920027}
+        gas-amount           (rf/sub [:wallet.send/tx-settings-gas-amount])
+        suggested-gas-amount (rf/sub [:wallet.send/tx-settings-suggested-tx-gas-amount])
+        conditions           (partial hint-and-status suggested-gas-amount spectrum)]
     [transaction-settings/custom-setting-screen
      {:screen-title   (i18n/label :t/max-gas-amount)
       :token-symbol   :units
