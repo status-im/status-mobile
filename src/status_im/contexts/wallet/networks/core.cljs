@@ -1,5 +1,6 @@
 (ns status-im.contexts.wallet.networks.core
-  (:require [status-im.contexts.wallet.networks.config :as networks.config]))
+  (:require [status-im.contexts.wallet.networks.config :as networks.config]
+            [utils.url :as url]))
 
 (defn get-chain-id
   [networks network-name]
@@ -25,11 +26,11 @@
   [network tx-hash]
   (-> network
       :block-explorer-url
-      (str "tx/" tx-hash)))
+      (url/add-path :tx tx-hash)))
 
 (defn get-block-explorer-address-url
   "Returns the block-explorer address url for a chain"
   [network address]
   (-> network
       :block-explorer-url
-      (str "address/" address)))
+      (url/add-path :address address)))

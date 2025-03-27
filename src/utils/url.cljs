@@ -58,3 +58,19 @@
   [url new-port]
   (when url
     (string/replace url #"(:\d+)" (str ":" new-port))))
+
+(defn add-slash-separator
+  [url]
+  (if (not= (last url) "/")
+    (str url "/")
+    url))
+
+(defn add-path
+  ([url path value]
+   (-> url
+       (add-path path)
+       (add-path value)))
+  ([url path]
+   (-> url
+       add-slash-separator
+       (str (name path)))))
