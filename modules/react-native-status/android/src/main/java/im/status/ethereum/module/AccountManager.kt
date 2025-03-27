@@ -271,7 +271,6 @@ class AccountManager(private val reactContext: ReactApplicationContext) : ReactC
 
     companion object {
         private const val TAG = "AccountManager"
-        private const val gethLogFileName = "geth.log"
 
         private fun prettyPrintConfig(config: String) {
             Log.d(TAG, "startNode() with config (see below)")

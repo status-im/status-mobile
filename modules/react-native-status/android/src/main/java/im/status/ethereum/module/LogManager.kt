@@ -220,10 +220,7 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
 
     companion object {
         private const val TAG = "LogManager"
-        private const val gethLogFileName = "geth.log"
         private const val statusLogFileName = "Status.log"
-        private const val requestsLogFileName = "api.log"
-        private const val preLoginLogFileName = "pre_login.log"
         private const val logsZipFileName = "Status-debug-logs.zip"
     }
 }
