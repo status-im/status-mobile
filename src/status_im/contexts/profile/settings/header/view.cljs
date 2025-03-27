@@ -1,6 +1,6 @@
 (ns status-im.contexts.profile.settings.header.view
-  (:require [quo.core :as quo]
-            [quo.theme]
+  (:require [quo.context]
+            [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.common.scalable-avatar.view :as avatar]
             [status-im.contexts.profile.settings.header.header-shape :as header.shape]

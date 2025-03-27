@@ -31,7 +31,7 @@ NOW:
 (defn view
   [{:keys [on-press on-long-press icon]}]
   (let [[pressed? set-pressed] (rn/use-state false)
-        theme                  (theme/use-theme)
+        theme                  (context/use-theme)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed nil))]
     [rn/pressable

@@ -1,7 +1,7 @@
 (ns status-im.navigation.effects
   (:require
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.navigation :as navigation]
     [react-native.platform :as platform]
     [react-native.share :as share]

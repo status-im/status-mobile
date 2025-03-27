@@ -3,8 +3,8 @@
     [quo.components.drawers.action-drawers.style :as style]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn- get-icon-color
@@ -30,7 +30,7 @@
 (defn action
   [{:keys [icon label sub-label right-icon right-text danger? disabled? on-press add-divider?
            accessibility-label icon-color no-icon-color? state customization-color blur?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [:<>
      (when add-divider?
        [divider theme blur?])

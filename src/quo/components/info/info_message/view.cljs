@@ -2,8 +2,8 @@
   (:require [quo.components.icon :as icons]
             [quo.components.info.info-message.style :as style]
             [quo.components.markdown.text :as text]
+            [quo.context :as quo.context]
             [quo.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [schema.core :as schema]))
 
@@ -36,7 +36,7 @@
 (defn view-internal
   [{:keys [status size blur? icon color icon-color text-color no-icon-color? container-style
            accessibility-label]} message]
-  (let [theme         (quo.theme/use-theme)
+  (let [theme         (quo.context/use-theme)
         default-color (get-color status theme blur?)
         text-color    (or text-color color default-color)
         icon-color    (or icon-color color default-color)]

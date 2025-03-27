@@ -1,8 +1,8 @@
 (ns status-im.contexts.chat.home.new-chat.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
@@ -87,7 +87,7 @@
 
 (defn view
   [{:keys [on-scroll close]}]
-  (let [theme                             (quo.theme/use-theme)
+  (let [theme                             (quo.context/use-theme)
         contacts                          (rf/sub [:contacts/sorted-and-grouped-by-first-letter])
         selected-contacts-count           (rf/sub [:selected-contacts-count])
         selected-contacts                 (rf/sub [:group/selected-contacts])

@@ -2,8 +2,8 @@
   (:require
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
+    [quo.context]
     [quo.foundations.colors :as colors :refer [theme-colors]]
-    [quo.theme]
     [react-native.core :as rn]))
 
 (defn themes
@@ -21,7 +21,7 @@
 (defn menu-item
   [{:keys [type title accessibility-label icon on-press style-props subtitle subtitle-color]
     :or   {type :main}}]
-  (let [theme                                      (quo.theme/use-theme)
+  (let [theme                                      (quo.context/use-theme)
         {:keys [icon-color text-color background]} (themes type theme)]
     [rn/touchable-opacity
      (merge {:accessibility-label accessibility-label

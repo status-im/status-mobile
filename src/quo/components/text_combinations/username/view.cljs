@@ -2,14 +2,14 @@
   (:require [quo.components.icon :as icon]
             [quo.components.markdown.text :as text]
             [quo.components.text-combinations.username.style :as style]
+            [quo.context]
             [quo.foundations.colors :as colors]
-            [quo.theme]
             [react-native.core :as rn]))
 
 (defn- username-text
   [{:keys     [name-type username accessibility-label blur?]
     real-name :name}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/username-text-container}
      [text/text
       {:size                :heading-1
@@ -33,7 +33,7 @@
 
 (defn- icon-20
   [icon-name color]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [icon/icon icon-name
      {:accessibility-label :username-status-icon
       :size                20

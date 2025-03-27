@@ -13,8 +13,8 @@
     [quo.components.record-audio.record-audio.handlers :as handlers]
     [quo.components.record-audio.record-audio.style :as style]
     [quo.components.record-audio.soundtrack.view :as soundtrack]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.audio-toolkit :as audio]
     [react-native.core :as rn]
     [taoensso.timbre :as log]
@@ -22,14 +22,14 @@
 
 (defn- recording-bar
   [recording-length-ms ready-to-delete?]
-  (let [theme           (quo.theme/use-theme)
+  (let [theme           (quo.context/use-theme)
         fill-percentage (/ (* recording-length-ms 100) record-audio.constants/max-audio-duration-ms)]
     [rn/view {:style (style/recording-bar-container theme)}
      [rn/view {:style (style/recording-bar fill-percentage ready-to-delete? theme)}]]))
 
 (defn- time-counter
   [recording? recording-length-ms ready-to-delete? reviewing-audio? audio-current-time-ms]
-  (let [theme    (quo.theme/use-theme)
+  (let [theme    (quo.context/use-theme)
         s        (quot (if recording? recording-length-ms audio-current-time-ms) 1000)
         time-str (gstring/format "%02d:%02d" (quot s 60) (mod s 60))]
     [rn/view {:style (style/timer-container reviewing-audio?)}
@@ -47,7 +47,7 @@
   [playing-audio? set-playing-audio player-ref playing-timer set-audio-current-time-ms seeking-audio?
    set-seeking-audio
    max-duration-ms]
-  (let [theme    (quo.theme/use-theme)
+  (let [theme    (quo.context/use-theme)
         on-play  (fn []
                    (set-playing-audio true)
                    (reset! playing-timer

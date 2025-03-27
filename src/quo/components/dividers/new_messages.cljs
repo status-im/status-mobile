@@ -1,15 +1,15 @@
 (ns quo.components.dividers.new-messages
   (:require
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]))
 
 (defn view
   "new-messages params - label, customization-color, theme"
   [{:keys [label customization-color] :or {customization-color :blue}}]
-  (let [theme      (quo.theme/use-theme)
+  (let [theme      (quo.context/use-theme)
         bg-color   (colors/resolve-color customization-color theme 5)
         text-color (colors/resolve-color customization-color theme)]
     [linear-gradient/linear-gradient

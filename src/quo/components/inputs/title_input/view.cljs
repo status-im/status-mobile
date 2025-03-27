@@ -3,7 +3,7 @@
     [quo.components.icon :as icon]
     [quo.components.inputs.title-input.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn- pad-0
@@ -18,7 +18,7 @@
     :or   {max-length    0
            auto-focus    false
            default-value ""}}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         [focused? set-focused] (rn/use-state auto-focus)
         [value set-value]      (rn/use-state default-value)
         input-ref              (rn/use-ref-atom nil)

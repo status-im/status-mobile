@@ -32,12 +32,11 @@
   {:width 12})
 
 (defn right-content
-  [min-size?]
-  (merge
-   {:flex-grow  1
-    :flex-basis 1}
-   (when min-size?
-     {:min-height 32})))
+  [min-size? centered-content?]
+  (cond-> {}
+    centered-content? (assoc :flex-grow  1
+                             :flex-basis 1)
+    min-size?         (assoc :min-height 32)))
 
 (def token-logo
   {:width 16 :height 16})

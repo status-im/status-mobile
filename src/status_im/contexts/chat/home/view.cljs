@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.home.view
   (:require
     [oops.core :as oops]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
@@ -115,26 +115,27 @@
                                               :shared-value scroll-shared-value})}])))
 
 (defn- on-new-message-press
-  []
-  (let [main-event [:show-bottom-sheet {:content chat.actions.view/new-chat}]]
+  [screen-id]
+  (let [main-event [:show-bottom-sheet {:content chat.actions.view/new-chat :screen-id screen-id}]]
     (rf/dispatch [:profile/check-profile-update-prompt main-event])))
 
 (defn- banner-data
   [profile-link]
-  {:title-props
-   {:beta?               true
-    :label               (i18n/label :t/messages)
-    :handler             on-new-message-press
-    :accessibility-label :new-chat-button}
-   :card-props
-   {:on-press    #(rf/dispatch [:open-share {:options {:url profile-link}}])
-    :banner      (resources/get-image :invite-friends)
-    :title       (i18n/label :t/invite-friends-to-status)
-    :description (i18n/label :t/share-invite-link)}})
+  (let [screen-id (quo.context/use-screen-id)]
+    {:title-props
+     {:beta?               true
+      :label               (i18n/label :t/messages)
+      :handler             #(on-new-message-press screen-id)
+      :accessibility-label :new-chat-button}
+     :card-props
+     {:on-press    #(rf/dispatch [:open-share {:options {:url profile-link}}])
+      :banner      (resources/get-image :invite-friends)
+      :title       (i18n/label :t/invite-friends-to-status)
+      :description (i18n/label :t/share-invite-link)}}))
 
 (defn view
   []
-  (let [theme                           (quo.theme/use-theme)
+  (let [theme                           (quo.context/use-theme)
         scroll-ref                      (rn/use-ref-atom nil)
         set-scroll-ref                  (rn/use-callback #(reset! scroll-ref %))
         {:keys [universal-profile-url]} (rf/sub [:profile/profile])

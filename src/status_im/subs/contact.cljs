@@ -2,7 +2,7 @@
   (:require
     [clojure.set :as set]
     [clojure.string :as string]
-    [quo.theme]
+    [quo.context]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
     [status-im.subs.chat.utils :as chat.utils]

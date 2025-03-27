@@ -2,9 +2,9 @@
   (:require
     [legacy.status-im.ui.screens.chat.group :as chat.group]
     [oops.core :as oops]
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.background-timer :as background-timer]
     [react-native.core :as rn]
     [react-native.hooks :as hooks]
@@ -118,7 +118,7 @@
   [{:keys [insets distance-from-list-top layout-height chat-list-scroll-y on-layout-done?]}]
   (let [content-height           (rn/use-ref-atom 0)
         distance-atom            (rn/use-ref-atom 0)
-        theme                    (quo.theme/use-theme)
+        theme                    (quo.context/use-theme)
         {:keys [keyboard-shown]} (hooks/use-keyboard)
         {:keys [chat-type chat-id]
          :as   chat}             (rf/sub [:chats/current-chat-chat-view])

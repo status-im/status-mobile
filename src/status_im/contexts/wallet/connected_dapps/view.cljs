@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.connected-dapps.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.plus-button.view :as plus-button]
@@ -45,7 +45,7 @@
 
 (defn- account-details
   [{:keys [name emoji color]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/account-details-wrapper}
      [quo/context-tag
       {:theme               theme
@@ -87,7 +87,7 @@
         customization-color                (rf/sub [:profile/customization-color])
         sessions                           (rf/sub
                                             [:wallet-connect/sessions-for-current-account-and-networks])
-        theme                              (quo.theme/use-theme)]
+        theme                              (quo.context/use-theme)]
     [rn/view {:flex 1}
      [header
       {:title          (i18n/label :t/connected-dapps)

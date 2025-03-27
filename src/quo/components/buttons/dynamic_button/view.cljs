@@ -3,8 +3,8 @@
     [quo.components.buttons.dynamic-button.style :as style]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn- get-button-color
@@ -45,7 +45,7 @@
     :count               mentions or notifications count
     :customization-color customize and mention button color}"
   [{:keys [type label on-press customization-color style] :as args}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         button-color           (get-button-color {:type                type
                                                   :pressed?            pressed?

@@ -2,9 +2,9 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
@@ -72,7 +72,7 @@
 
 (defn- transaction-details
   []
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         swap-proposal-fee      (rf/sub [:wallet/wallet-swap-proposal-fee-fiat
                                         constants/token-for-fees-symbol])
         approval-gas-fee       (rf/sub [:wallet/approval-gas-fees])
@@ -380,7 +380,7 @@
 
 (defn- swap-exchange-rate-view
   []
-  (let [theme                     (quo.theme/use-theme)
+  (let [theme                     (quo.context/use-theme)
         asset-to-pay              (rf/sub [:wallet/swap-asset-to-pay])
         asset-to-receive          (rf/sub [:wallet/swap-asset-to-receive])
         swap-exchange-rate-crypto (rf/sub [:wallet/swap-exchange-rate-crypto])

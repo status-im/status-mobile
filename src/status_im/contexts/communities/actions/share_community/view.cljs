@@ -1,5 +1,6 @@
 (ns status-im.contexts.communities.actions.share-community.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -18,7 +19,7 @@
 
 (defn view
   []
-  (let [params                     (rf/sub [:get-screen-params])
+  (let [params                     (quo.context/use-screen-params)
         ;; NOTE(seanstrom): We need to store these screen params for when the modal closes
         ;; because the screen params will be cleared.
         {:keys [url community-id]} @(rn/use-ref-atom params)

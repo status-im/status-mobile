@@ -3,12 +3,12 @@
     [quo.components.markdown.text :as text]
     [quo.components.selectors.selectors.view :as selectors]
     [quo.components.settings.page-setting.style :as style]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]))
 
 (defn page-setting
   [{:keys [setting-text customization-color checked? container-style on-change disabled?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style (merge (style/container theme)
                     container-style)}

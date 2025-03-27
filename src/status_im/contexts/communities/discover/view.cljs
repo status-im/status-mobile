@@ -1,9 +1,9 @@
 (ns status-im.contexts.communities.discover.view
   (:require
     [oops.core :as oops]
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -43,7 +43,7 @@
 
 (defn featured-communities-header
   [communities-count]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style style/featured-communities-header}
      [rn/view
@@ -202,7 +202,7 @@
         selected-tab  (reagent/atom :all)
         scroll-height (reagent/atom 0)]
     (fn []
-      (let [theme                      (quo.theme/use-theme)
+      (let [theme                      (quo.context/use-theme)
             featured-communities       (rf/sub [:communities/featured-contract-communities])
             featured-communities-count (count featured-communities)]
         [scroll-page/scroll-page
@@ -224,7 +224,7 @@
 
 (defn view
   []
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     (rn/use-mount #(rf/dispatch [:fetch-contract-communities]))
     [rn/view
      {:style (style/discover-screen-container (colors/theme-colors

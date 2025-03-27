@@ -79,12 +79,12 @@
  :<- [:dimensions/window]
  :-> :height)
 
+;; WARNING: Do not use :get-screen-params directly, use quo.context/use-screen-params instead
 (re-frame/reg-sub
  :get-screen-params
  :<- [:screen-params]
- :<- [:view-id]
- (fn [[params view-id-db] [_ view-id]]
-   (get params (or view-id view-id-db))))
+ (fn [params [_ screen-id]]
+   (get params screen-id)))
 
 (defn- node-version
   [web3-node-version]

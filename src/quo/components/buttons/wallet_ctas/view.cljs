@@ -3,7 +3,7 @@
     [quo.components.buttons.wallet-button.view :as wallet-button]
     [quo.components.buttons.wallet-ctas.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
@@ -25,7 +25,7 @@
 (defn view
   [{:keys [buy-action send-action receive-action bridge-action swap-action bridge-disabled?
            swap-disabled? container-style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style container-style}
      [rn/view {:style style/inner-container}
       [action-button

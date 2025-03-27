@@ -6,7 +6,7 @@
     [quo.components.list-items.token-network.style :as style]
     [quo.components.markdown.text :as text]
     [quo.components.utilities.token.view :as token]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
@@ -31,7 +31,7 @@
 
 (defn- values
   [{:keys [state token-value fiat-value customization-color]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     (if (= state :selected)
       [icon/icon :i/check
        {:color               (style/check-color customization-color theme)
@@ -52,7 +52,7 @@
   [{:keys [on-press state customization-color _token _networks _token-value _fiat-value]
     :as   props
     :or   {customization-color :blue}}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))

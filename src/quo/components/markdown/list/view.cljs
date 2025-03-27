@@ -5,8 +5,8 @@
     [quo.components.markdown.list.style :as style]
     [quo.components.markdown.text :as text]
     [quo.components.tags.context-tag.view :as context-tag]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]))
 
 (defn get-colors
@@ -43,7 +43,7 @@
   [{:keys [title description tag-picture tag-name description-after-tag step-number
            customization-color type blur? container-style icon icon-props]
     :or   {type :bullet}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style (style/container container-style)}
      [rn/view
       (case type

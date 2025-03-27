@@ -1,5 +1,6 @@
 (ns status-im.contexts.onboarding.share-usage.view
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -26,7 +27,7 @@
 (defn view
   []
   (let [insets           (safe-area/get-insets)
-        next-screen      (:next-screen (rf/sub [:get-screen-params :screen/onboarding.share-usage]))
+        next-screen      (:next-screen (quo.context/use-screen-params))
         share-usage-data (rn/use-callback #(share-usage-data-fn true next-screen))
         maybe-later      (rn/use-callback #(share-usage-data-fn false next-screen))]
     [rn/view {:style style/page}

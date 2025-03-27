@@ -8,8 +8,8 @@
             [quo.components.markdown.text :as text]
             [quo.components.tags.collectible-tag.view :as collectible-tag]
             [quo.components.tags.token-tag.view :as token-tag]
+            [quo.context :as quo.context]
             [quo.foundations.colors :as colors]
-            [quo.theme :as theme]
             [react-native.core :as rn]
             [schema.core :as schema]
             [utils.i18n :as i18n]))
@@ -51,7 +51,7 @@
 
 (defn- view-internal
   [{:keys [tokens community-color role satisfied? on-press on-press-info]}]
-  (let [theme            (theme/use-theme)
+  (let [theme            (quo.context/use-theme)
         last-token-index (dec (count tokens))]
     [rn/view {:style (style/container theme)}
      [rn/view {:style style/eligibility-row}

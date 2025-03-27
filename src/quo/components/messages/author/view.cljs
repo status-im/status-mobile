@@ -4,7 +4,7 @@
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.components.messages.author.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (def middle-dot "·")
@@ -13,7 +13,7 @@
   [{:keys [primary-name secondary-name style short-chat-key time-str contact? verified? untrustworthy?
            muted? size]
     :or   {size 13}}]
-  (let [theme (quo.theme/use-theme)
+  (let [theme (quo.context/use-theme)
 
         short-chat-key-component
         (when (and (not verified?) short-chat-key)

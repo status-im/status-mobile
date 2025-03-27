@@ -6,14 +6,14 @@
     [quo.components.list-items.account-list-card.style :as style]
     [quo.components.markdown.text :as text]
     [quo.components.wallet.address-text.view :as address-text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
 (defn- internal-view
   [{:keys [action blur? account-props on-press on-options-press]}]
-  (let [theme             (quo.theme/use-theme)
+  (let [theme             (quo.context/use-theme)
         [state set-state] (rn/use-state :default)
         on-press-in       (rn/use-callback #(set-state :pressed))
         on-press-out      (rn/use-callback #(set-state :default))]

@@ -5,7 +5,7 @@
     [quo.components.common.notification-dot.view :as notification-dot]
     [quo.components.counter.counter.view :as counter]
     [quo.components.navigation.top-nav.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]))
 
@@ -95,7 +95,7 @@
            qr-code-on-press
            right-section-content]
     :as   props}]
-  (let [theme               (quo.theme/use-theme)
+  (let [theme               (quo.context/use-theme)
         button-common-props (get-button-common-props {:theme theme
                                                       :blur? blur?})]
     [rn/view {:style style/right-section}

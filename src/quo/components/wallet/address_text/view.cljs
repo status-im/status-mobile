@@ -3,8 +3,8 @@
             [quo.components.markdown.text :as text]
             [quo.components.wallet.address-text.schema :as component-schema]
             [quo.components.wallet.address-text.style :as style]
+            [quo.context]
             [quo.foundations.colors :as colors]
-            [quo.theme]
             [schema.core :as schema]
             [utils.address :as utils]))
 
@@ -19,7 +19,7 @@
 (defn- view-internal
   [{:keys [networks address blur? format full-address? size weight]
     :or   {size :paragraph-2}}]
-  (let [theme                                (quo.theme/use-theme)
+  (let [theme                                (quo.context/use-theme)
         network-colored-text                 (map #(colored-network-text {:theme   theme
                                                                           :network %
                                                                           :weight  weight

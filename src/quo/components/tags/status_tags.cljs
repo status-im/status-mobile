@@ -2,8 +2,8 @@
   (:require
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (def default-container-style
@@ -115,7 +115,7 @@
 (defn status-tag
   [{:keys [status size label blur? no-icon? container-style]}]
   (when status
-    (let [theme (quo.theme/use-theme)]
+    (let [theme (quo.context/use-theme)]
       (when-let [status-component (case (:type status)
                                     :positive positive
                                     :negative negative

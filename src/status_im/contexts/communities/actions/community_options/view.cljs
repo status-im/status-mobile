@@ -22,7 +22,7 @@
   {:icon                :i/members
    :accessibility-label :view-members
    :label               (i18n/label :t/view-members)
-   :on-press            #(hide-sheet-and-dispatch [:navigate-to :legacy-community-members
+   :on-press            #(hide-sheet-and-dispatch [:navigate-to :screen/legacy-community-members
                                                    {:community-id id}])})
 
 (defn view-rules

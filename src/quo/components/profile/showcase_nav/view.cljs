@@ -2,7 +2,7 @@
   (:require
     [quo.components.buttons.button.view :as button]
     [quo.components.profile.showcase-nav.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn- render-button
@@ -24,7 +24,7 @@
 
 (defn view
   [{:keys [container-style default-active state data on-press active-id]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style               container-style
       :accessibility-label :showcase-nav}

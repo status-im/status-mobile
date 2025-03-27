@@ -395,7 +395,7 @@
   (rf/merge (assoc-in cofx [:db :browser/options :yielding-control?] false)
             (browser.permissions/send-response-to-bridge permission message-id true data)
             (browser.permissions/process-next-permission dapp-name)
-            (navigation/navigate-back)))
+            (navigation/navigate-back nil)))
 
 (rf/defn handle-canceled-qr-code
   {:events [:browser.bridge.callback/qr-code-canceled]}

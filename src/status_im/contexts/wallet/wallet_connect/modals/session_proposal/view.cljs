@@ -1,9 +1,9 @@
 (ns status-im.contexts.wallet.wallet-connect.modals.session-proposal.view
   (:require
     [clojure.string :as string]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.wallet.wallet-connect.modals.session-proposal.style :as style]
@@ -38,7 +38,7 @@
   (let [dapp-name (rf/sub [:wallet-connect/session-proposer-name])
         labels    [(i18n/label :t/check-your-account-balance-and-activity)
                    (i18n/label :t/request-txns-and-message-signing)]
-        theme     (quo.theme/use-theme)]
+        theme     (quo.context/use-theme)]
     [rn/view {:style (style/approval-note-container theme)}
      [quo/text
       {:style  style/approval-note-title

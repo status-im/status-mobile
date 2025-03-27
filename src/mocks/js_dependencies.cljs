@@ -429,6 +429,18 @@
                                                         (slurp
                                                          "./resources/data/emojis/en.json"))
     "../src/js/worklets/core.js"                       worklet-factory
+    "../src/js/worklets/communities.js"                #js {"useLogoStyles"            #js {}
+                                                            "useSheetStyles"           #js {}
+                                                            "useNameStyles"            #js {}
+                                                            "useInfoStyles"            #js {}
+                                                            "useChannelsStyles"        #js {}
+                                                            "useScrollTo"              #js {}
+                                                            "useHeaderOpacity"         #js {}
+                                                            "useOppositeHeaderOpacity" #js {}
+                                                            "useNavContentOpacity"     #js {}
+                                                            "onPanStart"               #js {}
+                                                            "onPanUpdate"              #js {}
+                                                            "onPanEnd"                 #js {}}
     "../src/js/worklets/shell/bottom_tabs.js"          #js {}
     "../src/js/worklets/shell/home_stack.js"           #js {}
     "../src/js/worklets/bottom_sheet.js"               #js {}

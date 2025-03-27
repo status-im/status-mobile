@@ -4,12 +4,12 @@
     [quo.components.markdown.text :as text]
     [quo.components.settings.reorder-item.style :as style]
     [quo.components.tabs.segmented-tab :as quo]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]))
 
 (defn render-tab-item
   [item]
-  (let [theme     (quo.theme/use-theme)
+  (let [theme     (quo.context/use-theme)
         tab-image (cond
                     (item :image) [rn/image
                                    {:source (:image item)
@@ -32,7 +32,7 @@
   [{:keys [data default-active on-change]
     :or   {default-active 1
            on-change      (constantly nil)}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [quo/segmented-control
      {:default-active              default-active
       :size                        32

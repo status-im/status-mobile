@@ -5,8 +5,8 @@
     [quo.components.markdown.text :as text]
     [quo.components.wallet.account-origin.schema :as component-schema]
     [quo.components.wallet.account-origin.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
@@ -97,7 +97,7 @@
 
 (defn view-internal
   [{:keys [type derivation-path on-press] :as props}]
-  (let [theme           (quo.theme/use-theme)
+  (let [theme           (quo.context/use-theme)
         secondary-color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
     [rn/view {:style (style/container theme)}
      [text/text

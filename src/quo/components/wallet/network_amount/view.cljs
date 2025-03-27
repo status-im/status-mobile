@@ -5,13 +5,13 @@
     [quo.components.utilities.token.view :as token]
     [quo.components.wallet.network-amount.schema :as network-amount-schema]
     [quo.components.wallet.network-amount.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
 (defn- view-internal
   [{:keys [amount token]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/container}
      [token/view {:token token :size :size-12}]
      [text/text

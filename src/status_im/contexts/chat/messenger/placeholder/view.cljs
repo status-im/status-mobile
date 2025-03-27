@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.messenger.placeholder.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.contexts.chat.messenger.placeholder.style :as style]
     [utils.re-frame :as rf]))
@@ -15,11 +15,12 @@
 
 (defn view
   [on-layout-done?]
-  (let [theme       (quo.theme/use-theme)
+  (let [theme       (quo.context/use-theme)
+        screen-id   (quo.context/use-screen-id)
         chat-exist? (rf/sub [:chats/current-chat-exist?])]
     [rn/view {:style (style/container theme @on-layout-done?)}
      (when-not chat-exist?
        [quo/page-nav
         {:icon-name :i/arrow-left
-         :on-press  #(rf/dispatch [:navigate-back])}])
+         :on-press  #(rf/dispatch [:navigate-back screen-id])}])
      [loading-skeleton]]))

@@ -1,7 +1,7 @@
 (ns status-im.contexts.profile.settings.view
   (:require [oops.core :as oops]
+            [quo.context]
             [quo.core :as quo]
-            [quo.theme]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
@@ -51,7 +51,7 @@
 
 (defn view
   []
-  (let [theme                      (quo.theme/use-theme)
+  (let [theme                      (quo.context/use-theme)
         insets                     (safe-area/get-insets)
         customization-color        (rf/sub [:profile/customization-color])
         scroll-y                   (reanimated/use-shared-value 0)

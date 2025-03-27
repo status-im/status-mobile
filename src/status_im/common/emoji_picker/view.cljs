@@ -2,9 +2,9 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
@@ -14,8 +14,7 @@
     [status-im.common.emoji-picker.style :as style]
     [status-im.common.emoji-picker.utils :as emoji-picker.utils]
     [utils.debounce :as debounce]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.i18n :as i18n]))
 
 (defn- on-press-category
   [{:keys [id index active-category scroll-ref]}]
@@ -95,7 +94,7 @@
 (defn- render-list
   [{:keys [filtered-data on-viewable-items-changed scroll-enabled? on-scroll
            on-select set-scroll-ref close sheet-animating?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [gesture/flat-list
      {:ref                             set-scroll-ref
       :scroll-enabled                  @scroll-enabled?
@@ -121,7 +120,7 @@
 
 (defn- footer
   [{:keys [active-category scroll-ref]}]
-  (let [theme    (quo.theme/use-theme)
+  (let [theme    (quo.context/use-theme)
         on-press (fn [id index]
                    (on-press-category
                     {:id              id
@@ -171,7 +170,7 @@
 
 (defn view
   [_]
-  (let [{:keys [on-select]}       (rf/sub [:get-screen-params])
+  (let [{:keys [on-select]}       (quo.context/use-screen-params)
         scroll-ref                (atom nil)
         set-scroll-ref            #(reset! scroll-ref %)
         search-text               (reagent/atom "")

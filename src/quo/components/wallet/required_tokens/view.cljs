@@ -3,14 +3,14 @@
             [quo.components.utilities.token.view :as token]
             [quo.components.wallet.required-tokens.schema :as required-tokens-schema]
             [quo.components.wallet.required-tokens.style :as style]
-            quo.theme
+            quo.context
             [react-native.core :as rn]
             [schema.core :as schema]))
 
 (defn- view-internal
   [{:keys [type amount token token-img-src collectible-img-src collectible-name divider?
            container-style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style               (merge style/container container-style)
       :accessibility-label :wallet-required-tokens}

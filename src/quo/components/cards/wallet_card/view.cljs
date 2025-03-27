@@ -3,14 +3,14 @@
             [quo.components.cards.wallet-card.style :as style]
             [quo.components.icon :as icon]
             [quo.components.markdown.text :as text]
-            [quo.theme :as quo.theme]
+            [quo.context :as quo.context]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
             [schema.core :as schema]))
 
 (defn- view-internal
   [{:keys [image title subtitle dismissible? on-press on-press-close container-style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style (style/root-container theme container-style)}
      [rn/pressable
       {:on-press            on-press

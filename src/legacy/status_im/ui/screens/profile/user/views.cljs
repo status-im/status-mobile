@@ -2,8 +2,8 @@
   (:require
     [legacy.status-im.ui.components.core :as components]
     [legacy.status-im.ui.components.list.item :as list.item]
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [utils.i18n :as i18n]

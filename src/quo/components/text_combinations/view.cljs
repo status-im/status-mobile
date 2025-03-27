@@ -3,7 +3,7 @@
     [quo.components.buttons.button.view :as button]
     [quo.components.markdown.text :as text]
     [quo.components.text-combinations.style :as style]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]))
 
 (defn icon
@@ -24,7 +24,7 @@
   [{:keys [container-style title title-number-of-lines avatar title-accessibility-label description emoji
            description-accessibility-label button-icon button-on-press customization-color emoji-hash]
     :or   {title-number-of-lines 1}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style container-style}
      [rn/view
       {:style {:flex-direction  :row

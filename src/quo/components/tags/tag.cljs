@@ -3,8 +3,8 @@
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.components.tags.base-tag :as base-tag]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]))
 
 (def themes
@@ -91,7 +91,7 @@
   [{:keys [id on-press disabled? size active accessibility-label label resource type
            labelled? blurred? icon-color]
     :or   {size 32}}]
-  (let [theme                (quo.theme/use-theme)
+  (let [theme                (quo.context/use-theme)
         state                (cond
                                disabled? :disabled
                                active    :active

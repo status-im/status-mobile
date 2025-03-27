@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.common.collectibles-tab.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
     [status-im.contexts.wallet.collectible.utils :as utils]
@@ -52,7 +52,7 @@
 (defn view
   [{:keys [collectibles filtered? on-end-reached on-collectible-press
            current-account-address on-collectible-long-press loading?]}]
-  (let [theme                   (quo.theme/use-theme)
+  (let [theme                   (quo.context/use-theme)
         no-results-match-query? (and filtered? (empty? collectibles))]
     (cond
       loading?

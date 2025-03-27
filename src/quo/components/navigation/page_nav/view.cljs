@@ -10,7 +10,7 @@
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.components.navigation.page-nav.style :as style]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [utils.worklets.profile-header :as header-worklet]))
@@ -87,9 +87,10 @@
 
 (defn- right-content
   [{:keys [background content max-actions min-size? support-account-switcher?
-           behind-overlay?]
-    :or   {support-account-switcher? true}}]
-  [rn/view (style/right-content min-size?)
+           behind-overlay? centered-content?]
+    :or   {support-account-switcher? true
+           centered-content?         true}}]
+  [rn/view (style/right-content min-size? centered-content?)
    (when (coll? content)
      (into [rn/view {:style style/right-actions-container}]
            (add-right-buttons-xf max-actions background behind-overlay? support-account-switcher?)
@@ -116,7 +117,7 @@
 (defn- dropdown-center
   [{:keys [background dropdown-on-press dropdown-selected? dropdown-text
            center-content-container-style]}]
-  (let [theme          (quo.theme/use-theme)
+  (let [theme          (quo.context/use-theme)
         dropdown-type  (cond
                          (= background :photo)                      :grey
                          (and (= theme :dark) (= background :blur)) :grey
@@ -133,7 +134,7 @@
 
 (defn- token-center
   [{:keys [background token-logo token-name token-abbreviation center-content-container-style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [reanimated/view {:style center-content-container-style}
      [rn/image {:style style/token-logo :source token-logo}]
      [text/text
@@ -151,7 +152,7 @@
 
 (defn- channel-center
   [{:keys [background channel-emoji channel-name channel-icon center-content-container-style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [reanimated/view {:style center-content-container-style}
      [rn/text {:style style/channel-emoji}
       channel-emoji]
@@ -165,7 +166,7 @@
 
 (defn- title-description-center
   [{:keys [background picture title description center-content-container-style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [reanimated/view {:style center-content-container-style}
      (when picture
        [rn/view {:style style/group-avatar-picture}
@@ -260,15 +261,15 @@
            right-side :none
            background :white}
     :as   props}]
-  (let [center-content-container-style (reanimated/apply-animations-to-style
+  (let [centered-content?              (case type
+                                         :title                       (= text-align :center)
+                                         (:dropdown :wallet-networks) true
+                                         false)
+        center-content-container-style (reanimated/apply-animations-to-style
                                         (if center-opacity
                                           {:opacity center-opacity}
                                           nil)
-                                        (style/center-content-container
-                                         (case type
-                                           :title                       (= text-align :center)
-                                           (:dropdown :wallet-networks) true
-                                           false)))
+                                        (style/center-content-container centered-content?))
         props-with-style               (assoc props
                                               :center-content-container-style
                                               center-content-container-style)]
@@ -342,6 +343,7 @@
         {:background                background
          :content                   right-side
          :max-actions               3
-         :support-account-switcher? false}]]
+         :support-account-switcher? false
+         :centered-content?         centered-content?}]]
 
       nil)))

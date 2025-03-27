@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.send.send-amount.view
   (:require
-    [quo.theme]
+    [quo.context]
     [status-im.contexts.wallet.send.input-amount.view :as input-amount]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

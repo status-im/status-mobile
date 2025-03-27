@@ -3,9 +3,9 @@
     [camel-snake-kebab.core :as camel-snake-kebab]
     cljs.pprint
     [clojure.string :as string]
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -45,7 +45,7 @@
 
 (defn- customizer-boolean
   [{:keys [label state set-state] :as args}]
-  (let [theme           (quo.theme/use-theme)
+  (let [theme           (quo.context/use-theme)
         label           (or label (key->boolean-label (:key args)))
         field-cursor    (when-not (fn? set-state)
                           (reagent/cursor state [(:key args)]))
@@ -132,7 +132,7 @@
 
 (defn- customizer-select-modal
   [{:keys [open options field-value set-field-value]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/modal
      {:visible                @open
       :on-request-close       #(reset! open false)
@@ -186,7 +186,7 @@
   []
   (let [open (reagent/atom nil)]
     (fn [{:keys [label state set-state options] :as args}]
-      (let [theme           (quo.theme/use-theme)
+      (let [theme           (quo.context/use-theme)
             label           (or label (key->text-label (:key args)))
             field-cursor    (when-not (fn? set-state)
                               (reagent/cursor state [(:key args)]))
@@ -210,7 +210,7 @@
 
 (defn- customizer-multi-select-modal
   [{:keys [open-atom options field-value set-field-value]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/modal
      {:visible                @open-atom
       :on-request-close       #(reset! open-atom false)
@@ -278,7 +278,7 @@
   []
   (let [open (reagent/atom nil)]
     (fn [{:keys [label state set-state options] :as args}]
-      (let [theme            (quo.theme/use-theme)
+      (let [theme            (quo.context/use-theme)
             label            (or label (key->text-label (:key args)))
             field-cursor     (when-not (fn? set-state)
                                (reagent/cursor state [(:key args)]))
@@ -371,7 +371,7 @@
            blur-container-style blur-view-props blur-height show-blur-background? full-screen?]
     :or   {blur-height 200}}
    & children]
-  (let [theme (quo.theme/use-theme)
+  (let [theme (quo.context/use-theme)
         title (or title (rf/sub [:view-id]))]
     (rn/use-effect (fn []
                      (when blur-dark-only?

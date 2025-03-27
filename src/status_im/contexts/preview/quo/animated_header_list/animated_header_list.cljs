@@ -1,8 +1,8 @@
 (ns status-im.contexts.preview.quo.animated-header-list.animated-header-list
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [re-frame.core :as rf]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
@@ -82,5 +82,5 @@
 
 (defn mock-screen
   []
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [quo/animated-header-list (parameters theme)]))

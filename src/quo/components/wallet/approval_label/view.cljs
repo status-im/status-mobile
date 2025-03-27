@@ -5,8 +5,8 @@
             [quo.components.markdown.text :as text]
             [quo.components.wallet.approval-label.schema :as approval-label.schema]
             [quo.components.wallet.approval-label.style :as style]
+            quo.context
             [quo.foundations.colors :as colors]
-            quo.theme
             [react-native.core :as rn]
             [react-native.hole-view :as hole-view]
             [schema.core :as schema]
@@ -26,7 +26,7 @@
   [{:keys [status token-value token-symbol
            container-style button-props show-view-button?]
     :as   props}]
-  (let [theme                                 (quo.theme/use-theme)
+  (let [theme                                 (quo.context/use-theme)
         customization-color                   (or (:customization-color props) :blue)
         [container-width set-container-width] (rn/use-state 0)
         on-layout                             (rn/use-callback

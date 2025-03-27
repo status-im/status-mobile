@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.wallet-connect.modals.send-transaction.view
-  (:require [quo.core :as quo]
-            [quo.theme]
+  (:require [quo.context]
+            [quo.core :as quo]
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [react-native.safe-area :as safe-area]

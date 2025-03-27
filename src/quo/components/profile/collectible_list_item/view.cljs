@@ -7,9 +7,9 @@
     [quo.components.list-items.preview-list.view :as preview-list]
     [quo.components.markdown.text :as text]
     [quo.components.profile.collectible-list-item.style :as style]
+    [quo.context]
     [quo.foundations.colors :as colors]
     [quo.foundations.gradients :as gradients]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [schema.core :as schema]
@@ -138,7 +138,7 @@
 (defn- card-view
   [{:keys [avatar-image-src collectible-name community? counter state set-state
            gradient-color-index image-src supported-file? loading?]}]
-  (let [theme                     (quo.theme/use-theme)
+  (let [theme                     (quo.context/use-theme)
         loader-opacity            (reanimated/use-shared-value (if supported-file? 1 0))
         image-opacity             (reanimated/use-shared-value (if supported-file? 0 1))
         [load-time set-load-time] (rn/use-state (datetime/now))
@@ -196,7 +196,7 @@
 (defn- image-view
   [{:keys [avatar-image-src community? counter state set-state
            gradient-color-index image-src supported-file?]}]
-  (let [theme                     (quo.theme/use-theme)
+  (let [theme                     (quo.context/use-theme)
         loader-opacity            (reanimated/use-shared-value (if supported-file? 1 0))
         image-opacity             (reanimated/use-shared-value (if supported-file? 0 1))
         [load-time set-load-time] (rn/use-state (datetime/now))]

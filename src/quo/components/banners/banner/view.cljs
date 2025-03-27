@@ -4,13 +4,13 @@
     [quo.components.counter.counter.view :as counter]
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [hide-pin? latest-pin-text pins-count on-press]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     (when (pos? pins-count)
       [rn/touchable-opacity
        {:accessibility-label :pinned-banner

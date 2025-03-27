@@ -5,7 +5,7 @@
     [quo.components.icon :as quo.icons]
     [quo.components.list-items.channel.style :as style]
     [quo.components.markdown.text :as quo.text]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]))
 
 (defn view
@@ -27,7 +27,7 @@
    - on-long-press - (function, default: nil) - Function called when the component is long pressed.
    - theme - Theme value from with-theme HOC"
   [{:keys [notification locked? mentions-count customization-color emoji name on-press on-long-press]}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))]

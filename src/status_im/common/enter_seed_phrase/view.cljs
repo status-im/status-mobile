@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [legacy.status-im.ethereum.mnemonic :as mnemonic]
     [oops.core :as oops]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -238,7 +239,7 @@
 
 (defn view
   []
-  (let [{:keys [on-success onboarding-flow?]} (rf/sub [:get-screen-params])]
+  (let [{:keys [on-success onboarding-flow?]} (quo.context/use-screen-params)]
     (rn/use-unmount
      (fn []
        (rf/dispatch [:enter-seed-phrase/clear-error])

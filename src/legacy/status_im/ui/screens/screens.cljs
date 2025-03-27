@@ -46,9 +46,9 @@
     :component progress/progress}
 
    ;;COMMUNITY
-   {:name      :legacy-community-members
+   {:name      :screen/legacy-community-members
     :options   {:insets {:top? true}}
-    :component members/legacy-members-container}
+    :component members/view}
 
 
    ;;SETTINGS

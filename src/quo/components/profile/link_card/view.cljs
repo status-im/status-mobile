@@ -3,13 +3,13 @@
             [quo.components.profile.link-card.properties :as properties]
             [quo.components.profile.link-card.style :as style]
             [quo.components.utilities.social.view :as social]
-            [quo.theme]
+            [quo.context]
             [react-native.core :as rn]
             [react-native.linear-gradient :as linear-gradient]))
 
 (defn view
   [{:keys [address on-press icon title customization-color container-style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/pressable
      {:accessibility-label :link-card
       :on-press            on-press}

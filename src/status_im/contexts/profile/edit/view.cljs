@@ -1,6 +1,6 @@
 (ns status-im.contexts.profile.edit.view
-  (:require [quo.core :as quo]
-            [quo.theme :as quo.theme]
+  (:require [quo.context :as quo.context]
+            [quo.core :as quo]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im.common.not-implemented :as not-implemented]
@@ -25,7 +25,7 @@
 
 (defn view
   []
-  (let [theme  (quo.theme/use-theme)
+  (let [theme  (quo.context/use-theme)
         insets (safe-area/get-insets)]
     [quo/overlay
      {:type            :shell

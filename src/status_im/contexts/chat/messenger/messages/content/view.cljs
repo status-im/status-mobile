@@ -2,9 +2,9 @@
   (:require
     [clojure.string :as string]
     [legacy.status-im.ui.screens.chat.message.legacy-view :as old-message]
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
     [react-native.gesture :as gesture]
@@ -213,7 +213,7 @@
   (let [show-delivery-state? (reagent/atom false)]
     (fn [{:keys [message-data context keyboard-shown? hide-reactions?
                  in-reaction-or-action-menu? show-user-info?]}]
-      (let [theme                  (quo.theme/use-theme)
+      (let [theme                  (quo.context/use-theme)
             {:keys [content-type quoted-message content outgoing outgoing-status pinned-by
                     pinned bridge-message last-in-group? message-id
                     chat-id]}      message-data

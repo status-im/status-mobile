@@ -3,9 +3,9 @@
     [clojure.string :as string]
     [quo.components.keycard.style :as style]
     [quo.components.tags.tag :as tag]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
@@ -30,7 +30,7 @@
   - :theme :light/:dark
   "
   [{:keys [holder-name locked? blur?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style (style/card-container locked? theme blur?)}
      [rn/image
       {:source (resources/get-image :keycard-logo)

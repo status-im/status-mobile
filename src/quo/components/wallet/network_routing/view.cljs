@@ -4,7 +4,7 @@
     [quo.components.wallet.network-routing.animation :as animation]
     [quo.components.wallet.network-routing.schema :as network-routing-schema]
     [quo.components.wallet.network-routing.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
@@ -197,7 +197,7 @@
 
 (defn view-internal
   [{:keys [networks container-style] :as params}]
-  (let [theme             (quo.theme/use-theme)
+  (let [theme             (quo.context/use-theme)
         [total-width
          set-total-width] (rn/use-state nil)
         on-layout         (rn/use-callback #(let [width (oops/oget % "nativeEvent.layout.width")]

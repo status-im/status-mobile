@@ -4,7 +4,7 @@
     [clojure.string :as string]
     [legacy.status-im.fleet.core :as fleet]
     [legacy.status-im.multiaccounts.db :as multiaccounts.db]
-    [quo.theme]
+    [quo.context]
     [re-frame.core :as re-frame]
     [status-im.common.pixel-ratio :as pixel-ratio]
     [status-im.constants :as constants]

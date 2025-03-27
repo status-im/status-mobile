@@ -3,8 +3,8 @@
     [oops.core :as oops]
     [quo.components.animated-header-flatlist.style :as style]
     [quo.components.icon :as icon]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
     [react-native.platform :as platform]
@@ -54,7 +54,7 @@
 
 (defn- f-animated-header-list
   [{:keys [header-comp main-comp back-button-on-press] :as params}]
-  (let [theme                   (quo.theme/use-theme)
+  (let [theme                   (quo.context/use-theme)
         window-height           (:height (rn/get-window))
         {:keys [top bottom]}    (safe-area/get-insets)
         ;; view height calculation is different because window height is different on iOS and

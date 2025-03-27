@@ -3,14 +3,14 @@
     [quo.components.icon :as icons]
     [quo.components.record-audio.record-audio.helpers :as helpers]
     [quo.components.record-audio.record-audio.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]))
 
 (defn lock-button
   [recording? ready-to-lock? locked?]
-  (let [theme                     (quo.theme/use-theme)
+  (let [theme                     (quo.context/use-theme)
         translate-x-y             (reanimated/use-shared-value 20)
         opacity                   (reanimated/use-shared-value 0)
         connector-opacity         (reanimated/use-shared-value 0)

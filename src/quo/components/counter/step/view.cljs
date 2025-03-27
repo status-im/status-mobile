@@ -2,7 +2,7 @@
   (:require
     [quo.components.counter.step.style :as style]
     [quo.components.markdown.text :as text]
-    quo.theme
+    quo.context
     [react-native.core :as rn]
     [schema.core :as schema]
     [utils.number]))
@@ -21,7 +21,7 @@
 
 (defn- view-internal
   [{:keys [type accessibility-label in-blur-view? customization-color]} value]
-  (let [theme (quo.theme/use-theme)
+  (let [theme (quo.context/use-theme)
         type  (or type :neutral)
         value (utils.number/parse-int value)
         label (str value)

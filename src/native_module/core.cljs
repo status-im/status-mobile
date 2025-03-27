@@ -313,6 +313,12 @@
   (log/debug "[native-module] send-logs")
   (.sendLogs ^js (log-manager) dbJson js-logs callback))
 
+;; workaround for android since react-native-share is not working for zip files
+(defn share-logs
+  [fileUri callback]
+  (log/debug "[native-module] share-logs")
+  (.shareLogs ^js (log-manager) fileUri callback))
+
 (defn close-application
   []
   (log/debug "[native-module] close-application")

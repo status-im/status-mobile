@@ -4,7 +4,7 @@
     [quo.components.avatars.user-avatar.style :as style]
     [quo.components.common.no-flicker-image :as no-flicker-image]
     [quo.components.markdown.text :as text]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
     [schema.core :as schema]
@@ -14,7 +14,7 @@
 (defn initials-avatar
   [{:keys [full-name size customization-color]
     :or   {customization-color :blue}}]
-  (let [theme           (quo.theme/use-theme)
+  (let [theme           (quo.context/use-theme)
         font-size       (get-in style/sizes [size :font-size])
         amount-initials (if (#{:xs :xxs :xxxs} size) 1 2)]
     [rn/view
@@ -39,7 +39,7 @@
            online?           true
            ring?             true}
     :as   props}]
-  (let [theme           (quo.theme/use-theme)
+  (let [theme           (quo.context/use-theme)
         picture-config  (:config profile-picture)
         full-name       (or full-name "Your Name")
         ;; image generated with `profile-picture-fn` is round cropped

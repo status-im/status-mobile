@@ -2,7 +2,7 @@
   (:require
     [quo.components.slideshow.slider-bar.schema :as component-schema]
     [quo.components.slideshow.slider-bar.style :as style]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [schema.core :as schema]))
@@ -112,7 +112,7 @@
     :as   props}]
   (let [active-index      (or (:active-index props) 0)
         total-amount      (or (:total-amount props) 1)
-        theme             (quo.theme/use-theme)
+        theme             (quo.context/use-theme)
         flat-list-ref     (rn/use-ref-atom nil)
         set-flat-list-ref (rn/use-callback #(reset! flat-list-ref %))
         center-position   0.5

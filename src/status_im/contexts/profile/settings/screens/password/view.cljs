@@ -1,6 +1,6 @@
 (ns status-im.contexts.profile.settings.screens.password.view
-  (:require [quo.core :as quo]
-            [quo.theme :as quo.theme]
+  (:require [quo.context :as quo.context]
+            [quo.core :as quo]
             [status-im.common.biometric.utils :as biometric]
             [status-im.constants :as constants]
             [utils.i18n :as i18n]
@@ -65,7 +65,7 @@
 
 (defn view
   []
-  (let [theme            (quo.theme/use-theme)
+  (let [theme            (quo.context/use-theme)
         keycard-profile? (rf/sub [:keycard/keycard-profile?])]
     [quo/overlay {:type :shell :top-inset? true}
      [quo/page-nav

@@ -3,8 +3,8 @@
     [quo.components.avatars.group-avatar.style :as style]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]))
 
@@ -26,7 +26,7 @@
            customization-color :blue
            picture             nil
            icon-name           :i/members}}]
-  (let [theme          (quo.theme/use-theme)
+  (let [theme          (quo.context/use-theme)
         container-size (get-in sizes [size :container])
         icon-size      (get-in sizes [size :icon])]
     [rn/view

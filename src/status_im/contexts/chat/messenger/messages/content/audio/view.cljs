@@ -2,9 +2,9 @@
   (:require
     ["react-native-blob-util" :default ReactNativeBlobUtil]
     [goog.string :as gstring]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.audio-toolkit :as audio]
     [react-native.core :as rn]
     [react-native.platform :as platform]
@@ -149,7 +149,7 @@
 (defn f-audio-message
   [player-state progress seeking-audio? {:keys [audio-duration-ms message-id]}
    {:keys [in-pinned-view?]}]
-  (let [theme            (quo.theme/use-theme)
+  (let [theme            (quo.context/use-theme)
         player-key       (get-player-key message-id in-pinned-view?)
         player           (@active-players player-key)
         duration         (min constants/audio-max-duration-ms audio-duration-ms)

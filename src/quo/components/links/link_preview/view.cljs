@@ -5,7 +5,7 @@
     [quo.components.buttons.button.view :as button]
     [quo.components.links.link-preview.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.svg :as svg]
@@ -87,7 +87,7 @@
            enabled? on-enable disabled-text
            container-style thumbnail-size]
     :or   {enabled? true}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style               (merge (style/container enabled? theme) container-style)
       :accessibility-label :link-preview}

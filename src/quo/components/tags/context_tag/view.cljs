@@ -11,8 +11,8 @@
     [quo.components.tags.context-tag.schema :as component-schema]
     [quo.components.tags.context-tag.style :as style]
     [quo.components.utilities.token.view :as token]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
     [schema.core :as schema]))
@@ -21,7 +21,7 @@
   [{:keys [size text theme shrinkable? gray-text?]
     :or   {size       24
            gray-text? false
-           theme      (quo.theme/use-theme)}}
+           theme      (quo.context/use-theme)}}
    logo-component]
   [rn/view {:style (style/tag-container size)}
    logo-component
@@ -36,7 +36,7 @@
 
 (defn- communities-tag
   [{:keys [size community-logo community-name blur? channel? channel-name]}]
-  (let [theme     (quo.theme/use-theme)
+  (let [theme     (quo.context/use-theme)
         text-size (if (= size 24) :paragraph-2 :paragraph-1)
         icon-size (if (= size 24) 16 20)]
     [rn/view {:style (style/tag-container size)}
@@ -64,7 +64,7 @@
 
 (defn- address-tag
   [{:keys [size address]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style (style/address size)}
      [text/text
       {:style  (style/text theme)
@@ -74,7 +74,7 @@
 
 (defn- icon-tag
   [{:keys [size icon blur? context]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style (style/icon size)}
      [icons/icon icon
       {:color (style/context-tag-icon-color theme blur?)
@@ -94,7 +94,7 @@
     :or   {customization-color :blue
            type                :default
            state               :default
-           theme               (quo.theme/use-theme)}
+           theme               (quo.context/use-theme)}
     :as   props}]
   (let [[image-error? set-image-error] (rn/use-state false)]
     [rn/view {:style [{:align-items :flex-start} container-style]}

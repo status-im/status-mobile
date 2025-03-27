@@ -140,7 +140,6 @@
               (get-in community [:chats relative-chat-id :can-post?]))
          (assoc :able-to-send-message? true)
 
-
          (and (chat.events/group-chat? current-chat)
               (member? my-public-key current-chat))
          (assoc :able-to-send-message? true

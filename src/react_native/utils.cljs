@@ -1,4 +1,6 @@
-(ns react-native.utils)
+(ns react-native.utils
+  (:require [goog.object :as gobj]
+            [utils.transforms :as transforms]))
 
 (defonce ^:private throttle (atom {}))
 
@@ -37,3 +39,15 @@
         props       (when (map? first-child) first-child)
         children    (if props (rest argv) argv)]
     [props children]))
+
+(defn kebab-case-map->camelCase-obj
+  "Takes a Clojure map with kebab-case keys and returns a JS object with camelCase keys.
+   Not recursive"
+  [m]
+  (if (map? m)
+    (reduce-kv (fn [o k v]
+                 (doto o
+                   (gobj/set (transforms/->camelCaseString k) v)))
+               #js {}
+               m)
+    m))

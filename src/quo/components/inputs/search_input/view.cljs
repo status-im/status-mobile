@@ -3,8 +3,8 @@
     [oops.core :as oops]
     [quo.components.icon :as icon]
     [quo.components.inputs.search-input.style :as style]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]))
 
 (def ^:private tag-separator [rn/view {:style style/tag-separator}])
@@ -46,7 +46,7 @@
     :or   {customization-color :blue}
     :as   props}
    & children]
-  (let [theme              (quo.theme/use-theme)
+  (let [theme              (quo.context/use-theme)
         [state set-state]  (rn/use-state :default)
         on-focus           (rn/use-callback
                             (fn []

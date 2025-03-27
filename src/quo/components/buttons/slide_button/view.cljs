@@ -7,8 +7,8 @@
     [quo.components.buttons.slide-button.utils :as utils]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]))
@@ -48,7 +48,7 @@
   "
   [{:keys [on-complete track-text track-icon disabled? customization-color size
            container-style type blur?]}]
-  (let [theme                         (quo.theme/use-theme)
+  (let [theme                         (quo.context/use-theme)
         x-pos                         (reanimated/use-shared-value 0)
         [track-width set-track-width] (rn/use-state nil)
         [sliding-complete?

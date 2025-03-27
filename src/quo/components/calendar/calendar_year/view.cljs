@@ -2,12 +2,12 @@
   (:require
     [quo.components.calendar.calendar-year.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [selected? disabled? on-press]} year]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/touchable-opacity
      {:on-press on-press
       :style    (style/container

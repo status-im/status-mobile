@@ -6,7 +6,7 @@
     [quo.components.inputs.input.view :as input]
     [quo.components.markdown.text :as text]
     [quo.components.selectors.selectors.view :as selectors]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
@@ -16,7 +16,7 @@
     action-type :type
     :or         {customization-color :blue
                  blur?               false}}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         action-type            (or action-type :main)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))

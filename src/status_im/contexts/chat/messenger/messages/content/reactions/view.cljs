@@ -1,7 +1,7 @@
 (ns status-im.contexts.chat.messenger.messages.content.reactions.view
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.drawers.view :as drawers]
     [utils.re-frame :as rf]))
@@ -53,7 +53,7 @@
 
 (defn message-reactions-row
   [{:keys [message-id chat-id pinned-by hide-new-reaction-button?]} user-message-content-render-fn]
-  (let [theme     (quo.theme/use-theme)
+  (let [theme     (quo.context/use-theme)
         reactions (rf/sub [:chats/message-reactions message-id chat-id])]
     (when (seq reactions)
       [quo/react

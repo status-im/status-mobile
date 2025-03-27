@@ -3,12 +3,12 @@
     [quo.components.markdown.text :as text]
     [quo.components.settings.category.style :as style]
     [quo.components.settings.settings-item.view :as settings-item]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn settings-category
   [{:keys [label data blur? container-style]}]
-  (let [theme          (quo.theme/use-theme)
+  (let [theme          (quo.context/use-theme)
         settings-items (remove nil? data)
         last-index     (dec (count settings-items))]
     [rn/view {:style [(style/container label) container-style]}

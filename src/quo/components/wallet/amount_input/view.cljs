@@ -4,7 +4,7 @@
     [quo.components.markdown.text :as text]
     [quo.components.wallet.amount-input.schema :as amount-input.schema]
     [quo.components.wallet.amount-input.style :as style]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
@@ -26,7 +26,7 @@
     :or   {value     0
            min-value 0
            max-value 999999999}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style (merge style/container container-style)}
      [amount-button

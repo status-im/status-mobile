@@ -1,9 +1,9 @@
 (ns status-im.common.bottom-sheet.view
   (:require
     [oops.core :as oops]
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
@@ -67,7 +67,7 @@
            hide-on-background-press?]
     :or   {border-radius             12
            hide-on-background-press? true}}]
-  (let [theme                             (quo.theme/use-theme)
+  (let [theme                             (quo.context/use-theme)
         {window-height :height}           (rn/get-window)
         [sheet-height set-sheet-height]   (rn/use-state 0)
         [layout-height set-layout-height] (rn/use-state window-height)

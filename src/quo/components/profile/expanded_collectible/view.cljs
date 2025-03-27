@@ -5,9 +5,9 @@
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
     [quo.components.profile.expanded-collectible.style :as style]
+    [quo.context]
     [quo.foundations.colors :as colors]
     [quo.foundations.gradients :as gradients]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [schema.core :as schema]
@@ -89,7 +89,7 @@
            on-collectible-load aspect-ratio gradient-color-index]
     :or   {gradient-color-index :gradient-1
            on-collectible-load  (fn [])}}]
-  (let [theme              (quo.theme/use-theme)
+  (let [theme              (quo.context/use-theme)
         [error? set-error] (rn/use-state (invalid-image? image-src))]
     (rn/use-effect #(set-error (invalid-image? image-src))
                    [image-src])

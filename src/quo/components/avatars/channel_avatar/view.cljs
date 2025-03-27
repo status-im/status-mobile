@@ -4,8 +4,8 @@
     [quo.components.avatars.channel-avatar.style :as style]
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.string]))
 
@@ -53,7 +53,7 @@
   used to extract the initials.
   "
   [{:keys [size emoji customization-color locked? full-name]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:accessibility-label :channel-avatar
       :style               (style/outer-container {:theme               theme

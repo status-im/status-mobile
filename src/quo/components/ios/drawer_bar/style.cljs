@@ -1,7 +1,7 @@
 (ns quo.components.ios.drawer-bar.style
   (:require
-    [quo.foundations.colors :as colors]
-    [quo.theme]))
+    [quo.context]
+    [quo.foundations.colors :as colors]))
 
 (def handle-container
   {:padding-vertical 8

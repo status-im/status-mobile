@@ -2,12 +2,12 @@
   (:require [quo.components.icon :as icon]
             [quo.components.markdown.text :as text]
             [quo.components.text-combinations.channel-name.style :as style]
-            [quo.theme]
+            [quo.context]
             [react-native.core :as rn]))
 
 (defn icons
   [{:keys [unlocked? muted? blur?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/icons-container}
      (when unlocked?
        [rn/view

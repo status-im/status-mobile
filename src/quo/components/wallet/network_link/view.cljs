@@ -4,8 +4,8 @@
     [quo.components.wallet.network-link.helpers :as helpers]
     [quo.components.wallet.network-link.schema :as component-schema]
     [quo.components.wallet.network-link.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.svg :as svg]
     [schema.core :as schema]))
@@ -46,7 +46,7 @@
 
 (defn link-linear
   [{:keys [source destination]}]
-  (let [theme                 (quo.theme/use-theme)
+  (let [theme                 (quo.context/use-theme)
         [container-width
          set-container-width] (rn/use-state 100)
         stroke-color          "url(#gradient)"
@@ -71,7 +71,7 @@
 
 (defn link-1x
   [{:keys [source destination]}]
-  (let [theme                 (quo.theme/use-theme)
+  (let [theme                 (quo.context/use-theme)
         [container-width
          set-container-width] (rn/use-state 100)
         stroke-color          "url(#gradient)"
@@ -120,7 +120,7 @@
 
 (defn link-2x
   [{:keys [source destination]}]
-  (let [theme                 (quo.theme/use-theme)
+  (let [theme                 (quo.context/use-theme)
         [container-width
          set-container-width] (rn/use-state 100)
         stroke-color          "url(#gradient)"

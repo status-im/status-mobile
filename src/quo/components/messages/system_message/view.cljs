@@ -5,7 +5,7 @@
     [quo.components.avatars.user-avatar.view :as user-avatar]
     [quo.components.markdown.text :as text]
     [quo.components.messages.system-message.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [utils.i18n :as i18n]))
@@ -59,7 +59,7 @@
 
 (defn system-message-deleted
   [{:keys [label child timestamp]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [system-message-base
      {:icon {:icon    :i/delete
              :color   :danger
@@ -75,7 +75,7 @@
 
 (defn system-message-contact
   [{:keys [display-name photo-path customization-color timestamp]} label icon]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [system-message-base
      {:icon {:icon    icon
              :color   (or customization-color :primary)
@@ -108,7 +108,7 @@
 
 (defn system-message-contact-request
   [{:keys [display-name photo-path customization-color timestamp incoming?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [system-message-base
      {:icon {:icon    :i/add-user
              :color   (or customization-color :primary)
@@ -137,7 +137,7 @@
 
 (defn system-message-pinned
   [{:keys [pinned-by child customization-color timestamp]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [system-message-base
      {:icon {:icon    :i/pin
              :color   (or customization-color :primary)

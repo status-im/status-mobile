@@ -4,7 +4,7 @@
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.components.tabs.tab.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [react-native.svg :as svg]))
 
@@ -53,7 +53,7 @@
            disabled id on-press segmented? size notification-dot? customization-color]
     :or   {size 32}}
    children]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         show-notification-dot? (and notification-dot? (= size 32))
         {:keys [icon-color
                 background-color

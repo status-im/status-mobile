@@ -1,5 +1,6 @@
 (ns status-im.contexts.communities.actions.airdrop-addresses.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
@@ -39,7 +40,7 @@
 
 (defn view
   []
-  (let [{id :community-id}        (rf/sub [:get-screen-params])
+  (let [{id :community-id}        (quo.context/use-screen-params)
         {:keys [name logo color]} (rf/sub [:communities/for-context-tag id])
         accounts                  (rf/sub [:communities/accounts-to-reveal id])
         airdrop-address           (rf/sub [:communities/airdrop-address id])

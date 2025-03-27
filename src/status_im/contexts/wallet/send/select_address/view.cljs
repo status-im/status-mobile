@@ -1,9 +1,9 @@
 (ns status-im.contexts.wallet.send.select-address.view
   (:require
     [clojure.string :as string]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -91,7 +91,7 @@
 
 (defn- ens-linked-address
   [{:keys [address networks]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [quo/text
      {:size  :paragraph-2
       :style style/network-text-container}

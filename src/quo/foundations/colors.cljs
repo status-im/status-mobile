@@ -1,7 +1,7 @@
 (ns quo.foundations.colors
   (:require
     [clojure.string :as string]
-    [quo.theme]
+    [quo.context]
     [react-native.platform :as platform]))
 
 (def account-colors

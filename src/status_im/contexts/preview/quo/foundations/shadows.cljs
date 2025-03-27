@@ -1,9 +1,9 @@
 (ns status-im.contexts.preview.quo.foundations.shadows
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.foundations.shadows :as shadows]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.preview :as preview]))
@@ -32,7 +32,7 @@
   []
   (let [state   (reagent/atom {:shadow? true})
         shadow? (reagent/cursor state [:shadow?])
-        theme   (quo.theme/use-theme)]
+        theme   (quo.context/use-theme)]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}
        [quo/text

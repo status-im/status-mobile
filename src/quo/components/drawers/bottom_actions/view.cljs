@@ -6,8 +6,8 @@
     [quo.components.markdown.text :as text]
     [quo.components.tags.context-tag.schema :as context-tag.schema]
     [quo.components.tags.context-tag.view :as context-tag]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]
     [utils.i18n :as i18n]))
@@ -45,7 +45,7 @@
   [{:keys [actions description description-text description-top-text error-message role button-one-label
            button-two-label blur? button-one-props button-two-props scroll? container-style
            buttons-container-style buttons-style context-tag-props]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style (merge (style/container scroll? blur? theme) container-style)}
      (when (= description :top-error)
        [rn/view {:style style/error-message}

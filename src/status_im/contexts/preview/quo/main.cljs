@@ -1,8 +1,8 @@
 (ns status-im.contexts.preview.quo.main
   (:refer-clojure :exclude [filter])
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.contexts.preview.quo.animated-header-list.animated-header-list
@@ -601,7 +601,7 @@
 
 (defn- main-screen
   []
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [:<>
      [common/navigation-bar {:title "Quo components preview"}]
      [rn/scroll-view {:style (style/main theme)}

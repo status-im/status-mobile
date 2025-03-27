@@ -4,7 +4,7 @@
             [quo.components.markdown.text :as text]
             [quo.components.tags.tag :as tag]
             [quo.components.text-combinations.standard-title.style :as style]
-            [quo.theme]
+            [quo.context]
             [react-native.core :as rn]
             [utils.number]))
 
@@ -17,7 +17,7 @@
 
 (defn- right-counter
   [{:keys [blur? counter-left counter-right]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/right-counter}
      [text/text
       {:size   :paragraph-2
@@ -41,7 +41,7 @@
 (defn- right-tag
   [{:keys [blur? on-press icon label]
     :or   {icon :i/placeholder}}]
-  (let [theme     (quo.theme/use-theme)
+  (let [theme     (quo.context/use-theme)
         labelled? (not (string/blank? label))]
     [tag/tag
      {:accessibility-label :standard-title-tag

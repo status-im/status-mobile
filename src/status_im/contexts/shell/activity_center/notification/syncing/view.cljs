@@ -1,7 +1,7 @@
 (ns status-im.contexts.shell.activity-center.notification.syncing.view
   (:require
+    quo.context
     [quo.core :as quo]
-    quo.theme
     [react-native.core :as rn]
     [status-im.common.new-device-sheet.view :as new-device-sheet]
     [status-im.contexts.shell.activity-center.notification.common.view :as common]
@@ -23,7 +23,7 @@
   [{:keys [notification extra-fn]}]
   (let [{:keys [installation-id read timestamp]} notification
         customization-color (rf/sub [:profile/customization-color])
-        theme (quo.theme/use-theme)
+        theme (quo.context/use-theme)
         more-details (rn/use-callback
                       (fn []
                         (rf/dispatch [:show-bottom-sheet
@@ -52,7 +52,7 @@
   [{:keys [notification extra-fn]}]
   (let [{:keys [installation-id read timestamp]} notification
         customization-color (rf/sub [:profile/customization-color])
-        theme (quo.theme/use-theme)
+        theme (quo.context/use-theme)
         review-pairing-request (rn/use-callback
                                 (fn []
                                   (rf/dispatch [:show-bottom-sheet

@@ -3,7 +3,7 @@
             [quo.components.icon :as icon]
             [quo.components.inputs.input.style :as style]
             [quo.components.markdown.text :as text]
-            [quo.theme :as quo.theme]
+            [quo.context :as quo.context]
             [react-native.core :as rn]
             [react-native.platform :as platform]))
 
@@ -74,7 +74,7 @@
            label char-limit multiline? clearable? on-focus on-blur container-style input-container-style
            on-change-text on-char-limit-reach weight default-value on-clear placeholder label-right]
     :as   props}]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         ref                    (rn/use-ref-atom nil)
         on-ref                 (rn/use-callback (fn [value]
                                                   (when (:ref props)

@@ -4,7 +4,7 @@
     [quo.components.links.internal-link-card.community.style :as style]
     [quo.components.links.internal-link-card.schema :as component-schema]
     [quo.components.markdown.text :as text]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
@@ -75,7 +75,7 @@
 (defn- view-internal
   [{:keys [title description loading? icon banner members-count active-members-count
            on-press size]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/pressable
      {:style               (style/container size theme)
       :accessibility-label :internal-link-card

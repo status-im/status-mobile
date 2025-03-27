@@ -1,7 +1,7 @@
 (ns status-im.contexts.wallet.common.activity-tab.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.resources :as resources]
     [status-im.contexts.shell.constants :as shell.constants]
@@ -25,7 +25,7 @@
 
 (defn view
   []
-  (let [theme          (quo.theme/use-theme)
+  (let [theme          (quo.context/use-theme)
         loading?       (rf/sub [:wallet/activity-tab-loading?])
         activity-list  (rf/sub [:wallet/activities-for-current-viewing-account])
         on-end-reached (rn/use-callback

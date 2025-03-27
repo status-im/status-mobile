@@ -9,8 +9,8 @@
     [quo.components.markdown.text :as text]
     [quo.components.tags.context-tag.view :as context-tag]
     [quo.components.wallet.address-text.view :as address-text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
@@ -200,7 +200,7 @@
            on-button-press on-button-long-press profile-picture stored label full-name
            button-disabled? account-avatar-emoji account-avatar-type customization-color icon-avatar
            context icon]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style [style/container container-style]}
      (when (left-image-supported-types type)
        [rn/view {:style style/left-container}

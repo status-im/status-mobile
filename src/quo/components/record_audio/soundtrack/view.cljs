@@ -2,8 +2,8 @@
   (:require
     [quo.components.icons.icons :as icons]
     [quo.components.record-audio.soundtrack.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.audio-toolkit :as audio]
     [react-native.core :as rn]
     [react-native.platform :as platform]
@@ -17,7 +17,7 @@
   [{:keys [audio-current-time-ms set-audio-current-time-ms player-ref style
            seeking-audio? set-seeking-audio max-audio-duration-ms]}]
   (let [audio-duration-ms   (min max-audio-duration-ms (audio/get-player-duration player-ref))
-        theme               (quo.theme/use-theme)
+        theme               (quo.context/use-theme)
         on-sliding-start    (rn/use-callback #(set-seeking-audio true))
         on-sliding-complete (rn/use-callback
                              (fn [seek-time]

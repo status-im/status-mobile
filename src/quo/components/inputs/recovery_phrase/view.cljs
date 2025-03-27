@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as string]
     [quo.components.inputs.recovery-phrase.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (def ^:private custom-props
@@ -47,7 +47,7 @@
            error-pred-written-words (constantly false)}
     :as   props}
    text]
-  (let [theme             (quo.theme/use-theme)
+  (let [theme             (quo.context/use-theme)
         [state set-state] (rn/use-state :default)
         on-focus          (rn/use-callback
                            (fn []

@@ -2,14 +2,14 @@
   (:require [quo.components.community.community-stat.style :as style]
             [quo.components.icon :as quo.icons]
             [quo.components.markdown.text :as quo.text]
+            [quo.context :as quo.context]
             [quo.foundations.colors :as colors]
-            [quo.theme :as quo.theme]
             [react-native.core :as rn]
             utils.money))
 
 (defn view
   [{:keys [value icon style accessibility-label text-size]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style               (merge style/container style)
       :accessibility-label accessibility-label}

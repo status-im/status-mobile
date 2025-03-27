@@ -5,14 +5,14 @@
     [quo.components.markdown.text :as text]
     [quo.components.tags.collectible-tag.schema :as component-schema]
     [quo.components.tags.collectible-tag.style :as style]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]
     [schema.core :as schema]))
 
 (defn- view-internal
   [{:keys [options blur? collectible-img-src collectible-name collectible-id] :as props}]
-  (let [theme                 (quo.theme/use-theme)
+  (let [theme                 (quo.context/use-theme)
         [container-width
          set-container-width] (rn/use-state 0)
         on-layout             (rn/use-callback

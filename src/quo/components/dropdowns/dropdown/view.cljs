@@ -5,8 +5,8 @@
     [quo.components.dropdowns.dropdown.style :as style]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
+    [quo.context]
     [quo.foundations.customization-colors :as customization-colors]
-    [quo.theme]
     [react-native.core :as rn]))
 
 (defn view
@@ -32,7 +32,7 @@
            icon-name :i/placeholder}
     :as   props}
    text]
-  (let [theme                   (quo.theme/use-theme)
+  (let [theme                   (quo.context/use-theme)
         {:keys [icon-size text-size emoji-size border-radius]
          :as   size-properties} (properties/sizes size)
         {:keys [left-icon-color right-icon-color right-icon-color-2 label-color blur-type

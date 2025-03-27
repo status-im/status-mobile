@@ -4,7 +4,7 @@
     [quo.components.dropdowns.dropdown-input.style :as style]
     [quo.components.icon :as icon]
     [quo.components.markdown.text :as text]
-    [quo.theme]
+    [quo.context]
     [react-native.core :as rn]))
 
 (defn view
@@ -24,7 +24,7 @@
            header-label "Label"}
     :as   props}
    label]
-  (let [theme          (quo.theme/use-theme)
+  (let [theme          (quo.context/use-theme)
         {:keys [left-icon-color right-icon-color right-icon-color-2]
          :as   colors} (properties/get-colors props)
         right-icon     (if (= state :active) :i/pullup :i/dropdown)]

@@ -1,7 +1,7 @@
 (ns status-im.contexts.settings.privacy-and-security.profile-picture.view
   (:require
+    [quo.context]
     [quo.core :as quo]
-    [quo.theme]
     [status-im.constants :as constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

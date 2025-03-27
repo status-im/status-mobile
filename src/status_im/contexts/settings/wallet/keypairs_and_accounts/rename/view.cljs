@@ -1,5 +1,6 @@
 (ns status-im.contexts.settings.wallet.keypairs-and-accounts.rename.view
   (:require [clojure.string :as string]
+            [quo.context]
             [quo.core :as quo]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
@@ -16,8 +17,9 @@
 (defn view
   []
   (let [insets                                          (safe-area/get-insets)
+
         {existing-keypair-name :name
-         :keys                 [key-uid]}               (rf/sub [:get-screen-params])
+         :keys                 [key-uid]}               (quo.context/use-screen-params)
         existing-keypair-names                          (rf/sub [:wallet/keypair-names])
         customization-color                             (rf/sub [:profile/customization-color])
         [unsaved-keypair-name set-unsaved-keypair-name] (rn/use-state existing-keypair-name)

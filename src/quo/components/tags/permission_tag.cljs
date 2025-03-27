@@ -3,8 +3,8 @@
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.components.tags.base-tag :as base-tag]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]))
 
 (defn outer-resource-container
@@ -37,7 +37,7 @@
 
 (defn extra-count
   [total-group-count selected-count size background-color]
-  (let [theme             (quo.theme/use-theme)
+  (let [theme             (quo.context/use-theme)
         extra-group-count (- total-group-count selected-count)]
     (when (> extra-group-count 0)
       [rn/view (outer-resource-container size background-color)
@@ -74,7 +74,7 @@
   []
   (fn [{:keys [group size last-group background-color]
         :or   {size 24}}]
-    (let [theme           (quo.theme/use-theme)
+    (let [theme           (quo.context/use-theme)
           tokens-count    (count group)
           selected-tokens (take (selected-token-count group) group)]
       [rn/view
@@ -141,7 +141,7 @@
 (defn tag
   [{:keys [locked? tokens size background-color on-press accessibility-label]
     :or   {size 24}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [base-tag/base-tag
      {:accessibility-label accessibility-label
       :background-color    background-color

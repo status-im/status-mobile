@@ -1,8 +1,8 @@
 (ns status-im.common.standard-authentication.password-input.view
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [status-im.common.biometric.utils :as biometric]
     [status-im.common.standard-authentication.forgot-password-doc.view :as forgot-password-doc]
@@ -14,7 +14,7 @@
 
 (defn- error-info
   [error-message processing shell?]
-  (let [theme    (quo.theme/use-theme)
+  (let [theme    (quo.context/use-theme)
         on-press (rn/use-callback
                   (fn []
                     (rn/dismiss-keyboard!)
@@ -46,7 +46,7 @@
                 error-message]} error
         default-value           (rn/use-ref-atom "") ;;bug on Android
                                                      ;;https://github.com/status-im/status-mobile/issues/19004
-        theme                   (quo.theme/use-theme)
+        theme                   (quo.context/use-theme)
         on-change-password      (rn/use-callback
                                  (fn [entered-password]
                                    (reset! default-value entered-password)

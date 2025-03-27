@@ -1,8 +1,8 @@
 (ns status-im.contexts.chat.messenger.composer.view
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.contexts.chat.messenger.composer.actions.view :as actions]
@@ -36,7 +36,7 @@
 
 (defn view
   [layout-height]
-  (let [theme     (quo.theme/use-theme)
+  (let [theme     (quo.context/use-theme)
         bottom    (safe-area/get-bottom)
         input-ref (rn/use-ref-atom nil)
         set-ref   (rn/use-callback (fn [value]

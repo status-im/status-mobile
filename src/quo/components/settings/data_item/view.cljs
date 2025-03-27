@@ -5,14 +5,14 @@
     [quo.components.list-items.preview-list.view :as preview-list]
     [quo.components.markdown.text :as text]
     [quo.components.settings.data-item.style :as style]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
 (defn- left-loading
   [{:keys [size blur?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style (style/loading-container size blur? theme)}]))
 
 (defn- left-subtitle
@@ -20,7 +20,7 @@
            customization-color emoji
            network-image]
     :or   {subtitle-type :default}}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/subtitle-container}
      (when (and subtitle-type (not= :small size))
        [rn/view {:style (style/subtitle-icon-container subtitle-type)}
@@ -58,7 +58,7 @@
 
 (defn- left-title
   [{:keys [title blur? title-icon]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/title-container}
      [text/text
       {:weight :regular
@@ -81,7 +81,7 @@
            subtitle-color icon-color
            customization-color network-image emoji title-icon]
     :as   props}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/left-side}
      [rn/view
       [left-title
@@ -158,7 +158,7 @@
 (defn view-internal
   [{:keys [blur? card? right-icon right-content status size on-press container-style]
     :as   props}]
-  (let [theme      (quo.theme/use-theme)
+  (let [theme      (quo.context/use-theme)
         icon-color (if (or blur? (= :dark theme))
                      colors/neutral-40
                      colors/neutral-50)]

@@ -5,14 +5,14 @@
     [quo.components.list-items.missing-keypair.view :as missing-keypair]
     [quo.components.markdown.text :as text]
     [quo.components.wallet.missing-keypairs.style :as style]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
 
 (defn title-view
   [{:keys [keypairs blur? on-import-press show-import-all?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:accessibility-label :title
       :style               style/title-container}

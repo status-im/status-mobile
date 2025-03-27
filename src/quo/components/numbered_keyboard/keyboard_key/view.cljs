@@ -3,7 +3,7 @@
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.components.numbered-keyboard.keyboard-key.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn- label->accessibility-label
@@ -13,7 +13,7 @@
 
 (defn view
   [{:keys [disabled? blur? on-press on-long-press type]} label]
-  (let [theme                   (quo.theme/use-theme)
+  (let [theme                   (quo.context/use-theme)
         [pressed? set-pressed?] (rn/use-state false)
         on-press                (rn/use-callback #(when on-press (on-press label)) [on-press label])
         on-long-press           (rn/use-callback #(when (fn? on-long-press) (on-long-press label))

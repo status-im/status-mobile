@@ -1,5 +1,6 @@
 (ns status-im.contexts.communities.actions.share-community-channel.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -13,7 +14,7 @@
 (defn view
   []
   (fn []
-    (let [params                          (rf/sub [:get-screen-params])
+    (let [params                          (quo.context/use-screen-params)
           ;; NOTE(seanstrom): We need to store these screen params for when the modal closes
           ;; because the screen params will be cleared.
           {:keys [url chat-id]}           @(rn/use-ref-atom params)

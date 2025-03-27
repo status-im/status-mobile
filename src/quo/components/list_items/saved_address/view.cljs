@@ -5,13 +5,13 @@
     [quo.components.list-items.saved-address.style :as style]
     [quo.components.markdown.text :as text]
     [quo.components.wallet.address-text.view :as address-text]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn- left-container
   [{:keys [blur? name ens address customization-color]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/left-container}
      [wallet-user-avatar/wallet-user-avatar
       {:size                :size-32
@@ -38,7 +38,7 @@
   [{:keys [blur? user-props active-state? customization-color on-press on-options-press container-style]
     :or   {customization-color :blue
            blur?               false}}]
-  (let [theme             (quo.theme/use-theme)
+  (let [theme             (quo.context/use-theme)
         [state set-state] (rn/use-state :default)
         active?           (rn/use-ref-atom false)
         timer             (rn/use-ref-atom nil)

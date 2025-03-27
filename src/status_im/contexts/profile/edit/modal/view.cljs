@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -188,7 +189,7 @@
 
 (defn view
   []
-  (let [{:keys [pending-event]}        (rf/sub [:get-screen-params])
+  (let [{:keys [pending-event]}        (quo.context/use-screen-params)
         {initial-display-name :display-name
          initial-color        :customization-color
          [initial-image]      :images} (rf/sub [:profile/profile])

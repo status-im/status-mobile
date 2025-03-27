@@ -8,8 +8,8 @@
             [quo.components.wallet.approval-label.schema :as approval-label.schema]
             [quo.components.wallet.approval-label.view :as approval-label]
             [quo.components.wallet.swap-input.style :as style]
+            quo.context
             [quo.foundations.colors :as colors]
-            quo.theme
             [react-native.core :as rn]
             [react-native.linear-gradient :as linear-gradient]
             [schema.core :as schema]))
@@ -54,7 +54,7 @@
            approval-label-props default-value auto-focus? input-disabled? enable-swap?
            currency-symbol on-change-text show-keyboard? get-ref
            container-style on-swap-press on-token-press on-max-press max-loading? on-input-focus]}]
-  (let [theme                        (quo.theme/use-theme)
+  (let [theme                        (quo.context/use-theme)
         pay?                         (= type :pay)
         disabled?                    (= status :disabled)
         loading?                     (= status :loading)

@@ -179,7 +179,7 @@ Our goal is to make all design system components *themeable*, which means they
 should not use, nor fallback to the OS theme, because themes are *contextual*
 and can be overridden in specific parts of the app.
 
-To achieve this, use the higher-order function `quo.theme/with-theme` to
+To achieve this, use the higher-order function `quo.context/with-theme` to
 automatically inject the current theme context (based on the [React Context
 API](https://react.dev/learn/passing-data-deeply-with-context)).
 
@@ -187,12 +187,12 @@ Use the following pattern:
 
 ```clojure
 (ns quo.components.<figma page>.<component name>.view
-  (:require [quo.theme :as quo.theme]))
+  (:require [quo.context :as quo.context]))
 
 (defn- view-internal [{:keys [theme]}]
   ...)
 
-(def view (quo.theme/with-theme view-internal))
+(def view (quo.context/with-theme view-internal))
 ```
 
 Then pass the `theme` value down to all functions that may rely on the OS theme,
@@ -213,12 +213,12 @@ file.
 ```clojure
 ;; bad
 (ns ...
-  (require [quo.theme :as quo.theme]
+  (require [quo.context :as quo.context]
            [quo.core :as quo]))
 
 ;; good
 (ns ...
-  (require [quo.theme :as quo.theme]
+  (require [quo.context :as quo.context]
            [quo.core :as quo]))
 ```
 

@@ -4,13 +4,13 @@
     [quo.components.markdown.text :as text]
     [quo.components.selectors.react-selector.style :as style]
     [quo.components.selectors.reaction-resource :as reaction.resource]
+    [quo.context :as quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [emoji clicks state use-case on-press accessibility-label on-long-press container-style]}]
-  (let [theme         (quo.theme/use-theme)
+  (let [theme         (quo.context/use-theme)
         numeric-value (int clicks)
         icon-color    (if (= :pinned use-case)
                         (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)

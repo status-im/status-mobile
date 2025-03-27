@@ -1,6 +1,6 @@
 (ns status-im.contexts.wallet.send.transaction-settings.max-fee.view
   (:require
-    [quo.theme]
+    [quo.context]
     [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

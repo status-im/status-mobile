@@ -2,10 +2,10 @@
   (:require
     [legacy.status-im.ui.components.colors :as quo.colors]
     [legacy.status-im.ui.screens.chat.message.legacy-style :as style]
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.foundations.typography :as typography]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.constants :as constants]
     [status-im.contexts.chat.messenger.messages.delete-message-for-me.events]
@@ -126,7 +126,7 @@
   [{:keys [content chat-id]
     :as   message-data}]
   (let [community-id (rf/sub [:community-id-by-chat-id chat-id])
-        theme        (quo.theme/use-theme)]
+        theme        (quo.context/use-theme)]
     (reduce (fn [acc e]
               (render-block message-data
                             acc
@@ -145,7 +145,7 @@
 ;; STATUS ? whats that ?
 (defmethod ->message constants/content-type-status
   [{:keys [content content-type]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view style/status-container
      [rn/text {:style (style/status-text)}
       (reduce

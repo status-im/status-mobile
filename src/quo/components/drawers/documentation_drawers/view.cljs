@@ -3,7 +3,7 @@
     [quo.components.buttons.button.view :as button]
     [quo.components.drawers.documentation-drawers.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]))
 
@@ -18,7 +18,7 @@
    `content` Content of the drawer
    "
   [{:keys [title show-button? on-press-button button-label button-icon shell?]} content]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [gesture/scroll-view
      {:style                             style/outer-container
       :always-bounce-vertical            false

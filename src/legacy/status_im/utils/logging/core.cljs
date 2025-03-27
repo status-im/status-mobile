@@ -9,9 +9,10 @@
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
     [status-im.common.json-rpc.events :as json-rpc]
-    [status-im.common.log :as log]
+    [status-im.common.log :as common-log]
     [status-im.config :as config]
     [status-im.navigation.events :as navigation]
+    [taoensso.timbre :as log]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -23,7 +24,7 @@
  (fn [[db-json callback-handler]]
    (native-module/send-logs
     db-json
-    (string/join "\n" (log/get-logs-queue))
+    (string/join "\n" (common-log/get-logs-queue))
     #(re-frame/dispatch [callback-handler %]))))
 
 (rf/defn store-web3-client-version
@@ -161,20 +162,18 @@
   (when-not (:logging/dialog-shown? db)
     {:db (assoc db :logging/dialog-shown? true)
      :effects.utils/show-confirmation
-     (cond-> {:title               (i18n/label :t/send-logs)
-              :content             (i18n/label :t/send-logs-to
-                                               {:email report-email})
-              :confirm-button-text (i18n/label :t/send-logs)
-              :on-accept           #(do (re-frame/dispatch [:open-modal :bug-report])
-                                        (re-frame/dispatch [:logging/dialog-left]))
-              :on-cancel           #(re-frame/dispatch [:logging/dialog-left])}
-
-       platform/ios?
-       (assoc :extra-options
-              [{:text    (i18n/label :t/share-logs)
-                :onPress #(re-frame/dispatch
-                           [:logging.ui/send-logs-pressed :sharing])
-                :style   "default"}]))}))
+     {:title (i18n/label :t/send-logs)
+      :content (i18n/label :t/send-logs-to
+                           {:email report-email})
+      :confirm-button-text (i18n/label :t/send-logs)
+      :extra-options
+      [{:text    (i18n/label :t/share-logs)
+        :onPress #(re-frame/dispatch
+                   [:logging.ui/send-logs-pressed :sharing])
+        :style   "default"}]
+      :on-accept #(do (re-frame/dispatch [:open-modal :bug-report])
+                      (re-frame/dispatch [:logging/dialog-left]))
+      :on-cancel #(re-frame/dispatch [:logging/dialog-left])}}))
 
 (re-frame/reg-fx
  :email/send
@@ -183,8 +182,10 @@
 
 (re-frame/reg-fx
  ::share-archive
- (fn [opts]
-   (.share ^js react/sharing (clj->js opts))))
+ (fn [{:keys [url] :as opts}]
+   (if platform/android?
+     (native-module/share-logs url (fn [error] (log/error "Error sharing logs" error)))
+     (.share ^js react/sharing (clj->js opts)))))
 
 (rf/defn share-archive
   [_ opts]

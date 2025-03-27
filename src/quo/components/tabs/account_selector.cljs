@@ -2,8 +2,8 @@
   (:require
     [quo.components.avatars.account-avatar.view :as account-avatar]
     [quo.components.markdown.text :as quo]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]))
 
 (def themes
@@ -47,7 +47,7 @@
     :account-text      \"My Savings\"        ;; content in place of account name
    }"
   [{:keys [show-label? account-text account-emoji transparent? label-text style]}]
-  (let [theme              (quo.theme/use-theme)
+  (let [theme              (quo.context/use-theme)
         background-color   (get-color-by-type (if transparent? :transparent :default) :bg theme)
         account-text-color (get-color-by-type (if transparent? :transparent :default)
                                               :account-text

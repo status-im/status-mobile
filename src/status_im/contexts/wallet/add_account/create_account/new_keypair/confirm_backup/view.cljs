@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [quo.context]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -99,10 +100,11 @@
         quiz-index             (reagent/atom 0)
         incorrect-count        (reagent/atom 0)
         show-error?            (reagent/atom false)
+
         {:keys [on-success
                 on-try-again
                 masked-seed-phrase
-                theme shell?]} (rf/sub [:get-screen-params])
+                theme shell?]} (quo.context/use-screen-params)
         unmasked-seed-phrase   (security/safe-unmask-data masked-seed-phrase)
         random-phrase          (reagent/atom [])]
     (fn []

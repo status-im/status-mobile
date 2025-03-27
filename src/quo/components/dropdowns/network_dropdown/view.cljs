@@ -3,12 +3,12 @@
     [quo.components.common.new-feature-dot :as new-feature-dot]
     [quo.components.dropdowns.network-dropdown.style :as style]
     [quo.components.list-items.preview-list.view :as preview-list]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [on-press state show-new-chain-indicator?] :as props} networks]
-  (let [theme                  (quo.theme/use-theme)
+  (let [theme                  (quo.context/use-theme)
         [pressed? set-pressed] (rn/use-state false)
         on-press-in            (rn/use-callback #(set-pressed true))
         on-press-out           (rn/use-callback #(set-pressed false))]

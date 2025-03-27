@@ -1,8 +1,8 @@
 (ns status-im.contexts.chat.messenger.composer.edit.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.messenger.composer.constants :as constants]
@@ -14,7 +14,7 @@
 
 (defn edit-message
   [input-ref]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:style               style/container
       :accessibility-label :edit-message}

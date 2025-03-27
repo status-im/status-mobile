@@ -4,8 +4,8 @@
     [quo.components.icon :as icon]
     [quo.components.links.url-preview.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.svg :as svg]))
 
@@ -30,7 +30,7 @@
 
 (defn- content
   [{:keys [title body]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view {:style style/content-container}
      [text/text
       {:accessibility-label :title
@@ -49,7 +49,7 @@
 
 (defn- clear-button
   [{:keys [on-press]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/touchable-opacity
      {:on-press            on-press
       :style               style/clear-button-container
@@ -61,7 +61,7 @@
 
 (defn view
   [{:keys [title body logo on-clear loading? loading-message container-style]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     (if loading?
       [rn/view
        {:accessibility-label :url-preview-loading

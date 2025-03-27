@@ -3,12 +3,12 @@
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.components.tags.number-tag.style :as style]
-    [quo.theme :as quo.theme]
+    [quo.context :as quo.context]
     [react-native.core :as rn]))
 
 (defn view
   [{:keys [number size blur?] :as props}]
-  (let [theme      (quo.theme/use-theme)
+  (let [theme      (quo.context/use-theme)
         size-value (get-in style/sizes [size :size])
         icon-size  (get-in style/sizes [size :icon-size])]
     [rn/view (style/container props theme)

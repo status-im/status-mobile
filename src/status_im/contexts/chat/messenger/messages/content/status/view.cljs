@@ -1,15 +1,15 @@
 (ns status-im.contexts.chat.messenger.messages.content.status.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.contexts.chat.messenger.messages.content.status.style :as style]
     [utils.i18n :as i18n]))
 
 (defn status
   [outgoing-status]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [rn/view
      {:accessibility-label :message-status
       :style               style/status-container}

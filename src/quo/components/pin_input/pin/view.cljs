@@ -1,11 +1,11 @@
 (ns quo.components.pin-input.pin.view
-  (:require [quo.foundations.colors :as colors]
-            quo.theme
+  (:require quo.context
+            [quo.foundations.colors :as colors]
             [react-native.core :as rn]))
 
 (defn view
   [{:keys [theme state blur?]}]
-  (let [app-theme (quo.theme/use-theme)
+  (let [app-theme (quo.context/use-theme)
         theme     (or theme app-theme)]
     [rn/view {:style {:width 36 :height 36 :align-items :center :justify-content :center}}
      (case state

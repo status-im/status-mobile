@@ -1,8 +1,8 @@
 (ns status-im.contexts.chat.messenger.composer.images.view
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
@@ -28,7 +28,7 @@
 
 (defn images-list
   []
-  (let [theme  (quo.theme/use-theme)
+  (let [theme  (quo.context/use-theme)
         images (rf/sub [:chats/sending-image])
         height (reanimated/use-shared-value (if (seq images) constants/images-container-height 0))]
     (rn/use-effect (fn []

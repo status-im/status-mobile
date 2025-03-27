@@ -1,13 +1,13 @@
 (ns status-im.contexts.preview.quo.common
   (:require
+    [quo.context :as quo.context]
     [quo.core :as quo]
-    [quo.theme :as quo.theme]
     [utils.re-frame :as rf]))
 
 
 (defn navigation-bar
   [{:keys [title]}]
-  (let [theme         (quo.theme/use-theme)
+  (let [theme         (quo.context/use-theme)
         logged-in?    (rf/sub [:multiaccount/logged-in?])
         has-profiles? (boolean (rf/sub [:profile/profiles-overview]))
         root          (if has-profiles? :screen/profile.profiles :screen/onboarding.intro)

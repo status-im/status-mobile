@@ -4,8 +4,8 @@
     [quo.components.icon :as icons]
     [quo.components.record-audio.record-audio.helpers :as helpers]
     [quo.components.record-audio.record-audio.style :as style]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.audio-toolkit :as audio]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
@@ -35,7 +35,7 @@
            record-button-at-initial-position? locked? set-locked reviewing-audio? recording-length-ms
            set-recording-length-ms
            clear-timeout touch-active? recorder-ref reload-recorder-fn idle? on-send on-cancel]}]
-  (let [theme (quo.theme/use-theme)
+  (let [theme (quo.context/use-theme)
         scale (reanimated/use-shared-value 1)
         opacity (reanimated/use-shared-value 0)
         opacity-from (if ready-to-lock? opacity-from-lock opacity-from-default)

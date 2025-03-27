@@ -5,8 +5,8 @@
     [quo.components.markdown.text :as text]
     [quo.components.tags.permission-tag :as permission]
     [quo.components.tags.tag :as tag]
+    [quo.context]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]))
 
@@ -69,7 +69,7 @@
 
 (defn permission-tag-container
   [{:keys [locked? blur? tokens on-press]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [permission/tag
      {:accessibility-label :permission-tag
       :background-color    (if (and (= :dark theme) blur?)

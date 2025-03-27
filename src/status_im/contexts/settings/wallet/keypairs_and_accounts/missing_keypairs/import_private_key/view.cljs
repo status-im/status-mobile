@@ -1,6 +1,7 @@
 (ns status-im.contexts.settings.wallet.keypairs-and-accounts.missing-keypairs.import-private-key.view
   (:require
     [clojure.string :as string]
+    [quo.context]
     [quo.core :as quo]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
@@ -21,7 +22,7 @@
 
 (defn view
   []
-  (let [keypair                       (rf/sub [:get-screen-params])
+  (let [keypair                       (quo.context/use-screen-params)
         blur?                         true
         insets                        (safe-area/get-insets)
         customization-color           (rf/sub [:profile/customization-color])

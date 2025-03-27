@@ -1,13 +1,13 @@
 (ns status-im.contexts.wallet.wallet-connect.modals.common.fees-data-item.view
-  (:require [quo.core :as quo]
+  (:require [quo.context]
+            [quo.core :as quo]
             [quo.foundations.colors :as colors]
-            [quo.theme]
             [status-im.contexts.wallet.wallet-connect.modals.common.style :as style]
             [utils.i18n :as i18n]))
 
 (defn- fees-subtitle
   [{:keys [text error?]}]
-  (let [theme (quo.theme/use-theme)]
+  (let [theme (quo.context/use-theme)]
     [quo/text
      {:weight :medium
       :size   :paragraph-2

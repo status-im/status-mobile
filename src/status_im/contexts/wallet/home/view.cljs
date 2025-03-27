@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.home.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
-    [quo.theme]
     [react-native.core :as rn]
     [status-im.common.home.top-nav.view :as common.top-nav]
     [status-im.common.refreshable-flat-list.view :as refreshable-flat-list]
@@ -135,7 +135,7 @@
         cards                          (conj account-cards-data (new-account-card-data))
         [init-loaded? set-init-loaded] (rn/use-state false)
         {:keys [formatted-balance]}    (rf/sub [:wallet/aggregated-token-values-and-balance])
-        theme                          (quo.theme/use-theme)
+        theme                          (quo.context/use-theme)
         show-new-chain-indicator?      (rf/sub [:wallet/show-new-chain-indicator?])
         on-press-network-selector      (rn/use-callback
                                         (fn []
