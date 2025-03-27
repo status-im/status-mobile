@@ -39,9 +39,14 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
         self.network_name = 'Base'
 
     @marks.testrail_id(741839)
-    @marks.xfail(reason="Collectibles list is not loaded sometimes")
     def test_wallet_collectibles_balance(self):
         self.wallet_view.collectibles_tab.click()
+        for _ in range(4):
+            self.wallet_view.pull_to_refresh()
+            if not self.wallet_view.element_by_text('No collectibles').is_element_displayed():
+                return
+            time.sleep(5)
+
         self.wallet_view.set_network_in_wallet(self.network_name + ', NEW')
         collectibles = {
             "BVL": {"quantity": 2,
@@ -95,28 +100,27 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(741840)
-    @marks.xfail(reason="Collectibles list is not loaded sometimes")
     def test_wallet_send_collectible(self):
-        self.wallet_view.reopen_app(user_name=self.sender_username)
+        self.wallet_view.get_account_element().click()
         self.wallet_view.send_button.click()
         self.wallet_view.address_text_input.send_keys(self.receiver['wallet_address'])
         self.wallet_view.continue_button.click()
         self.wallet_view.collectibles_tab_on_select_token_view.click()
-        time.sleep(5)
-        self.wallet_view.get_collectible_element('BVL').click()
-        # self.wallet_view.amount_input_increase_button.click()
-        # self.wallet_view.confirm_button.click()
-        for text in [self.account_name, self.sender_short_address]:
-            if not self.wallet_view.from_data_container.get_child_element_by_text(text).is_element_displayed():
-                self.errors.append(self.wallet_view,
-                                   "Text %s is not shown inside 'From' container on the Review Send page" % text)
-        if not self.wallet_view.to_data_container.get_child_element_by_text(
-                self.receiver_short_address).is_element_displayed():
-            self.errors.append(self.wallet_view,
-                               "Text %s is not shown inside 'To' container on the Review Send page" % text)
-        if not self.wallet_view.on_data_container.get_child_element_by_text(self.network_name).is_element_displayed():
-            self.errors.append(self.wallet_view,
-                               "Text %s is not shown inside 'On' container on the Review Send page" % text)
+        self.wallet_view.get_collectible_element('BVL').wait_and_click(20)
+        self.wallet_view.confirm_button.click()
+        data_to_find_on_review = {
+            self.account_name: ("From", self.wallet_view.from_data_container),
+            self.sender_short_address: ("From", self.wallet_view.from_data_container),
+            self.network_name: ("On", self.wallet_view.on_data_container),
+            self.receiver_short_address: ("To", self.wallet_view.to_data_container)
+        }
+
+        for text, (label, container) in data_to_find_on_review.items():
+            if not container.get_child_element_by_text(text).is_element_displayed():
+                self.errors.append(
+                    self.wallet_view,
+                    "Text %s is not shown inside '%s' container on the Review Send page" % (text, label)
+                )
         data_to_check = {
             'Est. time': r'~\d+ sec',
             'Max fees': r"[$]\d+.\d+",
@@ -151,25 +155,25 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(741841)
-    @marks.xfail(reason="Collectibles list is not loaded sometimes")
     def test_wallet_collectible_send_from_expanded_info_view(self):
-        # self.wallet_view.reopen_app(user_name=self.sender_username)
         self.wallet_view.collectibles_tab.click()
         self.wallet_view.get_collectible_element('Glitch Punks').wait_for_element().click()
         self.wallet_view.send_from_collectible_info_button.click()
         self.wallet_view.address_text_input.send_keys(self.receiver['wallet_address'])
         self.wallet_view.continue_button.click()
-        for text in [self.account_name, self.sender_short_address]:
-            if not self.wallet_view.from_data_container.get_child_element_by_text(text).is_element_displayed():
-                self.errors.append(self.wallet_view,
-                                   "Text %s is not shown in 'From' container on the Review Send page" % text)
-        if not self.wallet_view.to_data_container.get_child_element_by_text(
-                self.receiver_short_address).is_element_displayed():
-            self.errors.append(self.wallet_view,
-                               "Text %s is not shown in 'To' container on the Review Send page" % text)
-        if not self.wallet_view.on_data_container.get_child_element_by_text(self.network_name).is_element_displayed():
-            self.errors.append(self.wallet_view,
-                               "Text %s is not shown inside 'On' container on the Review Send page" % text)
+        data_to_find_on_review = {
+            self.account_name: ("From", self.wallet_view.from_data_container),
+            self.sender_short_address: ("From", self.wallet_view.from_data_container),
+            self.network_name: ("On", self.wallet_view.on_data_container),
+            self.receiver_short_address: ("To", self.wallet_view.to_data_container)
+        }
+
+        for text, (label, container) in data_to_find_on_review.items():
+            if not container.get_child_element_by_text(text).is_element_displayed():
+                self.errors.append(
+                    self.wallet_view,
+                    "Text %s is not shown inside '%s' container on the Review Send page" % (text, label)
+                )
         data_to_check = {
             'Est. time': r'~\d+ sec',
             'Max fees': r"[$]\d+.\d+",

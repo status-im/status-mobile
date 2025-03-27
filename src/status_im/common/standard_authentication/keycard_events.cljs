@@ -8,6 +8,7 @@
   {:fx [[:dispatch
          [:show-bottom-sheet
           {:hide-on-background-press? false
+           :drag-content?             false
            :on-close                  #(rf/dispatch [:standard-auth/reset-login-password])
            :content                   (fn []
                                         [keycard.pin/auth-sheet {:on-complete on-complete}])}]]]})
@@ -44,6 +45,25 @@
                                 :encryption-public-key
                                 security/mask-data)}]]]})
 (rf/reg-event-fx :standard-auth/on-keycard-key-success on-keycard-key-success)
+
+(defn- authorize-with-keycard-keys
+  [{:keys [db]} [{:keys [on-auth-success]}]]
+  (let [key-uid (get-in db [:profile/profile :key-uid])]
+    {:fx [[:dispatch
+           [:standard-auth/authorize-with-keycard
+            {:on-complete
+             (fn [pin]
+               (rf/dispatch
+                [:keycard/connect
+                 {:key-uid key-uid
+                  :on-success
+                  (fn []
+                    (rf/dispatch
+                     [:keycard/get-keys
+                      {:pin        pin
+                       :on-success #(on-auth-success (security/mask-data %))
+                       :on-failure #(rf/dispatch [:standard-auth/on-keycard-key-fail])}]))}]))}]]]}))
+(rf/reg-event-fx :standard-auth/authorize-with-keycard-keys authorize-with-keycard-keys)
 
 (defn on-keycard-key-fail
   [_ [error on-auth-fail]]

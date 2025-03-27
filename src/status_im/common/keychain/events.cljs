@@ -5,9 +5,13 @@
     [re-frame.core :as re-frame]
     [react-native.keychain :as keychain]
     [react-native.platform :as platform]
-    [taoensso.timbre :as log]
+    [status-im.common.log :as log]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
+
+(defn- whisper-key-name
+  [address]
+  (str address "-whisper"))
 
 (defn- check-conditions
   [callback & checks]
@@ -32,7 +36,7 @@
 
 (defn can-save-user-password?
   [callback]
-  (log/debug "[keychain] can-save-user-password?")
+  (log/log-debug "[keychain] can-save-user-password?")
   (cond
     platform/ios?
     (check-conditions callback keychain/device-encrypted?)
@@ -46,17 +50,21 @@
 (def auth-method-biometric "biometric")
 (def auth-method-none "none")
 
+(defn auth-credentials
+  [key-uid]
+  (str key-uid "-auth"))
+
 (defn save-auth-method!
   [key-uid method]
   (-> (keychain/save-credentials
-       (str key-uid "-auth")
+       (auth-credentials key-uid)
        key-uid
        method)
       (.catch (fn [err]
-                (log/error "Failed to save auth method in the keychain"
-                           {:error       err
-                            :key-uid     key-uid
-                            :auth-method method})))))
+                (log/log-error "Failed to save auth method in the keychain"
+                               {:error       err
+                                :key-uid     key-uid
+                                :auth-method method})))))
 
 (re-frame/reg-fx
  :keychain/save-auth-method
@@ -64,14 +72,9 @@
    (when-not (empty? key-uid) ; key-uid may be nil after restore from local pairing
      (save-auth-method! key-uid method))))
 
-(rf/defn save-auth-method
-  [{:keys [db]} key-uid method]
-  {:db                        (assoc db :auth-method method)
-   :keychain/save-auth-method [key-uid method]})
-
 (defn get-auth-method!
   [key-uid]
-  (-> (str key-uid "-auth")
+  (-> (auth-credentials key-uid)
       (keychain/get-credentials)
       (.then (fn [value]
                (if value
@@ -114,9 +117,9 @@
        ;; value, we only care that it's there
        key-uid)
       (.catch (fn [error]
-                (log/error "Failed to get the keychain password migration flag"
-                           {:error   error
-                            :key-uid key-uid})))))
+                (log/log-error "Failed to get the keychain password migration flag"
+                               {:error   error
+                                :key-uid key-uid})))))
 
 (defn get-password-migration!
   [key-uid callback]
@@ -128,7 +131,14 @@
  :keychain/clear-user-password
  (fn [key-uid]
    (keychain/reset-credentials (password-migration-key-name key-uid))
-   (keychain/reset-credentials (str key-uid "-auth"))
+   (keychain/reset-credentials (auth-credentials key-uid))
+   (keychain/reset-credentials key-uid)))
+
+(re-frame/reg-fx
+ :keychain/clear-keycard-keys
+ (fn [key-uid]
+   (keychain/reset-credentials (auth-credentials key-uid))
+   (keychain/reset-credentials (whisper-key-name key-uid))
    (keychain/reset-credentials key-uid)))
 
 (re-frame/reg-fx
@@ -144,10 +154,6 @@
  :keychain/save-password-and-auth-method
  (fn [_ [opts]]
    {:keychain/save-password-and-auth-method opts}))
-
-(defn- whisper-key-name
-  [address]
-  (str address "-whisper"))
 
 ;; NOTE: migrating the plaintext password in the keychain
 ;; with the hashed one. Added due to the sync onboarding
@@ -171,10 +177,32 @@
                            (.then #(save-password-migration! key-uid))
                            (.then callback)))))
             (.catch (fn [err]
-                      (log/error "Failed to migrate the keychain password"
-                                 {:error   err
-                                  :key-uid key-uid
-                                  :event   :keychain/password-hash-migration})))))))))
+                      (log/log-error "Failed to migrate the keychain password"
+                                     {:error   err
+                                      :key-uid key-uid
+                                      :event   :keychain/password-hash-migration})))))))))
+
+(re-frame/reg-fx
+ :effects.keychain/save-keycard-keys
+ (fn [keycard-keys]
+   (let [{:keys [key-uid encryption-public-key whisper-private-key]}
+         (security/safe-unmask-data keycard-keys)]
+     (keychain/save-credentials
+      key-uid
+      key-uid
+      encryption-public-key
+      #(when-not % (log/log-error "Error while saving encryption-public-key")))
+     (keychain/save-credentials
+      (whisper-key-name key-uid)
+      key-uid
+      whisper-private-key
+      #(when-not % (log/log-error "Error while saving whisper-private-key"))))))
+
+(re-frame/reg-event-fx :keychain/save-keycard-keys-and-auth-method
+ (fn [_ [keycard-keys]]
+   (let [{:keys [key-uid]} (security/safe-unmask-data keycard-keys)]
+     {:effects.keychain/save-keycard-keys keycard-keys
+      :keychain/save-auth-method          [key-uid auth-method-biometric]})))
 
 (re-frame/reg-fx
  :keychain/get-keycard-keys

@@ -64,9 +64,10 @@
   [{:keys [hide? insets]}
    {:keys [content selected-item padding-bottom-override border-radius on-close shell?
            gradient-cover? customization-color hide-handle? blur-radius
-           hide-on-background-press?]
+           hide-on-background-press? drag-content?]
     :or   {border-radius             12
-           hide-on-background-press? true}}]
+           hide-on-background-press? true
+           drag-content?             true}}]
   (let [theme                             (quo.context/use-theme)
         {window-height :height}           (rn/get-window)
         [sheet-height set-sheet-height]   (rn/use-state 0)
@@ -129,7 +130,8 @@
                 {:flex             1
                  :background-color (if shell? colors/neutral-100-opa-60 colors/neutral-100-opa-70)})}]]
      ;; sheet
-     [gesture/gesture-detector {:gesture sheet-gesture}
+     [(if drag-content? gesture/gesture-detector :<>)
+      (when drag-content? {:gesture sheet-gesture})
       [reanimated/view
        {:style (reanimated/apply-animations-to-style
                 {:transform [{:translateY translate-y}]}
@@ -158,5 +160,9 @@
            {:customization-color customization-color
             :opacity             0.4}])
         (when-not hide-handle?
-          [quo/drawer-bar])
+          [:<>
+           [quo/drawer-bar]
+           (when-not drag-content?
+             [gesture/gesture-detector {:gesture sheet-gesture}
+              [rn/view {:style style/drag-handle}]])])
         [content]]]]]))

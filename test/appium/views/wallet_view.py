@@ -8,6 +8,8 @@ from views.base_element import Button, EditBox, Text, BaseElement
 from views.base_view import BaseView
 from views.home_view import HomeView
 from views.sign_in_view import SignInView
+from typing import Literal
+import datetime
 
 
 class AssetElement(Button):
@@ -76,6 +78,11 @@ class ActivityElement(BaseElement):
     def to_text(self):
         return Text(self.driver, prefix=self.locator,
                     xpath="//*[@content-desc='context-tag'][3]/android.widget.TextView").text
+
+    @property
+    def on_network(self):
+        return Text(self.driver, prefix=self.locator,
+                    xpath="//*[@content-desc='context-tag'][4]/android.widget.TextView").text
 
 
 class ConfirmationViewInfoContainer(BaseElement):
@@ -214,7 +221,7 @@ class WalletView(BaseView):
         for _ in range(3):
             if self.slide_button_track.is_element_displayed():
                 break
-            time.sleep(1)
+            time.sleep(5)
             self.confirm_button.click()
         self.slide_and_confirm_with_password()
 
@@ -222,23 +229,23 @@ class WalletView(BaseView):
         for i in amount:
             Button(self.driver, accessibility_id='keyboard-key-%s' % i).click()
 
-    def send_asset(self, address: str, asset_name: str, amount: str, network_name: str):
+    def send_asset(self, address: str, asset_name: str, amount, network_name: str, account='Account 1'):
         self.send_button.click()
         self.address_text_input.send_keys(address)
         self.continue_button.click()
         self.select_asset(asset_name)
         self.select_network(network_name)
-        self.set_amount(amount)
+        self.set_amount(str(amount))
         self.confirm_transaction()
 
-    def send_asset_from_drawer(self, address: str, asset_name: str, amount: str, network_name: str):
+    def send_asset_from_drawer(self, address: str, asset_name: str, amount, network_name: str):
         asset_element = self.get_asset(asset_name)
         asset_element.long_press_without_release()
         self.send_from_drawer_button.double_click()
         self.select_network(network_name)
         self.address_text_input.send_keys(address)
         self.continue_button.click()
-        self.set_amount(amount)
+        self.set_amount(str(amount))
         self.confirm_transaction()
 
     def add_regular_account(self, account_name: str):
@@ -339,3 +346,78 @@ class WalletView(BaseView):
                 return Text(self.driver, xpath="(%s//android.widget.TextView)[2]" % self.locator).text
 
         return RouteElement(self.driver, route_name)
+
+    @staticmethod
+    def round_amount_float(amount, decimals=4):
+        return round(float(amount), decimals)
+
+
+    def wait_for_wallet_balance_to_update(self, expected_amount, asset='Ether', decimals=4):
+        self.just_fyi(f"Checking {asset} balance, expected value: {expected_amount}")
+
+        start_time = time.time()
+
+        while time.time() - start_time < 120:
+            self.pull_to_refresh()
+            new_balance = self.round_amount_float(self.get_asset(asset_name=asset).get_amount(), decimals)
+
+            # Exit early if the balance is updated
+            if new_balance == expected_amount:
+                return
+
+            time.sleep(10)  # Wait before retrying
+
+        # If the balance is not updated within the timeout, log an error and raise an exception
+        error_message = f"{asset} balance is {new_balance} but expected {expected_amount}"
+        raise TimeoutError(error_message)
+
+    def check_last_transaction_in_activity(self, device_time, amount,
+                                            asset='ETH',
+                                            to_account='',
+                                            tx_type: Literal['Send', 'Receive'] = 'Send',
+                                            from_account_name='Account 1',
+                                            network='Status Network'):
+        errors = list()
+
+        self.just_fyi("Checking the last transaction in the activity tab")
+        current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
+        expected_time = "Today %s" % current_time.strftime('%-I:%M %p')
+        possible_times = [expected_time,
+                          "Today %s" % (current_time + datetime.timedelta(minutes=1)).strftime('%-I:%M %p')]
+        receiver_variants = [to_account.replace(to_account[5:-3], '...').lower(), 'receiver eth2']
+        activity_element = self.get_activity_element()
+        try:
+            checks = {
+                "header": (activity_element.header, tx_type),
+                "timestamp": (activity_element.timestamp, possible_times),
+                "amount": (activity_element.amount, f"{amount} {asset}"),
+                "from_text": (activity_element.from_text, from_account_name),
+                "to_text": (activity_element.to_text, receiver_variants),
+                "on_network": (activity_element.on_network, network),
+            }
+
+            for name, (left, right) in checks.items():
+                if isinstance(right, list):
+                    if left not in right:
+                        errors.append(
+                            f"Verification of last transaction failed."
+                            f"The failed check: {name} (Expected: {right} to contain: {left})")
+                else:
+                    if left != right:
+                        errors.append(
+                            f"Verification of last transaction failed."
+                            f"The failed check: {name} (Expected: {right}, Found: {left})")
+
+
+
+        except NoSuchElementException:
+            errors.append("Can't find the last transaction")
+        finally:
+            self.close_account_button.click_until_presence_of_element(self.show_qr_code_button)
+        return errors
+
+    def get_balance(self, asset='Ether'):
+        self.just_fyi("Getting %s amount of the wallet of the sender before transaction" % asset)
+        return self.get_asset(asset_name=asset).get_amount()
+
+

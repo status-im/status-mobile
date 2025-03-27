@@ -203,7 +203,7 @@
          (str "wallet/" regx-string-any-ascii "+")])
        ")$"))
 (def regx-universal-link (re-pattern regx-string-universal-link))
-(def regx-deep-link #"((^ethereum:.*)|(^status-app://[\x00-\x7F]+$))")
+(def regx-deep-link #"((^ethereum:.*)|(^status-app://[\x00-\x7F]+)|(^wc://.*))")
 (def regx-ens #"^(?=.{5,255}$)([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$")
 (def regx-starts-with-uuid #"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 
@@ -487,3 +487,5 @@
 (def ^:const go-waku-url "https://github.com/waku-org/go-waku")
 (def ^:const status-go-url "https://github.com/status-im/status-go")
 (def ^:const status-mobile-url "https://github.com/status-im/status-mobile")
+
+(def ^:const wc-connection-string-identifier "wc")

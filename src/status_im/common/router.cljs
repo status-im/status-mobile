@@ -347,6 +347,10 @@
       (string/starts-with? uri constants/local-pairing-connection-string-identifier)
       (cb {:type :localpairing :data uri})
 
+      (string/starts-with? uri constants/wc-connection-string-identifier)
+      (cb {:type :wallet-connect
+           :uri  uri})
+
       :else
       (cb {:type :undefined
            :data uri}))))

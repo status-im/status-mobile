@@ -10,9 +10,16 @@
   [button-label theme keycard-profile?]
   (fn []
     (if keycard-profile?
-      (rf/dispatch [:keycard/feature-unavailable-show
-                    {:theme        :dark
-                     :feature-name :settings.enable-biometrics}])
+      (rf/dispatch [:standard-auth/authorize-with-keycard-keys
+                    {:on-auth-success (fn [keycard-keys]
+                                        (rf/dispatch [:hide-bottom-sheet])
+                                        (rf/dispatch [:keycard/disconnect])
+                                        (rf/dispatch
+                                         [:biometric/authenticate
+                                          {:on-success #(rf/dispatch [:biometric/enable-keycard
+                                                                      keycard-keys])
+                                           :on-fail    #(rf/dispatch [:biometric/show-message
+                                                                      (ex-cause %)])}]))}])
       (rf/dispatch
        [:standard-auth/authorize-with-password
         {:blur?                   true
