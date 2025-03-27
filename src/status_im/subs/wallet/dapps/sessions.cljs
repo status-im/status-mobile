@@ -20,7 +20,7 @@
  :<- [:wallet-connect/sessions-for-current-account]
  (fn [[networks sessions]]
    (let [chain-ids (->> networks
-                        (map :chain-ids)
+                        (map :chain-id)
                         set)]
      (filter
       (partial networks/session-networks-allowed? chain-ids)

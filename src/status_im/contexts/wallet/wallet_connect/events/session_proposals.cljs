@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
             [react-native.wallet-connect :as wallet-connect]
+            [status-im.contexts.wallet.networks.db :as networks.db]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks]
@@ -83,7 +84,7 @@
          sessions                         (get db :wallet-connect/sessions)
          available-accounts               (sessions/filter-operable-accounts (vals accounts))
          latest-connected-account-address (sessions/latest-connected-account-address sessions)
-         networks                         (networks/get-networks-by-mode db)
+         networks                         (networks.db/get-chain-ids db)
          session-networks                 (networks/proposal-networks-intersection proposal networks)
          required-networks-supported?     (networks/required-networks-supported? proposal networks)]
      (if (and (not-empty session-networks) required-networks-supported?)

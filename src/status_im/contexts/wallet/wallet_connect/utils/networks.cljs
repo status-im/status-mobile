@@ -58,12 +58,6 @@
         (every? #(contains? supported-eip155 %)
                 required-networks)))))
 
-(defn get-networks-by-mode
-  [db]
-  (->> db
-       networks.db/get-networks
-       (mapv #(-> % :chain-id))))
-
 (defn event-should-be-handled?
   [db {:keys [topic]}]
   (let [chain-ids (networks.db/get-chain-ids db)]
