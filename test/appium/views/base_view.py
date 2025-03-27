@@ -396,3 +396,19 @@ class BaseView(object):
         Button(self.driver, accessibility_id='Wi‑Fi').click()
         self.element_by_text('Done').click()
         self.click_system_back_button_until_presence_of_element(self.chats_tab)
+
+    def pull_to_refresh(self):
+        self.driver.info("Pull to refresh page to get updated data")
+        screen_size = self.driver.get_window_size()
+        width = screen_size["width"] // 2
+        start_y = int(screen_size["height"] * 0.3)
+        end_y = int(screen_size["height"] * 0.7)
+
+        self.driver.execute_script("mobile: swipeGesture", {
+            "left": width,
+            "top": start_y,
+            "width": 10,
+            "height": end_y - start_y,
+            "direction": "down",
+            "percent": 0.75
+        })

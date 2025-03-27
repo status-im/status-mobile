@@ -167,12 +167,42 @@ class Driver(webdriver.Remote):
 
 class Errors:
     def __init__(self):
-        self.errors = list()
+        self.errors = []
 
-    def append(self, view: BaseView, text: str):
-        error_text = "Device %s: %s" % (view.driver.number, text)
+    def _add_error(self, view: BaseView, text):
+        """
+        Adds an error message to the list and logs it.
+
+        Args:
+            view (BaseView): The view object containing the driver.
+            text (str): The error message to log.
+        """
+        error_text = f"Device {view.driver.number}: {text}"
         self.errors.append(error_text)
         view.driver.log_event("appium", error_text)
+
+    def append(self, view: BaseView, errors: list | str):
+        """
+        Appends errors to the error list and logs them.
+
+        Args:
+            view (BaseView): The view object containing the driver.
+            errors (str | list): A single error message or a list of error messages.
+
+        Raises:
+            TypeError: If the provided errors argument is not a string or a list of strings.
+        """
+        if isinstance(errors, str):
+            self._add_error(view, errors)
+        elif isinstance(errors, list) and all(isinstance(error, str) for error in errors):
+            for error in errors:
+                self._add_error(view, error)
+        else:
+            raise TypeError(f"Invalid type for errors: {type(errors)}. Expected str or list of str.")
+
+
+
+
 
     def verify_no_errors(self):
         if self.errors:
