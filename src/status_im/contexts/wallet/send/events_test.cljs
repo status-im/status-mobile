@@ -9,6 +9,14 @@
     [test-helpers.unit :as h]
     [utils.money :as money]))
 
+(defn make-send-structure
+  [send-data]
+  {:wallet {:ui {:send send-data}}})
+
+(defn extract-send-key
+  [result send-key]
+  (get-in result [:db :wallet :ui :send send-key]))
+
 (defn collectible-with-balance
   [balance]
   {:name "DOG #1"
@@ -25,8 +33,8 @@
   (testing "reciever networks changed"
     (let [selected-networks-before [:ethereum :optimism :arbitrum]
           selected-networks-after  [:ethereum :optimism]
-          expected-db              {:wallet {:ui {:send {:receiver-networks selected-networks-after}}}}]
-      (reset! rf-db/app-db {:wallet {:ui {:send {:receiver-networks selected-networks-before}}}})
+          expected-db              (make-send-structure {:receiver-networks selected-networks-after})]
+      (reset! rf-db/app-db (make-send-structure {:receiver-networks selected-networks-before}))
       (is (match? expected-db (:db (dispatch [event-id selected-networks-after])))))))
 
 (h/deftest-event :wallet/set-token-to-send
@@ -39,37 +47,37 @@
                                        {:chain-id 11155111}}}
         receiver-networks [421614 11155420]]
     (testing "can be called with :token"
-      (let [initial-db  {:wallet {:ui {:send {:receiver-networks receiver-networks}}}}
-            expected-db {:wallet {:ui {:send {:token-display-name token-symbol
-                                              :token-symbol       token-symbol}}}}
+      (let [initial-db  (make-send-structure {:receiver-networks receiver-networks})
+            expected-db (make-send-structure {:token-display-name token-symbol
+                                              :token-symbol       token-symbol})
             _ (reset! rf-db/app-db initial-db)
             result      (dispatch [event-id {:token token}])]
         (is (match? expected-db (:db result)))))
     (testing "can be called with :token-symbol"
-      (let [initial-db  {:wallet {:ui {:send {:receiver-networks receiver-networks}}}}
-            expected-db {:wallet {:ui {:send {:token-symbol token-symbol}}}}
+      (let [initial-db  (make-send-structure {:receiver-networks receiver-networks})
+            expected-db (make-send-structure {:token-symbol token-symbol})
             _ (reset! rf-db/app-db initial-db)
             result      (dispatch [event-id {:token-symbol token-symbol}])]
         (is (match? expected-db (:db result)))))
     (testing "shouldn't have changes if called without :token or :token-symbol")
-    (let [initial-db  {:wallet {:ui {:send {:receiver-networks receiver-networks}}}}
+    (let [initial-db  (make-send-structure {:receiver-networks receiver-networks})
           expected-db nil
           _ (reset! rf-db/app-db initial-db)
           result      (dispatch [event-id {}])]
       (is (match? expected-db (:db result))))
     (testing "should clean :collectible set"
-      (let [initial-db  {:wallet {:ui {:send {:receiver-networks receiver-networks
-                                              :collectible       "some-collectible"}}}}
-            expected-db {:wallet {:ui {:send {:token-display-name token-symbol}}}}
+      (let [initial-db  (make-send-structure {:receiver-networks receiver-networks
+                                              :collectible       "some-collectible"})
+            expected-db (make-send-structure {:token-display-name token-symbol})
             _ (reset! rf-db/app-db initial-db)
             result      (dispatch [event-id
                                    {:token   token
                                     :network "network"}])]
         (is (match? expected-db (:db result)))
-        (is (match? nil (get-in result [:db :wallet :ui :send :collectible])))))
+        (is (match? nil (extract-send-key result :collectible)))))
     (testing "should set :token-not-supported-in-receiver-networks?"
-      (let [initial-db  {:wallet {:ui {:send {:receiver-networks []}}}}
-            expected-db {:wallet {:ui {:send {:token-display-name token-symbol}}}}
+      (let [initial-db  (make-send-structure {:receiver-networks []})
+            expected-db (make-send-structure {:token-display-name token-symbol})
             _ (reset! rf-db/app-db initial-db)
             result      (dispatch [event-id {:token token}])]
         (is (match? expected-db (:db result)))))))
@@ -87,20 +95,20 @@
                                                  {:chain-id 11155111}}}
         receiver-networks [421614 11155420]]
     (testing "can be called with :token"
-      (let [initial-db  {:wallet {:ui {:send {:receiver-networks receiver-networks
+      (let [initial-db  (make-send-structure {:receiver-networks receiver-networks
                                               :token-display-name "DAI"
-                                              :token-not-supported-in-receiver-networks? true}}}}
-            expected-db {:wallet {:ui {:send {:token-display-name                        token-symbol
-                                              :token-not-supported-in-receiver-networks? false}}}}
+                                              :token-not-supported-in-receiver-networks? true})
+            expected-db (make-send-structure {:token-display-name                        token-symbol
+                                              :token-not-supported-in-receiver-networks? false})
             _ (reset! rf-db/app-db initial-db)
             result      (dispatch [event-id token])]
         (is (match? expected-db (:db result)))))
     (testing "should set :token-not-supported-in-receiver-networks?"
-      (let [initial-db  {:wallet {:ui {:send {:receiver-networks                         []
+      (let [initial-db  (make-send-structure {:receiver-networks                         []
                                               :token-display-name                        "DAI"
-                                              :token-not-supported-in-receiver-networks? false}}}}
-            expected-db {:wallet {:ui {:send {:token-display-name                        token-symbol
-                                              :token-not-supported-in-receiver-networks? true}}}}
+                                              :token-not-supported-in-receiver-networks? false})
+            expected-db (make-send-structure {:token-display-name                        token-symbol
+                                              :token-not-supported-in-receiver-networks? true})
             _ (reset! rf-db/app-db initial-db)
             result      (dispatch [event-id token])]
         (is (match? expected-db (:db result)))))))
@@ -129,23 +137,23 @@
       :preview-url
       {:uri
        "https://ipfs.io/ipfs/bafybeie7b7g7iibpac4k6ydw4m5ivgqw5vov7oyzlf4v5zoor57wokmsxy/isolated-happy-smiling-dog-white-background-portrait-4_1562-693.avif"}}
-     initial-db {:wallet {:ui {:send {:token {:symbol "ETH"}}}}}
+     initial-db (make-send-structure {:token {:symbol "ETH"}})
      _ (reset! rf-db/app-db initial-db)
      result (dispatch [event-id {:collectible collectible}])]
     (testing ":collectible field assigned"
-      (is (match? collectible (get-in result [:db :wallet :ui :send :collectible]))))
+      (is (match? collectible (extract-send-key result :collectible))))
     (testing ":token should be removed"
-      (is (match? nil (get-in result [:db :wallet :ui :send :token]))))
+      (is (match? nil (extract-send-key result :token))))
     (testing ":token-display-name assigned"
-      (is (match? "DOG #1" (get-in result [:db :wallet :ui :send :token-display-name]))))
+      (is (match? "DOG #1" (extract-send-key result :token-display-name))))
     (testing ":tx-type assigned"
-      (is (match? :tx/collectible-erc-1155 (get-in result [:db :wallet :ui :send :tx-type]))))
+      (is (match? :tx/collectible-erc-1155 (extract-send-key result :tx-type))))
     (testing "amount set if collectible was single"
-      (is (match? 1 (get-in result [:db :wallet :ui :send :amount]))))))
+      (is (match? 1 (extract-send-key result :amount))))))
 
 (h/deftest-event :wallet/set-collectible-amount-to-send
   [event-id dispatch]
-  (let [initial-db  {:wallet {:ui {:send nil}}}
+  (let [initial-db  (make-send-structure nil)
         expected-fx [[:dispatch [:wallet/start-get-suggested-routes {:amount 10}]]
                      [:dispatch
                       [:wallet/wizard-navigate-forward
@@ -154,18 +162,18 @@
         _ (reset! rf-db/app-db initial-db)
         result      (dispatch [event-id {:amount amount}])]
     (testing "amount set"
-      (is (match? amount (get-in result [:db :wallet :ui :send :amount]))))
+      (is (match? amount (extract-send-key result :amount))))
     (testing "effects match"
       (is (match? expected-fx (:fx result))))))
 
 (h/deftest-event :wallet/set-token-amount-to-send
   [event-id dispatch]
-  (let [initial-db {:wallet {:ui {:send {:token {:symbol "ETH"}}}}}
+  (let [initial-db (make-send-structure {:token {:symbol "ETH"}})
         amount     10
         _ (reset! rf-db/app-db initial-db)
         result     (dispatch [event-id {:amount amount}])]
     (testing "amount set"
-      (is (match? amount (get-in result [:db :wallet :ui :send :amount]))))))
+      (is (match? amount (extract-send-key result :amount))))))
 
 (h/deftest-event :wallet/clean-send-data
   [event-id dispatch]
@@ -178,54 +186,53 @@
         receiver-networks [421614 11155420]
         expected-db       {:wallet {:ui {:other-props :value}}}]
     (reset! rf-db/app-db
-      {:wallet {:ui {:send        {:token-display-name token-symbol
-                                   :token              token
-                                   :receiver-networks  receiver-networks}
-                     :other-props :value}}})
+      (-> (make-send-structure {:token-display-name token-symbol
+                                :token              token
+                                :receiver-networks  receiver-networks})
+          (assoc-in [:wallet :ui :other-props] :value)))
     (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/select-address-tab
   [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:select-address-tab "tab"}}}}]
-    (reset! rf-db/app-db
-      {:wallet {:ui {:send nil}}})
+  (let [expected-db (make-send-structure {:select-address-tab "tab"})]
+    (reset! rf-db/app-db (make-send-structure nil))
     (is (match? expected-db (:db (dispatch [event-id "tab"]))))))
 
 (h/deftest-event :wallet/clean-send-address
   [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+  (let [expected-db (make-send-structure {:other-props :value})]
     (reset! rf-db/app-db
-      {:wallet {:ui {:send {:to-address  "0x01"
+      (make-send-structure {:to-address  "0x01"
                             :recipient   {:recipient-type :saved-address
                                           :label          "label"}
-                            :other-props :value}}}})
+                            :other-props :value}))
     (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/clean-send-amount
   [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+  (let [expected-db (make-send-structure {:other-props :value})]
     (reset! rf-db/app-db
-      {:wallet {:ui {:send {:amount      10
-                            :other-props :value}}}})
+      (make-send-structure {:amount      10
+                            :other-props :value}))
     (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/clean-selected-token
   [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+  (let [expected-db (make-send-structure {:other-props :value})]
     (reset! rf-db/app-db
-      {:wallet {:ui {:send {:other-props        :value
+      (make-send-structure {:other-props        :value
                             :token              "ETH"
-                            :token-display-name "ETH"}}}})
+                            :token-display-name "ETH"}))
     (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/clean-selected-collectible
   [event-id dispatch]
-  (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+  (let [expected-db (make-send-structure {:other-props :value})]
     (reset! rf-db/app-db
-      {:wallet {:ui {:send {:other-props        :value
+      (make-send-structure {:other-props        :value
                             :collectible        "ETH"
                             :token-display-name "ETH"
-                            :amount             10}}}})
+                            :amount             10}))
     (is (match-strict? expected-db (:db (dispatch [event-id]))))))
 
 (h/deftest-event :wallet/suggested-routes-error
@@ -233,25 +240,25 @@
   (let [sender-network-amounts   [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}
                                   {:chain-id 10 :total-amount (money/bignumber "200") :type :default}]
         receiver-network-amounts [{:chain-id 1 :total-amount (money/bignumber "100") :type :loading}]
-        expected-result          {:db {:wallet {:ui {:send
-                                                     {:sender-network-values
-                                                      (send-utils/reset-loading-network-amounts-to-zero
-                                                       sender-network-amounts)
-                                                      :receiver-network-values
-                                                      (send-utils/reset-loading-network-amounts-to-zero
-                                                       receiver-network-amounts)
-                                                      :loading-suggested-routes? false
-                                                      :suggested-routes {:best []}}}}}
+        expected-result          {:db (make-send-structure
+                                       {:sender-network-values
+                                        (send-utils/reset-loading-network-amounts-to-zero
+                                         sender-network-amounts)
+                                        :receiver-network-values
+                                        (send-utils/reset-loading-network-amounts-to-zero
+                                         receiver-network-amounts)
+                                        :loading-suggested-routes? false
+                                        :suggested-routes {:best []}})
                                   :fx [[:dispatch
                                         [:toasts/upsert
                                          {:id   :send-transaction-error
                                           :type :negative
                                           :text "error"}]]]}]
     (reset! rf-db/app-db
-      {:wallet {:ui {:send {:sender-network-values     sender-network-amounts
+      (make-send-structure {:sender-network-values     sender-network-amounts
                             :receiver-network-values   receiver-network-amounts
                             :route                     :values
-                            :loading-suggested-routes? true}}}})
+                            :loading-suggested-routes? true}))
     (is (match? expected-result (dispatch [event-id "error"])))))
 
 (h/deftest-event :wallet/reset-network-amounts-to-zero
@@ -262,37 +269,37 @@
         sender-network-zero     (send-utils/reset-network-amounts-to-zero sender-network-values)
         receiver-network-zero   (send-utils/reset-network-amounts-to-zero receiver-network-values)]
     (testing "if sender-network-value and receiver-network-value are not empty"
-      (let [expected-db {:wallet {:ui {:send {:other-props             :value
+      (let [expected-db (make-send-structure {:other-props             :value
                                               :sender-network-values   sender-network-zero
-                                              :receiver-network-values receiver-network-zero}}}}]
+                                              :receiver-network-values receiver-network-zero})]
         (reset! rf-db/app-db
-          {:wallet {:ui {:send {:other-props             :value
+          (make-send-structure {:other-props             :value
                                 :sender-network-values   sender-network-values
                                 :receiver-network-values receiver-network-values
                                 :network-links           [{:from-chain-id 1
                                                            :to-chain-id   10
-                                                           :position-diff 1}]}}}})
+                                                           :position-diff 1}]}))
         (is (match? expected-db (:db (dispatch [event-id]))))))
     (testing "if only receiver-network-value is empty"
-      (let [expected-db {:wallet {:ui {:send {:other-props           :value
-                                              :sender-network-values sender-network-zero}}}}]
+      (let [expected-db (make-send-structure {:other-props           :value
+                                              :sender-network-values sender-network-zero})]
         (reset! rf-db/app-db
-          {:wallet {:ui {:send {:other-props             :value
+          (make-send-structure {:other-props             :value
                                 :sender-network-values   sender-network-values
                                 :receiver-network-values []
                                 :network-links           [{:from-chain-id 1
                                                            :to-chain-id   10
-                                                           :position-diff 1}]}}}})
+                                                           :position-diff 1}]}))
         (is (match? expected-db (:db (dispatch [event-id]))))))
     (testing "if receiver-network-value and sender-network-values are empty"
-      (let [expected-db {:wallet {:ui {:send {:other-props :value}}}}]
+      (let [expected-db (make-send-structure {:other-props :value})]
         (reset! rf-db/app-db
-          {:wallet {:ui {:send {:other-props             :value
+          (make-send-structure {:other-props             :value
                                 :sender-network-values   []
                                 :receiver-network-values []
                                 :network-links           [{:from-chain-id 1
                                                            :to-chain-id   10
-                                                           :position-diff 1}]}}}})
+                                                           :position-diff 1}]}))
         (is (match? expected-db (:db (dispatch [event-id]))))))))
 
 (h/deftest-event :wallet/select-send-address
@@ -307,12 +314,11 @@
     (testing "testing when collectible balance is more than 1"
       (let [collectible      (collectible-with-balance 2)
             testnet-enabled? false
-            expected-result  {:db {:wallet          {:ui {:send {:other-props :value
-                                                                 :recipient   recipient
-                                                                 :to-address  to-address
-                                                                 :tx-type     tx-type
-                                                                 :collectible collectible}}}
-                                   :profile/profile {:test-networks-enabled? false}}
+            expected-result  {:db (make-send-structure {:other-props :value
+                                                        :recipient   recipient
+                                                        :to-address  to-address
+                                                        :tx-type     tx-type
+                                                        :collectible collectible})
                               :fx [nil
                                    [:dispatch
                                     [:wallet/wizard-navigate-forward
@@ -334,12 +340,11 @@
     (testing "testing when collectible balance is 1"
       (let [collectible      (collectible-with-balance 1)
             testnet-enabled? false
-            expected-result  {:db {:wallet          {:ui {:send {:other-props :value
-                                                                 :recipient   recipient
-                                                                 :to-address  to-address
-                                                                 :tx-type     tx-type
-                                                                 :collectible collectible}}}
-                                   :profile/profile {:test-networks-enabled? false}}
+            expected-result  {:db (make-send-structure {:other-props :value
+                                                        :recipient   recipient
+                                                        :to-address  to-address
+                                                        :tx-type     tx-type
+                                                        :collectible collectible})
                               :fx [[:dispatch [:wallet/start-get-suggested-routes {:amount 1}]]
                                    [:dispatch
                                     [:wallet/wizard-navigate-forward
@@ -457,28 +462,28 @@
                                             sender-possible-chain-ids)))
                                         (send-utils/reset-loading-network-amounts-to-zero
                                          sender-network-values))
-        expected-db                   {:wallet {:ui {:send
-                                                     {:other-props :value
-                                                      :suggested-routes suggested-routes-data
-                                                      :route chosen-route
-                                                      :token token
-                                                      :suggested-routes-call-timestamp timestamp
-                                                      :collectible (collectible-with-balance 1)
-                                                      :token-display-name token-symbol
-                                                      :receiver-networks receiver-networks
-                                                      :tx-type tx-type
-                                                      :from-values-by-chain from-network-values-for-ui
-                                                      :to-values-by-chain to-network-values-for-ui
-                                                      :sender-network-values sender-network-values
-                                                      :receiver-network-values receiver-network-values
-                                                      :network-links (when routes-available?
-                                                                       (send-utils/network-links
-                                                                        chosen-route
-                                                                        sender-network-values
-                                                                        receiver-network-values))
-                                                      :loading-suggested-routes? false}}}}]
+        expected-db                   (make-send-structure
+                                       {:other-props                     :value
+                                        :suggested-routes                suggested-routes-data
+                                        :route                           chosen-route
+                                        :token                           token
+                                        :suggested-routes-call-timestamp timestamp
+                                        :collectible                     (collectible-with-balance 1)
+                                        :token-display-name              token-symbol
+                                        :receiver-networks               receiver-networks
+                                        :tx-type                         tx-type
+                                        :from-values-by-chain            from-network-values-for-ui
+                                        :to-values-by-chain              to-network-values-for-ui
+                                        :sender-network-values           sender-network-values
+                                        :receiver-network-values         receiver-network-values
+                                        :network-links                   (when routes-available?
+                                                                           (send-utils/network-links
+                                                                            chosen-route
+                                                                            sender-network-values
+                                                                            receiver-network-values))
+                                        :loading-suggested-routes?       false})]
     (reset! rf-db/app-db
-      {:wallet {:ui {:send {:other-props                     :value
+      (make-send-structure {:other-props                     :value
                             :suggested-routes-call-timestamp timestamp
                             :token                           token
                             :collectible                     (collectible-with-balance 1)
@@ -486,7 +491,7 @@
                             :receiver-networks               receiver-networks
                             :receiver-network-values         [1 10]
                             :sender-network-values           [1 10]
-                            :tx-type                         tx-type}}}})
+                            :tx-type                         tx-type}))
     (is (match? expected-db (:db (dispatch [event-id suggested-routes timestamp]))))))
 
 (h/deftest-event :wallet/select-from-account
@@ -498,15 +503,15 @@
     (testing "when tx-type is :tx/bridge and token-symbol is nil"
       (let [flow-id         :wallet-bridge-flow
             tx-type         :tx/bridge
-            expected-result {:db {:wallet {:ui {:send {:to-address address
-                                                       :tx-type    tx-type}}}}
+            expected-result {:db (make-send-structure {:to-address address
+                                                       :tx-type    tx-type})
                              :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
                                   [:dispatch
                                    [:wallet/wizard-navigate-forward
                                     {:current-screen stack-id
                                      :start-flow?    start-flow?
                                      :flow-id        flow-id}]]]}]
-        (reset! rf-db/app-db {:wallet {:ui {:send {:tx-type tx-type}}}})
+        (reset! rf-db/app-db (make-send-structure {:tx-type tx-type}))
         (is (match? expected-result
                     (dispatch [event-id
                                {:address     address
@@ -515,15 +520,15 @@
     (testing "when tx-type is :tx/bridge, network is selected and token-symbol is nil"
       (let [flow-id         :wallet-bridge-flow
             tx-type         :tx/bridge
-            expected-result {:db {:wallet {:ui {:send {:to-address address
-                                                       :tx-type    tx-type}}}}
+            expected-result {:db (make-send-structure {:to-address address
+                                                       :tx-type    tx-type})
                              :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
                                   [:dispatch
                                    [:wallet/wizard-navigate-forward
                                     {:current-screen stack-id
                                      :start-flow?    start-flow?
                                      :flow-id        flow-id}]]]}]
-        (reset! rf-db/app-db {:wallet {:ui {:send {:tx-type tx-type}}}})
+        (reset! rf-db/app-db (make-send-structure {:tx-type tx-type}))
         (is (match? expected-result
                     (dispatch [event-id
                                {:address     address
@@ -533,14 +538,14 @@
     (testing "when tx-type is not :tx/bridge and token-symbol is nil"
       (let [flow-id         :wallet-send-flow
             tx-type         :tx/collectible-erc-721
-            expected-result {:db {:wallet {:ui {:send {:tx-type tx-type}}}}
+            expected-result {:db (make-send-structure {:tx-type tx-type})
                              :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
                                   [:dispatch
                                    [:wallet/wizard-navigate-forward
                                     {:current-screen stack-id
                                      :start-flow?    start-flow?
                                      :flow-id        flow-id}]]]}]
-        (reset! rf-db/app-db {:wallet {:ui {:send {:tx-type tx-type}}}})
+        (reset! rf-db/app-db (make-send-structure {:tx-type tx-type}))
         (is (match? expected-result
                     (dispatch [event-id
                                {:address     address
@@ -549,13 +554,13 @@
                                 :start-flow? start-flow?}])))))
     (testing "when tx-type is :tx/bridge and token-symbol is not nil"
       (let [tx-type         :tx/bridge
-            expected-result {:db {:wallet {:ui {:send {:to-address address
-                                                       :tx-type    tx-type}}}}
+            expected-result {:db (make-send-structure {:to-address address
+                                                       :tx-type    tx-type})
                              :fx [[:dispatch [:dismiss-modal :screen/wallet.select-from]]
                                   [:dispatch [:wallet/switch-current-viewing-account address]]
                                   [:dispatch [:show-bottom-sheet {:content (m/pred fn?)}]]]}]
-        (reset! rf-db/app-db {:wallet {:ui {:send {:tx-type      tx-type
-                                                   :token-symbol "ETH"}}}})
+        (reset! rf-db/app-db (make-send-structure {:tx-type      tx-type
+                                                   :token-symbol "ETH"}))
         (is (match? expected-result
                     (dispatch [event-id
                                {:address     address
@@ -573,22 +578,24 @@
             network-details #{{:chain-id 1}
                               {:chain-id 10}
                               {:chain-id 42161}}
-            expected-result {:db {:wallet {:ui       {:send {:tx-type      tx-type
-                                                             :token-symbol "ETH"
-                                                             :token        (assoc (first tokens)
-                                                                                  :networks #{nil}
-                                                                                  :total-balance
-                                                                                  (money/bignumber 6))}}
-                                           :accounts {address {:tokens tokens}}}}
+            expected-result {:db (-> (make-send-structure {:tx-type      tx-type
+                                                           :token-symbol "ETH"
+                                                           :token        (assoc (first tokens)
+                                                                                :networks #{nil}
+                                                                                :total-balance
+                                                                                (money/bignumber
+                                                                                 6))})
+                                     (assoc-in [:wallet :accounts] {address {:tokens tokens}}))
+
                              :fx [[:dispatch [:wallet/switch-current-viewing-account address]]
                                   [:dispatch
                                    [:wallet/wizard-navigate-forward
                                     {:current-screen stack-id
                                      :start-flow?    start-flow?
                                      :flow-id        flow-id}]]]}]
-        (reset! rf-db/app-db {:wallet {:ui       {:send {:tx-type      tx-type
-                                                         :token-symbol "ETH"}}
-                                       :accounts {address {:tokens tokens}}}})
+        (reset! rf-db/app-db (-> (make-send-structure {:tx-type      tx-type
+                                                       :token-symbol "ETH"})
+                                 (assoc-in [:wallet :accounts] {address {:tokens tokens}})))
         (is (match? expected-result
                     (dispatch [event-id
                                {:address        address

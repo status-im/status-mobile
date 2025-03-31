@@ -2,6 +2,7 @@
   (:require
     [cljs.test :refer [is testing use-fixtures]]
     [re-frame.db :as rf-db]
+    [status-im.contexts.wallet.db-path :as db-path]
     [status-im.contexts.wallet.networks.config :as networks.config]
     [status-im.subs.root]
     [test-helpers.unit :as h]
@@ -890,7 +891,7 @@
       #(-> %
            (assoc-in [:wallet :accounts] accounts-with-tokens)
            (assoc-in [:wallet :current-viewing-account-address] "0x1")
-           (assoc-in [:wallet :ui :send :route] route-data)
+           (update-in db-path/send assoc :route route-data)
            (assoc :currencies currencies)
            (assoc-in [:wallet :tokens :prices-per-token]
                      {:ETH {:usd 2000} :DAI {:usd 1}})

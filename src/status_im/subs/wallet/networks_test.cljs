@@ -2,6 +2,7 @@
   (:require
     [cljs.test :refer [is testing]]
     [re-frame.db :as rf-db]
+    [status-im.contexts.wallet.db-path :as db-path]
     [status-im.contexts.wallet.networks.config :as networks.config]
     status-im.subs.root
     status-im.subs.wallet.networks
@@ -95,7 +96,7 @@
     (swap! rf-db/app-db #(-> %
                              (assoc-in [:wallet :networks-by-id] network-data-by-id)
                              (assoc-in
-                              [:wallet :ui :send]
+                              db-path/send
                               {:from-values-by-chain {mainnet-chain-id 100}
                                :to-values-by-chain   {arbitrum-chain-id 100}
                                :token-display-name   "ETH"})))
@@ -106,7 +107,7 @@
     (swap! rf-db/app-db #(-> %
                              (assoc-in [:wallet :networks-by-id] network-data-by-id)
                              (assoc-in
-                              [:wallet :ui :send]
+                              db-path/send
                               {:from-values-by-chain {mainnet-chain-id 100}
                                :to-values-by-chain   {arbitrum-chain-id 100}
                                :token-display-name   "ARB1"})))

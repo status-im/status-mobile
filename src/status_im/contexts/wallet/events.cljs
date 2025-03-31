@@ -13,6 +13,7 @@
     [status-im.contexts.wallet.common.activity-tab.events]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.data-store :as data-store]
+    [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.db-path :as db-path]
     [status-im.contexts.wallet.item-types :as item-types]
     [status-im.contexts.wallet.networks.db :as networks.db]
@@ -79,7 +80,7 @@
 (rf/reg-event-fx :wallet/clean-current-viewing-account
  (fn [{:keys [db]} [ignore-just-completed-transaction?]]
    (let [{:keys [entry-point just-completed-transaction?
-                 collectible-multiple-owners?]} (-> db :wallet :ui :send)
+                 collectible-multiple-owners?]} (db/send db)
          entry-point-wallet-home?               (= entry-point :screen/wallet-stack)]
      {:db (cond-> db
             (and (not entry-point)
@@ -88,7 +89,7 @@
             (update :wallet dissoc :current-viewing-account-address)
 
             (and entry-point-wallet-home? (not collectible-multiple-owners?))
-            (update-in [:wallet :ui :send] dissoc :entry-point)
+            (update-in db-path/send dissoc :entry-point)
 
             (and entry-point-wallet-home?
                  (not just-completed-transaction?))
@@ -96,7 +97,7 @@
 
 (rf/reg-event-fx :wallet/close-account-page
  (fn [{:keys [db]}]
-   (let [just-completed-transaction? (get-in db [:wallet :ui :send :just-completed-transaction?])]
+   (let [just-completed-transaction? (get-in db (conj db-path/send :just-completed-transaction?))]
      {:db (update db :wallet dissoc :current-viewing-account-address)
       :fx [(when-not just-completed-transaction?
              [:dispatch [:wallet/clear-account-tab]])
@@ -369,7 +370,7 @@
                                                                                   unique-owner)]
                                           (utils/token-with-balance token network-details))
                                         token)
-         missing-recipient?           (-> db :wallet :ui :send :to-address nil?)
+         missing-recipient?           (-> db db/send :to-address nil?)
          to-address                   (or unique-owner
                                           (-> db :wallet :current-viewing-account-address)
                                           (utils/get-default-account (-> db :wallet :accounts)))
@@ -391,11 +392,11 @@
                                                        network-details))
                                         network)]
      {:db (cond-> db
-            :always            (assoc-in [:wallet :ui :send :tx-type] :tx/bridge)
-            token              (assoc-in [:wallet :ui :send :token] token)
-            token-symbol       (assoc-in [:wallet :ui :send :token-symbol] token-symbol)
-            network            (assoc-in [:wallet :ui :send :network] network)
-            missing-recipient? (assoc-in [:wallet :ui :send :to-address] to-address))
+            :always            (update-in db-path/send assoc :tx-type :tx/bridge)
+            token              (update-in db-path/send assoc :token token)
+            token-symbol       (update-in db-path/send assoc :token-symbol token-symbol)
+            network            (update-in db-path/send assoc :network network)
+            missing-recipient? (update-in db-path/send assoc :to-address to-address))
       :fx (cond
             ;; If the token has a balance in more than one account and this was dispatched from the
             ;; general wallet screen, open the account selection screen.
@@ -432,7 +433,7 @@
 (rf/reg-event-fx
  :wallet/start-bridge
  (fn [{:keys [db]}]
-   {:db (assoc-in db [:wallet :ui :send :tx-type] :tx/bridge)
+   {:db (update-in db db-path/send assoc :tx-type :tx/bridge)
     :fx [[:dispatch
           [:wallet/wizard-navigate-forward
            {:start-flow? true
@@ -441,11 +442,11 @@
 (rf/reg-event-fx
  :wallet/set-send-tx-type
  (fn [{:keys [db]} [type]]
-   {:db (assoc-in db [:wallet :ui :send :tx-type] type)}))
+   {:db (update-in db db-path/send assoc :tx-type type)}))
 
 (rf/reg-event-fx :wallet/select-bridge-network
  (fn [{:keys [db]} [{:keys [network-chain-id stack-id]}]]
-   {:db (assoc-in db [:wallet :ui :send :bridge-to-chain-id] network-chain-id)
+   {:db (update-in db db-path/send assoc :bridge-to-chain-id network-chain-id)
     :fx [[:dispatch
           [:wallet/wizard-navigate-forward
            {:current-screen stack-id
@@ -782,3 +783,4 @@
  (fn [{:keys [db]}]
    {:db (assoc-in db [:wallet :ui :show-new-chain-indicator?] false)
     :fx [[:effects.wallet/set-base-chain-indicator-shown true]]}))
+

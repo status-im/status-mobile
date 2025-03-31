@@ -6,6 +6,8 @@
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.data-store :as data-store]
+    [status-im.contexts.wallet.db :as db]
+    [status-im.contexts.wallet.db-path :as db-path]
     [status-im.contexts.wallet.networks.db :as networks.db]
     [status-im.contexts.wallet.send.transaction-settings.core :as transaction-settings]
     [status-im.contexts.wallet.send.utils :as send-utils]
@@ -24,7 +26,7 @@
 
 (rf/reg-event-fx :wallet/select-address-tab
  (fn [{:keys [db]} [tab]]
-   {:db (assoc-in db [:wallet :ui :send :select-address-tab] tab)}))
+   {:db (update-in db db-path/send assoc :select-address-tab tab)}))
 
 (rf/reg-event-fx :wallet/stop-and-clean-suggested-routes
  (fn []
@@ -48,7 +50,7 @@
    (let [chosen-route                            (:best suggested-routes-data)
          {:keys [token collectible token-display-name
                  receiver-network-values
-                 sender-network-values tx-type]} (get-in db [:wallet :ui :send])
+                 sender-network-values tx-type]} (get-in db db-path/send)
          token-decimals                          (if collectible 0 (:decimals token))
          native-token?                           (and token (= token-display-name "ETH"))
          to-network-amounts-by-chain             (send-utils/network-amounts-by-chain
@@ -58,7 +60,7 @@
                                                    :receiver?      true})]
      (if-not enough-assets?
        {:db (update-in db
-                       [:wallet :ui :send]
+                       db-path/send
                        add-not-enough-assets-data
                        chosen-route
                        to-network-amounts-by-chain)}
@@ -88,7 +90,7 @@
                                                                        sender-network-values
                                                                        receiver-network-values))]
          {:db (update-in db
-                         [:wallet :ui :send]
+                         db-path/send
                          assoc
                          :suggested-routes          suggested-routes-data
                          :route                     chosen-route
@@ -103,27 +105,30 @@
 (rf/reg-event-fx
  :wallet/suggested-routes-error
  (fn [{:keys [db]} [error-message]]
-   {:db (-> db
-            (update-in [:wallet :ui :send] dissoc :route)
-            (update-in [:wallet :ui :send :sender-network-values]
-                       send-utils/reset-loading-network-amounts-to-zero)
-            (update-in [:wallet :ui :send :receiver-network-values]
-                       send-utils/reset-loading-network-amounts-to-zero)
-            (assoc-in [:wallet :ui :send :loading-suggested-routes?] false)
-            (assoc-in [:wallet :ui :send :suggested-routes] {:best []}))
-    :fx [[:dispatch
-          [:toasts/upsert
-           {:id   :send-transaction-error
-            :type :negative
-            :text error-message}]]]}))
+   (let [{:keys [sender-network-values receiver-network-values]} (get-in db db-path/send)]
+     {:db (-> db
+              (update-in db-path/send dissoc :route)
+              (update-in db-path/send
+                         assoc
+                         :sender-network-values
+                         (send-utils/reset-loading-network-amounts-to-zero sender-network-values)
+                         :receiver-network-values
+                         (send-utils/reset-loading-network-amounts-to-zero receiver-network-values)
+                         :loading-suggested-routes? false
+                         :suggested-routes {:best []}))
+      :fx [[:dispatch
+            [:toasts/upsert
+             {:id   :send-transaction-error
+              :type :negative
+              :text error-message}]]]})))
 
 (rf/reg-event-fx :wallet/clean-send-address
  (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui :send] dissoc :recipient :to-address)}))
+   {:db (update-in db db-path/send dissoc :recipient :to-address)}))
 
 (rf/reg-event-fx :wallet/clean-send-amount
  (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui :send] dissoc :amount)}))
+   {:db (update-in db db-path/send dissoc :amount)}))
 
 (rf/reg-event-fx
  :wallet/init-send-flow-for-address
@@ -141,7 +146,7 @@
 
             :always
             (update-in
-             [:wallet :ui :send]
+             db-path/send
              assoc
              :general-flow? true
              :recipient     (or recipient address)
@@ -163,15 +168,15 @@
  (fn [{:keys [db]} [{:keys [address recipient stack-id start-flow?]}]]
    (let [address          (utils.address/extract-address-without-chains-info address)
          sender           (get-in db [:wallet :current-viewing-account-address])
-         collectible-tx?  (send-utils/tx-type-collectible?
-                           (-> db :wallet :ui :send :tx-type))
-         collectible      (when collectible-tx?
-                            (-> db :wallet :ui :send :collectible))
+         collectible-tx?  (send-utils/tx-type-collectible? (-> db db/send :tx-type))
+         collectible      (when collectible-tx? (-> db db/send :collectible))
          one-collectible? (when collectible-tx?
                             (= (collectible.utils/collectible-balance collectible sender) 1))]
-     {:db (-> db
-              (assoc-in [:wallet :ui :send :recipient] (or recipient address))
-              (assoc-in [:wallet :ui :send :to-address] address))
+     {:db (update-in db
+                     db-path/send
+                     assoc
+                     :recipient  (or recipient address)
+                     :to-address address)
       :fx [(when (and collectible-tx? one-collectible?)
              [:dispatch [:wallet/start-get-suggested-routes {:amount 1}]])
            [:dispatch
@@ -183,8 +188,8 @@
 (rf/reg-event-fx
  :wallet/update-receiver-networks
  (fn [{:keys [db]} [selected-networks]]
-   (let [amount (get-in db [:wallet :ui :send :amount])]
-     {:db (assoc-in db [:wallet :ui :send :receiver-networks] selected-networks)
+   (let [amount (get-in db (conj db-path/send :amount))]
+     {:db (update-in db db-path/send assoc :receiver-networks selected-networks)
       :fx [[:dispatch [:wallet/start-get-suggested-routes {:amount amount}]]]})))
 
 (rf/reg-event-fx
@@ -221,12 +226,12 @@
                                         network)]
      (when (or token-data token-symbol)
        {:db (cond-> db
-              network      (update-in [:wallet :ui :send]
+              network      (update-in db-path/send
                                       #(-> %
                                            (dissoc :collectible)
                                            (assoc :network network)))
-              token-symbol (assoc-in [:wallet :ui :send :token-symbol] token-symbol)
-              token-data   (update-in [:wallet :ui :send]
+              token-symbol (update-in db-path/send assoc :token-symbol token-symbol)
+              token-data   (update-in db-path/send
                                       #(assoc %
                                               :token              (assoc token-data
                                                                          :supported-networks
@@ -236,8 +241,8 @@
                                               :token-display-name (:symbol token-data)
                                               :token-symbol       (:symbol token-data)))
               unique-owner (assoc-in [:wallet :current-viewing-account-address] unique-owner)
-              entry-point  (assoc-in [:wallet :ui :send :entry-point] entry-point)
-              :always      (assoc-in [:wallet :ui :send :tx-type] :tx/send))
+              entry-point  (update-in db-path/send assoc :entry-point entry-point)
+              :always      (update-in db-path/send assoc :tx-type :tx/send))
         :fx (cond
               ;; If the token has a balance in more than one account and this was dispatched from
               ;; the general wallet screen, open the account selection screen.
@@ -279,22 +284,24 @@
  (fn [{:keys [db]} [token]]
    (let [{token-networks :supported-networks
           token-symbol   :symbol}                  token
-         receiver-networks                         (get-in db [:wallet :ui :send :receiver-networks])
+         receiver-networks                         (get-in db (conj db-path/send :receiver-networks))
          token-networks-ids                        (map :chain-id token-networks)
          token-not-supported-in-receiver-networks? (not-any? (set receiver-networks)
                                                              token-networks-ids)]
-     {:db (-> db
-              (assoc-in [:wallet :ui :send :token] token)
-              (assoc-in [:wallet :ui :send :token-display-name] token-symbol)
-              (assoc-in [:wallet :ui :send :token-not-supported-in-receiver-networks?]
-                        token-not-supported-in-receiver-networks?))
+     {:db (update-in db
+                     db-path/send
+                     assoc
+                     :token token
+                     :token-display-name token-symbol
+                     :token-not-supported-in-receiver-networks?
+                     token-not-supported-in-receiver-networks?)
       :fx [[:dispatch [:hide-bottom-sheet]]
            [:dispatch [:wallet/stop-and-clean-suggested-routes]]]})))
 
 (rf/reg-event-fx :wallet/clean-selected-token
  (fn [{:keys [db]}]
    {:db (update-in db
-                   [:wallet :ui :send]
+                   db-path/send
                    dissoc
                    :token
                    :token-symbol
@@ -303,14 +310,15 @@
 
 (rf/reg-event-fx :wallet/clean-selected-collectible
  (fn [{:keys [db]} [{:keys [ignore-entry-point?]}]]
-   (let [entry-point-wallet-home? (= (get-in db [:wallet :ui :send :entry-point]) :screen/wallet-stack)
-         multiple-owners?         (get-in db [:wallet :ui :send :collectible-multiple-owners?])
-         transaction-type         (get-in db [:wallet :ui :send :tx-type])]
+   (let [{:keys [entry-point collectible-multiple-owners? tx-type]} (get-in db db-path/send)
+         entry-point-wallet-home?                                   (= entry-point :screen/wallet-stack)
+         multiple-owners?                                           collectible-multiple-owners?
+         transaction-type                                           tx-type]
      (when (or ignore-entry-point?
                (and entry-point-wallet-home? (not multiple-owners?))
                (not entry-point-wallet-home?))
        {:db (update-in db
-                       [:wallet :ui :send]
+                       db-path/send
                        dissoc
                        :collectible
                        :collectible-multiple-owners?
@@ -346,21 +354,23 @@
                               collectible
                               (str (:name collection-data) " #" collectible-id))
          collectible-tx     (-> db
-                                (update-in [:wallet :ui :send] dissoc :token)
-                                (assoc-in [:wallet :ui :send :entry-point] entry-point)
-                                (assoc-in [:wallet :ui :send :collectible] collectible)
-                                (assoc-in [:wallet :ui :send :collectible-multiple-owners?]
-                                          (not single-owner?))
-                                (assoc-in [:wallet :ui :send :token-display-name] token-display-name)
-                                (assoc-in [:wallet :ui :send :tx-type] tx-type))
-         recipient-set?     (-> db :wallet :ui :send :recipient)]
+                                (update-in db-path/send dissoc :token)
+                                (update-in db-path/send
+                                           assoc
+                                           :entry-point entry-point
+                                           :collectible collectible
+                                           :collectible-multiple-owners?
+                                           (not single-owner?)
+                                           :token-display-name token-display-name
+                                           :tx-type tx-type))
+         recipient-set?     (-> db db/send :recipient)]
      {:db (cond-> collectible-tx
 
             (and (not viewing-account?) single-owner?)
             (assoc-in [:wallet :current-viewing-account-address] owner-address)
 
             one-collectible?
-            (assoc-in [:wallet :ui :send :amount] 1))
+            (update-in db-path/send assoc :amount 1))
       :fx (if
             ;; If the collectible is present in multiple accounts, the user will be taken to select
             ;; the address to send from
@@ -378,7 +388,7 @@
 (rf/reg-event-fx
  :wallet/set-collectible-amount-to-send
  (fn [{db :db} [{:keys [stack-id amount]}]]
-   {:db (assoc-in db [:wallet :ui :send :amount] amount)
+   {:db (update-in db db-path/send assoc :amount amount)
     :fx [[:dispatch [:wallet/start-get-suggested-routes {:amount amount}]]
          [:dispatch
           [:wallet/wizard-navigate-forward
@@ -388,7 +398,7 @@
 (rf/reg-event-fx
  :wallet/set-token-amount-to-send
  (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
-   {:db (assoc-in db [:wallet :ui :send :amount] amount)
+   {:db (update-in db db-path/send assoc :amount amount)
     :fx [[:dispatch
           [:wallet/wizard-navigate-forward
            {:current-screen stack-id
@@ -398,8 +408,8 @@
 (rf/reg-event-fx
  :wallet.send/auth-slider-completed
  (fn [{:keys [db]}]
-   (let [last-request-uuid (get-in db [:wallet :ui :send :last-request-uuid])]
-     {:db (update-in db [:wallet :ui :send] dissoc :transaction-for-signing)
+   (let [last-request-uuid (get-in db (conj db-path/send :last-request-uuid))]
+     {:db (update-in db db-path/send dissoc :transaction-for-signing)
       :fx [[:dispatch [:wallet/build-transactions-from-route {:request-uuid last-request-uuid}]]
            [:dispatch
             [:wallet.send/set-sign-transactions-callback-fx
@@ -488,11 +498,11 @@
 (rf/reg-event-fx
  :wallet/build-transaction-for-collectible-route
  (fn [{:keys [db]}]
-   (let [last-request-uuid     (get-in db [:wallet :ui :send :last-request-uuid])
-         collectible-unique-id (get-in db [:wallet :ui :send :collectible :unique-id])]
+   (let [{:keys [last-request-uuid collectible]} (get-in db db-path/send)
+         collectible-unique-id                   (:unique-id collectible)]
      {:db (->
             db
-            (update-in [:wallet :ui :send] dissoc :transaction-for-signing)
+            (update-in db-path/send dissoc :transaction-for-signing)
             (assoc-in [:wallet :ui :collectibles :pending collectible-unique-id] true))
       :fx [[:dispatch [:wallet/build-transactions-from-route {:request-uuid last-request-uuid}]]]})))
 
@@ -500,8 +510,8 @@
  :wallet/set-token-amount-to-bridge
  (fn [{:keys [db]} [{:keys [amount stack-id start-flow?]}]]
    {:db (-> db
-            (assoc-in [:wallet :ui :send :amount] amount)
-            (update-in [:wallet :ui :send] dissoc :transaction-for-signing))
+            (update-in db-path/send assoc :amount amount)
+            (update-in db-path/send dissoc :transaction-for-signing))
     :fx [[:dispatch
           [:wallet/wizard-navigate-forward
            {:current-screen stack-id
@@ -511,7 +521,7 @@
 (rf/reg-event-fx
  :wallet/clean-bridge-to-selection
  (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui :send] dissoc :bridge-to-chain-id)}))
+   {:db (update-in db db-path/send dissoc :bridge-to-chain-id)}))
 
 (rf/reg-event-fx
  :wallet/clean-suggested-routes
@@ -519,18 +529,22 @@
    (let [keys-to-remove [:to-values-by-chain :network-links :sender-network-values :route
                          :receiver-network-values :suggested-routes :from-values-by-chain
                          :loading-suggested-routes? :amount :enough-assets?]]
-     {:db (update-in db [:wallet :ui :send] #(apply dissoc % keys-to-remove))})))
+     {:db (update-in db db-path/send #(apply dissoc % keys-to-remove))})))
 
 (rf/reg-event-fx :wallet/reset-network-amounts-to-zero
  (fn [{:keys [db]}]
-   (let [sender-network-values   (get-in db [:wallet :ui :send :sender-network-values])
-         receiver-network-values (get-in db [:wallet :ui :send :receiver-network-values])
-         sender-network-values   (send-utils/reset-network-amounts-to-zero sender-network-values)
-         receiver-network-values (send-utils/reset-network-amounts-to-zero receiver-network-values)]
+   (let [{:keys [sender-network-values
+                 receiver-network-values]} (get-in db db-path/send)
+         sender-network-values             (send-utils/reset-network-amounts-to-zero
+                                            sender-network-values)
+         receiver-network-values           (send-utils/reset-network-amounts-to-zero
+                                            receiver-network-values)]
      {:db (-> db
-              (assoc-in [:wallet :ui :send :sender-network-values] sender-network-values)
-              (assoc-in [:wallet :ui :send :receiver-network-values] receiver-network-values)
-              (update-in [:wallet :ui :send]
+              (update-in db-path/send
+                         assoc
+                         :sender-network-values   sender-network-values
+                         :receiver-network-values receiver-network-values)
+              (update-in db-path/send
                          dissoc
                          :network-links
                          (when (empty? sender-network-values) :sender-network-values)
@@ -541,7 +555,7 @@
    (let [wallet-address                (get-in db [:wallet :current-viewing-account-address])
          {:keys [token tx-type collectible to-address
                  network bridge-to-chain-id]
-          :or   {token updated-token}} (get-in db [:wallet :ui :send])
+          :or   {token updated-token}} (get-in db db-path/send)
          network-chain-ids             (networks.db/get-chain-ids db)
          token-decimal                 (when token (:decimals token))
          token-id                      (utils/format-token-id token collectible)
@@ -592,7 +606,7 @@
                                          :packID               (:packID args)}]]
      (when (and to-address from-address amount-in token-id)
        {:db            (update-in db
-                                  [:wallet :ui :send]
+                                  db-path/send
                                   #(-> %
                                        (assoc :last-request-uuid         request-uuid
                                               :amount                    amount
@@ -614,7 +628,7 @@
  (fn [{:keys [db]}]
    ;; Adding a key to prevent processing route signals in the client until the routes generation is
    ;; stopped. This is to ensure no route signals are processed when we make the RPC call
-   {:db (assoc-in db [:wallet :ui :send :skip-processing-suggested-routes?] true)
+   {:db (update-in db db-path/send assoc :skip-processing-suggested-routes? true)
     :fx [[:json-rpc/call
           [{:method   "wallet_stopSuggestedRoutesAsyncCalculation"
             :params   []
@@ -628,9 +642,9 @@
  (fn [{:keys [db]} [data]]
    (let [{send :send swap? :swap} (-> db :wallet :ui)
          skip-processing-routes?  (:skip-processing-suggested-routes? send)
-         clean-user-tx-settings?  (get-in db
-                                          [:wallet :ui :send :user-tx-settings
-                                           :delete-on-routes-update?])]
+         clean-user-tx-settings?  (get-in
+                                   db
+                                   (conj db-path/send :user-tx-settings :delete-on-routes-update?))]
      (when (or swap? (not skip-processing-routes?))
        (let [{error-code :code
               :as        error} (:ErrorResponse data)
@@ -643,7 +657,7 @@
                        :error error-message}))
          (merge
           (when clean-user-tx-settings?
-            {:db (update-in db [:wallet :ui :send] dissoc :user-tx-settings)})
+            {:db (update-in db db-path/send dissoc :user-tx-settings)})
           {:fx [[:dispatch
                  (cond
                    (and failure? swap?) [:wallet/swap-proposal-error error]
@@ -661,8 +675,10 @@
                                   vals
                                   (map :hash))]
      {:db (-> db
-              (assoc-in [:wallet :ui :send :just-completed-transaction?] true)
-              (assoc-in [:wallet :ui :send :transaction-ids] transaction-ids)
+              (update-in db-path/send
+                         assoc
+                         :just-completed-transaction? true
+                         :transaction-ids             transaction-ids)
               (assoc-in [:wallet :transactions] (merge wallet-transactions transactions)))
       :fx [[:dispatch [:wallet/end-transaction-flow]]
            [:dispatch-later
@@ -687,7 +703,7 @@
 
 (rf/reg-event-fx :wallet/clean-just-completed-transaction
  (fn [{:keys [db]}]
-   {:db (update-in db [:wallet :ui :send] dissoc :just-completed-transaction?)}))
+   {:db (update-in db db-path/send dissoc :just-completed-transaction?)}))
 
 (rf/reg-event-fx :wallet/clean-up-transaction-flow
  (fn [_]
@@ -726,7 +742,7 @@
  :wallet/select-from-account
  (fn [{db :db} [{:keys [address stack-id network-details network start-flow?] :as params}]]
    (let [{:keys [token-symbol
-                 tx-type]}            (-> db :wallet :ui :send)
+                 tx-type]}            (db/send db)
          no-tx-type?                  (nil? tx-type)
          collectible-tx?              (send-utils/tx-type-collectible? tx-type)
          token                        (when token-symbol
@@ -754,9 +770,9 @@
                                                        network-details))
                                         network)]
      {:db (cond-> db
-            network      (assoc-in [:wallet :ui :send :network] network)
-            token-symbol (assoc-in [:wallet :ui :send :token] token)
-            bridge-tx?   (assoc-in [:wallet :ui :send :to-address] address))
+            network      (update-in db-path/send assoc :network network)
+            token-symbol (update-in db-path/send assoc :token token)
+            bridge-tx?   (update-in db-path/send assoc :to-address address))
       :fx (if (or no-tx-type? (some? network) collectible-tx? (not asset-selected?))
             [[:dispatch [:wallet/switch-current-viewing-account address]]
              [:dispatch
@@ -781,9 +797,9 @@
 (rf/reg-event-fx
  :wallet/clean-route-data-for-collectible-tx
  (fn [{db :db}]
-   (when (send-utils/tx-type-collectible? (-> db :wallet :ui :send :tx-type))
+   (when (send-utils/tx-type-collectible? (-> db db/send :tx-type))
      {:db (update-in db
-                     [:wallet :ui :send]
+                     db-path/send
                      dissoc
                      :amount
                      :route
@@ -797,31 +813,31 @@
  :wallet/collectible-amount-navigate-back
  (fn [{db :db} [{:keys []}]]
    (let [keep-tx-data? (#{:account-collectible-tab :screen/wallet-stack}
-                        (-> db :wallet :ui :send :entry-point))]
+                        (-> db db/send :entry-point))]
      {:db (cond-> db
-            :always             (update-in [:wallet :ui :send] dissoc :amount :route)
-            (not keep-tx-data?) (update-in [:wallet :ui :send] dissoc :tx-type))
+            :always             (update-in db-path/send dissoc :amount :route)
+            (not keep-tx-data?) (update-in db-path/send dissoc :tx-type))
       :fx [[:dispatch [:navigate-back]]]})))
 
 (rf/reg-event-fx
  :wallet.send/set-max-base-fee
  (fn [{db :db} [value]]
-   {:db (assoc-in db [:wallet :ui :send :user-tx-settings :max-base-fee] value)}))
+   {:db (assoc-in db (conj db-path/send :user-tx-settings :max-base-fee) value)}))
 
 (rf/reg-event-fx
  :wallet.send/set-priority-fee
  (fn [{db :db} [value]]
-   {:db (assoc-in db [:wallet :ui :send :user-tx-settings :priority-fee] value)}))
-(rf/reg-event-fx
+   {:db (assoc-in db (conj db-path/send :user-tx-settings :priority-fee) value)}))
 
+(rf/reg-event-fx
  :wallet.send/set-max-gas-amount
  (fn [{db :db} [value]]
-   {:db (assoc-in db [:wallet :ui :send :user-tx-settings :gas-amount] value)}))
+   {:db (assoc-in db (conj db-path/send :user-tx-settings :gas-amount) value)}))
 
 (rf/reg-event-fx
  :wallet.send/set-nonce
  (fn [{db :db} [value]]
-   {:db (assoc-in db [:wallet :ui :send :user-tx-settings :nonce] value)}))
+   {:db (assoc-in db (conj db-path/send :user-tx-settings :nonce) value)}))
 
 (defn set-fee-mode-effect
   [path-tx-identity gas-rate]
@@ -838,16 +854,17 @@
 
 (rf/reg-event-fx :wallet.send/quick-fee-mode-confirmed
  (fn [{db :db} [fee-mode]]
-   (let [gas-rate        (transaction-settings/tx-fee-mode->gas-rate fee-mode)
-         tx-type         (get-in db [:wallet :ui :send :tx-type])
-         route           (first (get-in db [:wallet :ui :send :route]))
+   (let [gas-rate                (transaction-settings/tx-fee-mode->gas-rate fee-mode)
+         {:keys [tx-type route]} (get-in db db-path/send)
+         path                    (first route)
          ;; bridge consist from 2 transactions - approval and send, so we need to apply
          ;; setting to both of them by making 2 calls
-         set-fee-effects (if (= tx-type :tx/bridge)
-                           [(set-fee-mode-effect (send-utils/path-identity route true) gas-rate)
-                            (set-fee-mode-effect (send-utils/path-identity route false) gas-rate)]
-                           [(set-fee-mode-effect (send-utils/path-identity route) gas-rate)])]
-     {:db (assoc-in db [:wallet :ui :send :user-fee-mode] fee-mode)
+         set-fee-effects         (if (= tx-type :tx/bridge)
+                                   [(set-fee-mode-effect (send-utils/path-identity path true) gas-rate)
+                                    (set-fee-mode-effect (send-utils/path-identity path false)
+                                                         gas-rate)]
+                                   [(set-fee-mode-effect (send-utils/path-identity path) gas-rate)])]
+     {:db (update-in db db-path/send assoc :user-fee-mode fee-mode)
       :fx (conj set-fee-effects
                 [:dispatch [:wallet.send/mark-user-tx-settings-for-deletion]])})))
 
@@ -865,20 +882,23 @@
 
 (rf/reg-event-fx :wallet.send/custom-transaction-settings-confirmed
  (fn [{db :db}]
-   (let [route                     (first (get-in db [:wallet :ui :send :route]))
-         tx-type                   (get-in db [:wallet :ui :send :tx-type])
-         user-tx-settings          (get-in db [:wallet :ui :send :user-tx-settings])
-         custom-tx-params          (send-utils/path-tx-custom-params user-tx-settings route)
+   (let [{:keys [tx-type route user-tx-settings]} (get-in db db-path/send)
+         path                                     (first route)
+         custom-tx-params                         (send-utils/path-tx-custom-params user-tx-settings
+                                                                                    path)
          ;; bridge consist from 2 transactions - approval and send, so we need to apply
          ;; setting to both of them by making 2 calls
-         custom-tx-details-effects (if (= tx-type :tx/bridge)
-                                     [(set-custom-tx-effect (send-utils/path-identity route true)
-                                                            custom-tx-params)
-                                      (set-custom-tx-effect (send-utils/path-identity route false)
-                                                            custom-tx-params)]
-                                     [(set-custom-tx-effect (send-utils/path-identity route)
-                                                            custom-tx-params)])]
-     {:db (assoc-in db [:wallet :ui :send :user-fee-mode] :tx-fee-mode/custom)
+         custom-tx-details-effects                (if (= tx-type :tx/bridge)
+                                                    [(set-custom-tx-effect
+                                                      (send-utils/path-identity path true)
+                                                      custom-tx-params)
+                                                     (set-custom-tx-effect
+                                                      (send-utils/path-identity path false)
+                                                      custom-tx-params)]
+                                                    [(set-custom-tx-effect (send-utils/path-identity
+                                                                            path)
+                                                                           custom-tx-params)])]
+     {:db (update-in db db-path/send assoc :user-fee-mode :tx-fee-mode/custom)
       :fx (conj custom-tx-details-effects
                 [:dispatch [:wallet.send/mark-user-tx-settings-for-deletion]])})))
 
@@ -890,11 +910,9 @@
 
 (rf/reg-event-fx :wallet.send/mark-user-tx-settings-for-deletion
  (fn [{db :db}]
-   {:db (assoc-in db [:wallet :ui :send :user-tx-settings :delete-on-routes-update?] true)}))
+   {:db (assoc-in db (conj db-path/send :user-tx-settings :delete-on-routes-update?) true)}))
 
 
 (rf/reg-event-fx :wallet.send/set-sign-transactions-callback-fx
  (fn [{:keys [db]} [callback-fx]]
-   {:db (assoc-in db
-         [:wallet :ui :send :sign-transactions-callback-fx]
-         callback-fx)}))
+   {:db (assoc-in db (conj db-path/send :sign-transactions-callback-fx) callback-fx)}))
