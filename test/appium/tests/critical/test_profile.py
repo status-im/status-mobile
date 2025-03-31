@@ -124,6 +124,7 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
         self.chat_1.send_message(self.message_1_1_from_1)
         self.new_username_1 = 'user 1'
 
+    @marks.smoke
     @marks.testrail_id(741968)
     def test_profile_change_username(self):
         self.home_1.navigate_back_to_home_view()
@@ -176,6 +177,7 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.smoke
     @marks.testrail_id(741969)
     def test_profile_change_profile_photo(self):
         self.home_2.navigate_back_to_home_view()

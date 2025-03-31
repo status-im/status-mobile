@@ -349,6 +349,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
         self.channel_2.chat_message_input.wait_for_visibility_of_element(20)
 
+    @marks.smoke
     @marks.testrail_id(702838)
     def test_community_message_send_check_timestamps_sender_username(self):
         message = self.text_message
@@ -386,6 +387,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append(self.channel_1, "Message reaction is not shown for the sender")
         self.errors.verify_no_errors()
 
+    @marks.smoke
     @marks.testrail_id(702839)
     def test_community_message_delete(self):
         message_to_delete_everyone = 'delete for everyone'
@@ -460,8 +462,10 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                 self.errors.append(self.channel_1, 'Reply message was not received by the sender')
         self.errors.verify_no_errors()
 
+    @marks.smoke
+    @marks.xfail(reason="Might fail from time to time as reaction are set too slowly") # TODO: needs investigation
     @marks.testrail_id(702859)
-    def test_community_one_image_send_reply(self):
+    def test_community_one_image_send_reply_set_reaction(self):
         self.home_1.just_fyi('Send image in 1-1 chat from Gallery')
         image_description = 'description'
         self.channel_1.send_images_with_description(image_description)

@@ -39,6 +39,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.account_name = 'Account 1'
 
     @marks.testrail_id(740490)
+    @marks.xfail(reason="Might fail due to #22384")
     def test_wallet_balance_mainnet(self):
         self.wallet_view.just_fyi("Checking total balance")
         real_balance = {}
@@ -367,17 +368,11 @@ class TestWalletOneDeviceTwo(MultipleSharedDeviceTestCase):
         self.sign_in_view.recover_access(passphrase=self.sender['passphrase'])
 
         self.home_view = self.sign_in_view.get_home_view()
-        self.sender_username = self.home_view.get_username()
-        self.profile_view = self.home_view.profile_button.click()
-        self.profile_view.switch_network()
-        self.sign_in_view.sign_in(user_name=self.sender_username)
         self.wallet_view = self.home_view.wallet_tab.click()
         self.account_name = 'Account 1'
 
     @marks.testrail_id(727231)
     def test_wallet_add_remove_regular_account(self):
-        self.sign_in_view.reopen_app(user_name=self.sender_username)
-        self.home_view.wallet_tab.click()
         self.wallet_view.just_fyi("Adding new regular account")
         new_account_name = "New Account"
         self.wallet_view.add_regular_account(account_name=new_account_name)

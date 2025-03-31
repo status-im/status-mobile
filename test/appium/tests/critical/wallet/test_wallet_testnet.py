@@ -7,7 +7,7 @@ from users import transaction_senders
 from views.sign_in_view import SignInView
 
 
-@pytest.mark.xdist_group(name="five_2")
+@pytest.mark.xdist_group(name="four_2")
 @marks.nightly
 @marks.secured
 @marks.smoke

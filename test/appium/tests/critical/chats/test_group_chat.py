@@ -81,6 +81,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
         self.chats[0].send_message(self.message_before_adding)
 
+    @marks.smoke
     @marks.testrail_id(702807)
     def test_group_chat_join_send_text_messages_push(self):
         message_to_admin = self.message_to_admin

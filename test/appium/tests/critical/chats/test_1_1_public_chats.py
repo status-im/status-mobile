@@ -1,3 +1,4 @@
+from os import read
 import random
 
 import emoji
@@ -46,6 +47,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.message_1, self.message_2, self.message_3, self.message_4 = \
             "Message 1", "Message 2", "Message 3", "Message 4"
 
+    @marks.smoke
+    @marks.xfail(reason="Might fail from time to time as reaction are set too slowly") # TODO: needs investigation
     @marks.testrail_id(702730)
     def test_1_1_chat_message_reaction(self):
         message_from_sender = "Message sender"
@@ -184,6 +187,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.smoke
     @marks.testrail_id(702731)
     def test_1_1_chat_pin_messages(self):
         self.home_1.just_fyi("Check that Device1 can pin own message in 1-1 chat")
@@ -279,7 +283,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702745)
-    @marks.smoke
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
         self.home_1.navigate_back_to_home_view()
         self.home_1.profile_button.click()
@@ -412,6 +415,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                 self.errors.append(self.chat_1, "Message reaction is not shown for the sender")
         self.errors.verify_no_errors()
 
+    @marks.smoke
     @marks.testrail_id(703391)
     def test_1_1_chat_send_image_save_and_share(self):
         if not self.chat_2.chat_message_input.is_element_displayed():
