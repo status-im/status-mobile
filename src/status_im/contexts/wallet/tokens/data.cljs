@@ -32,10 +32,10 @@
                         (fn [{:keys [chainId address]}]
                           (str chainId "-" address)))))
 
-(defn tokens-by-symbol
+(defn tokens-by-name
   [props]
   (tokens-by-key
-   (assoc props
-          :key-fn
-          (fn [{:keys [chainId address] :as token}]
-            (str chainId "-" (if (get-in token [:communityData :id]) address (:symbol token)))))))
+    (assoc props
+      :key-fn
+      (fn [{:keys [chainId name]}]
+        (str chainId "-" name)))))

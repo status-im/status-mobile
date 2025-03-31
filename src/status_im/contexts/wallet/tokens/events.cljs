@@ -22,7 +22,7 @@
   [{:keys [db]} [{:keys [data]}]]
   (let [chain-ids                  (chain/chain-ids db)
         profile-currency           (get-in db [:profile/profile :currency])
-        tokens                     (reduce (fn [{:keys [by-address by-symbol] :as data}
+        tokens                     (reduce (fn [{:keys [by-address by-name] :as data}
                                                 {:keys [name source version tokens]}]
                                              (-> data
                                                  (update :sources
@@ -38,52 +38,52 @@
                                                            :source-name  name
                                                            :tokens       tokens
                                                            :chain-ids    chain-ids}))
-                                                 (update :by-symbol
+                                                 (update :by-name
                                                          merge
-                                                         (tokens-data/tokens-by-symbol
-                                                          {:added-tokens by-symbol
+                                                         (tokens-data/tokens-by-name
+                                                          {:added-tokens by-name
                                                            :source-name  name
                                                            :tokens       tokens
                                                            :chain-ids    chain-ids}))))
                                            {:sources    []
                                             :by-address {}
-                                            :by-symbol  {}}
+                                            :by-name  {}}
                                            data)
-        by-symbol-vals             (-> tokens :by-symbol vals)
-        symbols                    (reduce (fn [acc token]
-                                             (conj acc (:symbol token)))
+        by-name-vals             (-> tokens :by-name vals)
+        token-names              (reduce (fn [acc token]
+                                             (conj acc (:name token)))
                                            #{}
-                                           by-symbol-vals)
-        supported-chains-by-symbol (reduce
+                                           by-name-vals)
+        supported-chains-by-name (reduce
                                     (fn [result
-                                         {token-symbol :symbol
+                                         {token-name :name
                                           :keys        [chain-id]}]
-                                      (if (contains? result token-symbol)
-                                        (update result token-symbol conj chain-id)
-                                        (assoc result token-symbol #{chain-id})))
+                                      (if (contains? result token-name)
+                                        (update result token-name conj chain-id)
+                                        (assoc result token-name #{chain-id})))
                                     {}
-                                    by-symbol-vals)]
+                                    by-name-vals)]
 
     {:fx [[:effects.wallet.tokens/fetch-market-values
-           {:symbols    symbols
+           {:token-names token-names
             :currency   profile-currency
             :on-success [:wallet.tokens/store-market-values]
             :on-error   [:wallet.tokens/fetch-market-values-failed]}]
           [:effects.wallet.tokens/fetch-details
-           {:symbols    symbols
+           {:token-names token-names
             :on-success [:wallet.tokens/store-details]
             :on-error   [:wallet.tokens/fetch-details-failed]}]
           [:effects.wallet.tokens/fetch-prices
-           {:symbols    symbols
+           {:token-names token-names
             :currencies [constants/profile-default-currency profile-currency]
             :on-success [:wallet.tokens/store-prices]
             :on-error   [:wallet.tokens/fetch-prices-failed]}]]
      :db (-> db
              (assoc-in [:wallet :tokens]
                        {:sources                    (:sources tokens)
-                        :supported-chains-by-symbol supported-chains-by-symbol
+                        :supported-chains-by-name supported-chains-by-name
                         :by-address                 (-> tokens :by-address vals)
-                        :by-symbol                  by-symbol-vals})
+                        :by-name                  by-name-vals})
              (assoc-in [:wallet :ui :loading]
                        {:token-list    false
                         :market-values true
