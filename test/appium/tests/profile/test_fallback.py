@@ -10,7 +10,6 @@ from views.sign_in_view import SignInView
 
 @pytest.mark.xdist_group(name="one_3")
 @marks.nightly
-@marks.secured
 class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):

@@ -12,7 +12,6 @@ from views.sign_in_view import SignInView
 
 @pytest.mark.xdist_group(name="six_2")
 @marks.nightly
-@marks.secured
 @marks.smoke
 class TestWalletCollectibles(MultipleSharedDeviceTestCase):
 

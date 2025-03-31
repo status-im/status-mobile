@@ -12,7 +12,6 @@ from views.sign_in_view import SignInView
 
 @pytest.mark.xdist_group(name="three_1")
 @marks.nightly
-@marks.secured
 @marks.smoke
 class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
@@ -354,7 +353,6 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
 
 @pytest.mark.xdist_group(name="one_1")
 @marks.nightly
-@marks.secured
 @marks.smoke
 class TestWalletOneDeviceTwo(MultipleSharedDeviceTestCase):
 
