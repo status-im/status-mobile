@@ -374,7 +374,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="new_six_2")
+@pytest.mark.xdist_group(name="six_2")
 @marks.nightly
 class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
 

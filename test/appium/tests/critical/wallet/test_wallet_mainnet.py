@@ -349,6 +349,31 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
             self.wallet_view.click_system_back_button(times=5)
         self.errors.verify_no_errors()
 
+
+
+@pytest.mark.xdist_group(name="one_1")
+@marks.nightly
+@marks.secured
+@marks.smoke
+class TestWalletOneDeviceTwo(MultipleSharedDeviceTestCase):
+
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(1)
+        self.sign_in_view = SignInView(self.drivers[0])
+        self.sender, self.receiver = transaction_senders['ETH_5'], transaction_senders['ETH_2']
+
+        self.sender['wallet_address'] = '0x' + self.sender['address']
+        self.receiver['wallet_address'] = '0x' + self.receiver['address']
+        self.sign_in_view.recover_access(passphrase=self.sender['passphrase'])
+
+        self.home_view = self.sign_in_view.get_home_view()
+        self.sender_username = self.home_view.get_username()
+        self.profile_view = self.home_view.profile_button.click()
+        self.profile_view.switch_network()
+        self.sign_in_view.sign_in(user_name=self.sender_username)
+        self.wallet_view = self.home_view.wallet_tab.click()
+        self.account_name = 'Account 1'
+
     @marks.testrail_id(727231)
     def test_wallet_add_remove_regular_account(self):
         self.sign_in_view.reopen_app(user_name=self.sender_username)

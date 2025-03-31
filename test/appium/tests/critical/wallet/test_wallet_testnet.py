@@ -31,8 +31,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
     @pytest.mark.parametrize(
         "network, amount",
         [
-            pytest.param("Arbitrum", 0.0001, marks=pytest.mark.testrail_id(742015)),
-            pytest.param("Status Network", 0.0002, marks=pytest.mark.testrail_id(727229)),
+            pytest.param("Arbitrum Sepolia", 0.0001, marks=pytest.mark.testrail_id(742015)),
+            pytest.param("Status Network Sepolia", 0.0002, marks=pytest.mark.testrail_id(727229)),
         ],
     )
     def test_send_eth(self, network, amount):
@@ -65,8 +65,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
     @pytest.mark.parametrize(
         "network, asset, asset_ticker, decimals, amount",
         [
-            pytest.param("Mainnet", 'USD Coin', 'USDC', 2, 0.01,  marks=pytest.mark.testrail_id(742016)),
-            pytest.param("Optimism", 'USD Coin', 'USDC', 2, 0.01,  marks=pytest.mark.testrail_id(727230)),
+            pytest.param("Sepolia", 'USD Coin', 'USDC', 2, 0.01,  marks=pytest.mark.testrail_id(742016)),
+            pytest.param("Optimism Sepolia", 'USD Coin', 'USDC', 2, 0.01,  marks=pytest.mark.testrail_id(727230)),
         ],
     )
     def test_wallet_send_erc20_from_drawer(self, network, asset, asset_ticker, decimals, amount):
