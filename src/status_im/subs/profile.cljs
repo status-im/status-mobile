@@ -161,13 +161,13 @@
    (boolean opensea-enabled?)))
 
 (re-frame/reg-sub
- :log-level/current-log-level
+ :log-level/current-profile-log-level
  :<- [:profile/profile]
  (fn [multiaccount]
    (get multiaccount :log-level)))
 
 (re-frame/reg-sub :log-level/debug?
- :<- [:log-level/current-log-level]
+ :<- [:log-level/current-profile-log-level]
  (fn [level]
    (= "DEBUG" level)))
 

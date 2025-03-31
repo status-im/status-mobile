@@ -2412,6 +2412,7 @@
   "set-dapp-access-permissions": "Set DApp access permissions",
   "set-max": "Set max",
   "set-nickname-toast": "You have renamed {{primary-name}} as {{nickname}}",
+  "set-pre-login-log-level": "Set pre-login log",
   "set-spending-cap": "Set spending cap",
   "set-spending-cap-of": "Set spending cap of",
   "set-up-sync": "Set up sync",

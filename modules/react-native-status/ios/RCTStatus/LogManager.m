@@ -89,19 +89,35 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(logFileDirectory:(BOOL)usePublicLogDir) {
     return logsUrl.path;
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(setLogLevel:(NSString *)setLogLevelRequest) {
-    return [StatusBackendClient executeStatusGoRequestWithResult:@"SetLogLevel"
-                                                          body:setLogLevelRequest
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(setProfileLogLevel:(NSString *)setProfileLogLevelRequest) {
+    return [StatusBackendClient executeStatusGoRequestWithResult:@"SetProfileLogLevel"
+                                                          body:setProfileLogLevelRequest
                                               statusgoFunction:^NSString *{
-        return StatusgoSetLogLevel(setLogLevelRequest);
+        return StatusgoSetProfileLogLevel(setProfileLogLevelRequest);
     }];
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(setLogEnabled:(NSString *)setLogEnabledRequest) {
-    return [StatusBackendClient executeStatusGoRequestWithResult:@"SetLogEnabled"
-                                                          body:setLogEnabledRequest
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(setProfileLogEnabled:(NSString *)setProfileLogEnabledRequest) {
+    return [StatusBackendClient executeStatusGoRequestWithResult:@"SetProfileLogEnabled"
+                                                          body:setProfileLogEnabledRequest
                                               statusgoFunction:^NSString *{
-        return StatusgoSetLogEnabled(setLogEnabledRequest);
+        return StatusgoSetProfileLogEnabled(setProfileLogEnabledRequest);
+    }];
+}
+
+RCT_EXPORT_METHOD(setPreLoginLogLevel:(NSString *)setPreLoginLogLevelRequest) {
+    [StatusBackendClient executeStatusGoRequest:@"SetPreLoginLogLevel"
+                                                          body:setPreLoginLogLevelRequest
+                                              statusgoFunction:^NSString *{
+        return StatusgoSetPreLoginLogLevel(setPreLoginLogLevelRequest);
+    }];
+}
+
+RCT_EXPORT_METHOD(setPreLoginLogEnabled:(NSString *)setPreLoginLogEnabledRequest) {
+    [StatusBackendClient executeStatusGoRequest:@"SetPreLoginLogEnabled"
+                                                          body:setPreLoginLogEnabledRequest
+                                              statusgoFunction:^NSString *{
+        return StatusgoSetPreLoginLogEnabled(setPreLoginLogEnabledRequest);
     }];
 }
 

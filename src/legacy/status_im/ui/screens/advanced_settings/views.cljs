@@ -114,7 +114,7 @@
   []
   (views/letsubs [light-client-enabled?        [:profile/light-client-enabled?]
                   store-confirmations-enabled? [:profile/store-confirmations-enabled?]
-                  current-log-level            [:log-level/current-log-level]
+                  current-log-level            [:log-level/current-profile-log-level]
                   current-fleet                [:fleets/current-fleet]
                   peer-syncing-enabled?        [:profile/peer-syncing-enabled?]
                   analytics-user-id            [:centralized-metrics/user-id]]

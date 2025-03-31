@@ -198,24 +198,46 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    fun setLogLevel(setLogLevelRequest: String): String {
-        Log.d(TAG, "setLogLevel: $setLogLevelRequest")
+    fun setProfileLogLevel(setProfileLogLevelRequest: String): String {
+        Log.d(TAG, "setProfileLogLevel: $setProfileLogLevelRequest")
 
         return StatusBackendClient.executeStatusGoRequestWithResult(
-            endpoint = "SetLogLevel",
-            requestBody = setLogLevelRequest,
-            statusgoFunction = { Statusgo.setLogLevel(setLogLevelRequest) }
+            endpoint = "SetProfileLogLevel",
+            requestBody = setProfileLogLevelRequest,
+            statusgoFunction = { Statusgo.setProfileLogLevel(setProfileLogLevelRequest) }
         )
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    fun setLogEnabled(setLogEnabledRequest: String): String {
-        Log.d(TAG, "setLogEnabled: $setLogEnabledRequest")
+    fun setProfileLogEnabled(setProfileLogEnabledRequest: String): String {
+        Log.d(TAG, "setProfileLogEnabled: $setProfileLogEnabledRequest")
 
         return StatusBackendClient.executeStatusGoRequestWithResult(
             endpoint = "SetLogEnabled",
-            requestBody = setLogEnabledRequest,
-            statusgoFunction = { Statusgo.setLogEnabled(setLogEnabledRequest) }
+            requestBody = setProfileLogEnabledRequest,
+            statusgoFunction = { Statusgo.setProfileLogEnabled(setProfileLogEnabledRequest) }
+        )
+    }
+
+    @ReactMethod
+    fun setPreLoginLogLevel(setPreLoginLogLevelRequest: String) {
+        Log.d(TAG, "setPreLoginLogLevel: $setPreLoginLogLevelRequest")
+
+        StatusBackendClient.executeStatusGoRequest(
+            endpoint = "SetPreLoginLogLevel",
+            requestBody = setPreLoginLogLevelRequest,
+            statusgoFunction = { Statusgo.setPreLoginLogLevel(setPreLoginLogLevelRequest) }
+        )
+    }
+
+    @ReactMethod
+    fun setPreLoginLogEnabled(setPreLoginLogEnabledRequest: String) {
+        Log.d(TAG, "setPreLoginLogEnabled: $setPreLoginLogEnabledRequest")
+
+        StatusBackendClient.executeStatusGoRequest(
+            endpoint = "SetPreLoginLogEnabled",
+            requestBody = setPreLoginLogEnabledRequest,
+            statusgoFunction = { Statusgo.setPreLoginLogEnabled(setPreLoginLogEnabledRequest) }
         )
     }
 

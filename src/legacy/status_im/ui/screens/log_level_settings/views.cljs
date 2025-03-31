@@ -49,7 +49,7 @@
 
 (views/defview log-level-settings
   []
-  (views/letsubs [current-log-level [:log-level/current-log-level]]
+  (views/letsubs [current-log-level [:log-level/current-profile-log-level]]
     [:<>
      [quo/page-nav
       {:type       :title

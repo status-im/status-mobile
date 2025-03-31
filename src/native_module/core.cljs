@@ -573,12 +573,22 @@
   [message]
   (.intendedPanic ^js (status) message))
 
-(defn set-log-level
+(defn set-profile-log-level
   [level]
-  (log/debug "[native-module] set-log-level")
-  (.setLogLevel ^js (log-manager) (types/clj->json {:logLevel level})))
+  (log/debug "[native-module] set-profile-log-level")
+  (.setProfileLogLevel ^js (log-manager) (types/clj->json {:logLevel level})))
 
-(defn set-log-enabled
+(defn set-profile-log-enabled
   [enabled]
-  (log/debug "[native-module] set-log-enabled")
-  (.setLogEnabled ^js (log-manager) (types/clj->json {:enabled enabled})))
+  (log/debug "[native-module] set-profile-log-enabled")
+  (.setProfileLogEnabled ^js (log-manager) (types/clj->json {:enabled enabled})))
+
+(defn set-pre-login-log-level
+  [level]
+  (log/debug "[native-module] set-pre-login-log-level")
+  (.setPreLoginLogLevel ^js (log-manager) (types/clj->json {:logLevel level})))
+
+(defn set-pre-login-log-enabled
+  [enabled]
+  (log/debug "[native-module] set-pre-login-log-enabled")
+  (.setPreLoginLogEnabled ^js (log-manager) (types/clj->json {:enabled enabled})))
