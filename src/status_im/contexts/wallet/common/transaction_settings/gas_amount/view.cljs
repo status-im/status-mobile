@@ -1,7 +1,7 @@
-(ns status-im.contexts.wallet.send.transaction-settings.gas-amount.view
+(ns status-im.contexts.wallet.common.transaction-settings.gas-amount.view
   (:require
     [quo.context]
-    [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
+    [status-im.contexts.wallet.common.transaction-settings.view :as transaction-settings]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -32,8 +32,8 @@
   []
   (let [spectrum             {:low  21000
                               :high 7920027}
-        gas-amount           (rf/sub [:wallet.send/tx-settings-gas-amount])
-        suggested-gas-amount (rf/sub [:wallet.send/tx-settings-suggested-tx-gas-amount])
+        gas-amount           (rf/sub [:wallet/tx-settings-gas-amount])
+        suggested-gas-amount (rf/sub [:wallet/tx-settings-suggested-tx-gas-amount])
         conditions           (partial hint-and-status suggested-gas-amount spectrum)]
     [transaction-settings/custom-setting-screen
      {:screen-title   (i18n/label :t/max-gas-amount)
@@ -43,7 +43,7 @@
       :info-title     (i18n/label :t/gas-amount)
       :info-content   (i18n/label :t/about-gas-amount)
       :on-save        (fn [new-val]
-                        (rf/dispatch [:wallet.send/set-max-gas-amount new-val])
+                        (rf/dispatch [:wallet/set-max-gas-amount new-val])
                         (rf/dispatch [:navigate-back])
                         (rf/dispatch [:show-bottom-sheet
                                       {:content transaction-settings/custom-settings-sheet}]))

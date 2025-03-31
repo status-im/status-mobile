@@ -6,6 +6,7 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.constants :as constants]
+    [status-im.contexts.wallet.common.transaction-settings.view :as transaction-settings]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
     [status-im.contexts.wallet.swap.swap-confirmation.style :as style]
@@ -144,6 +145,17 @@
         max-slippage           (rf/sub [:wallet/swap-max-slippage])]
     [rn/view {:style style/details-container}
      [:<>
+      [quo/button
+       {:icon-only?          true
+        :type                :outline
+        :size                32
+        :inner-style         {:opacity 1}
+        :accessibility-label :advanced-button
+        :container-style     {:margin-right 8}
+        :on-press            #(rf/dispatch
+                               [:show-bottom-sheet
+                                {:content transaction-settings/settings-sheet}])}
+       :i/advanced]
       [data-item
        {:title    (i18n/label :t/est-time)
         :subtitle (i18n/label :t/time-in-sec {:seconds estimated-time})

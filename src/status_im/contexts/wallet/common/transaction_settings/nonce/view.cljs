@@ -1,18 +1,18 @@
-(ns status-im.contexts.wallet.send.transaction-settings.nonce.view
+(ns status-im.contexts.wallet.common.transaction-settings.nonce.view
   (:require
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.controlled-input.utils :as controlled-input]
-    [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
+    [status-im.contexts.wallet.common.transaction-settings.view :as transaction-settings]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn view
   []
-  (let [current                       (rf/sub [:wallet.send/tx-settings-nonce])
-        suggested-nonce               (rf/sub [:wallet.send/tx-settings-suggested-nonce])
+  (let [current                       (rf/sub [:wallet/tx-settings-nonce])
+        suggested-nonce               (rf/sub [:wallet/tx-settings-suggested-nonce])
         last-tx-nonce                 (dec suggested-nonce)
         [input-state set-input-state] (rn/use-state (controlled-input/set-value-numeric
                                                      controlled-input/init-state
@@ -64,7 +64,7 @@
        :button-one-label (i18n/label :t/save-changes)
        :button-one-props {:disabled? (controlled-input/empty-value? input-state)
                           :on-press  (fn []
-                                       (rf/dispatch [:wallet.send/set-nonce
+                                       (rf/dispatch [:wallet/set-nonce
                                                      (controlled-input/value-numeric input-state)])
                                        (rf/dispatch [:navigate-back])
                                        (rf/dispatch [:show-bottom-sheet

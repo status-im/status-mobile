@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.send.transaction-settings.core
+(ns status-im.contexts.wallet.common.transaction-settings.core
   (:require
     [status-im.constants :as constants]))
 

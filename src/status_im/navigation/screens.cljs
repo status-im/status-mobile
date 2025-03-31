@@ -136,6 +136,12 @@
     [status-im.contexts.wallet.bridge.select-asset.view :as wallet-bridge-select-asset]
     [status-im.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im.contexts.wallet.common.scan-account.view :as wallet-scan-address]
+    [status-im.contexts.wallet.common.transaction-settings.gas-amount.view :as
+     wallet-tx-settings-gas-amount]
+    [status-im.contexts.wallet.common.transaction-settings.max-fee.view :as wallet-tx-settings-max-fee]
+    [status-im.contexts.wallet.common.transaction-settings.nonce.view :as wallet-tx-settings-nonce]
+    [status-im.contexts.wallet.common.transaction-settings.priority-fee.view :as
+     wallet-tx-settings-priority-fee]
     [status-im.contexts.wallet.connected-dapps.scan-dapp.view :as wallet-scan-dapp]
     [status-im.contexts.wallet.connected-dapps.view :as wallet-connected-dapps]
     [status-im.contexts.wallet.send.from.view :as wallet-select-from]
@@ -145,12 +151,6 @@
     [status-im.contexts.wallet.send.send-amount.view :as wallet-send-input-amount]
     [status-im.contexts.wallet.send.transaction-confirmation.view :as wallet-transaction-confirmation]
     [status-im.contexts.wallet.send.transaction-progress.view :as wallet-transaction-progress]
-    [status-im.contexts.wallet.send.transaction-settings.gas-amount.view :as
-     wallet-tx-settings-gas-amount]
-    [status-im.contexts.wallet.send.transaction-settings.max-fee.view :as wallet-tx-settings-max-fee]
-    [status-im.contexts.wallet.send.transaction-settings.nonce.view :as wallet-tx-settings-nonce]
-    [status-im.contexts.wallet.send.transaction-settings.priority-fee.view :as
-     wallet-tx-settings-priority-fee]
     [status-im.contexts.wallet.swap.select-account.view :as wallet-swap-select-account]
     [status-im.contexts.wallet.swap.select-asset-to-pay.view :as wallet-swap-select-asset-to-pay]
     [status-im.contexts.wallet.swap.set-spending-cap.view :as wallet-swap-set-spending-cap]
@@ -641,25 +641,25 @@
 
    {:name      :screen/wallet.tx-settings-max-fee
     :metrics   {:track?   true
-                :alias-id :wallet-send.tx-settings-max-fee}
+                :alias-id :wallet.tx-settings-max-fee}
     :options   {:insets {:top? true}}
     :component wallet-tx-settings-max-fee/view}
 
    {:name      :screen/wallet.tx-settings-priority-fee
     :metrics   {:track?   true
-                :alias-id :wallet-send.tx-settings-priority-fee}
+                :alias-id :wallet.tx-settings-priority-fee}
     :options   {:insets {:top? true}}
     :component wallet-tx-settings-priority-fee/view}
 
    {:name      :screen/wallet.tx-settings-gas-amount
     :metrics   {:track?   true
-                :alias-id :wallet-send.tx-settings-gas-amount}
+                :alias-id :wallet.tx-settings-gas-amount}
     :options   {:insets {:top? true}}
     :component wallet-tx-settings-gas-amount/view}
 
    {:name      :screen/wallet.tx-settings-nonce
     :metrics   {:track?   true
-                :alias-id :wallet-send.tx-settings-nonce}
+                :alias-id :wallet.tx-settings-nonce}
     :options   {:insets {:top? true}}
     :component wallet-tx-settings-nonce/view}])
 

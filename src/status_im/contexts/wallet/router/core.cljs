@@ -1,8 +1,8 @@
 (ns status-im.contexts.wallet.router.core
   (:require [schema.core :as schema]
             [status-im.constants :as constants]
+            [status-im.contexts.wallet.common.transaction-settings.core :as transaction-settings]
             [status-im.contexts.wallet.router.schema :as router.schema]
-            [status-im.contexts.wallet.send.transaction-settings.core :as transaction-settings]
             [utils.money :as money]))
 
 (defn- to-gwei
