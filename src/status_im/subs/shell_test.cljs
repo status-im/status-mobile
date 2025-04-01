@@ -19,12 +19,12 @@
                          :unviewed-mentions-count 0}})
 
 (def expected-notification-data-for-one-to-one-group-community-chats1
-  {:communities-stack {:new-notifications?     true
-                       :notification-indicator :unread-dot
-                       :counter-label          0}
-   :chats-stack       {:new-notifications?     true
-                       :notification-indicator :unread-dot
-                       :counter-label          0}})
+  {:screen/communities-stack {:new-notifications?     true
+                              :notification-indicator :unread-dot
+                              :counter-label          0}
+   :screen/chats-stack       {:new-notifications?     true
+                              :notification-indicator :unread-dot
+                              :counter-label          0}})
 
 (def one-to-one-group-community-chats2
   (merge
@@ -40,12 +40,12 @@
                           :unviewed-mentions-count 7}}))
 
 (def expected-notification-data-for-one-to-one-group-community-chats2
-  {:communities-stack {:new-notifications?     true
-                       :notification-indicator :counter
-                       :counter-label          7}
-   :chats-stack       {:new-notifications?     true
-                       :notification-indicator :counter
-                       :counter-label          11}})
+  {:screen/communities-stack {:new-notifications?     true
+                              :notification-indicator :counter
+                              :counter-label          7}
+   :screen/chats-stack       {:new-notifications?     true
+                              :notification-indicator :counter
+                              :counter-label          11}})
 
 (h/deftest-sub :shell/bottom-tabs-notifications-data
   [sub-name]

@@ -67,7 +67,7 @@
           :on-press   #(rf/dispatch [:navigate-back])
           :right-side [{:icon-left :i/info
                         :label     (i18n/label :t/how-to-pair)
-                        :on-press  #(rf/dispatch [:open-modal :how-to-pair])}]}]
+                        :on-press  #(rf/dispatch [:open-modal :screen/how-to-pair])}]}]
         [rn/view {:style style/page-container}
          [rn/view {:style style/title-container}
           [quo/text
@@ -130,5 +130,5 @@
          [quo/divider-label {:tight? false} (i18n/label :t/have-a-sync-code?)]
          [quo/action-drawer
           [[{:icon     :i/scan
-             :on-press #(rf/dispatch [:open-modal :scan-sync-code-page])
+             :on-press #(rf/dispatch [:open-modal :screen/scan-sync-code-page])
              :label    (i18n/label :t/scan-or-enter-sync-code)}]]]]]])))

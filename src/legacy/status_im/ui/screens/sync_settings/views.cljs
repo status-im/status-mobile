@@ -31,7 +31,7 @@
        {:size                :small
         :title               (i18n/label :t/backup-settings)
         :accessibility-label :backup-settings-button
-        :on-press            #(re-frame/dispatch [:navigate-to :backup-settings])
+        :on-press            #(re-frame/dispatch [:navigate-to :screen/backup-settings])
         :chevron             true
         :accessory           :text
         :accessory-text      (if backup-enabled?
@@ -41,7 +41,7 @@
        {:size                :small
         :title               (i18n/label :t/default-sync-period)
         :accessibility-label :default-sync-period-button
-        :on-press            #(re-frame/dispatch [:navigate-to :default-sync-period-settings])
+        :on-press            #(re-frame/dispatch [:navigate-to :screen/default-sync-period-settings])
         :chevron             true
         :accessory           :text
         :accessory-text      (cond
@@ -82,5 +82,5 @@
        {:size                :small
         :title               (i18n/label :t/devices)
         :accessibility-label :pairing-settings-button
-        :on-press            #(re-frame/dispatch [:navigate-to :installations])
+        :on-press            #(re-frame/dispatch [:navigate-to :screen/installations])
         :chevron             true}]]]))

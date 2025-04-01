@@ -71,8 +71,8 @@
          :type                :grey
          :background          :blur
          :size                32
-         :accessibility-label :find-sync-code
-         :on-press            #(rf/dispatch [:open-modal :find-sync-code])}
+         :accessibility-label :screen/find-sync-code
+         :on-press            #(rf/dispatch [:open-modal :screen/find-sync-code])}
         (i18n/label :t/find-sync-code)]]]
      [reanimated/view
       {:style (reanimated/apply-animations-to-style
@@ -302,7 +302,7 @@
                                          (some #{view-id}
                                                [:screen/onboarding.sign-in-intro
                                                 :screen/onboarding.sign-in
-                                                :scan-sync-code-page])
+                                                :screen/scan-sync-code-page])
                                          (boolean (not-empty @qr-view-finder)))
             camera-ready-to-scan?   (and (or (not animated?) @render-camera?)
                                          show-camera?

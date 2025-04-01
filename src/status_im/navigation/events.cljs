@@ -54,9 +54,9 @@
   {:fx [[:navigate-back nil]
         (when (or
                ;; Closing chat using UI buttons in chat screen (screen-id is known)
-               (= screen-id :chat)
+               (= screen-id :screen/chat)
                ;; Support chat closing using android hardware back button
-               (and platform/android? (= (:view-id db) :chat)))
+               (and platform/android? (= (:view-id db) :screen/chat)))
           [:dispatch [:chat/close]])]})
 
 (rf/defn navigate-back-to
@@ -127,7 +127,7 @@
 (rf/defn set-view-id
   {:events [:set-view-id]}
   [{:keys [db]} view-id]
-  (let [view-id (if (= view-id :shell-stack) (:shell/selected-stack-id db) view-id)]
+  (let [view-id (if (= view-id :screen/shell-stack) (:shell/selected-stack-id db) view-id)]
     {:db             (assoc db :view-id view-id)
      :set-view-id-fx [view-id (:theme db)]}))
 

@@ -15,7 +15,7 @@
    {:fx [(when notifications-enabled?
            [:dispatch [:push-notifications/switch true]])
          [:dispatch [:shell/change-tab shell.constants/default-selected-stack]]
-         [:dispatch [:update-theme-and-init-root :shell-stack]]
+         [:dispatch [:update-theme-and-init-root :screen/shell-stack]]
          [:dispatch [:profile/show-testnet-mode-banner-if-enabled]]
          [:dispatch [:universal-links/process-stored-event]]]}))
 

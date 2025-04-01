@@ -5,7 +5,7 @@
 
 (rf/reg-event-fx :lightbox/navigate-to-lightbox
  (fn [{:keys [db]} [animation-shared-element-id screen-params]]
-   (reagent/next-tick #(rf/dispatch [:navigate-to :lightbox screen-params]))
+   (reagent/next-tick #(rf/dispatch [:navigate-to :screen/lightbox screen-params]))
    {:db (assoc db :animation-shared-element-id animation-shared-element-id)}))
 
 (rf/reg-event-fx :lightbox/update-animation-shared-element-id

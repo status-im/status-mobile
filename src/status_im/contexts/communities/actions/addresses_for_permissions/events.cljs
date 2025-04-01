@@ -61,15 +61,15 @@
 (rf/reg-event-fx :communities/addresses-for-permissions-cancel-request
  (fn [_ [request-id]]
    {:fx [[:dispatch [:communities/cancel-request-to-join request-id]]
-         [:dispatch [:pop-to-root :shell-stack]]
+         [:dispatch [:pop-to-root :screen/shell-stack]]
          [:dispatch [:hide-bottom-sheet]]]}))
 
 (rf/reg-event-fx :communities/addresses-for-permissions-leave
  (fn [_ [community-id]]
    {:fx [[:dispatch [:communities/leave community-id]]
          [:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:dismiss-modal :addresses-for-permissions]]
-         [:dispatch [:pop-to-root :shell-stack]]]}))
+         [:dispatch [:dismiss-modal :screen/addresses-for-permissions]]
+         [:dispatch [:pop-to-root :screen/shell-stack]]]}))
 
 (defn check-permissions-to-join-for-selection
   [{:keys [db]} [community-id addresses]]

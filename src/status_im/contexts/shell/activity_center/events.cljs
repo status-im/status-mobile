@@ -27,7 +27,7 @@
 
          filter-type
          (assoc-in [:activity-center :filter :type] filter-type))
-   :fx [[:dispatch [:open-modal :activity-center {}]]
+   :fx [[:dispatch [:open-modal :screen/activity-center {}]]
         ;; We delay marking as seen so that the user doesn't see the unread bell icon
         ;; change while the Activity Center modal is opening.
         [:dispatch-later

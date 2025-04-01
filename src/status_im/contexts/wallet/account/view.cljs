@@ -36,7 +36,7 @@
      [account-switcher/view
       {:type               :wallet-networks
        :show-dapps-button? true
-       :on-press           #(rf/dispatch [:pop-to-root :shell-stack])}]
+       :on-press           #(rf/dispatch [:pop-to-root :screen/shell-stack])}]
      [quo/account-overview
       {:container-style     style/account-overview
        :current-value       formatted-balance

@@ -41,7 +41,7 @@
      :title (i18n/label :t/log-level)
      :accessibility-label :log-level-settings-button
      :on-press
-     #(re-frame/dispatch [:open-modal :legacy-:og-level-settings])
+     #(re-frame/dispatch [:open-modal :screen/legacy-log-level-settings])
      :accessory :text
      :accessory-text current-log-level
      :chevron true}
@@ -49,7 +49,7 @@
      :title (i18n/label :t/fleet)
      :accessibility-label :fleet-settings-button
      :on-press
-     #(re-frame/dispatch [:open-modal :fleet-settings])
+     #(re-frame/dispatch [:open-modal :screen/fleet-settings])
      :accessory :text
      :accessory-text current-fleet
      :chevron true}
@@ -64,14 +64,14 @@
      :accessibility-label :rpc-usage-info
      :container-margin-top 8
      :on-press
-     #(re-frame/dispatch [:open-modal :rpc-usage-info])
+     #(re-frame/dispatch [:open-modal :screen/rpc-usage-info])
      :chevron true}
     {:size :small
      :title (i18n/label :t/peers-stats)
      :accessibility-label :peers-stats
      :container-margin-top 8
      :on-press
-     #(re-frame/dispatch [:open-modal :peers-stats])
+     #(re-frame/dispatch [:open-modal :screen/peers-stats])
      :chevron true}
     {:size :small
      :title (i18n/label :t/light-client-enabled)

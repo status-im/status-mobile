@@ -78,14 +78,14 @@
     (utils-address/supported-address? scanned-text)
     (when-let [address (utils-address/supported-address->eth-address scanned-text)]
       (debounce/debounce-and-dispatch [:generic-scanner/scan-success address] 300)
-      (debounce/debounce-and-dispatch [:shell/change-tab :wallet-stack] 300))
+      (debounce/debounce-and-dispatch [:shell/change-tab :screen/wallet-stack] 300))
 
     (utils-address/eip-681-address? scanned-text)
     (do
       (debounce/debounce-and-dispatch [:generic-scanner/scan-success
                                        (utils-address/eip-681-address->eth-address scanned-text)]
                                       300)
-      (debounce/debounce-and-dispatch [:shell/change-tab :wallet-stack] 300))
+      (debounce/debounce-and-dispatch [:shell/change-tab :screen/wallet-stack] 300))
 
     (pairing-qr-code? scanned-text)
     ;; TODO: https://github.com/status-im/status-mobile/issues/18744

@@ -202,7 +202,7 @@
  ;; joined, to some of them join request sent and others were opened one day and their data remained
  ;; in app-db. Result map has form: {:joined [id1, id2] :pending [id3, id5] :opened [id4]}"
  (fn [[view-id communities requests]]
-   (if (or (empty? @memo-communities-stack-items) (= view-id :communities-stack))
+   (if (or (empty? @memo-communities-stack-items) (= view-id :screen/communities-stack))
      (let [grouped-communities (->> communities
                                     vals
                                     ;; Remove data that can grow fast or is

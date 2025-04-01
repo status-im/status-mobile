@@ -34,7 +34,7 @@
                                 (get-in db [:profile/profile :wakuv2-config :CustomNodes])))]
     (rf/merge cofx
               {:db       (assoc db :wakuv2-nodes/list custom-nodes)
-               :dispatch [:navigate-to :wakuv2-settings]})))
+               :dispatch [:navigate-to :screen/wakuv2-settings]})))
 
 (rf/defn edit
   {:events       [:wakuv2.ui/add-node-pressed]
@@ -50,7 +50,7 @@
                                                       :id id)}
                                          (set-input :name name)
                                          (set-input :address address))]
-    (assoc fxs :dispatch [:navigate-to :edit-wakuv2-node])))
+    (assoc fxs :dispatch [:navigate-to :screen/edit-wakuv2-node])))
 
 (rf/defn delete
   [{:keys [db] :as cofx} id]

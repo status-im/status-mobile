@@ -74,7 +74,8 @@
         show-addresses-for-permissions    (rn/use-callback
                                            (fn []
                                              (if can-edit-addresses?
-                                               (rf/dispatch [:open-modal :addresses-for-permissions
+                                               (rf/dispatch [:open-modal
+                                                             :screen/addresses-for-permissions
                                                              {:community-id id}])
                                                (rf/dispatch [:show-bottom-sheet
                                                              {:community-id id
@@ -84,7 +85,7 @@
         show-airdrop-addresses            (rn/use-callback
                                            (fn []
                                              (if can-edit-addresses?
-                                               (rf/dispatch [:open-modal :address-for-airdrop
+                                               (rf/dispatch [:open-modal :screen/address-for-airdrop
                                                              {:community-id id}])
                                                (rf/dispatch [:show-bottom-sheet
                                                              {:community-id id

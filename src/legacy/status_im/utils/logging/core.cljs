@@ -171,7 +171,7 @@
         :onPress #(re-frame/dispatch
                    [:logging.ui/send-logs-pressed :sharing])
         :style   "default"}]
-      :on-accept #(do (re-frame/dispatch [:open-modal :bug-report])
+      :on-accept #(do (re-frame/dispatch [:open-modal :screen/bug-report])
                       (re-frame/dispatch [:logging/dialog-left]))
       :on-cancel #(re-frame/dispatch [:logging/dialog-left])}}))
 

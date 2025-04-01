@@ -63,7 +63,7 @@
 (defn- show-join-modal
   [community-id]
   (fn []
-    (rf/dispatch [:open-modal :community-account-selection-sheet
+    (rf/dispatch [:open-modal :screen/community-account-selection-sheet
                   {:community-id community-id}])))
 
 (defn token-gated-communities-info
@@ -518,7 +518,7 @@
 
 (defn view
   [id]
-  (let [community-id (or id (rf/sub [:get-screen-params :community-overview]))
+  (let [community-id (or id (quo.context/use-screen-params))
         community    (rf/sub [:communities/community-overview community-id])
         collapsed?   (:joined? community)]
     [rn/view {:style style/community-overview-container}

@@ -32,7 +32,7 @@
         :accessibility-label :shell-scan-button
         :on-press            (fn []
                                (rf/dispatch [:navigate-back])
-                               (rf/dispatch [:open-modal :shell-qr-reader]))}
+                               (rf/dispatch [:open-modal :screen/shell-qr-reader]))}
        :i/scan]]
      [quo/text
       {:size   :heading-1

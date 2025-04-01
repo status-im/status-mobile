@@ -44,10 +44,10 @@
      [reanimated/view
       {:style (style/bottom-tabs-container (:bottom-tabs-height shared-values))}
       [rn/view {:style (style/bottom-tabs)}
-       [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
+       [bottom-tab :i/wallet :screen/wallet-stack shared-values notifications-data]
        [gesture/gesture-detector {:gesture messages-double-tap-gesture}
-        [bottom-tab :i/messages :chats-stack shared-values notifications-data]]
+        [bottom-tab :i/messages :screen/chats-stack shared-values notifications-data]]
        [gesture/gesture-detector {:gesture communities-double-tab-gesture}
-        [bottom-tab :i/communities :communities-stack shared-values notifications-data]]
+        [bottom-tab :i/communities :screen/communities-stack shared-values notifications-data]]
        (when config/show-not-implemented-features?
-         [bottom-tab :i/browser :browser-stack shared-values notifications-data])]]]))
+         [bottom-tab :i/browser :screen/browser-stack shared-values notifications-data])]]]))

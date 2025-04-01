@@ -101,7 +101,7 @@
        {:type       :outline
         :icon-only? true
         :size       40
-        :on-press   #(rf/dispatch [:open-modal :scan-profile-qr-code])}
+        :on-press   #(rf/dispatch [:open-modal :screen/scan-profile-qr-code])}
        :i/scan]]]))
 
 (defn- invalid-text

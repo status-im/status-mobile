@@ -38,9 +38,9 @@
 
 (def ^:const view-ids-to-track
   #{;; Tabs
-    :communities-stack
-    :chats-stack
-    :wallet-stack})
+    :screen/communities-stack
+    :screen/chats-stack
+    :screen/wallet-stack})
 
 (defn track-view-id-event
   [view-id]

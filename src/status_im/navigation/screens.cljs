@@ -167,13 +167,13 @@
     [utils.collection]))
 
 (def chat-screens
-  [{:name      :start-a-new-chat
+  [{:name      :screen/start-a-new-chat
     :metrics   {:track?   true
                 :alias-id :messenger.new-chat}
     :options   {:sheet? true}
     :component new-chat/view}
 
-   {:name      :chat
+   {:name      :screen/chat
     :metrics   {:track?   true
                 :alias-id :messenger.chat}
     :options   {:popGesture false
@@ -207,12 +207,12 @@
     :component group.details/add-manage-members}])
 
 (def community-screens
-  [{:name      :discover-communities
+  [{:name      :screen/discover-communities
     :metrics   {:track?   true
                 :alias-id :community.discover}
     :component communities.discover/view}
 
-   {:name      :community-overview
+   {:name      :screen/community-overview
     :metrics   {:track?   true
                 :alias-id :community.overview}
     :options   {:animations transitions/stack-transition-from-bottom}
@@ -221,12 +221,12 @@
    ;; Note: the sheet screen is used when selecting addresses to share when
    ;; joining a community. The non-sheet screen is used when editing shared
    ;; addresses after the join request was sent.
-   {:name      :community-account-selection-sheet
+   {:name      :screen/community-account-selection-sheet
     :metrics   {:track?   true
                 :alias-id :community.select-addresses-for-joining-community}
     :options   {:sheet? true}
     :component communities.accounts-selection/view}
-   {:name      :community-account-selection
+   {:name      :screen/community-account-selection
     :metrics   {:track?   true
                 :alias-id :community.select-addresses-for-community}
     :options   {:insets {:top? true}}
@@ -238,13 +238,13 @@
     :options   options/transparent-screen-options
     :component share-community/view}
 
-   {:name      :invite-people-community
+   {:name      :screen/invite-people-community
     :metrics   {:track?   true
                 :alias-id :community.invite-people}
     :options   {:sheet? true}
     :component communities.invite/view}
 
-   {:name      :share-community-channel
+   {:name      :screen/share-community-channel
     :metrics   {:track?   true
                 :alias-id :community.share-channel}
     :options   options/transparent-screen-options
@@ -256,70 +256,70 @@
     :options   {:insets {:top? true}}
     :component channel-view-channel-members-and-details/view}
 
-   {:name      :addresses-for-permissions
+   {:name      :screen/addresses-for-permissions
     :metrics   {:track?   true
                 :alias-id :community.choose-addresses-for-permissions}
     :options   {:insets {:top? true}}
     :component addresses-for-permissions/view}
 
-   {:name      :address-for-airdrop
+   {:name      :screen/address-for-airdrop
     :metrics   {:track?   true
                 :alias-id :community.choose-addresses-for-airdrop}
     :options   {:insets {:top? true}}
     :component airdrop-addresses/view}])
 
 (def contact-screens
-  [{:name      :new-contact
+  [{:name      :screen/new-contact
     :metrics   {:track?   true
                 :alias-id :contact.new-contact}
     :options   {:sheet? true}
     :component add-new-contact/new-contact}
 
-   {:name      :scan-profile-qr-code
+   {:name      :screen/scan-profile-qr-code
     :metrics   {:track?   true
                 :alias-id :contact.scan-profile-qr-code}
     :options   options/dark-screen
     :component scan-profile-qr-page/view}
 
-   {:name      :contact-profile
+   {:name      :screen/contact-profile
     :metrics   {:track?   true
                 :alias-id :contact.contact-profile}
     :options   {:modalPresentationStyle :overCurrentContext}
     :component contact-profile/view}
 
-   {:name      :share-contact
+   {:name      :screen/share-contact
     :metrics   {:track?   true
                 :alias-id :contact.share-profile}
     :options   options/transparent-screen-options
     :component share-contact/view}])
 
 (def device-syncing-screens
-  [{:name      :how-to-pair
+  [{:name      :screen/how-to-pair
     :metrics   {:track?   true
                 :alias-id :syncing.how-to-pair}
     :options   (assoc options/dark-screen :sheet? true)
     :component how-to-pair/view}
 
-   {:name      :find-sync-code
+   {:name      :screen/find-sync-code
     :metrics   {:track?   true
                 :alias-id :syncing.find-sync-code}
     :options   (assoc options/dark-screen :sheet? true)
     :component find-sync-code/view}
 
-   {:name      :settings-setup-syncing
+   {:name      :screen/settings-setup-syncing
     :metrics   {:track?   true
                 :alias-id :syncing.setup-syncing}
     :options   options/transparent-screen-options
     :component settings-setup-syncing/view}
 
-   {:name      :scan-sync-code-page
+   {:name      :screen/scan-sync-code-page
     :metrics   {:track?   true
                 :alias-id :syncing.scan-sync-code}
     :options   options/transparent-modal-screen-options
     :component scan-sync-code-page/view}])
 
 (def settings-screens
-  [{:name      :settings
+  [{:name      :screen/settings
     :metrics   {:track?   true
                 :alias-id :settings.profile-settings}
     :options   options/transparent-screen-options
@@ -332,25 +332,25 @@
                 :insets {:top? true :bottom? true}}
     :component settings.keycard/view}
 
-   {:name      :edit-profile
+   {:name      :screen/edit-profile
     :metrics   {:track?   true
                 :alias-id :settings.edit-profile}
     :options   options/transparent-modal-screen-options
     :component edit-profile/view}
 
-   {:name      :edit-accent-colour
+   {:name      :screen/edit-accent-colour
     :metrics   {:track?   true
                 :alias-id :settings.edit-profile-accent-colour}
     :options   options/transparent-modal-screen-options
     :component edit-accent-colour/view}
 
-   {:name      :edit-name
+   {:name      :screen/edit-name
     :metrics   {:track?   true
                 :alias-id :settings.edit-profile-name}
     :options   options/transparent-modal-screen-options
     :component edit-name/view}
 
-   {:name      :edit-bio
+   {:name      :screen/edit-bio
     :metrics   {:track?   true
                 :alias-id :settings.edit-profile-bio}
     :options   options/transparent-modal-screen-options
@@ -1166,7 +1166,7 @@
    onboarding-screens
    keycard-screens
 
-   [{:name      :activity-center
+   [{:name      :screen/activity-center
      :metrics   {:track? true}
      :options   options/transparent-screen-options
      :component activity-center/view}
@@ -1176,32 +1176,32 @@
      :options   options/transparent-screen-options
      :component share/view}
 
-    {:name      :shell-stack
+    {:name      :screen/shell-stack
      :metrics   {:track? true}
      :component shell/shell-stack}
 
-    {:name      :shell-qr-reader
+    {:name      :screen/shell-qr-reader
      :metrics   {:track? true}
      :options   options/dark-screen
      :component shell-qr-reader/view}
 
-    {:name      :lightbox
+    {:name      :screen/lightbox
      :metrics   {:track? true}
      :options   options/lightbox
      :component lightbox/lightbox}
 
-    {:name      :photo-selector
+    {:name      :screen/photo-selector
      :metrics   {:track? true}
      :options   {:sheet? true}
      :component photo-selector/photo-selector}
 
-    {:name      :camera-screen
+    {:name      :screen/camera-screen
      :metrics   {:track? true}
      :options   {:navigationBar {:backgroundColor colors/black}
                  :theme         :dark}
      :component camera-screen/camera-screen}
 
-    {:name      :emoji-picker
+    {:name      :screen/emoji-picker
      :metrics   {:track? true}
      :options   {:sheet? true}
      :component emoji-picker/view}
@@ -1252,12 +1252,8 @@
      :options   options/transparent-screen-options
      :component edit-profile-modal/view}]
 
-   [{:name    :shell
-     :metrics {:track? true}
-     :options {:theme :dark}}]
-
    (when js/goog.DEBUG
-     [{:name      :dev-component-preview
+     [{:name      :screen/dev-component-preview
        :options   {:sheet? true}
        :component component-preview/view}])
 
@@ -1274,7 +1270,7 @@
      status-im-preview/main-screens)
 
    (when config/quo-preview-enabled?
-     [{:name      :feature-flags
+     [{:name      :screen/feature-flags
        :options   {:insets {:top? true}}
        :component feature-flags/view}])))
 

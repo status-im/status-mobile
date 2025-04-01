@@ -336,12 +336,12 @@
              [:dispatch [:communities/update-last-opened-at community-id]]
              [:dispatch
               [:communities/fetch-community {:community-id community-id}]]
-             [:dispatch [:navigate-to :community-overview community-id]]
+             [:dispatch [:navigate-to :screen/community-overview community-id]]
              (when (get-in db [:communities community-id :joined])
                [:dispatch
                 [:activity-center.notifications/dismiss-community-overview community-id]])]}
-       (when-not (#{:shell :communities-stack :discover-communities} current-view-id)
-         (navigation/pop-to-root :shell-stack))))))
+       (when-not (#{:screen/communities-stack :screen/discover-communities} current-view-id)
+         (navigation/pop-to-root :screen/shell-stack))))))
 
 (rf/reg-event-fx :communities/navigate-to-community-overview navigate-to-community-overview)
 

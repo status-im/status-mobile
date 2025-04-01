@@ -14,7 +14,7 @@
   [_ opts]
   {:request-permissions-fx
    {:permissions [:camera]
-    :on-allowed  #(re-frame/dispatch [:open-modal :qr-scanner opts])
+    :on-allowed  #(re-frame/dispatch [:open-modal :screen/qr-scanner opts])
     :on-denied   (fn []
                    (utils/set-timeout
                     #(utils/show-popup (i18n/label :t/error)
@@ -62,8 +62,8 @@
     (cond
       (and public-key own)
       (rf/merge cofx
-                (navigation/pop-to-root :shell-stack)
-                (navigation/navigate-to :my-profile nil))
+                (navigation/pop-to-root :screen/shell-stack)
+                (navigation/navigate-to :screen/my-profile nil))
 
       (and public-key (not own))
       (rf/merge cofx
@@ -73,14 +73,15 @@
       :else
       {:effects.utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
                                   :content    (i18n/label :t/ens-name-not-found)
-                                  :on-dismiss #(re-frame/dispatch [:pop-to-root :shell-stack])}})))
+                                  :on-dismiss #(re-frame/dispatch [:pop-to-root
+                                                                   :screen/shell-stack])}})))
 
 (rf/defn handle-eip681
   [cofx data]
   (rf/merge cofx
-            {:dispatch-n [[:shell/change-tab :wallet-stack]
+            {:dispatch-n [[:shell/change-tab :screen/wallet-stack]
                           [:wallet-legacy/parse-eip681-uri-and-resolve-ens data]]}
-            (navigation/pop-to-root :shell-stack)))
+            (navigation/pop-to-root :screen/shell-stack)))
 
 (rf/defn handle-local-pairing
   {:events [::handle-local-pairing-uri]}
@@ -103,7 +104,8 @@
                  :event ::match-scanned-value})
       {:dispatch                 [:navigate-back]
        :effects.utils/show-popup {:title      (i18n/label :t/unable-to-read-this-code)
-                                  :on-dismiss #(re-frame/dispatch [:pop-to-root :shell-stack])}})))
+                                  :on-dismiss #(re-frame/dispatch [:pop-to-root
+                                                                   :screen/shell-stack])}})))
 
 (rf/defn on-scan
   {:events [::on-scan-success]}

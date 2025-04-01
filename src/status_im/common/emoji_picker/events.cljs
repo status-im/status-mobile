@@ -5,4 +5,4 @@
 (rf/defn open-emoji-picker
   {:events [:emoji-picker/open]}
   [_ {:keys [on-select]}]
-  {:dispatch [:open-modal :emoji-picker {:on-select on-select}]})
+  {:dispatch [:open-modal :screen/emoji-picker {:on-select on-select}]})

@@ -37,13 +37,13 @@
           {:chats-stack     {:unviewed-messages-count 0 :unviewed-mentions-count 0}
            :community-stack {:unviewed-messages-count 0 :unviewed-mentions-count 0}}
           chats)]
-     {:communities-stack
+     {:screen/communities-stack
       {:new-notifications?     (pos? (:unviewed-messages-count community-stack))
        :notification-indicator (if (pos? (:unviewed-mentions-count community-stack))
                                  :counter
                                  :unread-dot)
        :counter-label          (:unviewed-mentions-count community-stack)}
-      :chats-stack
+      :screen/chats-stack
       {:new-notifications?     (pos? (:unviewed-messages-count chats-stack))
        :notification-indicator (if (pos? (:unviewed-mentions-count chats-stack))
                                  :counter

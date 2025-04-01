@@ -58,13 +58,8 @@
      (let [screen-details                   (get (if js/goog.DEBUG
                                                    (get-screens)
                                                    screens)
-                                                 (keyword screen-key))
-           qualified-screen-details         (get (if js/goog.DEBUG
-                                                   (get-screens)
-                                                   screens)
                                                  (keyword "screen" screen-key))
-           ;; Todo: Remove qualifier check once #22358 is fixed
-           {:keys [component options name]} (or qualified-screen-details screen-details)
+           {:keys [component options name]} screen-details
            screen-params                    (rf/sub [:get-screen-params name])
            {:keys [insets sheet? theme
                    skip-background?]}       options

@@ -9,7 +9,7 @@
  (fn [{:keys [db]} [id]]
    {:db (assoc db :communities/community-id-input id)
     :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:open-modal :invite-people-community {:id id}]]]}))
+         [:dispatch [:open-modal :screen/invite-people-community {:id id}]]]}))
 
 (rf/reg-event-fx :communities/share-community-pressed
  (fn [{:keys [db]} [id]]
@@ -31,7 +31,7 @@
 
 (rf/reg-event-fx :communities/share-community-channel-url-qr-code
  (fn [_ [chat-id]]
-   (let [on-success #(rf/dispatch [:open-modal :share-community-channel
+   (let [on-success #(rf/dispatch [:open-modal :screen/share-community-channel
                                    {:chat-id chat-id
                                     :url     %}])]
      {:fx [[:dispatch [:communities/get-community-channel-share-data chat-id on-success]]]})))

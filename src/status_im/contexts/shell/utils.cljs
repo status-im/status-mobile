@@ -14,10 +14,10 @@
 (defn load-stack
   [stack-id]
   (case stack-id
-    :communities-stack (reset! state/load-communities-stack? true)
-    :chats-stack       (reset! state/load-chats-stack? true)
-    :wallet-stack      (reset! state/load-wallet-stack? true)
-    :browser-stack     (reset! state/load-browser-stack? true)
+    :screen/communities-stack (reset! state/load-communities-stack? true)
+    :screen/chats-stack       (reset! state/load-chats-stack? true)
+    :screen/wallet-stack      (reset! state/load-wallet-stack? true)
+    :screen/browser-stack     (reset! state/load-browser-stack? true)
     ""))
 
 (defn change-selected-stack
@@ -30,7 +30,7 @@
 (defn reset-bottom-tabs
   []
   (let [selected-stack-id @state/selected-stack-id-value]
-    (reset! state/load-communities-stack? (= selected-stack-id :communities-stack))
-    (reset! state/load-chats-stack? (= selected-stack-id :chats-stack))
-    (reset! state/load-wallet-stack? (= selected-stack-id :wallet-stack))
-    (reset! state/load-browser-stack? (= selected-stack-id :browser-stack))))
+    (reset! state/load-communities-stack? (= selected-stack-id :screen/communities-stack))
+    (reset! state/load-chats-stack? (= selected-stack-id :screen/chats-stack))
+    (reset! state/load-wallet-stack? (= selected-stack-id :screen/wallet-stack))
+    (reset! state/load-browser-stack? (= selected-stack-id :screen/browser-stack))))

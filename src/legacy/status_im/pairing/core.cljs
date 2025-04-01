@@ -74,7 +74,7 @@
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             {:db (assoc-in db [:pairing/prompt-user-pop-up] false)}
-            (navigation/navigate-to :installations nil)))
+            (navigation/navigate-to :screen/installations nil)))
 
 (rf/defn prompt-user-on-new-installation
   [{:keys [db]}]

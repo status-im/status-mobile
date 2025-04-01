@@ -104,7 +104,7 @@
      (if empty-tab
        [react/touchable-highlight
         {:accessibility-label :universal-qr-scanner
-         :on-press            #(re-frame/dispatch [:open-modal :shell-qr-reader])}
+         :on-press            #(re-frame/dispatch [:open-modal :screen/shell-qr-reader])}
         [icons/icon :main-icons/qr {:color colors/black}]]
        [react/touchable-highlight
         {:on-press            #(re-frame/dispatch

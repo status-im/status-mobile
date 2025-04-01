@@ -159,4 +159,4 @@
     :fx [[:dispatch
           [:universal-links/generate-profile-url
            {:public-key public-key
-            :on-success #(rf/dispatch [:open-modal :share-contact])}]]]}))
+            :on-success #(rf/dispatch [:open-modal :screen/share-contact])}]]]}))

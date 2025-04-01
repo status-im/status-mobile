@@ -168,7 +168,7 @@
   [{:keys [db] :as cofx} view-id]
   (rf/merge cofx
             (cond
-              (= :chat view-id)
+              (= :screen/chat view-id)
               {:effects.async-storage/set {:chat-id (get-in cofx [:db :current-chat-id])
                                            :key-uid (get-in cofx [:db :profile/profile :key-uid])}
                :db                        (assoc db :screens/was-focused-once? true)

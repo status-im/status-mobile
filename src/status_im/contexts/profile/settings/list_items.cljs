@@ -8,7 +8,7 @@
   [mnemonic?]
   [(when mnemonic?
      [{:title            (i18n/label :t/back-up-seed-phrase)
-       :on-press         #(rf/dispatch [:open-modal :backup-seed])
+       :on-press         #(rf/dispatch [:open-modal :screen/backup-seed])
        :image-props      :i/seed
        :image            :icon
        :label            :icon
@@ -17,7 +17,7 @@
        :blur?            true
        :action           :arrow}])
    [{:title       (i18n/label :t/edit-profile)
-     :on-press    #(rf/dispatch [:open-modal :edit-profile])
+     :on-press    #(rf/dispatch [:open-modal :screen/edit-profile])
      :image-props :i/edit
      :image       :icon
      :blur?       true
@@ -73,13 +73,13 @@
      :blur?       true
      :action      :arrow}
     {:title       (i18n/label :t/notifications)
-     :on-press    #(rf/dispatch [:open-modal :legacy-notifications])
+     :on-press    #(rf/dispatch [:open-modal :screen/legacy-notifications])
      :image-props :i/activity-center
      :image       :icon
      :blur?       true
      :action      :arrow}
     {:title       (i18n/label :t/appearance)
-     :on-press    #(rf/dispatch [:open-modal :legacy-appearance])
+     :on-press    #(rf/dispatch [:open-modal :screen/legacy-appearance])
      :image-props :i/light
      :image       :icon
      :blur?       true
@@ -98,28 +98,28 @@
        :blur?       true
        :action      :arrow})
     {:title       (i18n/label :t/advanced)
-     :on-press    #(rf/dispatch [:open-modal :legacy-advanced-settings])
+     :on-press    #(rf/dispatch [:open-modal :screen/legacy-advanced-settings])
      :image-props :i/settings
      :image       :icon
      :blur?       true
      :action      :arrow}]
    ;; temporary link to legacy settings
    [{:title       "Legacy settings"
-     :on-press    #(rf/dispatch [:open-modal :legacy-settings])
+     :on-press    #(rf/dispatch [:open-modal :screen/legacy-settings])
      :action      :arrow
      :image       :icon
      :blur?       true
      :image-props :i/toggle}
     (when config/quo-preview-enabled?
       {:title       "Quo preview"
-       :on-press    #(rf/dispatch [:open-modal :quo-preview])
+       :on-press    #(rf/dispatch [:open-modal :screen/quo-preview])
        :action      :arrow
        :image       :icon
        :blur?       true
        :image-props :i/light})
     (when config/quo-preview-enabled?
       {:title       "Feature Flags"
-       :on-press    #(rf/dispatch [:open-modal :feature-flags])
+       :on-press    #(rf/dispatch [:open-modal :screen/feature-flags])
        :action      :arrow
        :image       :icon
        :blur?       true
@@ -129,6 +129,6 @@
      :action   :arrow
      :blur?    true}
     {:title    (i18n/label :t/status-help)
-     :on-press #(rf/dispatch [:open-modal :help-center])
+     :on-press #(rf/dispatch [:open-modal :screen/help-center])
      :action   :arrow
      :blur?    true}]])

@@ -42,7 +42,7 @@
                               (rf/dispatch [:universal-links/generate-profile-url
                                             {:public-key public-key
                                              :on-success #(rf/dispatch [:open-modal
-                                                                        :share-contact])}]))
+                                                                        :screen/share-contact])}]))
                             [public-key])
         has-nickname?      (rn/use-memo (fn [] (not (string/blank? nickname))) [nickname])
         on-share-profile   (rn/use-callback

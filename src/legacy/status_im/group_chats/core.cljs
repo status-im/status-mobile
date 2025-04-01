@@ -23,7 +23,7 @@
  (fn [{:keys [db]} [response]]
    {:db (dissoc db :current-chat-id)
     :fx [[:dispatch [:sanitize-messages-and-process-response response]]
-         [:dispatch [:pop-to-root :shell-stack]]
+         [:dispatch [:pop-to-root :screen/shell-stack]]
          [:activity-center.notifications/fetch-unread-count]]}))
 
 (rf/defn handle-chat-update
@@ -116,7 +116,7 @@
   [cofx chat-id]
   (rf/merge cofx
             (chat.events/deactivate-chat chat-id)
-            (navigation/pop-to-root :shell-stack)))
+            (navigation/pop-to-root :screen/shell-stack)))
 
 (def not-blank?
   (complement string/blank?))

@@ -24,16 +24,18 @@
         home-stack?      (some #(= view-id %) shell.constants/stacks-ids)
         ;; Home screen nav bar always dark due to bottom tabs
         nav-bar-color    (if (or home-stack?
-                                 (= view-id :shell-stack)
+                                 (= view-id :screen/shell-stack)
                                  (= theme :dark))
                            colors/neutral-100
                            colors/white)
-        comp-id          (if (some #(= view-id %) shell.constants/stacks-ids) :shell-stack view-id)]
+        comp-id          (if (some #(= view-id %) shell.constants/stacks-ids)
+                           :screen/shell-stack
+                           view-id)]
     [status-bar-theme nav-bar-color comp-id]))
 
 (defn reload-status-nav-color-fx
   [[view-id theme]]
-  (when (and (= @state/root-id :shell-stack) view-id)
+  (when (and (= @state/root-id :screen/shell-stack) view-id)
     (let [[status-bar-theme nav-bar-color comp-id] (get-status-nav-color view-id theme)]
       (when platform/android?
         (navigation/merge-options

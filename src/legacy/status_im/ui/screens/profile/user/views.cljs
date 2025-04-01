@@ -18,7 +18,7 @@
      :title               (i18n/label :t/sync-settings)
      :accessibility-label :sync-settings-button
      :chevron             true
-     :on-press            #(re-frame/dispatch [:open-modal :legacy-sync-settings])}]])
+     :on-press            #(re-frame/dispatch [:open-modal :screen/legacy-sync-settings])}]])
 
 (defn legacy-settings
   []

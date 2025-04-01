@@ -20,7 +20,7 @@
   [images-count]
   (device-permissions/camera #(if (>= images-count constants/max-album-photos)
                                 (photo-limit-toast)
-                                (rf/dispatch [:navigate-to :camera-screen]))))
+                                (rf/dispatch [:navigate-to :screen/camera-screen]))))
 
 (defn camera-button
   []

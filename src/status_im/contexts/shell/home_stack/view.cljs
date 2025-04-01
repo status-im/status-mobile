@@ -14,10 +14,10 @@
 (defn load-stack?
   [stack-id]
   (case stack-id
-    :communities-stack @state/load-communities-stack?
-    :chats-stack       @state/load-chats-stack?
-    :browser-stack     @state/load-browser-stack?
-    :wallet-stack      @state/load-wallet-stack?))
+    :screen/communities-stack @state/load-communities-stack?
+    :screen/chats-stack       @state/load-chats-stack?
+    :screen/browser-stack     @state/load-browser-stack?
+    :screen/wallet-stack      @state/load-wallet-stack?))
 
 (defn- f-stack-view
   [stack-id shared-values]
@@ -29,10 +29,10 @@
              :z-index (get shared-values
                            (get shell.constants/stacks-z-index-keywords stack-id))})}
    (case stack-id
-     :communities-stack [communities/view]
-     :chats-stack       [chat/view]
-     :wallet-stack      [wallet/view]
-     :browser-stack     [browser.stack/browser-stack]
+     :screen/communities-stack [communities/view]
+     :screen/chats-stack       [chat/view]
+     :screen/wallet-stack      [wallet/view]
+     :screen/browser-stack     [browser.stack/browser-stack]
      [:<>])])
 
 (defn lazy-screen
@@ -45,7 +45,7 @@
   [shared-values]
   (let [theme (quo.context/use-theme)]
     [rn/view {:style (style/home-stack theme)}
-     [lazy-screen :communities-stack shared-values theme]
-     [lazy-screen :chats-stack shared-values theme]
-     [lazy-screen :browser-stack shared-values theme]
-     [lazy-screen :wallet-stack shared-values theme]]))
+     [lazy-screen :screen/communities-stack shared-values theme]
+     [lazy-screen :screen/chats-stack shared-values theme]
+     [lazy-screen :screen/browser-stack shared-values theme]
+     [lazy-screen :screen/wallet-stack shared-values theme]]))

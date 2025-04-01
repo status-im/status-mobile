@@ -62,7 +62,7 @@
        :button-one-props {:customization-color color
                           :on-press
                           (fn []
-                            (rf/dispatch [:dismiss-modal :addresses-for-permissions])
+                            (rf/dispatch [:dismiss-modal :screen/addresses-for-permissions])
                             (rf/dispatch [:hide-bottom-sheet]))}
 
        :button-two-label (i18n/label :t/cancel)
@@ -128,7 +128,7 @@
         confirm-discard-changes   (rn/use-callback
                                    (fn []
                                      (if identical-choices?
-                                       (rf/dispatch [:dismiss-modal :addresses-for-permissions])
+                                       (rf/dispatch [:dismiss-modal :screen/addresses-for-permissions])
                                        (rf/dispatch [:show-bottom-sheet
                                                      {:content (fn []
                                                                  [confirm-discard-drawer
@@ -195,7 +195,8 @@
                             {:community-id id
                              :addresses    addresses-to-reveal
                              :on-success   (fn []
-                                             (rf/dispatch [:dismiss-modal :addresses-for-permissions])
+                                             (rf/dispatch [:dismiss-modal
+                                                           :screen/addresses-for-permissions])
                                              (rf/dispatch [:hide-bottom-sheet]))}])
               (rf/dispatch [:communities/set-share-all-addresses id flag-share-all-addresses]))
             (do

@@ -12,7 +12,7 @@
   [{:size                :small
     :title               (i18n/label :t/submit-bug)
     :accessibility-label :submit-bug-button
-    :on-press            #(re-frame/dispatch [:open-modal :bug-report])
+    :on-press            #(re-frame/dispatch [:open-modal :screen/bug-report])
     :chevron             true}
    {:size                :small
     :title               (i18n/label :t/status-help)

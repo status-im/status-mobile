@@ -226,7 +226,7 @@
           :type                :grey
           :background          :blur
           :icon-only?          true
-          :on-press            #(rf/dispatch [:navigate-to :quo-preview])
+          :on-press            #(rf/dispatch [:navigate-to :screen/quo-preview])
           :disabled?           processing
           :accessibility-label :quo-preview
           :container-style     {:margin-right 12}}

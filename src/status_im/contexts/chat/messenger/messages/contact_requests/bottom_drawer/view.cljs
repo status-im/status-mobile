@@ -40,7 +40,7 @@
                        (and community-chat? (not pending?) (not joined))
                        (if keycard?
                          keycard-feature-unavailable
-                         #(rf/dispatch [:open-modal :community-account-selection-sheet
+                         #(rf/dispatch [:open-modal :screen/community-account-selection-sheet
                                         {:community-id community-id}]))
 
                        (not community-chat?)

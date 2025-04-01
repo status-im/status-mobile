@@ -26,7 +26,7 @@
                  :on-success      (fn []
                                     (rf/dispatch
                                      [:dismiss-modal
-                                      :address-for-airdrop])
+                                      :screen/address-for-airdrop])
                                     (rf/dispatch
                                      [:hide-bottom-sheet]))}])
               (do
@@ -45,7 +45,8 @@
         accounts                  (rf/sub [:communities/accounts-to-reveal id])
         airdrop-address           (rf/sub [:communities/airdrop-address id])
         can-edit-addresses?       (rf/sub [:communities/can-edit-shared-addresses? id])
-        go-back                   (rn/use-callback #(rf/dispatch [:dismiss-modal :address-for-airdrop]))]
+        go-back                   (rn/use-callback #(rf/dispatch [:dismiss-modal
+                                                                  :screen/address-for-airdrop]))]
     [:<>
      (when can-edit-addresses?
        [quo/page-nav

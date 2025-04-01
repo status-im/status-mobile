@@ -58,7 +58,7 @@
             :right-side          [{:icon-name :i/scan
                                    :on-press  (fn []
                                                 (rf/dispatch [:navigate-back])
-                                                (rf/dispatch [:open-modal :shell-qr-reader]))}]
+                                                (rf/dispatch [:open-modal :screen/shell-qr-reader]))}]
             :accessibility-label :top-bar}]
           [quo/page-top
            {:title           title

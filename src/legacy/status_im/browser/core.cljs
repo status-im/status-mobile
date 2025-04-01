@@ -306,8 +306,8 @@
                                       :browser/options
                                       {:browser-id (:browser-id browser)}
                                       :browser/screen-id :browser)
-                   :dispatch-n [[:shell/change-tab :browser-stack]]}
-                  (navigation/pop-to-root :shell-stack)
+                   :dispatch-n [[:shell/change-tab :screen/browser-stack]]}
+                  (navigation/pop-to-root :screen/shell-stack)
                   (chat.events/close-chat (:current-chat-id db))
                   (update-browser browser)
                   (resolve-url nil))
@@ -323,7 +323,7 @@
                                   :browser/options
                                   {:browser-id browser-id}
                                   :browser/screen-id :browser)
-               :dispatch-n [[:shell/change-tab :browser-stack]]}
+               :dispatch-n [[:shell/change-tab :screen/browser-stack]]}
               (update-browser browser)
               (resolve-url nil))))
 
@@ -332,7 +332,7 @@
   [{:keys [db] :as cofx}]
   (rf/merge cofx
             {:db         (assoc db :browser/screen-id :browser-tabs)
-             :dispatch-n [[:shell/change-tab :browser-stack]]}))
+             :dispatch-n [[:shell/change-tab :screen/browser-stack]]}))
 
 (rf/defn web3-error-callback
   {:events [:browser.dapp/transaction-on-error]}

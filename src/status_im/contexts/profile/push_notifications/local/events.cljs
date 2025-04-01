@@ -13,7 +13,7 @@
 (defn foreground-chat?
   [{{:keys [current-chat-id view-id]} :db} chat-id]
   (and (= current-chat-id chat-id)
-       (= view-id :chat)))
+       (= view-id :screen/chat)))
 
 (defn show-message-pn?
   [{{:keys [app-state profile/profile]} :db :as cofx}

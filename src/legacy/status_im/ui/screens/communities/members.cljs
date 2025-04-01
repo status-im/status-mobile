@@ -104,7 +104,8 @@
        [react/view {:flex-direction :row}
         (when (pos? requests-count)
           [unviewed-indicator/unviewed-indicator requests-count])]
-       :on-press #(rf/dispatch [:navigate-to :community-requests-to-join {:community-id community-id}])
+       :on-press #(rf/dispatch [:navigate-to :screen/community-requests-to-join
+                                {:community-id community-id}])
        :title (i18n/label :t/membership-requests)}]
      [quo/separator {:style {:margin-vertical 8}}]]))
 

@@ -66,7 +66,7 @@
 (rf/defn handle-community-requests
   [cofx {:keys [community-id]}]
   (log/info "universal-links: handling community request  " community-id)
-  (navigation/navigate-to cofx :community-requests-to-join {:community-id community-id}))
+  (navigation/navigate-to cofx :screen/community-requests-to-join {:community-id community-id}))
 
 (rf/defn handle-view-profile
   [{:keys [db] :as cofx} {:keys [public-key ens-name]}]
@@ -74,8 +74,8 @@
   (cond
     (and public-key (own-public-key? db public-key))
     (rf/merge cofx
-              (navigation/pop-to-root :shell-stack)
-              (navigation/navigate-to :settings nil))
+              (navigation/pop-to-root :screen/shell-stack)
+              (navigation/navigate-to :screen/settings nil))
 
     public-key
     {:dispatch [:chat.ui/show-profile public-key ens-name]}))

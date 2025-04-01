@@ -100,7 +100,7 @@
                    [:dispatch [:onboarding/finish-onboarding false]]]
 
                   :else
-                  [[:dispatch [:update-theme-and-init-root :shell-stack]]
+                  [[:dispatch [:update-theme-and-init-root :screen/shell-stack]]
                    [:dispatch [:profile/show-testnet-mode-banner-if-enabled]]]))})))
 
 ;; login phase 2: we want to load and show chats faster, so we split login into 2 phases
@@ -209,7 +209,7 @@
      {:db (-> db
               (assoc-in [:profile/login :password] password)
               (assoc-in [:profile/login :processing] true))
-      :fx [[:dispatch [:update-theme-and-init-root :progress]]
+      :fx [[:dispatch [:update-theme-and-init-root :screen/progress]]
            [:effects.profile/login
             [(get-in db [:profile/login :key-uid])
              (security/safe-unmask-data password)]]]})))

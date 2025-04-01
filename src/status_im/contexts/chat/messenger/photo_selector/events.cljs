@@ -78,6 +78,6 @@
 
 (re-frame/reg-event-fx :photo-selector/navigate-to-photo-selector
  (fn []
-   {:fx [[:dispatch [:open-modal :photo-selector]]
+   {:fx [[:dispatch [:open-modal :screen/photo-selector]]
          [:dispatch [:photo-selector/get-photos-for-selected-album]]
          [:dispatch [:photo-selector/camera-roll-get-albums]]]}))

@@ -21,17 +21,17 @@
                        :label-props     (utils/truncate-str full-name constants/profile-name-max-length)
                        :container-style style/item-container}
                 (not ens-name?)
-                (assoc :on-press #(rf/dispatch [:open-modal :edit-name])
+                (assoc :on-press #(rf/dispatch [:open-modal :screen/edit-name])
                        :action   :arrow))
               {:title           (i18n/label :t/bio)
-               :on-press        #(rf/dispatch [:open-modal :edit-bio])
+               :on-press        #(rf/dispatch [:open-modal :screen/edit-bio])
                :blur?           true
                :label           :text
                :label-props     (utils/truncate-str bio 15)
                :action          :arrow
                :container-style style/item-container}
               {:title           (i18n/label :t/accent-colour)
-               :on-press        #(rf/dispatch [:open-modal :edit-accent-colour])
+               :on-press        #(rf/dispatch [:open-modal :screen/edit-accent-colour])
                :label           :color
                :label-props     (colors/resolve-color customization-color theme)
                :blur?           true

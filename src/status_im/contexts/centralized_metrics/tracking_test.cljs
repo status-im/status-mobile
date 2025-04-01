@@ -47,7 +47,7 @@
               :platform   platform-os
               :appVersion app-version
               :eventValue {:viewId "communities-stack"}}}]
-           (tracking/track-view-id-event :communities-stack)))
+           (tracking/track-view-id-event :screen/communities-stack)))
     (is (= [{:metric
              {:eventName  "navigation"
               :platform   platform-os
@@ -75,7 +75,7 @@
               :platform   platform-os
               :appVersion app-version
               :eventValue {:viewId "wallet-stack"}}}]
-           (tracking/metrics-event [:set-view-id :wallet-stack])))
+           (tracking/metrics-event [:set-view-id :screen/wallet-stack])))
     (is (nil? (tracking/metrics-event [:unknown-event])))
     (is (= [{:metric
              {:eventName  "navigation"

@@ -550,14 +550,14 @@ used in the new code in `src/status_im2/`. Don't use
   (rf/merge cofx
             (reset-community-id-input id)
             (bottom-sheet/hide-bottom-sheet)
-            (navigation/open-modal :invite-people-community {:invite? true})))
+            (navigation/open-modal :screen/invite-people-community {:invite? true})))
 
 ;; good
 (re-frame/reg-event-fx :communities/invite-people-pressed
  (fn [{:keys [db]} [id]]
    {:db (assoc db :communities/community-id-input id)
     :fx [[:dispatch [:hide-bottom-sheet]]
-         [:dispatch [:open-modal :invite-people-community {:invite? true}]]]}))
+         [:dispatch [:open-modal :screen/invite-people-community {:invite? true}]]]}))
 ```
 
 ### Registering top-level re-frame subscriptions

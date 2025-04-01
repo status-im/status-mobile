@@ -47,7 +47,7 @@
 (rf/reg-event-fx :wallet/navigate-to-account-within-stack
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
-    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.accounts :shell-stack]]]]}))
+    :fx [[:dispatch [:navigate-to-within-stack [:screen/wallet.accounts :screen/shell-stack]]]]}))
 
 (rf/reg-event-fx :wallet/navigate-to-new-account
  (fn [{:keys [db]} [address]]
@@ -80,7 +80,7 @@
  (fn [{:keys [db]} [ignore-just-completed-transaction?]]
    (let [{:keys [entry-point just-completed-transaction?
                  collectible-multiple-owners?]} (-> db :wallet :ui :send)
-         entry-point-wallet-home?               (= entry-point :wallet-stack)]
+         entry-point-wallet-home?               (= entry-point :screen/wallet-stack)]
      {:db (cond-> db
             (and (not entry-point)
                  (not ignore-just-completed-transaction?)
@@ -191,7 +191,7 @@
            :dispatch [:hide-bottom-sheet]}]
          [:dispatch-later
           {:ms       100
-           :dispatch [:pop-to-root :shell-stack]}]
+           :dispatch [:pop-to-root :screen/shell-stack]}]
          [:dispatch-later
           {:ms       100
            :dispatch [:wallet/show-account-deleted-toast toast-message]}]]}))
@@ -374,7 +374,7 @@
                                           (-> db :wallet :current-viewing-account-address)
                                           (utils/get-default-account (-> db :wallet :accounts)))
          view-id                      (:view-id db)
-         root-screen?                 (or (= view-id :wallet-stack) (nil? view-id))
+         root-screen?                 (or (= view-id :screen/wallet-stack) (nil? view-id))
          multi-account-balance?       (-> (utils/get-accounts-with-token-balance (:accounts wallet)
                                                                                  token)
                                           (count)

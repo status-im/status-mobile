@@ -51,7 +51,8 @@
    :right-icon          :i/chevron-right
    :accessibility-label :edit-shared-addresses
    :on-press            (fn []
-                          (rf/dispatch [:open-modal :community-account-selection {:community-id id}]))
+                          (rf/dispatch [:open-modal :screen/community-account-selection
+                                        {:community-id id}]))
    :label               (i18n/label :t/edit-shared-addresses)})
 
 (defn mark-as-read

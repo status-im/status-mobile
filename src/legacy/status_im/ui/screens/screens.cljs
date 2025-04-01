@@ -8,7 +8,6 @@
     [legacy.status-im.ui.screens.communities.members :as members]
     [legacy.status-im.ui.screens.default-sync-period-settings.view :as default-sync-period-settings]
     [legacy.status-im.ui.screens.fleet-settings.views :as fleet-settings]
-    [legacy.status-im.ui.screens.glossary.view :as glossary]
     [legacy.status-im.ui.screens.help-center.views :as help-center]
     [legacy.status-im.ui.screens.log-level-settings.views :as log-level-settings]
     [legacy.status-im.ui.screens.notifications-settings.views :as notifications-settings]
@@ -40,7 +39,7 @@
 (defn screens
   []
   [;;PROGRESS
-   {:name      :progress
+   {:name      :screen/progress
     :options   {:insets {:top? true}
                 :theme  :dark}
     :component progress/progress}
@@ -52,86 +51,81 @@
 
 
    ;;SETTINGS
-   {:name      :legacy-notifications
+   {:name      :screen/legacy-notifications
     :options   {:topBar {:visible false}
                 :insets {:top? platform/android?}}
     :component notifications-settings/notifications-settings}
 
-   {:name      :legacy-appearance
+   {:name      :screen/legacy-appearance
     :options   {:topBar {:visible false}
                 :insets {:top? platform/android?}}
     :component appearance/appearance-view}
 
    ;; ADVANCED
-   {:name      :legacy-advanced-settings
+   {:name      :screen/legacy-advanced-settings
     :options   {:topBar {:visible false}
                 :insets {:top? platform/android?}}
     :component advanced-settings/advanced-settings}
 
-   {:name      :legacy-:og-level-settings
+   {:name      :screen/legacy-log-level-settings
     :options   {:topBar {:visible false}
                 :insets {:top? platform/android?}}
     :component log-level-settings/log-level-settings}
 
    ;; LEGACY SETTINGS
-   {:name      :legacy-settings
+   {:name      :screen/legacy-settings
     :options   {:topBar {:visible false}
                 :insets {:top? platform/android?}}
     :component profile.user/legacy-settings}
 
    ;; SYNC
-   {:name      :legacy-sync-settings
+   {:name      :screen/legacy-sync-settings
     :options   {:topBar {:visible false}
                 :insets {:top? platform/android?}}
     :component sync-settings/sync-settings}
 
    ;; STATUS HELP
-   {:name      :help-center
+   {:name      :screen/help-center
     :options   {:topBar {:visible false}
                 :insets {:top? platform/android?}}
     :component help-center/help-center}
 
-   {:name      :glossary
-    :options   {:topBar {:visible false}
-                :insets {:top? platform/android?}}
-    :component glossary/glossary}
-
-   {:name      :bug-report
+   {:name      :screen/bug-report
     :options   {:topBar {:visible false}
                 :insets {:top? platform/android?}}
     :component bug-report/bug-report}
 
    ;; OTHER
-   {:name      :wakuv2-settings
+   {:name      :screen/wakuv2-settings
     :options   {:insets {:top? true}}
     :component wakuv2-settings/wakuv2-settings}
-   {:name      :edit-wakuv2-node
+   {:name      :screen/edit-wakuv2-node
     :options   {:insets {:top? true}}
     :component edit-wakuv2-node/edit-node}
-   {:name      :installations
+   {:name      :screen/installations
     :options   {:topBar (topbar-options (i18n/label :t/devices))
                 :insets {:top? true}}
     :component pairing/installations}
-   {:name      :rpc-usage-info
+   {:name      :screen/rpc-usage-info
     :options   {:topBar (topbar-options :t/rpc-usage-info)
                 :insets {:top? true}}
     :component rpc-usage-info/usage-info}
-   {:name      :peers-stats
+   {:name      :screen/peers-stats
     :options   {:topBar (topbar-options :t/peers-stats)
                 :insets {:top? true}}
     :component peers-stats/peers-stats}
-   {:name      :fleet-settings
+   {:name      :screen/fleet-settings
     :options   {:topBar (topbar-options :t/fleet-settings)
                 :insets {:top? true}}
     :component fleet-settings/fleet-settings}
-   {:name      :backup-settings
+   {:name      :screen/backup-settings
     :options   {:topBar (topbar-options :t/backup-settings)
                 :insets {:top? true}}
     :component backup-settings/backup-settings}
-   {:name      :backup-seed
+   {:name      :screen/backup-seed
     :options   {:insets {:top? platform/android? :bottom? true}}
     :component profile.seed/backup-seed}
-   {:name      :default-sync-period-settings
+   {:name      :screen/default-sync-period-settings
     :options   {:topBar (topbar-options :t/default-sync-period)
                 :insets {:top? true}}
     :component default-sync-period-settings/default-sync-period-settings}])

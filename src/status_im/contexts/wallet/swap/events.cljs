@@ -17,7 +17,7 @@
  (fn [{:keys [db]} [{:keys [network asset-to-receive open-new-screen? from-account] :as data}]]
    (let [{:keys [wallet]}       db
          view-id                (:view-id db)
-         root-screen?           (or (= view-id :wallet-stack) (nil? view-id))
+         root-screen?           (or (= view-id :screen/wallet-stack) (nil? view-id))
          available-accounts     (utils/get-accounts-with-token-balance (:accounts wallet)
                                                                        (:asset-to-pay data))
          account                (or from-account

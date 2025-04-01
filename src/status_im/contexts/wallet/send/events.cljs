@@ -147,8 +147,8 @@
              :recipient     (or recipient address)
              :to-address    address))
       :fx [[:dispatch [:hide-bottom-sheet]]
-           [:dispatch [:shell/change-tab :wallet-stack]]
-           [:dispatch [:pop-to-root :shell-stack]]
+           [:dispatch [:shell/change-tab :screen/wallet-stack]]
+           [:dispatch [:pop-to-root :screen/shell-stack]]
            [:dispatch-later
             [{:ms       600
               :dispatch (if multiple-accounts?
@@ -203,7 +203,7 @@
                                             (some #(when (= (:symbol %) token-symbol) %)
                                                   unique-owner-tokens)))
          view-id                      (:view-id db)
-         root-screen?                 (or (= view-id :wallet-stack) (nil? view-id))
+         root-screen?                 (or (= view-id :screen/wallet-stack) (nil? view-id))
          multi-account-balance?       (-> (utils/get-accounts-with-token-balance (:accounts wallet)
                                                                                  token)
                                           (count)
@@ -303,7 +303,7 @@
 
 (rf/reg-event-fx :wallet/clean-selected-collectible
  (fn [{:keys [db]} [{:keys [ignore-entry-point?]}]]
-   (let [entry-point-wallet-home? (= (get-in db [:wallet :ui :send :entry-point]) :wallet-stack)
+   (let [entry-point-wallet-home? (= (get-in db [:wallet :ui :send :entry-point]) :screen/wallet-stack)
          multiple-owners?         (get-in db [:wallet :ui :send :collectible-multiple-owners?])
          transaction-type         (get-in db [:wallet :ui :send :tx-type])]
      (when (or ignore-entry-point?
@@ -326,7 +326,7 @@
          entry-point        (cond
                               entry-point      entry-point
                               viewing-account? :account-collectible-tab
-                              :else            :wallet-stack)
+                              :else            :screen/wallet-stack)
          collection-data    (:collection-data collectible)
          collectible-data   (:collectible-data collectible)
          contract-type      (:contract-type collectible)
@@ -796,7 +796,7 @@
 (rf/reg-event-fx
  :wallet/collectible-amount-navigate-back
  (fn [{db :db} [{:keys []}]]
-   (let [keep-tx-data? (#{:account-collectible-tab :wallet-stack}
+   (let [keep-tx-data? (#{:account-collectible-tab :screen/wallet-stack}
                         (-> db :wallet :ui :send :entry-point))]
      {:db (cond-> db
             :always             (update-in [:wallet :ui :send] dissoc :amount :route)

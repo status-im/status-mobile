@@ -24,7 +24,7 @@
       :on-press            (fn []
                              (rf/dispatch [:group-chat/clear-contacts])
                              (debounce/throttle-and-dispatch
-                              [:open-modal :start-a-new-chat]
+                              [:open-modal :screen/start-a-new-chat]
                               1000))}
      {:icon                :i/add-user
       :accessibility-label :add-a-contact
@@ -32,5 +32,5 @@
       :sub-label           (i18n/label :t/enter-chat-key)
       :add-divider?        true
       :on-press            #(debounce/throttle-and-dispatch
-                             [:open-modal :new-contact]
+                             [:open-modal :screen/new-contact]
                              1000)}]]])

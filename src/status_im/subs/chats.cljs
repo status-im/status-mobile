@@ -16,7 +16,7 @@
  :<- [:view-id]
  :<- [:home-items-show-number]
  (fn [[chats view-id home-items-show-number]]
-   (if (or (empty? @memo-chats-stack-items) (= view-id :chats-stack))
+   (if (or (empty? @memo-chats-stack-items) (= view-id :screen/chats-stack))
      (let [res (take home-items-show-number chats)]
        (reset! memo-chats-stack-items res)
        res)

@@ -3,7 +3,7 @@
     [quo.core :as quo]
     [re-frame.core :as re-frame]))
 
-(def preview-screen-name :dev-component-preview)
+(def preview-screen-name :screen/dev-component-preview)
 
 (when js/goog.DEBUG
   (re-frame/reg-event-fx :dev/preview-component

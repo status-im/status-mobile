@@ -102,11 +102,11 @@
                               (and (not selected-account) unique-owner?)
                               (assoc :token-symbol token-symbol
                                      :token        token-data
-                                     :stack-id     :wallet-stack)
+                                     :stack-id     :screen/wallet-stack)
 
                               (and (not selected-account) (not unique-owner?))
                               (assoc :token-symbol token-symbol
-                                     :stack-id     :wallet-stack))]
+                                     :stack-id     :screen/wallet-stack))]
     [quo/action-drawer
      [(cond->> [(when (ff/enabled? ::ff/wallet.assets-modal-manage-tokens)
                   (action-manage-tokens watch-only?))
@@ -135,7 +135,7 @@
      (or (not watch-only?) (ff/enabled? ::ff/wallet.long-press-watch-only-asset))
      (assoc :on-long-press
             (fn []
-              (when (= entry-point :wallet-stack)
+              (when (= entry-point :screen/wallet-stack)
                 (rf/dispatch [:wallet/close-account-page])
                 (rf/dispatch [:wallet/clean-current-viewing-account]))
               (rf/dispatch

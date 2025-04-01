@@ -221,363 +221,363 @@
     [utils.re-frame :as rf]))
 
 (def screens-categories
-  {:foundations       [{:name      :gradients
+  {:foundations       [{:name      :screen/gradients
                         :component gradients/view}
-                       {:name      :shadows
+                       {:name      :screen/shadows
                         :component shadows/view}]
-   :animated-list     [{:name      :animated-header-list
+   :animated-list     [{:name      :screen/animated-header-list
                         :component animated-header-list/mock-screen}]
-   :avatar            [{:name      :community-avatar
+   :avatar            [{:name      :screen/community-avatar
                         :component community-avatar/view}
-                       {:name      :dapp-avatar
+                       {:name      :screen/dapp-avatar
                         :component dapp-avatar/view}
-                       {:name      :group-avatar
+                       {:name      :screen/group-avatar
                         :component group-avatar/view}
-                       {:name      :icon-avatar
+                       {:name      :screen/icon-avatar
                         :component icon-avatar/view}
-                       {:name      :token-avatar
+                       {:name      :screen/token-avatar
                         :component token-avatar/view}
-                       {:name      :user-avatar
+                       {:name      :screen/user-avatar
                         :component user-avatar/view}
-                       {:name      :wallet-user-avatar
+                       {:name      :screen/wallet-user-avatar
                         :component wallet-user-avatar/view}
-                       {:name      :channel-avatar
+                       {:name      :screen/channel-avatar
                         :component channel-avatar/view}
-                       {:name      :collection-avatar
+                       {:name      :screen/collection-avatar
                         :component collection-avatar/view}
-                       {:name      :account-avatar
+                       {:name      :screen/account-avatar
                         :component account-avatar/view}]
-   :banner            [{:name      :alert-banners
+   :banner            [{:name      :screen/alert-banners
                         :component alert-banner/view}
-                       {:name      :banner
+                       {:name      :screen/banner
                         :component banner/view}]
-   :buttons           [{:name      :button
+   :buttons           [{:name      :screen/button
                         :component button/view}
-                       {:name      :composer-button
+                       {:name      :screen/composer-button
                         :component composer-button/view}
-                       {:name      :dynamic-button
+                       {:name      :screen/dynamic-button
                         :component dynamic-button/view}
-                       {:name      :slide-button
+                       {:name      :screen/slide-button
                         :component slide-button/view}
-                       {:name      :swap-order-button
+                       {:name      :screen/swap-order-button
                         :component swap-order-button/view}
-                       {:name      :predictive-keyboard
+                       {:name      :screen/predictive-keyboard
                         :component predictive-keyboard/view}
-                       {:name      :wallet-button
+                       {:name      :screen/wallet-button
                         :component wallet-button/view}
-                       {:name      :wallet-ctas
+                       {:name      :screen/wallet-ctas
                         :component wallet-ctas/view}]
-   :browser           [{:name      :browser-input
+   :browser           [{:name      :screen/browser-input
                         :component browser-input/view}]
-   :calendar          [{:name      :calendar
+   :calendar          [{:name      :screen/calendar
                         :component calendar/view}
-                       {:name      :calendar-day
+                       {:name      :screen/calendar-day
                         :component calendar-day/view}
-                       {:name      :calendar-year
+                       {:name      :screen/calendar-year
                         :component calendar-year/view}]
-   :cards             [{:name      :wallet-card
+   :cards             [{:name      :screen/wallet-card
                         :component wallet-card/view}]
-   :code              [{:name      :snippet
+   :code              [{:name      :screen/snippet
                         :component code-snippet/view}
-                       {:name      :snippet-preview
+                       {:name      :screen/snippet-preview
                         :component code-snippet-preview/view}]
-   :colors            [{:name      :color-picker
+   :colors            [{:name      :screen/color-picker
                         :component color-picker/view}
-                       {:name      :color
+                       {:name      :screen/color
                         :component color/view}]
-   :community         [{:name      :community-card-view
+   :community         [{:name      :screen/community-card-view
                         :component community-card/view}
-                       {:name      :community-detail-token-gating
+                       {:name      :screen/community-detail-token-gating
                         :component community-detail-token-gating/view}
-                       {:name      :community-token-gating
+                       {:name      :screen/community-token-gating
                         :component community-token-gating/view}
-                       {:name      :community-membership-list-view
+                       {:name      :screen/community-membership-list-view
                         :component community-membership-list-view/view}
-                       {:name      :community-stat
+                       {:name      :screen/community-stat
                         :component community-stat/view}
-                       {:name      :discover-card
+                       {:name      :screen/discover-card
                         :component discover-card/view}
-                       {:name      :channel-action
+                       {:name      :screen/channel-action
                         :options   {:insets {:bottom? true}}
                         :component channel-action/view}
-                       {:name      :channel-actions
+                       {:name      :screen/channel-actions
                         :options   {:insets {:bottom? true}}
                         :component channel-actions/view}]
-   :counter           [{:name      :collectible-counter
+   :counter           [{:name      :screen/collectible-counter
                         :component collectible-counter/view}
-                       {:name      :counter
+                       {:name      :screen/counter
                         :component counter/view}
-                       {:name      :step
+                       {:name      :screen/step
                         :component step/view}]
-   :dividers          [{:name      :divider-label
+   :dividers          [{:name      :screen/divider-label
                         :component divider-label/view}
-                       {:name      :divider-line
+                       {:name      :screen/divider-line
                         :component divider-line/view}
-                       {:name      :new-messages
+                       {:name      :screen/new-messages
                         :component new-messages/view}
-                       {:name      :divider-date
+                       {:name      :screen/divider-date
                         :component divider-date/view}
-                       {:name      :strength-divider
+                       {:name      :screen/strength-divider
                         :component strength-divider/view}]
-   :drawers           [{:name      :action-drawers
+   :drawers           [{:name      :screen/action-drawers
                         :component action-drawers/view}
-                       {:name      :documentation-drawer
+                       {:name      :screen/documentation-drawer
                         :component documentation-drawers/view}
-                       {:name      :drawer-action
+                       {:name      :screen/drawer-action
                         :component drawer-action/view}
-                       {:name      :drawer-buttons
+                       {:name      :screen/drawer-buttons
                         :component drawer-buttons/view}
-                       {:name      :drawer-top
+                       {:name      :screen/drawer-top
                         :component drawer-top/view}
-                       {:name      :permission-drawers
+                       {:name      :screen/permission-drawers
                         :component permission-drawers/view}
-                       {:name :bottom-actions
+                       {:name :screen/bottom-actions
                         :component
                         bottom-actions/view}]
-   :dropdowns         [{:name      :dropdown
+   :dropdowns         [{:name      :screen/dropdown
                         :component dropdown/view}
-                       {:name      :network-dropdown
+                       {:name      :screen/network-dropdown
                         :component network-dropdown/view}
-                       {:name      :dropdown-input
+                       {:name      :screen/dropdown-input
                         :component dropdown-input/view}]
-   :empty-state       [{:name      :empty-state
+   :empty-state       [{:name      :screen/empty-state
                         :component empty-state/view}]
-   :gradient          [{:name      :gradient-cover
+   :gradient          [{:name      :screen/gradient-cover
                         :component gradient-cover/view}]
-   :graph             [{:name      :interactive-graph
+   :graph             [{:name      :screen/interactive-graph
                         :options   {:topBar {:visible true}}
                         :component interactive-graph/view}
-                       {:name      :wallet-graph
+                       {:name      :screen/wallet-graph
                         :options   {:topBar {:visible true}}
                         :component wallet-graph/view}]
-   :info              [{:name      :info-message
+   :info              [{:name      :screen/info-message
                         :component info-message/view}
-                       {:name      :information-box
+                       {:name      :screen/information-box
                         :component information-box/view}]
-   :inputs            [{:name      :input
+   :inputs            [{:name      :screen/input
                         :component input/view}
-                       {:name      :address-input
+                       {:name      :screen/address-input
                         :component address-input/view}
-                       {:name      :locked-input
+                       {:name      :screen/locked-input
                         :component locked-input/view}
-                       {:name      :profile-input
+                       {:name      :screen/profile-input
                         :component profile-input/view}
-                       {:name      :recovery-phrase-input
+                       {:name      :screen/recovery-phrase-input
                         :component recovery-phrase-input/view}
-                       {:name      :search-input
+                       {:name      :screen/search-input
                         :component search-input/view}
-                       {:name      :title-input
+                       {:name      :screen/title-input
                         :component title-input/view}]
-   :ios               [{:name      :drawer-bar
+   :ios               [{:name      :screen/drawer-bar
                         :component drawer-bar/view}]
-   :numbered-keyboard [{:name      :keyboard-key
+   :numbered-keyboard [{:name      :screen/keyboard-key
                         :component keyboard-key/view}
-                       {:name      :numbered-keyboard
+                       {:name      :screen/numbered-keyboard
                         :component numbered-keyboard/view}]
-   :pin-input         [{:name      :pin-input
+   :pin-input         [{:name      :screen/pin-input
                         :component pin-input/view}]
-   :links             [{:name      :internal-link-card
+   :links             [{:name      :screen/internal-link-card
                         :options   {:insets {:top true}}
                         :component internal-link-card/view}
-                       {:name      :url-preview
+                       {:name      :screen/url-preview
                         :options   {:insets {:top? true}}
                         :component url-preview/view}
-                       {:name      :url-preview-list
+                       {:name      :screen/url-preview-list
                         :options   {:insets {:top? true}}
                         :component url-preview-list/view}
-                       {:name      :link-preview
+                       {:name      :screen/link-preview
                         :options   {:insets {:top? true}}
                         :component link-preview/view}]
-   :list-items        [{:name      :account
+   :list-items        [{:name      :screen/account
                         :component account-item/view}
-                       {:name      :account-list-card
+                       {:name      :screen/account-list-card
                         :component account-list-card/view}
-                       {:name      :address
+                       {:name      :screen/address
                         :component address/view}
-                       {:name      :approval-info
+                       {:name      :screen/approval-info
                         :component approval-info/view}
-                       {:name      :channel
+                       {:name      :screen/channel
                         :component channel/view}
-                       {:name      :community-list
+                       {:name      :screen/community-list
                         :options   {:insets {:top? true}}
                         :component community-list-item/view}
-                       {:name      :dapp
+                       {:name      :screen/dapp
                         :component dapp/preview}
-                       {:name      :missing-keypair
+                       {:name      :screen/missing-keypair
                         :component missing-keypair/view}
-                       {:name      :network-list
+                       {:name      :screen/network-list
                         :component network-list/view}
-                       {:name      :preview-lists
+                       {:name      :screen/preview-lists
                         :component preview-lists/view}
-                       {:name      :quiz-item
+                       {:name      :screen/quiz-item
                         :component quiz-item/view}
-                       {:name      :saved-address
+                       {:name      :screen/saved-address
                         :component saved-address/view}
-                       {:name      :saved-contact-address
+                       {:name      :screen/saved-contact-address
                         :component saved-contact-address/view}
-                       {:name      :token-network
+                       {:name      :screen/token-network
                         :component token-network/view}
-                       {:name      :token-value
+                       {:name      :screen/token-value
                         :component token-value/view}
-                       {:name      :user-list
+                       {:name      :screen/user-list
                         :options   {:topBar {:visible true}}
                         :component user-list/view}]
-   :loaders           [{:name      :skeleton-list
+   :loaders           [{:name      :screen/skeleton-list
                         :options   {:topBar {:visible true}}
                         :component skeleton-list/view}]
-   :markdown          [{:name      :texts
+   :markdown          [{:name      :screen/texts
                         :component text/view}
-                       {:name      :markdown-list
+                       {:name      :screen/markdown-list
                         :component markdown-list/view}]
-   :messages          [{:name      :author
+   :messages          [{:name      :screen/author
                         :component messages-author/view}
-                       {:name      :gap
+                       {:name      :screen/gap
                         :component messages-gap/view}
-                       {:name      :system-messages
+                       {:name      :screen/system-messages
                         :component system-message/view}]
-   :navigation        [{:name      :bottom-nav-tab
+   :navigation        [{:name      :screen/bottom-nav-tab
                         :component bottom-nav-tab/view}
-                       {:name      :top-nav
+                       {:name      :screen/top-nav
                         :component top-nav/view}
-                       {:name      :page-nav
+                       {:name      :screen/page-nav
                         :component page-nav/view}
-                       {:name      :floating-shell-button
+                       {:name      :screen/floating-shell-button
                         :component floating-shell-button/view}]
-   :notifications     [{:name      :activity-logs
+   :notifications     [{:name      :screen/activity-logs
                         :component activity-logs/view}
-                       {:name      :activity-logs-photos
+                       {:name      :screen/activity-logs-photos
                         :component activity-logs-photos/view}
-                       {:name      :toast
+                       {:name      :screen/toast
                         :component toast/view}
-                       {:name      :notification
+                       {:name      :screen/notification
                         :component notification/view}]
-   :onboarding        [{:name      :small-option-card
+   :onboarding        [{:name      :screen/small-option-card
                         :component small-option-card/view}]
-   :password          [{:name      :tips
+   :password          [{:name      :screen/tips
                         :component tips/view}
-                       {:name      :password-tips
+                       {:name      :screen/password-tips
                         :component password-tips/view}]
-   :profile           [{:name      :collectible
+   :profile           [{:name      :screen/collectible
                         :component collectible/view}
-                       {:name      :collectible-list-item
+                       {:name      :screen/collectible-list-item
                         :component collectible-list-item/view}
-                       {:name      :expanded-collectible
+                       {:name      :screen/expanded-collectible
                         :component expanded-collectible/view}
-                       {:name      :link-card
+                       {:name      :screen/link-card
                         :component link-card/view}
-                       {:name      :profile-card
+                       {:name      :screen/profile-card
                         :component profile-card/view}
-                       {:name      :select-profile
+                       {:name      :screen/select-profile
                         :component select-profile/view}
-                       {:name      :showcase-nav
+                       {:name      :screen/showcase-nav
                         :component showcase-nav/view}]
-   :record-audio      [{:name      :record-audio
+   :record-audio      [{:name      :screen/record-audio
                         :component record-audio/view}]
-   :selectors         [{:name      :disclaimer
+   :selectors         [{:name      :screen/disclaimer
                         :component disclaimer/view}
-                       {:name      :filter
+                       {:name      :screen/filter
                         :component filter/view}
-                       {:name      :selectors
+                       {:name      :screen/selectors
                         :component selectors/view}
-                       {:name      :reactions-selector
+                       {:name      :screen/reactions-selector
                         :component reactions-selector/preview}
-                       {:name      :react-selector
+                       {:name      :screen/react-selector
                         :component (react-selector/preview-react-selector)}
-                       {:name      :react
+                       {:name      :screen/react
                         :component react/preview-react}]
-   :settings          [{:name      :privacy-option
+   :settings          [{:name      :screen/privacy-option
                         :component privacy-option/view}
-                       {:name      :page-setting
+                       {:name      :screen/page-setting
                         :component page-setting/view}
-                       {:name      :accounts
+                       {:name      :screen/accounts
                         :component accounts/view}
-                       {:name      :settings-item
+                       {:name      :screen/settings-item
                         :component settings-item/view}
-                       {:name      :reorder-item
+                       {:name      :screen/reorder-item
                         :component reorder-item/view}
-                       {:name      :category
+                       {:name      :screen/category
                         :component category/view}
-                       {:name      :data-item
+                       {:name      :screen/data-item
                         :component data-item/view}
-                       {:name      :section-label
+                       {:name      :screen/section-label
                         :component section-label/view}]
-   :share             [{:name      :qr-code
+   :share             [{:name      :screen/qr-code
                         :component qr-code/view}
-                       {:name      :share-qr-code
+                       {:name      :screen/share-qr-code
                         :component share-qr-code/view}]
-   :slideshow         [{:name      :slider-bar
+   :slideshow         [{:name      :screen/slider-bar
                         :component slider-bar/view}]
-   :tabs              [{:name      :segmented
+   :tabs              [{:name      :screen/segmented
                         :component segmented/view}
-                       {:name      :tabs
+                       {:name      :screen/tabs
                         :component tabs/view}
-                       {:name      :account-selector
+                       {:name      :screen/account-selector
                         :component account-selector/view}]
-   :tags              [{:name      :collectible-tag
+   :tags              [{:name      :screen/collectible-tag
                         :component collectible-tag/view}
-                       {:name      :context-tags
+                       {:name      :screen/context-tags
                         :component context-tags/view}
-                       {:name      :network-status-tag
+                       {:name      :screen/network-status-tag
                         :component network-status-tag/view}
-                       {:name      :network-tags
+                       {:name      :screen/network-tags
                         :component network-tags/view}
-                       {:name      :number-tag
+                       {:name      :screen/number-tag
                         :component number-tag/view}
-                       {:name      :permission-tag
+                       {:name      :screen/permission-tag
                         :component permission-tag/view}
-                       {:name      :status-tags
+                       {:name      :screen/status-tags
                         :component status-tags/view}
-                       {:name      :summary-tag
+                       {:name      :screen/summary-tag
                         :component summary-tag/view}
-                       {:name      :tag
+                       {:name      :screen/tag
                         :component tag/view}
-                       {:name      :tags
+                       {:name      :screen/tags
                         :component tags/view}
-                       {:name      :tiny-tag
+                       {:name      :screen/tiny-tag
                         :component tiny-tag/view}
-                       {:name      :token-tag
+                       {:name      :screen/token-tag
                         :component token-tag/view}]
-   :text-combinations [{:name      :text-combinations
+   :text-combinations [{:name      :screen/text-combinations
                         :component text-combinations/view}
-                       {:name      :channel-name
+                       {:name      :screen/channel-name
                         :component channel-name/view}
-                       {:name      :page-top
+                       {:name      :screen/page-top
                         :component page-top/view}
-                       {:name      :standard-title
+                       {:name      :screen/standard-title
                         :component standard-title/view}
-                       {:name      :username
+                       {:name      :screen/username
                         :component username/view}]
-   :wallet            [{:name :account-card :component account-card/view}
-                       {:name :account-origin :component account-origin/view}
-                       {:name      :account-overview
+   :wallet            [{:name :screen/account-card :component account-card/view}
+                       {:name :screen/account-origin :component account-origin/view}
+                       {:name      :screen/account-overview
                         :component account-overview/view}
-                       {:name      :account-permissions
+                       {:name      :screen/account-permissions
                         :component account-permissions/view}
-                       {:name      :amount-input
+                       {:name      :screen/amount-input
                         :component amount-input/view}
-                       {:name      :approval-label
+                       {:name      :screen/approval-label
                         :component approval-label/view}
-                       {:name      :confirmation-progress
+                       {:name      :screen/confirmation-progress
                         :component confirmation-progress/view}
-                       {:name :keypair :component keypair/view}
-                       {:name      :missing-keypairs
+                       {:name :screen/keypair :component keypair/view}
+                       {:name      :screen/missing-keypairs
                         :component missing-keypairs/view}
-                       {:name :network-amount :component network-amount/view}
-                       {:name :network-bridge :component network-bridge/view}
-                       {:name :network-link :component network-link/view}
-                       {:name :network-routing :component network-routing/view}
-                       {:name :progress-bar :component progress-bar/view}
-                       {:name      :required-tokens
+                       {:name :screen/network-amount :component network-amount/view}
+                       {:name :screen/network-bridge :component network-bridge/view}
+                       {:name :screen/network-link :component network-link/view}
+                       {:name :screen/network-routing :component network-routing/view}
+                       {:name :screen/progress-bar :component progress-bar/view}
+                       {:name      :screen/required-tokens
                         :component required-tokens/view}
-                       {:name :summary-info :component summary-info/view}
-                       {:name :swap-input :component swap-input/view}
-                       {:name :token-input :component token-input/view}
-                       {:name :wallet-activity :component wallet-activity/view}
-                       {:name :transaction-progress :component transaction-progress/view}
-                       {:name :transaction-summary :component transaction-summary/view}
-                       {:name      :wallet-overview
+                       {:name :screen/summary-info :component summary-info/view}
+                       {:name :screen/swap-input :component swap-input/view}
+                       {:name :screen/token-input :component token-input/view}
+                       {:name :screen/wallet-activity :component wallet-activity/view}
+                       {:name :screen/transaction-progress :component transaction-progress/view}
+                       {:name :screen/transaction-summary :component transaction-summary/view}
+                       {:name      :screen/wallet-overview
                         :component wallet-overview/view}]
-   :keycard           [{:name :keycard-component :component keycard/view}]})
+   :keycard           [{:name :screen/keycard-component :component keycard/view}]})
 
 (defn- category-view
   []
@@ -620,7 +620,7 @@
                          {:visible false})))))
 
 (def main-screens
-  [{:name      :quo-preview
+  [{:name      :screen/quo-preview
     :options   {:topBar {:visible false}
                 :insets {:top? true}}
     :component main-screen}])

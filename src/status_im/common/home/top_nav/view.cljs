@@ -49,10 +49,10 @@
                                            :unread-indicator/new  :mention
                                            nil)
         screen-id                        (quo.context/use-screen-id)
-        initial-share-tab                (if (= :wallet-stack screen-id) :wallet :profile)]
+        initial-share-tab                (if (= :screen/wallet-stack screen-id) :wallet :profile)]
     [quo/top-nav
-     {:avatar-on-press          #(rf/dispatch [:open-modal :settings])
-      :scan-on-press            #(rf/dispatch [:open-modal :shell-qr-reader])
+     {:avatar-on-press          #(rf/dispatch [:open-modal :screen/settings])
+      :scan-on-press            #(rf/dispatch [:open-modal :screen/shell-qr-reader])
       :activity-center-on-press #(rf/dispatch [:activity-center/open])
       :right-section-content    (when (and (= (:status wallet-blockchain-status) "down")
                                            wallet-latest-update)

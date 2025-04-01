@@ -15,13 +15,13 @@
 (deftest open-activity-center-test
   (testing "opens the activity center with default filters"
     (is (match? {:db {}
-                 :fx [[:dispatch [:open-modal :activity-center {}]]
+                 :fx [[:dispatch [:open-modal :screen/activity-center {}]]
                       [:dispatch-later [{:ms 1000 :dispatch [:activity-center/mark-as-seen]}]]]}
                 (events/open-activity-center {:db {}} [nil]))))
 
   (testing "opens the activity center with filters enabled"
     (is (match? {:db {:activity-center {:filter {:status :unread :type types/contact-request}}}
-                 :fx [[:dispatch [:open-modal :activity-center {}]]
+                 :fx [[:dispatch [:open-modal :screen/activity-center {}]]
                       [:dispatch-later [{:ms 1000 :dispatch [:activity-center/mark-as-seen]}]]]}
                 (events/open-activity-center {:db {}}
                                              [{:filter-type   types/contact-request
@@ -392,9 +392,9 @@
                 (events/reconcile-seen-state {:db {}} true))))
 
   (testing "update seen state when the user is on other screen"
-    (is (match? {:db {:view-id         :chats-stack
+    (is (match? {:db {:view-id         :screen/chats-stack
                       :activity-center {:seen? false}}}
-                (events/reconcile-seen-state {:db {:view-id :chats-stack}} false))))
+                (events/reconcile-seen-state {:db {:view-id :screen/chats-stack}} false))))
 
   (testing "update seen state when the user is on activity center"
     (is (match? {:db       {:view-id         :activity-center

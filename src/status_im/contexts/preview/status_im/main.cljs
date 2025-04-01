@@ -13,10 +13,10 @@
     [utils.re-frame :as rf]))
 
 (def screens-categories
-  {:common [{:name      :floating-button-page
+  {:common [{:name      :screen/floating-button-page
              :component floating-button-page/view}]
    :banner
-   [{:name      :alert-banner-preview
+   [{:name      :screen/alert-banner-preview
      :component alert-banner/view}]})
 
 (defn- category-view
@@ -60,7 +60,7 @@
                          {:visible false})))))
 
 (def main-screens
-  [{:name      :status-im-preview
+  [{:name      :screen/status-im-preview
     :options   {:topBar {:visible false}
                 :insets {:top? true}}
     :component main-screen}])

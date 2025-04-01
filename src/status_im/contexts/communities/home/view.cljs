@@ -70,7 +70,7 @@
                            #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}]))
     :accessibility-label :new-communities-button}
    :card-props
-   {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
+   {:on-press            #(rf/dispatch [:navigate-to :screen/discover-communities])
     :title               (i18n/label :t/discover)
     :description         (i18n/label :t/favorite-communities)
     :banner              (resources/get-image :discover)

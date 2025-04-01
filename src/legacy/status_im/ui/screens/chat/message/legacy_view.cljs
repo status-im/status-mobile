@@ -180,7 +180,7 @@
        [rn/view (style/community-view-button)
         [rn/touchable-opacity
          {:on-press #(do
-                       (rf/dispatch [:pop-to-root :shell-stack])
+                       (rf/dispatch [:pop-to-root :screen/shell-stack])
                        (rf/dispatch [:communities/navigate-to-community-overview (:id community)])
                        (rf/dispatch [:chat/close]))}
          [rn/text

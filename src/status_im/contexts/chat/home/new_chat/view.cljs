@@ -46,7 +46,7 @@
        :size                32
        :on-press            #(do
                                (rf/dispatch [:navigate-back])
-                               (rf/dispatch [:open-modal :new-contact]))}
+                               (rf/dispatch [:open-modal :screen/new-contact]))}
       (i18n/label :t/add-a-contact)]]))
 
 (def ^:private contacts-selection-limit (dec constants/max-group-chat-participants))

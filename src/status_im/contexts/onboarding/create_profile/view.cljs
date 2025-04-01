@@ -64,7 +64,7 @@
 
 (defn- navigate-to-quo-preview
   []
-  (rf/dispatch [:navigate-to :quo-preview]))
+  (rf/dispatch [:navigate-to :screen/quo-preview]))
 
 (defn view
   []

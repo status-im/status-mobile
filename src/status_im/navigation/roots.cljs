@@ -11,11 +11,11 @@
              :children [{:component {:name    :screen/onboarding.intro
                                      :id      :screen/onboarding.intro
                                      :options (options/dark-root-options)}}]}}}
-   :shell-stack
+   :screen/shell-stack
    {:root
-    {:stack {:id       :shell-stack
-             :children [{:component {:name    :shell-stack
-                                     :id      :shell-stack
+    {:stack {:id       :screen/shell-stack
+             :children [{:component {:name    :screen/shell-stack
+                                     :id      :screen/shell-stack
                                      :options (options/root-options
                                                {:nav-bar-color    colors/neutral-100
                                                 :status-bar-theme status-bar-theme})}}]}}}
@@ -34,9 +34,9 @@
 
 (defn old-roots
   [status-bar-theme]
-  {:progress
-   {:root {:stack {:children [{:component {:name    :progress
-                                           :id      :progress
+  {:screen/progress
+   {:root {:stack {:children [{:component {:name    :screen/progress
+                                           :id      :screen/progress
                                            :options (options/root-options {:status-bar-theme
                                                                            status-bar-theme})}}]
                    :options  (assoc (options/root-options nil)

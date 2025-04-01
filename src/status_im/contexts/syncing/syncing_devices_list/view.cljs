@@ -22,7 +22,7 @@
      :content
      (fn [] [check-before-syncing/view
              {:customization-color customization-color
-              :on-submit           #(rf/dispatch [:open-modal :settings-setup-syncing])}])}]))
+              :on-submit           #(rf/dispatch [:open-modal :screen/settings-setup-syncing])}])}]))
 
 (defn view
   []

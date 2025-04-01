@@ -99,7 +99,7 @@
              (update :chats-home-list set/difference removed-chats))
      :fx [(when (not-empty removed-chats)
             [:effects/push-notifications-clear-message-notifications removed-chats])
-          (when (and (= view-id :chat) (removed-chats current-chat-id))
+          (when (and (= view-id :screen/chat) (removed-chats current-chat-id))
             [:dispatch [:navigate-back]])]}))
 
 (re-frame/reg-event-fx :chat/ensure-chats ensure-chats)
@@ -201,7 +201,7 @@
   [{db :db :as cofx} chat-id animation]
   (rf/merge cofx
             (when-not (:current-chat-id db)
-              {:dispatch [:navigate-to :chat {:animation animation}]})
+              {:dispatch [:navigate-to :screen/chat {:animation animation}]})
             (close-chat chat-id)
             (force-close-chat chat-id)
             (fn [{:keys [db]}]
@@ -217,7 +217,7 @@
    cofx
    {:dispatch-later {:ms       500
                      :dispatch [:chat/navigate-to-chat chat-id animation]}}
-   (navigation/pop-to-root :shell-stack)))
+   (navigation/pop-to-root :screen/shell-stack)))
 
 (rf/defn handle-clear-history-response
   {:events [:chat/history-cleared]}
@@ -452,5 +452,5 @@
                    {:pubkey     public-key
                     :ens        ens-name
                     :success-fn (fn [_]
-                                  {:dispatch [:open-modal :contact-profile]})}]}
-       {:dispatch [:open-modal :settings]}))))
+                                  {:dispatch [:open-modal :screen/contact-profile]})}]}
+       {:dispatch [:open-modal :screen/settings]}))))

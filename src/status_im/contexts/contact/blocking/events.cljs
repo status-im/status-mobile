@@ -67,7 +67,7 @@
            ;; reset navigation to avoid going back to non existing one to one chat
            (when current-chat-id
              (if from-one-to-one-chat?
-               [:dispatch [:pop-to-root :shell-stack]]
+               [:dispatch [:pop-to-root :screen/shell-stack]]
                [:dispatch [:navigate-back]]))]})))
 
 (rf/reg-event-fx :contact/unblocked
