@@ -57,6 +57,8 @@ abstract_target 'Status' do
   pod 'react-native-config', :path => '../node_modules/react-native-config'
 
   pod 'SSZipArchive', '2.4.3'
+  # to fix [!] [!] CocoaPods could not find compatible versions for pod "libwebp"
+  pod 'libwebp', '1.0.0'
   # to fix [!] CocoaPods could not find compatible versions for pod "CryptoSwift"
   pod 'CryptoSwift', git: "https://github.com/krzyzanowskim/CryptoSwift", tag: '1.8.0'
   pod "react-native-status-keycard", path: "../node_modules/react-native-status-keycard"

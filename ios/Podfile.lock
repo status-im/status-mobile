@@ -23,18 +23,30 @@ PODS:
     - secp256k1
     - SSZipArchive
   - libevent (2.1.12)
-  - libwebp (1.5.0):
-    - libwebp/demux (= 1.5.0)
-    - libwebp/mux (= 1.5.0)
-    - libwebp/sharpyuv (= 1.5.0)
-    - libwebp/webp (= 1.5.0)
-  - libwebp/demux (1.5.0):
+  - libwebp (1.0.0):
+    - libwebp/core (= 1.0.0)
+    - libwebp/dec (= 1.0.0)
+    - libwebp/demux (= 1.0.0)
+    - libwebp/dsp (= 1.0.0)
+    - libwebp/enc (= 1.0.0)
+    - libwebp/mux (= 1.0.0)
+    - libwebp/utils (= 1.0.0)
+    - libwebp/webp (= 1.0.0)
+  - libwebp/core (1.0.0):
     - libwebp/webp
-  - libwebp/mux (1.5.0):
-    - libwebp/demux
-  - libwebp/sharpyuv (1.5.0)
-  - libwebp/webp (1.5.0):
-    - libwebp/sharpyuv
+  - libwebp/dec (1.0.0):
+    - libwebp/core
+  - libwebp/demux (1.0.0):
+    - libwebp/core
+  - libwebp/dsp (1.0.0):
+    - libwebp/core
+  - libwebp/enc (1.0.0):
+    - libwebp/core
+  - libwebp/mux (1.0.0):
+    - libwebp/core
+  - libwebp/utils (1.0.0):
+    - libwebp/core
+  - libwebp/webp (1.0.0)
   - MMKV (2.1.0):
     - MMKVCore (~> 2.1.0)
   - MMKVCore (2.1.1)
@@ -1213,6 +1225,7 @@ DEPENDENCIES:
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - Keycard (from `https://github.com/status-im/Keycard.swift.git`, tag `3.1.1`)
   - libevent (~> 2.1.12)
+  - libwebp (= 1.0.0)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -1522,7 +1535,7 @@ SPEC CHECKSUMS:
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: 3bd24405b9a875b3b3cf1ab1be69b5c30c5f28bc
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
+  libwebp: d7e0c95fe97245c97e08101eba10702ebb0f6101
   MMKV: ce484c1ac40bf76d5f09a0195d2ec5b3d3840d55
   MMKVCore: 1eb661c6c498ab88e3df9ce5d8ff94d05fcc0567
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
@@ -1612,6 +1625,6 @@ SPEC CHECKSUMS:
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   Yoga: a716eea57d0d3430219c0a5a233e1e93ee931eb7
 
-PODFILE CHECKSUM: 56d9f695324306d6db368d1172d211dfab55b7cb
+PODFILE CHECKSUM: 1a15018a9c864c8f0a1cdec9a6e195e1ab0b1d0d
 
 COCOAPODS: 1.15.2
