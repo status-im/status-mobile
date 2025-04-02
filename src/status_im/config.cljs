@@ -25,17 +25,17 @@
 (goog-define ALCHEMY_OPTIMISM_SEPOLIA_TOKEN "")
 (goog-define ALCHEMY_BASE_MAINNET_TOKEN "")
 (goog-define ALCHEMY_BASE_SEPOLIA_TOKEN "")
-(goog-define WALLET_CONNECT_PROJECT_ID "87815d72a81d739d2a7ce15c2cfdefb3")
+(goog-define WALLET_CONNECT_PROJECT_ID "foo")
 (goog-define STATUS_BUILD_ETH_RPC_PROXY_USER "")
 (goog-define STATUS_BUILD_ETH_RPC_PROXY_PASSWORD "")
 (goog-define STATUS_BUILD_ETH_RPC_PROXY_URL "")
 (goog-define MIXPANEL_APP_ID "")
 (goog-define MIXPANEL_APP_TOKEN "")
 
-(def mainnet-rpc-url (str "https://eth-archival.rpc.grove.city/v1/" POKT_TOKEN))
-(def sepolia-rpc-url (str "https://sepolia-archival.rpc.grove.city/v1/" POKT_TOKEN))
-(def opensea-link "https://opensea.io")
-(def opensea-tesnet-link "https://testnets.opensea.io")
+(def mainnet-rpc-url "foo")
+(def sepolia-rpc-url "foo")
+(def opensea-link "foo")
+(def opensea-tesnet-link "foo")
 
 ;; These MixPanel values should be injected via the CI since they vary depending
 ;; on the environment, as we want to keep production and test/development
@@ -45,12 +45,12 @@
 ;; `status-im`, and the test project is `test.status-im`.
 ;;
 ;; During development, do not use the production app ID and token.
-(def mixpanel-app-id MIXPANEL_APP_ID)
-(def mixpanel-token MIXPANEL_APP_TOKEN)
+(def mixpanel-app-id "foo")
+(def mixpanel-token "foo")
 
-(def opensea-api-key OPENSEA_API_KEY)
+(def opensea-api-key "foo")
 (def status-proxy-enabled? true)
-(def status-proxy-stage-name (get-config :STATUS_PROXY_STAGE_NAME "test"))
+(def status-proxy-stage-name "foo")
 (def pairing-popup-disabled? (enabled? (get-config :PAIRING_POPUP_DISABLED "0")))
 (def cached-webviews-enabled? (enabled? (get-config :CACHED_WEBVIEWS_ENABLED 0)))
 
@@ -66,7 +66,7 @@
 (def log-level (string/upper-case (get-config :LOG_LEVEL "")))
 (def api-logging-enabled? (enabled? (get-config :API_LOGGING_ENABLED "0")))
 (def fleet (get-config :FLEET ""))
-(def apn-topic (get-config :APN_TOPIC "im.status.ethereum"))
+(def apn-topic "foo")
 (def max-installations 2)
 
 (defn env-variable->int

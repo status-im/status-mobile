@@ -20,25 +20,25 @@
    :statusProxyMarketPassword     config/STATUS_BUILD_PROXY_PASSWORD
    :statusProxyBlockchainUser     config/STATUS_BUILD_PROXY_USER
    :statusProxyBlockchainPassword config/STATUS_BUILD_PROXY_PASSWORD
-   :openseaAPIKey                 config/opensea-api-key
-   :poktToken                     config/POKT_TOKEN
-   :infuraToken                   config/INFURA_TOKEN
-   :raribleMainnetAPIKey          config/RARIBLE_MAINNET_API_KEY
-   :raribleTestnetAPIKey          config/RARIBLE_TESTNET_API_KEY
-   :alchemyEthereumMainnetToken   config/ALCHEMY_ETHEREUM_MAINNET_TOKEN
-   :alchemyEthereumSepoliaToken   config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN
-   :alchemyOptimismMainnetToken   config/ALCHEMY_OPTIMISM_MAINNET_TOKEN
-   :alchemyOptimismSepoliaToken   config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN
-   :alchemyArbitrumMainnetToken   config/ALCHEMY_ARBITRUM_MAINNET_TOKEN
-   :alchemyArbitrumSepoliaToken   config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN
-   :alchemyBaseMainnetToken       config/ALCHEMY_BASE_MAINNET_TOKEN
-   :alchemyBaseSepoliaToken       config/ALCHEMY_BASE_SEPOLIA_TOKEN})
+   :openseaAPIKey                 "foo"
+   :poktToken                     "foo"
+   :infuraToken                   "foo"
+   :raribleMainnetAPIKey          "foo"
+   :raribleTestnetAPIKey          "foo"
+   :alchemyEthereumMainnetToken   "foo"
+   :alchemyEthereumSepoliaToken   "foo"
+   :alchemyOptimismMainnetToken   "foo"
+   :alchemyOptimismSepoliaToken   "foo"
+   :alchemyArbitrumMainnetToken   "foo"
+   :alchemyArbitrumSepoliaToken   "foo"
+   :alchemyBaseMainnetToken       "foo"
+   :alchemyBaseSepoliaToken       "foo"})
 
 (defn- common-config
   []
-  {:verifyTransactionURL                         config/verify-transaction-url
-   :verifyENSURL                                 config/verify-ens-url
-   :verifyENSContractAddress                     config/verify-ens-contract-address
+  {:verifyTransactionURL                         "foo"
+   :verifyENSURL                                 "foo"
+   :verifyENSContractAddress                     "foo"
    :verifyTransactionChainID                     config/verify-transaction-chain-id
    :wakuV2LightClient                            true
    :wakuV2EnableMissingMessageVerification       true
