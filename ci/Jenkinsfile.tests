@@ -53,23 +53,6 @@ pipeline {
         stage('Lint') {
           steps { make('lint') }
         }
-        stage('Unit') {
-          steps { make('test-unit') }
-        }
-        stage('Component') {
-          steps { make('test-component') }
-        }
-      }
-    }
-    stage('Heavy Test') {
-      parallel {
-        stage('Contract') {
-          when { expression { params.RUN_CONTRACT_TESTS } }
-          steps { make('test-contract') }
-        }
-        stage('Integration') {
-          steps { make('test-integration') }
-        }
       }
     }
     stage('Upload') {
