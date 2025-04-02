@@ -5,19 +5,20 @@
     [legacy.status-im.ui.components.react :as react]
     [legacy.status-im.utils.build :as build]
     [legacy.status-im.utils.deprecated-types :as types]
+    [legacy.status-im.utils.logging.view :as view]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
+    [react-native.mmkv :as mmkv]
     [react-native.platform :as platform]
     [status-im.common.json-rpc.events :as json-rpc]
     [status-im.common.log :as common-log]
     [status-im.config :as config]
+    [status-im.constants :as constants]
     [status-im.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
-
-(def report-email "error-reports@status.im")
 
 (re-frame/reg-fx
  :logs/archive-logs
@@ -82,11 +83,6 @@
               (datetime/timestamp->long-date
                (datetime/now))]))))
 
-(rf/defn dialog-closed
-  {:events [:logging/dialog-left]}
-  [{:keys [db]}]
-  {:db (dissoc db :logging/dialog-shown?)})
-
 (rf/defn send-email
   [_ opts callback]
   {:email/send [opts callback]})
@@ -97,10 +93,9 @@
   (rf/merge
    cofx
    {:db (dissoc db :bug-report/details)}
-   (dialog-closed)
    (send-email
     (cond-> {:subject    "Error report"
-             :recipients [report-email]
+             :recipients [constants/report-email]
              :body       (email-body db)}
 
       (not (nil? archive-uri))
@@ -116,7 +111,7 @@
   [{:profile/keys [profile]}]
   (let [log-level (if profile ;; already login
                     (get profile :log-level)
-                    config/log-level)]
+                    (config/log-level))]
     (not (string/blank? log-level))))
 
 (rf/defn send-logs
@@ -158,22 +153,8 @@
 
 (rf/defn show-logs-dialog
   {:events [:shake-event]}
-  [{:keys [db]}]
-  (when-not (:logging/dialog-shown? db)
-    {:db (assoc db :logging/dialog-shown? true)
-     :effects.utils/show-confirmation
-     {:title (i18n/label :t/send-logs)
-      :content (i18n/label :t/send-logs-to
-                           {:email report-email})
-      :confirm-button-text (i18n/label :t/send-logs)
-      :extra-options
-      [{:text    (i18n/label :t/share-logs)
-        :onPress #(re-frame/dispatch
-                   [:logging.ui/send-logs-pressed :sharing])
-        :style   "default"}]
-      :on-accept #(do (re-frame/dispatch [:open-modal :screen/bug-report])
-                      (re-frame/dispatch [:logging/dialog-left]))
-      :on-cancel #(re-frame/dispatch [:logging/dialog-left])}}))
+  [_]
+  {:dispatch [:show-bottom-sheet {:content view/logs-management-drawer}]})
 
 (re-frame/reg-fx
  :email/send
@@ -196,7 +177,6 @@
   [cofx archive-uri]
   (rf/merge
    cofx
-   (dialog-closed)
    (share-archive
     {:title "Archived logs"
      :url   archive-uri})))
@@ -254,3 +234,30 @@
    {:db (dissoc db :bug-report/details)}
    (navigation/hide-bottom-sheet)
    (submit-issue)))
+
+(rf/defn change-pre-login-log-level
+  {:events [:log-level.ui/change-pre-login-log-level]}
+  [{:keys [db]} log-level]
+  (let [old-log-level (get-in db [:log-level/current-pre-login-log-level])]
+    (when (not= old-log-level log-level)
+      (let [need-set-pre-login-log-enabled? (or (empty? old-log-level) (empty? log-level))
+            pre-login-log-enabled?          (boolean (seq log-level))]
+        {:fx [[:log-level/set-pre-login-log-level log-level]
+              (when need-set-pre-login-log-enabled?
+                [:log-level/set-pre-login-log-enabled pre-login-log-enabled?])
+              ;; update log level in taoensso.timbre
+              [:logs/set-level log-level]
+              [:dispatch [:hide-bottom-sheet]]]
+         :db (assoc db :log-level/current-pre-login-log-level log-level)}))))
+
+(rf/reg-fx
+ :log-level/set-pre-login-log-level
+ (fn [log-level]
+   (mmkv/store constants/pre-login-log-level-key log-level)
+   (when (seq log-level)
+     (native-module/set-pre-login-log-level log-level))))
+
+(rf/reg-fx
+ :log-level/set-pre-login-log-enabled
+ (fn [enabled?]
+   (native-module/set-pre-login-log-enabled enabled?)))

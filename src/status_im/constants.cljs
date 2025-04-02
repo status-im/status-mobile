@@ -491,3 +491,6 @@
 (def ^:const wc-connection-string-identifier "wc")
 
 (def ^:const max-allowed-watched-accounts 20)
+
+(def ^:const pre-login-log-level-key "pre-login-log-level")
+(def ^:const report-email "error-reports@status.im")

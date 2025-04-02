@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [react-native.config :as react-native-config]
+    [react-native.mmkv :as mmkv]
     [status-im.constants :as constants]
     [utils.ens.core :as utils.ens]
     [utils.ethereum.chain :as chain]))
@@ -63,7 +64,11 @@
 (def show-not-implemented-features? (enabled? (get-config :SHOW_NOT_IMPLEMENTED_FEATURES "0")))
 
 ;; CONFIG VALUES
-(def log-level (string/upper-case (get-config :LOG_LEVEL "")))
+(defn log-level
+  []
+  (if (mmkv/contains-key? constants/pre-login-log-level-key)
+    (mmkv/get-string constants/pre-login-log-level-key)
+    (string/upper-case (get-config :LOG_LEVEL ""))))
 (def api-logging-enabled? (enabled? (get-config :API_LOGGING_ENABLED "0")))
 (def fleet (get-config :FLEET ""))
 (def apn-topic (get-config :APN_TOPIC "im.status.ethereum"))

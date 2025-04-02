@@ -49,7 +49,7 @@
  (fn [{:keys [db]} [settings-data account]]
    (let [settings                 (data-store.settings/rpc->settings settings-data)
          profile-overview         (profile.rpc/rpc->profiles-overview account)
-         log-level                (or (:log-level settings) config/log-level)
+         log-level                (or (:log-level settings) (config/log-level))
          pairing-completed?       (= (get-in db [:syncing :pairing-status]) :completed)
          biometric-supported-type (get-in db [:biometrics :supported-type])
          new-db                   (-> db

@@ -64,7 +64,7 @@
   (native-module/init #(re-frame/dispatch [:signals/signal-received %]))
   (when platform/android?
     (native-module/set-soft-input-mode adjust-resize))
-  (logging/setup config/log-level)
+  (logging/setup (config/log-level))
   (global-error/register-handler)
   (notifications/listen-notifications)
   (.addEventListener rn/app-state "change" #(re-frame/dispatch [:app-state-change %]))
