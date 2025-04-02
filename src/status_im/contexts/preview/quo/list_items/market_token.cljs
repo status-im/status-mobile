@@ -8,32 +8,34 @@
   [{:key     :token
     :type    :select
     :options [{:key :eth}
-              {:key :snt}]}
-   {:key     :status
-    :type    :select
-    :options [{:key :empty}
-              {:key :positive}
-              {:key :negative}]}
-   (preview/customization-color-option)
-   {:key :metrics? :type :boolean}])
+              {:key :snt}
+              {:key :btc}]}
+   {:key  :token-rank
+    :type :number}
+   {:key  :percentage-change
+    :type :number}
+   {:key  :token-name
+    :type :text}
+   {:key  :market-cap
+    :type :text}
+   {:key  :price
+    :type :text}
+   (preview/customization-color-option)])
 
 (defn view
   []
   (let [state (reagent/atom {:token               :snt
+                             :token-rank          10
                              :token-name          "Status"
-                             :state               :default
-                             :status              :empty
-                             :customization-color :blue
-                             :metrics?            true
-                             :values              {:crypto-value      "0.00"
-                                                   :fiat-value        "€0.00"
-                                                   :percentage-change "0.00"
-                                                   :fiat-change       "€0.00"}})]
+                             :market-cap          "$332.1B"
+                             :price               "$0.8"
+                             :percentage-change   5.2
+                             :customization-color :blue})]
     (fn []
       [preview/preview-container
        {:state                     state
         :descriptor                descriptor
         :component-container-style {:align-items :center
                                     :margin-top  50}}
-       [quo/token-value @state]])))
+       [quo/market-token @state]])))
 

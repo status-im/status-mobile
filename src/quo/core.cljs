@@ -90,6 +90,7 @@
     quo.components.list-items.channel.view
     quo.components.list-items.community.view
     quo.components.list-items.dapp.view
+    quo.components.list-items.market-token.view
     quo.components.list-items.menu-item
     quo.components.list-items.missing-keypair.view
     quo.components.list-items.network-list.view
@@ -349,6 +350,7 @@
 (def token-info quo.components.list-items.token-info.view/view)
 (def token-network quo.components.list-items.token-network.view/view)
 (def token-value quo.components.list-items.token-value.view/view)
+(def market-token quo.components.list-items.market-token.view/view)
 (def user quo.components.list-items.user/user)
 (def status-list-item quo.components.list-items.status-list-item.view/view)
 
