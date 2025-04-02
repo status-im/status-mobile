@@ -2950,6 +2950,7 @@
   "watch-only": "Watch-only",
   "watched-account-removed": "Watched address has been removed",
   "watched-address": "Watched address",
+  "watched-addresses-limit-reached-toast": "Limit of 20 watched addresses reached: remove a watched address to add a new one.",
   "ways-to-buy": "Ways to buy",
   "ways-to-buy-assets": "Ways to buy assets",
   "wc-brand-guide": "Guidance on using branding such as trademarks and logos",

@@ -19,20 +19,31 @@
   []
   (let [watched-accounts             (rf/sub [:wallet/watch-only-accounts])
         reached-max-watched-account? (>= (count watched-accounts)
-                                         constants/max-allowed-watched-accounts)]
+                                         constants/max-allowed-watched-accounts)
+        on-add-address-press         (rn/use-callback
+                                      (fn []
+                                        (if reached-max-watched-account?
+                                          (rf/dispatch [:toasts/upsert
+                                                        {:type :negative
+                                                         :theme :dark
+                                                         :text
+                                                         (i18n/label
+                                                          :t/saved-addresses-limit-reached-toast)}])
+                                          (rf/dispatch [:navigate-to
+                                                        :screen/wallet.add-address-to-watch])))
+                                      [reached-max-watched-account?])]
     [quo/action-drawer
      [[{:icon                :i/add
         :accessibility-label :start-a-new-chat
         :label               (i18n/label :t/add-account)
         :sub-label           (i18n/label :t/add-account-description)
         :on-press            #(rf/dispatch [:navigate-to :screen/wallet.create-account])}
-       (when (not reached-max-watched-account?)
-         {:icon                :i/reveal
-          :accessibility-label :add-a-contact
-          :label               (i18n/label :t/add-address-to-watch)
-          :sub-label           (i18n/label :t/add-address-to-watch-description)
-          :on-press            #(rf/dispatch [:navigate-to :screen/wallet.add-address-to-watch])
-          :add-divider?        true})]]]))
+       {:icon                :i/reveal
+        :accessibility-label :add-a-contact
+        :label               (i18n/label :t/add-address-to-watch)
+        :sub-label           (i18n/label :t/add-address-to-watch-description)
+        :on-press            on-add-address-press
+        :add-divider?        true}]]]))
 
 (defn- new-account-card-data
   []
