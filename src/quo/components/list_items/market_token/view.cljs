@@ -1,5 +1,6 @@
 (ns quo.components.list-items.market-token.view
   (:require
+    [clojure.string :as string]
     [quo.components.counter.counter.view :as counter]
     [quo.components.icon :as icon]
     [quo.components.list-items.market-token.schema :as component-schema]
@@ -7,8 +8,6 @@
     [quo.components.markdown.text :as text]
     [quo.components.utilities.token.view :as token]
     [quo.context :as quo.context]
-    [quo.foundations.colors :as colors]
-    [re-frame.core :as rf]
     [react-native.core :as rn]
     [schema.core :as schema]))
 
@@ -27,7 +26,8 @@
                            (fn []
                              (set-state :active)
                              (js/setTimeout #(set-state :default) 300)
-                             on-press))]
+                             on-press))
+        token-short-name  (if token (string/upper-case (clj->js token)) "")]
     [rn/pressable
      {:style               (style/container customization-color bg-opacity theme)
       :on-press-in         on-press-in
@@ -36,37 +36,38 @@
       :on-long-press       on-long-press
       :accessibility-label :market-token-container}
      [rn/view
-      {:style {:flex-direction :row
-               :align-items    :center
-               :flex           1}}
+      {:style style/left-side}
       [counter/view
        {:type            :outline
         :max-value       99999
         :container-style {:margin-right 8}}
        token-rank]
       [token/view {:token token :size :size-32}]
-      [rn/view {:style {:margin-left 8}}
-       [text/text {:weight :semi-bold} token-name]
+      [rn/view style/left-text-block
+       [rn/view style/token-name-container
+        [text/text {:weight :semi-bold} token-name]
+        [text/text
+         {:weight :medium
+          :size   :paragraph-2
+          :style  (style/token-short-name theme)} token-short-name]]
        [text/text
         {:size  :paragraph-2
-         :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+         :style (style/market-cap theme)}
         market-cap]]]
      [rn/view
-      {:style {:align-items     :flex-end
-               :justify-content :space-between}}
+      {:style style/right-side}
       [text/text
        {:weight :medium
         :size   :paragraph-2} price]
       (when percentage-change
         [rn/view
-         {:style {:flex-direction :row
-                  :align-items    :center}}
+         {:style style/percentage-container}
          [text/text
           {:size  :paragraph-2
            :style (style/percentage-text percentage-change theme)}
           (str percentage-change "%")]
          [rn/view
-          {:style               {:margin-left 4}
+          {:style               style/arrow
            :accessibility-label :arrow-icon}
           [icon/icon (if (pos? percentage-change) :i/positive :i/negative)
            (style/arrow-icon percentage-change theme)]]])]]))

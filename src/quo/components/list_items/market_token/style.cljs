@@ -25,3 +25,35 @@
             (colors/resolve-color :success theme)
             (colors/resolve-color :danger theme))})
 
+(def left-side
+  {:flex-direction :row
+   :align-items    :center
+   :flex           1})
+
+(def right-side
+  {:align-items     :flex-end
+   :justify-content :space-between})
+
+(def percentage-container
+  {:flex-direction :row
+   :align-items    :center})
+
+(def token-name-container
+  {:flex-direction :row
+   :align-items    :center})
+
+(def arrow
+  {:margin-left 4})
+
+(def left-text-block
+  {:margin-left 8})
+
+(defn market-cap
+  [theme]
+  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
+
+(defn token-short-name
+  [theme]
+  {:color       (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+   :margin-left 4})
+
