@@ -4,11 +4,6 @@
     [re-frame.core :as rf]))
 
 (rf/reg-sub
- :wallet/saved-address
- :<- [:wallet/ui]
- :-> :saved-address)
-
-(rf/reg-sub
  :wallet/saved-addresses
  :<- [:wallet]
  :-> :saved-addresses)

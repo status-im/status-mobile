@@ -80,4 +80,4 @@
   [server]
   (when-not (empty? server)
     (-> (.resetInternetCredentials ^js react-native-keychain (string/lower-case server))
-        (.then #(when-not % (log/error (str "Error while clearing saved password.")))))))
+        (.then #(when-not % (log/error "Error while clearing saved password."))))))

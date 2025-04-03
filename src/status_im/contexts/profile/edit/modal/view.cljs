@@ -221,7 +221,7 @@
                                                   (not= initial-display-name @display-name))
                                              (assoc :display-name @display-name)
 
-                                             (and (not= initial-image @profile-image))
+                                             (not= initial-image @profile-image)
                                              (assoc :picture @profile-image)
 
                                              (not= initial-color @custom-color)

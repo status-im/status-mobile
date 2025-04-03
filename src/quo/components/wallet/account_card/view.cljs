@@ -123,7 +123,7 @@
                                    :pressed?            pressed?
                                    :metrics?            metrics?})
         :on-press     on-press}
-       (when (and customization-color (and (not watch-only?) (not missing-keypair?)))
+       (when (and customization-color (not watch-only?) (not missing-keypair?))
          [customization-colors/overlay
           {:customization-color customization-color
            :border-radius       16

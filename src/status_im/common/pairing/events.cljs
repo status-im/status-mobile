@@ -28,7 +28,8 @@
                                                    constants/local-pairing-event-received-account)
                                                 (= action
                                                    constants/local-pairing-action-pairing-account)
-                                                (and (some? account) (some? password)))
+                                                (some? account)
+                                                (some? password))
         multiaccount-data                  (when received-account?
                                              (merge account
                                                     {:password            password

@@ -25,4 +25,4 @@
       {:on-press            on-press-add
        :state               :add-reaction
        :use-case            use-case
-       :accessibility-label (str "emoji-add-reaction")}])])
+       :accessibility-label "emoji-add-reaction"}])])

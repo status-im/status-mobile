@@ -2,7 +2,6 @@
   (:require [quo.core :as quo]
             [react-native.core :as rn]
             [status-im.contexts.wallet.collectible.tabs.about.style :as style]
-            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (def ^:private link-card-space 28)
@@ -24,9 +23,6 @@
        {:size :paragraph-2}
        (:description collectible-data)]]
      (when (count collectible-about)
-       [quo/section-label
-        {:container-style style/section-label
-         :section         (i18n/label :t/on-the-web)}]
        [rn/view {:style style/link-cards-container}
         (for [item (:cards collectible-about)]
           ^{:key (:title item)}

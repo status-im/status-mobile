@@ -4,8 +4,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as wallet-utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
-    utils.string
-    [utils.transforms :as transforms]))
+    utils.string))
 
 (defn compute-dapp-name
   "Sometimes dapps have no name or an empty name. Return url as name in that case"
@@ -32,10 +31,6 @@
    constants/wallet-connect-eth-sign-typed-method       :screen/wallet-connect.sign-message
    constants/wallet-connect-eth-sign-typed-v4-method    :screen/wallet-connect.sign-message
    constants/wallet-connect-eth-send-transaction-method :screen/wallet-connect.send-transaction})
-
-(defn extract-native-call-signature
-  [data]
-  (-> data transforms/json->clj :result))
 
 (defn get-request-method
   [event]

@@ -1,6 +1,5 @@
 (ns status-im.subs.wallet.dapps.requests
   (:require [re-frame.core :as rf]
-            [status-im.contexts.keycard.utils :as keycard]
             [status-im.contexts.wallet.common.utils :as wallet-utils]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
@@ -69,9 +68,3 @@
  :<- [:wallet-connect/current-request-method]
  typed-data/typed-data-request?)
 
-(rf/reg-sub
- :wallet-connect/sign-on-keycard?
- :<- [:wallet/keypairs]
- :<- [:wallet-connect/current-request-address]
- (fn [[keypairs address]]
-   (keycard/keycard-address? keypairs address)))

@@ -138,20 +138,9 @@
  :-> :selected-networks)
 
 (rf/reg-sub
- :wallet/network-filter-selector-state
- :<- [:wallet/network-filter]
- :-> :selector-state)
-
-(rf/reg-sub
  :wallet/current-viewing-account-address
  :<- [:wallet]
  :-> :current-viewing-account-address)
-
-(rf/reg-sub
- :wallet/viewing-account?
- :<- [:wallet/current-viewing-account-address]
- (fn [address]
-   (boolean address)))
 
 (rf/reg-sub
  :wallet/wallet-send-to-address
@@ -173,12 +162,6 @@
  :<- [:wallet/wallet-send-route]
  (fn [routes]
    (first routes)))
-
-(rf/reg-sub
- :wallet/gas-fees
- :<- [:wallet/wallet-send-route]
- (fn [route]
-   (:gas-fees (first route))))
 
 (rf/reg-sub
  :wallet/suggested-gas-fees-for-setting
@@ -232,11 +215,6 @@
  :wallet/wallet-send-loading-suggested-routes?
  :<- [:wallet/wallet-send]
  :-> :loading-suggested-routes?)
-
-(rf/reg-sub
- :wallet/wallet-send-transaction-for-signing
- :<- [:wallet/wallet-send]
- :-> :transaction-for-signing)
 
 (rf/reg-sub
  :wallet/wallet-send-suggested-routes
@@ -753,14 +731,6 @@
      (and (not-empty aggregated-tokens) zero-balance?))))
 
 (rf/reg-sub
- :wallet/network-preference-details
- :<- [:wallet/current-viewing-account]
- :<- [:wallet/network-details]
- (fn [[current-viewing-account network-details]]
-   (let [network-preferences-names (:network-preferences-names current-viewing-account)]
-     (filter #(contains? network-preferences-names (:network-name %)) network-details))))
-
-(rf/reg-sub
  :wallet/accounts-with-customization-color
  :<- [:wallet/accounts]
  (fn [accounts]
@@ -780,13 +750,6 @@
                                          (:prod-preferred-chain-ids %)))
                                     accounts)]
      (filter #(preferred-chains-ids (:chain-id %)) network-details))))
-
-(rf/reg-sub
- :wallet/preferred-chain-names-for-address
- (fn [[_ address]]
-   (rf/subscribe [:wallet/preferred-chains-for-address address]))
- (fn [preferred-chains-for-address _]
-   (map :network-name preferred-chains-for-address)))
 
 (rf/reg-sub
  :wallet/transactions
@@ -818,32 +781,6 @@
  :wallet/searching-address?
  :<- [:wallet/search-address]
  :-> :loading?)
-
-(rf/reg-sub
- :wallet/aggregated-fiat-balance-per-chain
- :<- [:wallet/aggregated-tokens]
- :<- [:profile/currency]
- :<- [:profile/currency-symbol]
- :<- [:wallet/prices-per-token]
- (fn [[aggregated-tokens currency currency-symbol prices-per-token]]
-   (utils/calculate-balances-per-chain
-    {:tokens           aggregated-tokens
-     :currency         currency
-     :currency-symbol  currency-symbol
-     :prices-per-token prices-per-token})))
-
-(rf/reg-sub
- :wallet/current-viewing-account-fiat-balance-per-chain
- :<- [:wallet/current-viewing-account]
- :<- [:profile/currency]
- :<- [:profile/currency-symbol]
- :<- [:wallet/prices-per-token]
- (fn [[{:keys [tokens]} currency currency-symbol prices-per-token]]
-   (utils/calculate-balances-per-chain
-    {:tokens           tokens
-     :currency         currency
-     :currency-symbol  currency-symbol
-     :prices-per-token prices-per-token})))
 
 (rf/reg-sub
  :wallet/import-private-key

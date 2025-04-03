@@ -4,7 +4,6 @@
             [status-im.contexts.communities.actions.accounts-selection.events :as sut]))
 
 (def community-id "0x99")
-(def password "password")
 
 (def wallet-accounts
   {"0xA" {:address     "0xA"

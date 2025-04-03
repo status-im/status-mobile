@@ -2,8 +2,6 @@
   (:require
     [status-im.constants :as constants]))
 
-(def default-transaction-setting :tx-fee-mode/fast)
-
 (defn tx-fee-mode->gas-rate
   [tx-fee-mode]
   (case tx-fee-mode

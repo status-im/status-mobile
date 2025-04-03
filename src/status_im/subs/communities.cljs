@@ -237,16 +237,6 @@
    :community-icon        (:images community)})
 
 (re-frame/reg-sub
- :communities/home-item
- (fn [[_ community-id]]
-   [(re-frame/subscribe [:communities])
-    (re-frame/subscribe [:communities/unviewed-counts community-id])])
- (fn [[communities counts] [_ community-identity]]
-   (community->home-item
-    (get communities community-identity)
-    counts)))
-
-(re-frame/reg-sub
  :communities/my-pending-request-to-join
  :<- [:communities/my-pending-requests-to-join]
  (fn [requests [_ community-id]]

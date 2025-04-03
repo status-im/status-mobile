@@ -12,15 +12,6 @@
     {:message-to-sign (oops/oget res :messageToSign)
      :tx-args         (oops/oget res :txArgs)}))
 
-(defn build-raw-transaction
-  [chain-id tx-args signature]
-  (-> (rpc-events/call-async "wallet_buildRawTransaction"
-                             true
-                             chain-id
-                             (transforms/js-stringify tx-args 0)
-                             signature)
-      (promesa/then #(oops/oget % "rawTx"))))
-
 (defn hash-message-eip-191
   [message]
   (rpc-events/call-async "wallet_hashMessageEIP191" true message))

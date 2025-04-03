@@ -1,10 +1,10 @@
 (ns status-im.contexts.settings.keycard.view
   (:require [quo.core :as quo]
-            [quo.foundations.colors :as colors]
             [react-native.core :as rn]
             [status-im.common.events-helper :as events-helper]
             [status-im.common.resources :as resources]
             [status-im.constants :as constants]
+            [status-im.contexts.settings.keycard.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -18,7 +18,7 @@
      :on-press   events-helper/navigate-back}]
    [quo/page-top
     {:title (i18n/label :t/keycard)}]
-   [rn/view {:style {:padding-horizontal 28 :padding-top 20}}
+   [rn/view {:style style/container}
     [quo/small-option-card
      {:variant             :main
       :title               (i18n/label :t/get-keycard)
@@ -29,10 +29,9 @@
       :accessibility-label :get-keycard
       :image               (resources/get-image :keycard-buy)
       :on-press            #(rf/dispatch [:browser.ui/open-url constants/get-keycard-url])}]
-    [rn/view {:style {:margin-top 24}}
+    [rn/view {:style style/text-container}
      [quo/text
-      {:style  {:margin-bottom 1
-                :color         colors/white-opa-70}
+      {:style  style/text
        :size   :paragraph-2
        :weight :medium}
       (i18n/label :t/own-keycard)]]

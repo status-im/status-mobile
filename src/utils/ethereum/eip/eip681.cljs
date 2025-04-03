@@ -72,7 +72,8 @@
       (let [[_ authority-path query] (re-find uri-pattern s)]
         (when authority-path
           (let [[_ raw-address chain-id function-name] (re-find authority-path-pattern authority-path)]
-            (when (or (or (utils.ens/is-valid-eth-name? raw-address) (address? raw-address))
+            (when (or (utils.ens/is-valid-eth-name? raw-address)
+                      (address? raw-address)
                       (when (string/starts-with? raw-address "pay-")
                         (let [pay-address (string/replace-first raw-address "pay-" "")]
                           (or (utils.ens/is-valid-eth-name? pay-address)
@@ -83,8 +84,8 @@
                 (when-let [arguments (parse-arguments function-name query)]
                   (let [contract-address (get-in arguments [:function-arguments :address])]
                     (if-not (or (not contract-address)
-                                (or (utils.ens/is-valid-eth-name? contract-address)
-                                    (address? contract-address)))
+                                (utils.ens/is-valid-eth-name? contract-address)
+                                (address? contract-address))
                       nil
                       (merge {:address  address
                               :chain-id (if chain-id

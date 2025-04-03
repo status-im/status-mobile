@@ -154,11 +154,6 @@
  :-> :loading-swap-proposal-fee?)
 
 (rf/reg-sub
- :wallet/swap-transaction-for-signing
- :<- [:wallet/swap]
- :-> :transaction-for-signing)
-
-(rf/reg-sub
  :wallet/swap-proposal-amount-out
  :<- [:wallet/swap-proposal]
  :-> :amount-out)
@@ -291,15 +286,6 @@
                                                       0)
                                               (number/convert-to-whole-number pay-token-decimals))]
      pay-token-balance-selected-chain)))
-
-(rf/reg-sub
- :wallet/swap-asset-to-pay-balance-for-chain-ui
- :<- [:wallet/swap-asset-to-pay-balance-for-chain-data]
- (fn [asset-to-pay-with-current-account-balance [_ chain-id]]
-   (utils/token-balance-display-for-network
-    asset-to-pay-with-current-account-balance
-    chain-id
-    constants/min-token-decimals-to-display)))
 
 (rf/reg-sub
  :wallet/swap-asset-to-pay-amount-in-fiat

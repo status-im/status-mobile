@@ -38,10 +38,3 @@
   (-> db
       (get-network-details chain-id)
       (networks/get-block-explorer-address-url address)))
-
-(defn get-block-explorer-tx-url
-  "Returns the block-explorer transaction url for a chain"
-  [db chain-id tx-hash]
-  (-> db
-      (get-network-details chain-id)
-      (networks/get-block-explorer-tx-url tx-hash)))

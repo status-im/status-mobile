@@ -42,7 +42,6 @@
 
 (defn empty-backup-view
   []
-  []
   [:<>
    [quo/page-nav
     {:icon-name :i/close

@@ -74,7 +74,7 @@
 
 (defn logout
   []
-  (log/info (str "==== before dispatch logout ===="))
+  (log/info "==== before dispatch logout ====")
   (rf/dispatch [:profile/logout]))
 
 (defn log-headline
@@ -103,7 +103,7 @@
                                                           :timeout-ms  timeout-ms}
                                                          ::timeout)))
                                       timeout-ms)]
-          (log/info (str "==== inside wait-for after let block ===="))
+          (log/info "==== inside wait-for after let block ====")
           (rf/add-post-event-callback
            cb-id
            (fn [[event-id & _]]
@@ -237,9 +237,9 @@
         (setup-app)
         (setup-account)
         (logout)
-        (log/info (str "==== before wait-for logout ===="))
+        (log/info "==== before wait-for logout ====")
         (wait-for [:profile.logout/reset-state])
-        (log/info (str "==== after wait-for logout ===="))))))
+        (log/info "==== after wait-for logout ====")))))
 
 ;;;; Fixtures
 
@@ -265,9 +265,9 @@
     :after  (fn []
               (test/async done
                 (promesa/do (logout)
-                            (log/info (str "==== before wait-for logout ===="))
+                            (log/info "==== before wait-for logout ====")
                             (wait-for [:profile.logout/reset-state])
-                            (log/info (str "==== after wait-for logout ===="))
+                            (log/info "==== after wait-for logout ====")
                             (done))))})
   ([] (fixture-session [:new-account])))
 

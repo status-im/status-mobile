@@ -524,20 +524,6 @@
         :tokens                    tokens-0x2})
       (rf/sub [sub-name])))))
 
-(h/deftest-sub :wallet/network-preference-details
-  [sub-name]
-  (testing "returns newtork preference details"
-    (swap! rf-db/app-db
-      #(-> %
-           (assoc-in [:wallet :accounts] accounts)
-           (assoc-in [:wallet :current-viewing-account-address] "0x1")
-           (assoc-in [:wallet :tokens :prices-per-token]
-                     {:ETH {:usd 2000} :DAI {:usd 1}})
-           (assoc-in [:wallet :networks] network-data)))
-    (is
-     (match? (:prod network-data)
-             (rf/sub [sub-name])))))
-
 (h/deftest-sub :wallet/aggregated-tokens
   [sub-name]
   (testing "returns aggregated tokens from all accounts"
@@ -896,42 +882,6 @@
                      keys)]
       (is (match? (count chains) 1))
       (is (match? (first chains) optimism-chain-id)))))
-
-(h/deftest-sub :wallet/aggregated-fiat-balance-per-chain
-  [sub-name]
-  (testing "aggregated fiat balance per chain"
-    (swap! rf-db/app-db
-      #(-> %
-           (assoc-in [:wallet :accounts] accounts)
-           (assoc-in [:wallet :networks] network-data)
-           (assoc-in [:wallet :tokens :prices-per-token] {:ETH {:usd 2000} :DAI {:usd 1}})
-           (assoc :currencies currencies)
-           (assoc-in [:profile/profile :currency] :usd)))
-
-    (let [result (rf/sub [sub-name])
-          chains (keys result)]
-      (is (match? (count chains) 3))
-      (is (match? (get result mainnet-chain-id) "$9002.00"))
-      (is (match? (get result optimism-chain-id) "$8001.50")))))
-
-(h/deftest-sub :wallet/current-viewing-account-fiat-balance-per-chain
-  [sub-name]
-  (testing "current viewing account fiat balance per chain"
-    (swap! rf-db/app-db
-      #(-> %
-           (assoc-in [:wallet :accounts] accounts)
-           (assoc-in [:wallet :networks] network-data)
-           (assoc-in [:wallet :current-viewing-account-address] "0x2")
-           (assoc-in [:wallet :tokens :prices-per-token] {:ETH {:usd 2000} :DAI {:usd 1}})
-           (assoc :currencies currencies)
-           (assoc-in [:profile/profile :currency] :usd)))
-
-    (let [result (rf/sub [sub-name])
-          chains (keys result)]
-      (is (match? (count chains) 3))
-      (is (match? (get result mainnet-chain-id) "$5001.00"))
-      (is (match? (get result optimism-chain-id) "$6000.00"))
-      (is (match? (get result arbitrum-chain-id) "$0.00")))))
 
 (h/deftest-sub :wallet/wallet-send-fee-fiat-formatted
   [sub-name]

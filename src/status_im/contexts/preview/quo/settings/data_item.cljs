@@ -67,7 +67,7 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:on-press            #(js/alert (str "pressed"))
+  (let [state (reagent/atom {:on-press            #(js/alert "pressed")
                              :blur?               false
                              :subtitle-type       :account
                              :card?               true

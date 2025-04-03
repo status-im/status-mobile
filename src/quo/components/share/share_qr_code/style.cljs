@@ -16,15 +16,6 @@
    :padding-top        12
    :padding-bottom     8})
 
-;;; Header
-(def header-container
-  {:flex-direction :row
-   :margin-bottom  12})
-
-(def header-tab-active {:background-color colors/white-opa-20})
-(def header-tab-inactive {:background-color colors/white-opa-5})
-(def space-between-tabs {:width 8})
-
 ;;; QR code
 (defn qr-code-size
   [total-width]
@@ -60,10 +51,5 @@
   {:width (- total-width (* 2 padding-horizontal) share-button-size share-button-gap)})
 
 ;;; Wallet variants
-(def wallet-multichain-container
-  {:flex-direction  :row
-   :justify-content :space-between
-   :flex            1})
-
 (def watched-account-icon
   {:margin-left 4})
