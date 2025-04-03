@@ -49,13 +49,14 @@
         theme                   (quo.context/use-theme)
         on-change-password      (rn/use-callback
                                  (fn [entered-password]
-                                   (reset! default-value entered-password)
-                                   (debounce/debounce-and-dispatch
-                                    [:profile/on-password-input-changed
-                                     {:password (security/mask-data
-                                                 entered-password)
-                                      :error    ""}]
-                                    100)))
+                                   (when (not= entered-password @default-value)
+                                     (reset! default-value entered-password)
+                                     (debounce/debounce-and-dispatch
+                                      [:profile/on-password-input-changed
+                                       {:password (security/mask-data
+                                                   entered-password)
+                                        :error    ""}]
+                                      100))))
         biometric-type          (rf/sub [:biometrics/supported-type])]
     [:<>
      [rn/view {:style {:flex-direction :row}}
