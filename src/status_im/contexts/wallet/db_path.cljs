@@ -1,4 +1,4 @@
 (ns status-im.contexts.wallet.db-path)
 
-(def swap [:wallet :ui :swap])
-(def send [:wallet :ui :send])
+(def ^:const swap [:wallet :ui :swap])
+(def ^:const send [:wallet :ui :send])
