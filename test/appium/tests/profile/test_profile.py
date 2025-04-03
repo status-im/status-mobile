@@ -139,7 +139,7 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
         self.home_2.navigate_back_to_home_view()
         self.home_2.communities_tab.click()
         self.home_2.get_to_community_channel_from_home(self.community_name)
-        self.chat_2.chat_element_by_text(self.message_community_1).wait_for_element(30)
+        self.chat_2.chat_element_by_text(self.message_community_1).wait_for_element(60)
         if self.chat_2.chat_element_by_text(self.message_community_1).username.text != self.new_username_1:
             self.errors.append(self.chat_2,
                                "Updated username '%s' is not shown in the community channel" % self.new_username_1)

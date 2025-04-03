@@ -1,6 +1,7 @@
 import time
 
 import pytest
+from scipy.constants import elementary_charge
 from selenium.common import NoSuchElementException
 
 from tests import common_password
@@ -361,3 +362,9 @@ class ProfileView(BaseView):
         self.element_by_text_part(new_currency).click()
         time.sleep(1)
         self.click_system_back_button(2)
+
+    def click_options_by_text(self, text):
+        options_button_inside_element = Button(
+            self.driver,
+            xpath="//*[@text='%s']/../..//*[@content-desc='options-button']" % text)
+        options_button_inside_element.click()

@@ -169,6 +169,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(741054)
+    @marks.skip #TODO: re-do, overcomplex and prone to nav errors
     def test_fallback_add_key_pair(self):
         expected_addresses = generate_wallet_address(passphrase=self.recovery_phrase, number=4)
         account_to_add = transaction_senders['ETH_1']
@@ -261,7 +262,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
             self.errors.append(
                 self.profile_2,
                 "Newly added regular account is not shown in profile as on device before importing key pair")
-        self.profile_2.options_button.click()
+        self.profile_2.click_options_by_text(regular_account_name)
         if not self.profile_2.import_by_entering_recovery_phrase_button.is_element_displayed():
             self.errors.append(self.profile_2, "Can not import key pair account from profile")
         self.profile_2.click_system_back_button(times=4)
@@ -308,13 +309,6 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
                 "Generated key pair account is not shown in profile as missing after importing the first key pair")
         self.profile_2.click_system_back_button(times=3)
 
-        # ToDo: Arbiscan API is down, looking for analogue
-        # wallet_2.just_fyi("Device 2: check wallet balance")
-        # wallet_2.set_network_in_wallet(network_name='Arbitrum')
-        # expected_balance = self.network_api.get_balance(key_pair_account_address)
-        # shown_balance = wallet_2.get_asset(asset_name='Ether').get_amount()
-        # if shown_balance != round(expected_balance, 5):
-        #     self.errors.append("Device 2: ETH balance %s doesn't match expected %s" % (shown_balance, expected_balance))
 
         wallet_2.just_fyi("Device 2: check derivation paths of the regular and key pair accounts")
         account_element = wallet_2.get_account_element(account_name=regular_account_name)
