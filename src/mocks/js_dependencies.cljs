@@ -376,7 +376,32 @@
 (def worklet-factory
   #js {:applyAnimationsToStyle (fn [])})
 
-;; Update i18n_resources.cljs
+(def mmkv-storage-atom (atom {}))
+
+(def mmkv-storage
+  (clj->js
+   {:MMKV       (fn []
+                  (clj->js
+                   {:set        (fn [k v] (swap! mmkv-storage-atom assoc k v) true)
+                    :getString  (fn [k] (get @mmkv-storage-atom k))
+                    :getBoolean (fn [k] (get @mmkv-storage-atom k))
+                    :getNumber  (fn [k] (get @mmkv-storage-atom k))
+                    :contains   (fn [k] (contains? @mmkv-storage-atom k))
+                    :delete     (fn [k] (swap! mmkv-storage-atom dissoc k) true)
+                    :clearAll   (fn [] (reset! mmkv-storage-atom {}) true)
+                    :getAllKeys (fn [] (clj->js (keys @mmkv-storage-atom)))}))
+    :createMMKV (fn [_]
+                  ;; Just return the same mock implementation
+                  (clj->js
+                   {:set        (fn [k v] (swap! mmkv-storage-atom assoc k v) true)
+                    :getString  (fn [k] (get @mmkv-storage-atom k))
+                    :getBoolean (fn [k] (get @mmkv-storage-atom k))
+                    :getNumber  (fn [k] (get @mmkv-storage-atom k))
+                    :contains   (fn [k] (contains? @mmkv-storage-atom k))
+                    :delete     (fn [k] (swap! mmkv-storage-atom dissoc k) true)
+                    :clearAll   (fn [] (reset! mmkv-storage-atom {}) true)
+                    :getAllKeys (fn [] (clj->js (keys @mmkv-storage-atom)))}))}))
+
 (defn mock
   [module]
   (case module
@@ -385,6 +410,7 @@
     "react-native-gesture-handler"                     react-native-gesture-handler
     "react-native-static-safe-area-insets"             react-native-static-safe-area-insets
     "react-native-config"                              config
+    "react-native-mmkv"                                mmkv-storage
     "react-native-iphone-x-helper"                     (clj->js {:getStatusBarHeight (fn [])
                                                                  :getBottomSpace     (fn [])})
     "react-native-screens"                             (clj->js {})
