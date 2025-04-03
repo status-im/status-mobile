@@ -4,7 +4,6 @@
     status-im.subs.activity-center
     status-im.subs.alert-banner
     status-im.subs.biometrics
-    status-im.subs.bottom-sheet
     status-im.subs.chats
     status-im.subs.communities
     status-im.subs.community.account-selection
