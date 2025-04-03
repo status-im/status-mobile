@@ -307,9 +307,3 @@
  :profile/mnemonic
  :<- [:profile/profile]
  :-> :mnemonic)
-
-(re-frame/reg-sub
- :profile/logged-in?
- :<- [:profile/profile]
- (fn [profile]
-   (not (nil? profile))))

@@ -66,9 +66,8 @@
 ;; CONFIG VALUES
 (defn log-level
   []
-  (if (mmkv/contains-key? constants/pre-login-log-level-key)
-    (mmkv/get-string constants/pre-login-log-level-key)
-    (string/upper-case (get-config :LOG_LEVEL ""))))
+  (string/upper-case
+   (mmkv/get-string constants/pre-login-log-level-key (get-config :LOG_LEVEL ""))))
 (def api-logging-enabled? (enabled? (get-config :API_LOGGING_ENABLED "0")))
 (def fleet (get-config :FLEET ""))
 (def apn-topic (get-config :APN_TOPIC "im.status.ethereum"))

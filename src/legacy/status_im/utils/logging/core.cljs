@@ -238,7 +238,7 @@
 (rf/defn change-pre-login-log-level
   {:events [:log-level.ui/change-pre-login-log-level]}
   [{:keys [db]} log-level]
-  (let [old-log-level (get-in db [:log-level/current-pre-login-log-level])]
+  (let [old-log-level (get-in db [:log-level/pre-login-log-level])]
     (when (not= old-log-level log-level)
       (let [need-set-pre-login-log-enabled? (or (empty? old-log-level) (empty? log-level))
             pre-login-log-enabled?          (boolean (seq log-level))]
@@ -248,7 +248,7 @@
               ;; update log level in taoensso.timbre
               [:logs/set-level log-level]
               [:dispatch [:hide-bottom-sheet]]]
-         :db (assoc db :log-level/current-pre-login-log-level log-level)}))))
+         :db (assoc db :log-level/pre-login-log-level log-level)}))))
 
 (rf/reg-fx
  :log-level/set-pre-login-log-level

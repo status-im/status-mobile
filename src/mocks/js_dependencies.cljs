@@ -378,29 +378,22 @@
 
 (def mmkv-storage-atom (atom {}))
 
+(defn create-mmkv-mock []
+  (let [getter (fn [k] (get @mmkv-storage-atom k))]
+    (clj->js
+     {:set        (fn [k v] (swap! mmkv-storage-atom assoc k v) true)
+      :getString  getter
+      :getBoolean getter
+      :getNumber  getter
+      :contains   (fn [k] (contains? @mmkv-storage-atom k))
+      :delete     (fn [k] (swap! mmkv-storage-atom dissoc k) true)
+      :clearAll   (fn [] (reset! mmkv-storage-atom {}) true)
+      :getAllKeys (fn [] (clj->js (keys @mmkv-storage-atom)))})))
+
 (def mmkv-storage
   (clj->js
-   {:MMKV       (fn []
-                  (clj->js
-                   {:set        (fn [k v] (swap! mmkv-storage-atom assoc k v) true)
-                    :getString  (fn [k] (get @mmkv-storage-atom k))
-                    :getBoolean (fn [k] (get @mmkv-storage-atom k))
-                    :getNumber  (fn [k] (get @mmkv-storage-atom k))
-                    :contains   (fn [k] (contains? @mmkv-storage-atom k))
-                    :delete     (fn [k] (swap! mmkv-storage-atom dissoc k) true)
-                    :clearAll   (fn [] (reset! mmkv-storage-atom {}) true)
-                    :getAllKeys (fn [] (clj->js (keys @mmkv-storage-atom)))}))
-    :createMMKV (fn [_]
-                  ;; Just return the same mock implementation
-                  (clj->js
-                   {:set        (fn [k v] (swap! mmkv-storage-atom assoc k v) true)
-                    :getString  (fn [k] (get @mmkv-storage-atom k))
-                    :getBoolean (fn [k] (get @mmkv-storage-atom k))
-                    :getNumber  (fn [k] (get @mmkv-storage-atom k))
-                    :contains   (fn [k] (contains? @mmkv-storage-atom k))
-                    :delete     (fn [k] (swap! mmkv-storage-atom dissoc k) true)
-                    :clearAll   (fn [] (reset! mmkv-storage-atom {}) true)
-                    :getAllKeys (fn [] (clj->js (keys @mmkv-storage-atom)))}))}))
+   {:MMKV       (fn [] (create-mmkv-mock))
+    :createMMKV (fn [_] (create-mmkv-mock))}))
 
 (defn mock
   [module]

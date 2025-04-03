@@ -1,7 +1,6 @@
 (ns status-im.subs.general
   (:require
     [clojure.string :as string]
-    [legacy.status-im.multiaccounts.model :as multiaccounts.model]
     [legacy.status-im.utils.build :as build]
     [re-frame.core :as re-frame]
     [status-im.subs.chat.utils :as chat.utils]
@@ -27,8 +26,9 @@
 
 (re-frame/reg-sub
  :multiaccount/logged-in?
- (fn [db]
-   (multiaccounts.model/logged-in? db)))
+ :<- [:profile/profile]
+ (fn [profile]
+   (not (nil? profile))))
 
 (re-frame/reg-sub
  :hide-screen?

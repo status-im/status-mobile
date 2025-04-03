@@ -195,4 +195,4 @@
 ;;keycard
 (reg-root-key-sub :keycard :keycard)
 
-(reg-root-key-sub :log-level/current-pre-login-log-level :log-level/current-pre-login-log-level)
+(reg-root-key-sub :log-level/pre-login-log-level :log-level/pre-login-log-level)

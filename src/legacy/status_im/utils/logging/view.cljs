@@ -51,7 +51,7 @@
 
 (views/defview pre-login-log-level-settings
   []
-  (views/letsubs [current-log-level [:log-level/current-pre-login-log-level]]
+  (views/letsubs [current-log-level [:log-level/pre-login-log-level]]
     [:<>
      [list/flat-list
       {:data               log-levels
@@ -62,7 +62,7 @@
 
 (views/defview logs-management-drawer
   []
-  (views/letsubs [logged-in? [:profile/logged-in?]]
+  (views/letsubs [logged-in? [:multiaccount/logged-in?]]
     [quo/action-drawer
      [[{:label     (i18n/label :t/send-logs)
         :sub-label (i18n/label :t/send-logs-to
