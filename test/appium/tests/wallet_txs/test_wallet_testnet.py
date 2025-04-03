@@ -50,7 +50,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.wallet_1.just_fyi("Verify send tx in the list for sender")
         tx_errors = self.wallet_1.check_last_transaction_in_activity(device_time_before_sending, amount,
-                                                                     to_account=self.receiver['wallet_address'],
+                                                                     send_to_account=self.receiver['wallet_address'],
                                                                      asset=asset_ticker,
                                                                      tx_type='Send',
                                                                      network=network)
@@ -85,7 +85,7 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.wallet_1.just_fyi("Verify send tx in the list for sender")
         tx_errors = self.wallet_1.check_last_transaction_in_activity(device_time_before_sending, amount,
-                                                                     to_account=self.receiver['wallet_address'],
+                                                                     send_to_account=self.receiver['wallet_address'],
                                                                      asset=asset_ticker,
                                                                      tx_type='Send',
                                                                      network=network)

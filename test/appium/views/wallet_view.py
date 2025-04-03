@@ -13,24 +13,53 @@ from views.sign_in_view import SignInView
 
 
 class AssetElement(Button):
-
     def __init__(self, driver, asset_name):
         self.asset_name = asset_name
-        self.locator = "//android.view.ViewGroup[@content-desc='container']/android.widget.TextView[@text='%s']" % \
-                       self.asset_name
+        self.locator = (
+                "//android.view.ViewGroup[@content-desc='container']/android.widget.TextView[@text='%s']"
+                % self.asset_name
+        )
         super().__init__(driver=driver, xpath=self.locator)
 
+    def _parse_amount(self, element) -> float:
+        """
+        Helper method to parse and return the numeric amount from a given element.
+        Handles cases where the amount starts with a currency symbol or '<'.
+        """
+        try:
+            # Extract the first part of the text
+            amount = element.text.split()[0]
+
+            # Handle cases where the amount starts with '<'
+            if '<' in amount:
+                return 0.01 if '0.01' in amount else 0.0  # Covers cases like '<$0.01'
+
+            # Strip any leading non-numeric characters (e.g., currency symbols)
+            numeric_part = ''.join(c for c in amount if c.isdigit() or c == '.')
+
+            # Convert the remaining string to float
+            return float(numeric_part)
+        except (ValueError, IndexError):
+            # Fail the test if parsing fails
+            pytest.fail(f"Cannot parse amount for {self.asset_name}")
+            return 0.0  # Optional fallback
+
     def get_amount(self):
+        """
+        Get the crypto amount for the asset.
+        """
         element = Text(self.driver, xpath=self.locator + "/../android.widget.TextView[3]")
         element.scroll_to_element()
-        try:
-            amount = element.text.split()[0]
-            if '<' in amount:
-                return 0
-            else:
-                return float(amount)
-        except ValueError:
-            pytest.fail("Cannot get %s amount" % self.asset_name)
+        return self._parse_amount(element)
+
+    def get_fiat_balance(self):
+        """
+        Get the fiat balance for the asset.
+        """
+        element = Text(self.driver, xpath=self.locator + "/../android.widget.TextView[2]")
+        element.scroll_to_element()
+        amount = element.text.split()[1:]
+        return self._parse_amount(element)
 
 
 class CollectibleItemElement(Button):
@@ -70,12 +99,17 @@ class ActivityElement(BaseElement):
                     xpath="//*[@content-desc='context-tag'][1]/android.widget.TextView").text
 
     @property
-    def from_text(self):
+    def send_account_from_text(self):
         return Text(self.driver, prefix=self.locator,
                     xpath="//*[@content-desc='context-tag'][2]/android.widget.TextView").text
 
     @property
-    def to_text(self):
+    def swap_amount_to_text(self):
+        return Text(self.driver, prefix=self.locator,
+                    xpath="//*[@content-desc='context-tag'][2]/android.widget.TextView").text
+
+    @property
+    def account_to_text(self):
         return Text(self.driver, prefix=self.locator,
                     xpath="//*[@content-desc='context-tag'][3]/android.widget.TextView").text
 
@@ -127,6 +161,8 @@ class WalletView(BaseView):
         self.bridge_button = Button(self.driver, accessibility_id='bridge')
         self.send_from_drawer_button = Button(
             self.driver, xpath="//*[@content-desc='send']/*[@content-desc='left-icon-for-action']")
+        self.swap_asset_from_drawer_button = Button( self.driver,
+                                                     xpath="//*[@content-desc='swap']/*[@content-desc='left-icon-for-action']")
         self.copy_address_button = Button(self.driver, accessibility_id='copy-address')
         self.share_address_button = Button(self.driver, accessibility_id='share-account')
         self.remove_account_button = Button(self.driver, accessibility_id='remove-account')
@@ -167,7 +203,13 @@ class WalletView(BaseView):
             self.driver,
             xpath="//*[@content-desc='spender-contract-label']/following-sibling::*[@content-desc='approval-info'][1]")
 
-        # Edit key pair
+        self.max_fees_text =  Text(self.driver, xpath="//*[@text='Max fees']/following-sibling::android.widget.TextView[1]")
+        self.max_slippage_text =  Text(self.driver, xpath="//*[@text='Max slippage']/following-sibling::*[1]")
+        self.est_time_text = Text(self.driver, xpath="//*[@text='Est. time']/following-sibling::*[1]")
+        self.swap_receive_amount_summary_text = Text(self.driver, xpath="//android.widget.TextView[@content-desc='summary-section-receive']/following-sibling::android.view.ViewGroup[1]/android.widget.TextView[1]")
+
+
+        # Edit key pairs
         self.edit_key_pair_button = Button(self.driver, accessibility_id="Edit")
         self.key_pairs_plus_button = Button(self.driver, accessibility_id="standard-title-action")
         self.default_key_pair_container = BaseElement(self.driver,
@@ -251,6 +293,23 @@ class WalletView(BaseView):
         self.continue_button.click()
         self.set_amount(str(amount))
         self.confirm_transaction()
+
+    def swap_asset_from_drawer(self, asset_name: str, amount, network_name: str, decimals_to: int = 4, asset_to: str = 'SNT'):
+        asset_element = self.get_asset(asset_name)
+        asset_element.long_press_without_release()
+        self.swap_asset_from_drawer_button.double_click()
+        self.select_network(network_name)
+        self.set_amount(str(amount))
+        self.max_fees_text.wait_for_visibility_of_element(30)
+        self.confirm_button.click_until_presence_of_element(self.swap_receive_amount_summary_text)
+        expected_amount = self.get_receive_swap_amount(decimals_to)
+        est_time, slippage, fees = self.est_time_text.text, self.max_slippage_text.text, self.max_fees_text.text
+        self.slide_and_confirm_with_password()
+        return { 'receive_amount': expected_amount,
+                 'est_time': est_time,
+                 'est_slippage': slippage,
+                 'max_fees': fees}
+
 
     def add_regular_account(self, account_name: str):
         if not self.add_account_button.is_element_displayed():
@@ -357,14 +416,17 @@ class WalletView(BaseView):
     def round_amount_float(amount, decimals=4):
         return round(float(amount), decimals)
 
-    def wait_for_wallet_balance_to_update(self, expected_amount, asset='Ether', decimals=4):
-        self.just_fyi(f"Checking {asset} balance, expected value: {expected_amount}")
+    def wait_for_wallet_balance_to_update(self, expected_amount, asset='Ether', decimals=4, fiat=False):
+        self.just_fyi(f"Checking {asset} balance, expected value: {expected_amount}, fiat: {fiat}")
 
         start_time = time.time()
 
         while time.time() - start_time < 120:
             self.pull_to_refresh()
-            new_balance = self.round_amount_float(self.get_asset(asset_name=asset).get_amount(), decimals)
+            if fiat is False:
+                new_balance = self.round_amount_float(self.get_asset(asset_name=asset).get_amount(), decimals)
+            else:
+                new_balance = self.get_asset(asset_name=asset).get_fiat_balance()
 
             # Exit early if the balance is updated
             if new_balance == expected_amount:
@@ -373,33 +435,47 @@ class WalletView(BaseView):
             time.sleep(10)  # Wait before retrying
 
         # If the balance is not updated within the timeout, log an error and raise an exception
-        error_message = f"{asset} balance is {new_balance} but expected {expected_amount}"
+        error_message = f"{asset} balance is {new_balance} but expected {expected_amount}, fiat: {fiat}"
         raise TimeoutError(error_message)
 
     def check_last_transaction_in_activity(self, device_time, amount,
+                                           tx_type: Literal['Send', 'Receive', 'Swap'] = 'Send',
                                            asset='ETH',
-                                           to_account='',
-                                           tx_type: Literal['Send', 'Receive'] = 'Send',
                                            from_account_name='Account 1',
+                                           send_to_account='',
+                                           swap_asset_to = 'SNT',
+                                           swap_amount_to = '0.000000000000000000',
                                            network='Status Network'):
         errors = list()
-
-        self.just_fyi("Checking the last transaction in the activity tab")
         current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
         expected_time = "Today %s" % current_time.strftime('%-I:%M %p')
         possible_times = [expected_time,
                           "Today %s" % (current_time + datetime.timedelta(minutes=1)).strftime('%-I:%M %p')]
-        receiver_variants = [to_account.replace(to_account[5:-3], '...').lower(), 'receiver eth2']
-        activity_element = self.get_activity_element()
+        receiver_variants = [send_to_account.replace(send_to_account[5:-3], '...').lower(), 'receiver eth2']
+        self.just_fyi("Checking the last transaction in the activity tab")
+
         try:
-            checks = {
+            activity_element = self.get_activity_element()
+            common_checks = {
                 "header": (activity_element.header, tx_type),
                 "timestamp": (activity_element.timestamp, possible_times),
                 "amount": (activity_element.amount, f"{amount} {asset}"),
-                "from_text": (activity_element.from_text, from_account_name),
-                "to_text": (activity_element.to_text, receiver_variants),
                 "on_network": (activity_element.on_network, network),
             }
+            if tx_type == 'Send':
+                additional_checks = {
+                    "from_text": (activity_element.send_account_from_text, from_account_name),
+                    "to_text": (activity_element.account_to_text, receiver_variants),
+                }
+            elif tx_type == 'Swap':
+                additional_checks ={
+                    "amount_to": (activity_element.swap_amount_to_text, f"{swap_amount_to} {swap_asset_to}"),
+                    "in_account": (activity_element.account_to_text, from_account_name),
+                }
+            else:
+                additional_checks = {}
+
+            checks = {**common_checks, **additional_checks}
 
             for name, (left, right) in checks.items():
                 if isinstance(right, list):
@@ -421,6 +497,15 @@ class WalletView(BaseView):
             self.close_account_button.click_until_presence_of_element(self.show_qr_code_button)
         return errors
 
-    def get_balance(self, asset='Ether'):
+    def get_balance(self, asset='Ether', fiat=False):
         self.just_fyi("Getting %s amount of the wallet of the sender before transaction" % asset)
-        return self.get_asset(asset_name=asset).get_amount()
+        return self.get_asset(asset_name=asset).get_amount() if fiat is False else self.get_asset(
+            asset_name=asset).get_fiat_balance()
+
+
+    def get_receive_swap_amount(self, decimals=18):
+        self.just_fyi("Getting swap Receive amount for on review page")
+        return self.round_amount_float(self.swap_receive_amount_summary_text.text.split()[0], decimals)
+
+
+
