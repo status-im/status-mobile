@@ -29,7 +29,7 @@
   []
   (let [network-base-fee (rf/sub [:wallet/tx-settings-network-base-fee-route])
         max-base-fee     (rf/sub [:wallet/tx-settings-max-base-fee])
-        priority-fee     (rf/sub [:wallet/tx-settings-max-base-fee])
+        priority-fee     (rf/sub [:wallet/tx-settings-priority-fee])
         conditions       (partial hint-and-status network-base-fee priority-fee)]
     [transaction-settings/custom-setting-screen
      {:screen-title  (i18n/label :t/max-base-fee)

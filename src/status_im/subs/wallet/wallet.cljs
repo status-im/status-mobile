@@ -985,7 +985,7 @@
    (or value-set-by-user value-from-routes)))
 
 (rf/reg-sub
- :wallet/tx-settings-max-base-fee
+ :wallet/tx-settings-priority-fee
  :<- [:wallet/tx-settings-gas-fees]
  :<- [:wallet/tx-settings-priority-fee-user]
  (fn [[gas-fees value-set-by-user]]
