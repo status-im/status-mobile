@@ -116,6 +116,7 @@
     [status-im.contexts.preview.quo.list-items.saved-address :as saved-address]
     [status-im.contexts.preview.quo.list-items.saved-contact-address :as
      saved-contact-address]
+    [status-im.contexts.preview.quo.list-items.status-list-item :as status-list-item]
     [status-im.contexts.preview.quo.list-items.token-network :as token-network]
     [status-im.contexts.preview.quo.list-items.token-value :as token-value]
     [status-im.contexts.preview.quo.list-items.user-list :as user-list]
@@ -421,7 +422,9 @@
                         :component token-value/view}
                        {:name      :screen/user-list
                         :options   {:topBar {:visible true}}
-                        :component user-list/view}]
+                        :component user-list/view}
+                       {:name      :screen/status-list-item
+                        :component status-list-item/view}]
    :loaders           [{:name      :screen/skeleton-list
                         :options   {:topBar {:visible true}}
                         :component skeleton-list/view}]

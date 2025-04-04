@@ -12,7 +12,7 @@
        :image-props      :i/seed
        :image            :icon
        :label            :icon
-       :label-props      :i/warning
+       :label-props      :i/danger
        :label-icon-props {:no-color true}
        :blur?            true
        :action           :arrow}])
