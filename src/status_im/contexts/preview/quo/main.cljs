@@ -119,6 +119,7 @@
     [status-im.contexts.preview.quo.list-items.status-list-item :as status-list-item]
     [status-im.contexts.preview.quo.list-items.token-network :as token-network]
     [status-im.contexts.preview.quo.list-items.token-value :as token-value]
+    [status-im.contexts.preview.quo.list-items.market-token :as market-token]
     [status-im.contexts.preview.quo.list-items.user-list :as user-list]
     [status-im.contexts.preview.quo.loaders.skeleton-list :as skeleton-list]
     [status-im.contexts.preview.quo.markdown.list :as markdown-list]
@@ -420,6 +421,8 @@
                         :component token-network/view}
                        {:name      :screen/token-value
                         :component token-value/view}
+                       {:name      :screen/market-token
+                        :component market-token/view}
                        {:name      :screen/user-list
                         :options   {:topBar {:visible true}}
                         :component user-list/view}
