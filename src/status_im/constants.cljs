@@ -490,4 +490,4 @@
 
 (def ^:const wc-connection-string-identifier "wc")
 
-(def ^:const max-allowed-watched-accounts 1)
+(def ^:const max-allowed-watched-accounts 20)
