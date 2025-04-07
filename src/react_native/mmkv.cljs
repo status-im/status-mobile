@@ -35,10 +35,9 @@
   ([k]
    (get-string k nil))
   ([k default-value]
-   (let [v (.getString ^js storage k)]
-     (if (nil? v)
-       default-value
-       v))))
+   (if-let [v (.getString ^js storage k)]
+     v
+     default-value)))
 
 (defn get-boolean
   "Get a boolean value from MMKV"
@@ -55,10 +54,9 @@
   ([k]
    (get-number k 0))
   ([k default-value]
-   (let [v (.getNumber ^js storage k)]
-     (if (nil? v)
-       default-value
-       v))))
+   (if-let [v (.getNumber ^js storage k)]
+     v
+     default-value)))
 
 (defn set-object
   "Store a ClojureScript data structure in MMKV using transit serialization"
@@ -71,10 +69,9 @@
   ([k]
    (get-object k nil))
   ([k default-value]
-   (let [transit-str (.getString ^js storage k)]
-     (if (nil? transit-str)
-       default-value
-       (or (transit->clj transit-str) default-value)))))
+   (if-let [transit-str (.getString ^js storage k)]
+     (or (transit->clj transit-str) default-value)
+     default-value)))
 
 (defn contains-key?
   "Check if MMKV contains a key"
