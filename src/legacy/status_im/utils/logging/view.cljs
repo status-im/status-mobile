@@ -69,7 +69,7 @@
                                {:email constants/report-email})
         :on-press  #(rf/dispatch [:open-modal :bug-report])}
        {:label    (i18n/label :t/share-logs)
-        :on-press #(rf/dispatch [:logging.ui/send-logs-pressed :sharing])}
+        :on-press #(rf/dispatch [:logging.ui/send-logs-pressed :sharing true])}
        (when-not logged-in?
          {:label    (i18n/label :t/set-pre-login-log-level)
           :on-press #(rf/dispatch [:show-bottom-sheet {:content pre-login-log-level-settings}])})]]]))

@@ -116,34 +116,34 @@
 
 (rf/defn send-logs
   {:events [:logging.ui/send-logs-pressed]}
-  [{:keys [db] :as cofx} transport]
-  (if (logs-enabled? db)
-    ;; TODO: Add message explaining db export
-    (let [db-json (types/clj->json (select-keys db
-                                                [:app-state
-                                                 :current-chat-id
-                                                 :network
-                                                 :network/status
-                                                 :peers-summary
-                                                 :sync-state
-                                                 :view-id
-                                                 :chat/cooldown-enabled?
-                                                 :chat/cooldowns
-                                                 :chat/last-outgoing-message-sent-at
-                                                 :chat/spam-messages-frequency
-                                                 :dimensions/window]))]
-      {:logs/archive-logs [db-json
-                           (if (= transport :email)
-                             ::send-email
-                             ::share-logs-file)]})
-    (send-email-event cofx nil)))
+  [{:keys [db]} transport hide-bottom-sheet?]
+  (let [log-enabled? (logs-enabled? db)
+        db-json      (when log-enabled?
+                       (types/clj->json
+                        (select-keys db
+                                     [:app-state
+                                      :current-chat-id
+                                      :network
+                                      :network/status
+                                      :peers-summary
+                                      :sync-state
+                                      :view-id
+                                      :chat/cooldown-enabled?
+                                      :chat/cooldowns
+                                      :chat/last-outgoing-message-sent-at
+                                      :chat/spam-messages-frequency
+                                      :dimensions/window])))]
+    {:fx [(when hide-bottom-sheet? [:dispatch [:hide-bottom-sheet]])
+          (if log-enabled?
+            [:logs/archive-logs [db-json (if (= transport :email) ::send-email ::share-logs-file)]]
+            [:dispatch [::send-email nil]])]}))
 
 (rf/defn send-logs-on-error
   {:events [:logging/send-logs-on-error]}
   [{:keys [db]} error-message]
   (rf/merge
    {:db (assoc-in db [:bug-report/details :description] error-message)}
-   (send-logs :email)))
+   (send-logs :email false)))
 
 (rf/defn show-client-error
   {:events [:show-client-error]}
@@ -205,7 +205,7 @@
     (rf/merge
      cofx
      (navigation/hide-bottom-sheet)
-     (send-logs :email))))
+     (send-logs :email false))))
 
 (re-frame/reg-fx
  ::open-url
