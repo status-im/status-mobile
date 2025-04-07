@@ -4,7 +4,8 @@
     [cognitect.transit :as transit]
     [native-module.core :as native-module]
     [oops.core :as oops]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    (:refer-clojure :exclude [set])))
 
 ;; Create a single MMKV instance to be used throughout the app with the path from native code
 (defonce ^:private storage
@@ -29,7 +30,7 @@
       nil)))
 
 ;; Basic MMKV operations
-(defn set-value
+(defn set
   "Store a value in MMKV."
   [k v]
   (oops/ocall storage "set" k v))
