@@ -391,9 +391,9 @@
       :clearAll   (fn [] (reset! mmkv-storage-atom {}) true)
       :getAllKeys (fn [] (clj->js (keys @mmkv-storage-atom)))})))
 
-(def mmkv-storage
+(def react-native-mmkv
   (clj->js
-   {:MMKV       (fn [] (create-mmkv-mock))
+   {:MMKV       (fn [_] (create-mmkv-mock))
     :createMMKV (fn [_] (create-mmkv-mock))}))
 
 (defn mock
@@ -404,7 +404,7 @@
     "react-native-gesture-handler"                     react-native-gesture-handler
     "react-native-static-safe-area-insets"             react-native-static-safe-area-insets
     "react-native-config"                              config
-    "react-native-mmkv"                                mmkv-storage
+    "react-native-mmkv"                                react-native-mmkv
     "react-native-iphone-x-helper"                     (clj->js {:getStatusBarHeight (fn [])
                                                                  :getBottomSpace     (fn [])})
     "react-native-screens"                             (clj->js {})
