@@ -253,7 +253,7 @@
 (rf/reg-fx
  :log-level/set-pre-login-log-level
  (fn [log-level]
-   (mmkv/store constants/pre-login-log-level-key log-level)
+   (mmkv/set-value constants/pre-login-log-level-key log-level)
    (when (seq log-level)
      (native-module/set-pre-login-log-level log-level))))
 

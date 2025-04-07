@@ -2,8 +2,8 @@
   (:require
     ["react-native-mmkv" :refer [MMKV]]
     [cognitect.transit :as transit]
-    [taoensso.timbre :as log]
-    [oops.core :as oops]))
+    [oops.core :as oops]
+    [taoensso.timbre :as log]))
 
 ;; Create a single MMKV instance to be used throughout the app
 (defonce ^:private storage (MMKV.))
@@ -26,7 +26,7 @@
       nil)))
 
 ;; Basic MMKV operations
-(defn store
+(defn set-value
   "Store a value in MMKV."
   [k v]
   (oops/ocall storage "set" k v))
