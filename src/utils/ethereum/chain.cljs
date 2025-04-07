@@ -6,7 +6,7 @@
 
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 (def chains
-  {:mainnet     {:id 1 :name "Mainnet"}
+  {:mainnet     {:id 1 :name "Ethereum"}
    :xdai        {:id 100 :name "xDai"}
    :sepolia     {:id 11155111 :name "Sepolia"}
    :bsc         {:id   BSC-mainnet-chain-id

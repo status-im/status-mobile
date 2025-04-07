@@ -11,7 +11,7 @@
    :network             network
    :customization-color :blue
    :networks            [{:network      :mainnet
-                          :full-name    "Mainnet"
+                          :full-name    "Ethereum"
                           :state        state
                           :counter      0
                           :total-box    85

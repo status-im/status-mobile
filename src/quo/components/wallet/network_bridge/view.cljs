@@ -27,7 +27,7 @@
 (defn- network->text
   [network]
   (cond (not network)         ""
-        (= network :ethereum) "Mainnet"
+        (= network :ethereum) "Ethereum"
         :else                 (string/capitalize (name network))))
 
 (defn view-internal

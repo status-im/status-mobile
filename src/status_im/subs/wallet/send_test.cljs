@@ -213,7 +213,7 @@
   {:short-name       "eth"
    :network-name     :mainnet
    :abbreviated-name "Eth."
-   :full-name        "Mainnet"
+   :full-name        "Ethereum"
    :chain-id         1
    :related-chain-id 1
    :layer            1})

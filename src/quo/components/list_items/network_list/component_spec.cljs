@@ -9,7 +9,7 @@
 
 (def props
   {:state               :default
-   :label               "Mainnet"
+   :label               "Ethereum"
    :network-image       873
    :customization-color :blue
    :token-value         "100.00 ETH"
@@ -19,7 +19,7 @@
 (h/describe "List items: Network List"
   (h/test "default state explicit"
     (render [network-list/view props])
-    (h/is-truthy (h/get-by-text "Mainnet")))
+    (h/is-truthy (h/get-by-text "Ethereum")))
 
   (h/test "Pressed state"
     (render [network-list/view props])

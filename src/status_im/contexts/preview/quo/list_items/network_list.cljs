@@ -31,7 +31,7 @@
 (defn view
   []
   (let [state (reagent/atom {:network-image       (quo.resources/get-network :ethereum)
-                             :label               "Mainnet"
+                             :label               "Ethereum"
                              :token-value         "0.00 ETH"
                              :fiat-value          "€0.00"
                              :state               :default

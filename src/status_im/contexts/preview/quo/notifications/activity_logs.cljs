@@ -78,7 +78,7 @@
 (def complex-user-action
   [[quo/context-tag {:size 24 :full-name "Alice" :blur? true}]
    "from"
-   [quo/context-tag {:size 24 :full-name "Mainnet" :blur? true}]
+   [quo/context-tag {:size 24 :full-name "Ethereum" :blur? true}]
    "to"
    [quo/context-tag {:size 24 :full-name "Optimism" :blur? true}]
    "on"
