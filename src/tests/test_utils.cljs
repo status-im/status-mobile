@@ -108,7 +108,9 @@
     :validateMnemonic
     (fn [json callback] (callback (.validateMnemonic native-status json)))
     :isAddress
-    (fn [address] (.isAddress native-status address))}))
+    (fn [address] (.isAddress native-status address))
+    :getMMKVStoragePath
+    (fn [] (str test-dir "/mmkv"))}))
 
 (def log-manager
   (clj->js
