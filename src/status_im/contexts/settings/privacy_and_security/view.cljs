@@ -42,6 +42,7 @@
   (let [customization-color (rf/sub [:profile/customization-color])
         privacy-mode-enabled? (rf/sub [:privacy-mode/privacy-mode-enabled?])
         preview-privacy? (rf/sub [:profile/preview-privacy?])
+        news-feed-enabled? (rf/sub [:profile/news-feed-enabled?])
         see-profile-pictures-from (rf/sub [:profile/pictures-visibility])
         show-profile-pictures-to (rf/sub [:multiaccount/profile-pictures-show-to])
 
@@ -50,6 +51,14 @@
                            (rf/dispatch [:profile.settings/change-preview-privacy
                                          (not preview-privacy?)]))
                          [preview-privacy?])
+
+        toggle-news-feed
+        (rn/use-callback (fn []
+                           (rf/dispatch [:profile.settings/profile-update :news-feed-enabled?
+                                         (not news-feed-enabled?)])
+                           (rf/dispatch [:profile.settings/profile-update :news-rss-enabled?
+                                         (not news-feed-enabled?)]))
+                         [news-feed-enabled?])
 
         open-see-profile-pictures-from-options
         (rn/use-callback (fn []
@@ -104,6 +113,15 @@
                     :blur?             true
                     :action            :arrow
                     :action-props      {:on-change #(rf/dispatch [:open-modal
-                                                                  :screen/settings.share-usage-data])}}]
+                                                                  :screen/settings.share-usage-data])}}
+                   {:title             (i18n/label :t/status-news-rss)
+                    :description       :text
+                    :description-props {:text (i18n/label :t/rss-privacy-warning)}
+                    :blur?             true
+                    :action            :selector
+                    :action-props      {:on-change           toggle-news-feed
+                                        :checked?            news-feed-enabled?
+                                        :id                  :news-feed
+                                        :customization-color customization-color}}]
        :blur?     true
        :list-type :settings}]]))

@@ -64,7 +64,13 @@
                         :communityId               :community-id
                         :installationId            :installation-id
                         :membershipStatus          :membership-status
-                        :albumMessages             :album-messages})
+                        :albumMessages             :album-messages
+                        :newsImageUrl              :news-image-url
+                        :newsTitle                 :news-title
+                        :newsDescription           :news-description
+                        :newsContent               :news-content
+                        :newsLink                  :news-link
+                        :newsLinkLabel             :news-link-label})
       (update :last-message #(when % (messages/<-rpc %)))
       (update :message #(when % (messages/<-rpc %)))
       (update :reply-message #(when % (messages/<-rpc %)))

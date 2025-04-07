@@ -29,6 +29,11 @@
       :default-active      filter-type
       :data                [{:id    types/no-type
                              :label (i18n/label :t/all)}
+                            {:id                  types/news-feed
+                             :label               (i18n/label :t/news)
+                             :accessibility-label :tab-news
+                             :notification-dot?   (when-not is-mark-all-as-read-undoable?
+                                                    (contains? types-with-unread types/news-feed))}
                             {:id                  types/admin
                              :label               (i18n/label :t/admin)
                              :accessibility-label :tab-admin
