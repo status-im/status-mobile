@@ -2,7 +2,8 @@
   (:require
     ["react-native-mmkv" :refer [MMKV]]
     [cognitect.transit :as transit]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [oops.core :as oops]))
 
 ;; Create a single MMKV instance to be used throughout the app
 (defonce ^:private storage (MMKV.))
@@ -28,14 +29,14 @@
 (defn store
   "Store a value in MMKV."
   [k v]
-  (.set ^js storage k v))
+  (oops/ocall storage "set" k v))
 
 (defn get-string
   "Get a string value from MMKV"
   ([k]
    (get-string k nil))
   ([k default-value]
-   (if-let [v (.getString ^js storage k)]
+   (if-let [v (oops/ocall storage "getString" k)]
      v
      default-value)))
 
@@ -44,7 +45,7 @@
   ([k]
    (get-boolean k false))
   ([k default-value]
-   (let [v (.getBoolean ^js storage k)]
+   (let [v (oops/ocall storage "getBoolean" k)]
      (if (nil? v)
        default-value
        v))))
@@ -54,7 +55,7 @@
   ([k]
    (get-number k 0))
   ([k default-value]
-   (if-let [v (.getNumber ^js storage k)]
+   (if-let [v (oops/ocall storage "getNumber" k)]
      v
      default-value)))
 
@@ -62,33 +63,33 @@
   "Store a ClojureScript data structure in MMKV using transit serialization"
   [k v]
   (let [transit-str (clj->transit v)]
-    (.set ^js storage k transit-str)))
+    (oops/ocall storage "set" k transit-str)))
 
 (defn get-object
   "Get a ClojureScript data structure from MMKV using transit deserialization"
   ([k]
    (get-object k nil))
   ([k default-value]
-   (if-let [transit-str (.getString ^js storage k)]
+   (if-let [transit-str (oops/ocall storage "getString" k)]
      (or (transit->clj transit-str) default-value)
      default-value)))
 
 (defn contains-key?
   "Check if MMKV contains a key"
   [k]
-  (.contains ^js storage k))
+  (oops/ocall storage "contains" k))
 
 (defn delete-key
   "Delete a key from MMKV"
   [k]
-  (.delete ^js storage k))
+  (oops/ocall storage "delete" k))
 
 (defn clear-all
   "Clear all data from MMKV"
   []
-  (.clearAll ^js storage))
+  (oops/ocall storage "clearAll"))
 
 (defn get-all-keys
   "Get all keys stored in MMKV"
   []
-  (js->clj (.getAllKeys ^js storage)))
+  (js->clj (oops/ocall storage "getAllKeys")))
