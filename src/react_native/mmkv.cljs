@@ -4,8 +4,8 @@
     [cognitect.transit :as transit]
     [native-module.core :as native-module]
     [oops.core :as oops]
-    [taoensso.timbre :as log]
-    (:refer-clojure :exclude [set])))
+    [taoensso.timbre :as log])
+  (:refer-clojure :exclude [set]))
 
 ;; Create a single MMKV instance to be used throughout the app with the path from native code
 (defonce ^:private storage
@@ -67,7 +67,7 @@
   "Store a ClojureScript data structure in MMKV using transit serialization"
   [k v]
   (let [transit-str (clj->transit v)]
-    (oops/ocall storage "set" k transit-str)))
+    (set k transit-str)))
 
 (defn get-object
   "Get a ClojureScript data structure from MMKV using transit deserialization"
