@@ -82,7 +82,8 @@ def get_app_path():
     apk = pytest_config_global['apk']
     if re.findall(r'pr\d\d\d\d\d', apk) or re.findall(r'\d\d\d\d\d.apk', apk):
         app_folder += '.pr'
-    app_path = '/storage/emulated/0/Android/data/%s/files/Download/' % app_folder
+    # app_path = '/storage/emulated/0/Android/data/%s/files/Download/' % app_folder
+    app_path = '/data/user/0/%s/no_backup/logs/' % app_folder
     return app_path
 
 
