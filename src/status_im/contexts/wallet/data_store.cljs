@@ -25,10 +25,11 @@
 
 (defn add-keys-to-account
   [account]
-  (-> account
-      (assoc :operable? (not= (:operable account) :no))
-      (assoc :watch-only? (= (:type account) :watch))
-      (assoc :default-account? (:wallet account))))
+  (let [watch-only? (= (:type account) :watch)]
+    (-> account
+        (assoc :operable? (and (not= (:operable account) :no) (not watch-only?)))
+        (assoc :watch-only? watch-only?)
+        (assoc :default-account? (:wallet account)))))
 
 (defn- sanitize-emoji
   "As Desktop uses Twemoji, the emoji received can be an img tag
