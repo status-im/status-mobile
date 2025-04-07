@@ -140,6 +140,12 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(backupDisabledDataDir) {
     return rootUrl.path;
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getMMKVStoragePath) {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl = [[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+    return [rootUrl.path stringByAppendingPathComponent:@"mmkv"];
+}
+
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(keystoreDir) {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *rootUrl =[Utils getRootUrl];

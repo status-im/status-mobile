@@ -2,11 +2,14 @@
   (:require
     ["react-native-mmkv" :refer [MMKV]]
     [cognitect.transit :as transit]
+    [native-module.core :as native-module]
     [oops.core :as oops]
     [taoensso.timbre :as log]))
 
-;; Create a single MMKV instance to be used throughout the app
-(defonce ^:private storage (MMKV.))
+;; Create a single MMKV instance to be used throughout the app with the path from native code
+(defonce ^:private storage
+  (let [mmkv-path (native-module/get-mmkv-storage-path)]
+    (MMKV. #js {:id "mmkv.status" :path mmkv-path})))
 
 ;; Transit serialization/deserialization for ClojureScript data structures
 (def ^:private reader (transit/reader :json))

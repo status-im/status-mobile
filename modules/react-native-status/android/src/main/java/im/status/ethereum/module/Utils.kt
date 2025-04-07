@@ -39,6 +39,11 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
         return getNoBackupDirectory()
     }
 
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    fun getMMKVStoragePath(): String {
+        return pathCombine(reactContext.noBackupFilesDir.absolutePath, "/mmkv")
+    }
+
     fun getLogDirectory(usePublicLogDir: Boolean): File? {
         return if (usePublicLogDir) {
             StatusBackendClient.getInstance()?.let { client ->

@@ -378,7 +378,8 @@
 
 (def mmkv-storage-atom (atom {}))
 
-(defn create-mmkv-mock []
+(defn create-mmkv-mock
+  []
   (let [getter (fn [k] (get @mmkv-storage-atom k))]
     (clj->js
      {:set        (fn [k v] (swap! mmkv-storage-atom assoc k v) true)

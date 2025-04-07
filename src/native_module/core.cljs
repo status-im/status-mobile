@@ -592,3 +592,8 @@
   [enabled]
   (log/debug "[native-module] set-pre-login-log-enabled")
   (.setPreLoginLogEnabled ^js (log-manager) (types/clj->json {:enabled enabled})))
+
+(defn get-mmkv-storage-path
+  []
+  (log/debug "[native-module] get-mmkv-storage-path")
+  (.getMMKVStoragePath ^js (utils)))
