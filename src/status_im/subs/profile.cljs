@@ -234,6 +234,11 @@
  (fn [{:keys [preview-privacy?]}]
    (boolean preview-privacy?)))
 
+(re-frame/reg-sub :profile/news-feed-enabled?
+ :<- [:profile/profile]
+ (fn [{:keys [news-feed-enabled?]}]
+   (boolean news-feed-enabled?)))
+
 (defn- replace-multiaccount-image-uri
   [profile port font-file avatar-opts theme]
   (let [{:keys [key-uid images
