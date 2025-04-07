@@ -72,5 +72,4 @@
         :on-press #(rf/dispatch [:logging.ui/send-logs-pressed :sharing])}
        (when-not logged-in?
          {:label    (i18n/label :t/set-pre-login-log-level)
-          :on-press #(rf/dispatch [:show-bottom-sheet {:content pre-login-log-level-settings}])})
-      ]]]))
+          :on-press #(rf/dispatch [:show-bottom-sheet {:content pre-login-log-level-settings}])})]]]))
