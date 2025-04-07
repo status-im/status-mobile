@@ -9,7 +9,11 @@
 
 ;; Create a single MMKV instance to be used throughout the app with the path from native code
 (defonce ^:private storage
-  (let [mmkv-path (native-module/get-mmkv-storage-path)]
+  (let [mmkv-path (try
+                    (native-module/get-mmkv-storage-path)
+                    (catch :default _
+                      ;; Fallback for tests
+                      "/tmp/test-mmkv"))]
     (MMKV. #js {:id "mmkv.status" :path mmkv-path})))
 
 ;; Transit serialization/deserialization for ClojureScript data structures
