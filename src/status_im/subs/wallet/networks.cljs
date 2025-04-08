@@ -1,6 +1,7 @@
 (ns status-im.subs.wallet.networks
   (:require [re-frame.core :as re-frame]
-            [status-im.contexts.wallet.networks.core :as networks]))
+            [status-im.contexts.wallet.networks.core :as networks]
+            [status-im.contexts.wallet.networks.filter :as networks.filter]))
 
 #_"
    Since our wallet can handle a limited number of networks simultaneously,
@@ -52,7 +53,7 @@
  :wallet/network-filter?
  :<- [:wallet/network-filter]
  (fn [network-filter]
-   (-> network-filter seq boolean)))
+   (networks.filter/has-filters? network-filter)))
 
 (re-frame/reg-sub
  :wallet/chain-ids
@@ -107,6 +108,19 @@
  :<- [:wallet/network-filter]
  (fn [[active-networks network-filter]]
    (networks/get-filtered-chain-ids active-networks network-filter)))
+
+(re-frame/reg-sub
+ :wallet/network-filter-toggled?
+ :<- [:wallet/filtered-chain-ids]
+ (fn [filtered-chain-ids [_ chain-id]]
+   (contains? filtered-chain-ids chain-id)))
+
+(re-frame/reg-sub
+ :wallet/disable-network-filter?
+ :<- [:wallet/filtered-chain-ids]
+ (fn [filtered-chain-ids [_ chain-id]]
+   (and (= 1 (count filtered-chain-ids))
+        (contains? filtered-chain-ids chain-id))))
 
 (re-frame/reg-sub
  :wallet/layer-1-networks

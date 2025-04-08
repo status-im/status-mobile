@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.sheets.network-filter.network-field
   (:require [clojure.string :as string]
-            [quo.context :as quo.context]
             [quo.core :as quo]
             [quo.foundations.colors :as colors]
             [react-native.core :as rn]
@@ -54,21 +53,26 @@
        [collectibles-count {:amount n-collectibles}])]))
 
 (defn view
-  [{:keys [image-source title balance n-collectibles on-press new?]}]
-  (let [theme (quo.context/use-theme)]
-    [rn/pressable
-     {:style               style/item-container
-      :on-press            on-press
-      :accessibility-label :network-item}
-     [rn/view {:style style/item-left-side}
-      [icon {:source image-source}]
-      [rn/view {:style {:margin-left 12}}
-       [rn/view {:style style/item-title-container}
-        [quo/text {:weight :medium} title]
-        (when new? [new-tag])]
-       [network-balances
-        {:balance        balance
-         :n-collectibles n-collectibles}]]]
-     [rn/view {:style style/action-icon-container}
-      [quo/icon :i/chevron-right
-       {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
+  [{:keys [image-source title balance n-collectibles on-press new? network-toggled? disabled?
+           customization-color]}]
+  [rn/pressable
+   {:style               style/item-container
+    :on-press            on-press
+    :accessibility-label :network-item}
+   [rn/view {:style style/item-left-side}
+    [icon {:source image-source}]
+    [rn/view {:style {:margin-left 12}}
+     [rn/view {:style style/item-title-container}
+      [quo/text {:weight :medium} title]
+      (when new? [new-tag])]
+     [network-balances
+      {:balance        balance
+       :n-collectibles n-collectibles}]]]
+   [rn/view {:style style/action-icon-container}
+    [quo/selectors
+     {:type                :checkbox
+      :customization-color customization-color
+      :on-change           on-press
+      :default-checked?    true
+      :checked?            network-toggled?
+      :disabled?           disabled?}]]])

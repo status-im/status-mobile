@@ -10,22 +10,27 @@
 
 (defn on-network-press
   [chain-id]
-  (rf/dispatch [:wallet/filter-network-balances {:by-id #{chain-id}}])
-  (rf/dispatch [:hide-bottom-sheet]))
+  (rf/dispatch [:wallet/filter-network-balances {:by-id chain-id}]))
 
 (defn render-network
   [chain-id]
-  (let [{:keys [chain-id full-name source]} (rf/sub [:wallet/network-by-id chain-id])
+  (let [customization-color                 (rf/sub [:profile/customization-color])
+        {:keys [chain-id full-name source]} (rf/sub [:wallet/network-by-id chain-id])
+        network-toggled?                    (rf/sub [:wallet/network-filter-toggled? chain-id])
+        disabled?                           (rf/sub [:wallet/disable-network-filter? chain-id])
         network-balance                     (rf/sub [:wallet/balance-for-network-filter chain-id])
         n-collectibles                      (rf/sub [:wallet/collectibles-count-for-network-filter
                                                      chain-id])]
     [network-field/view
-     {:title          full-name
-      :image-source   source
-      :balance        network-balance
-      :n-collectibles n-collectibles
-      :on-press       #(on-network-press chain-id)
-      :new?           (networks/new-network? chain-id)}]))
+     {:title               full-name
+      :network-toggled?    network-toggled?
+      :disabled?           disabled?
+      :image-source        source
+      :balance             network-balance
+      :n-collectibles      n-collectibles
+      :on-press            (when-not disabled? #(on-network-press chain-id))
+      :customization-color customization-color
+      :new?                (networks/new-network? chain-id)}]))
 
 (defn view
   []

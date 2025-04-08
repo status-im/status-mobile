@@ -5,6 +5,7 @@
              max-active-networks-sheet]
             [status-im.contexts.wallet.networks.db :as networks.db]
             [status-im.contexts.wallet.networks.effects]
+            [status-im.contexts.wallet.networks.filter :as networks.filter]
             [status-im.contexts.wallet.rpc-data-store.networks :as rpc-data-store.networks]
             [utils.debounce :as debounce]))
 
@@ -114,7 +115,10 @@
 (rf/reg-event-fx
  :wallet/filter-network-balances
  (fn [{:keys [db]} [network-filter]]
-   {:db (update-in db [:wallet :ui :networks/network-filter] merge network-filter)}))
+   {:db (update-in db
+                   [:wallet :ui :networks/network-filter]
+                   networks.filter/toggle
+                   network-filter)}))
 
 (rf/reg-event-fx
  :wallet/reset-network-balances-filter

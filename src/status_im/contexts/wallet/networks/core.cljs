@@ -44,6 +44,12 @@
             network))
         networks))
 
+(defn get-chain-ids
+  [networks]
+  (->> networks
+       (map :chain-id)
+       set))
+
 (defn get-active-networks
   "Returns only active networks"
   [networks]
@@ -54,8 +60,7 @@
   [networks]
   (->> networks
        get-active-networks
-       (map :chain-id)
-       set))
+       get-chain-ids))
 
 (defn get-max-active-networks
   []
@@ -70,5 +75,4 @@
   [networks network-filter]
   (->> network-filter
        (get-filtered-networks networks)
-       (map :chain-id)
-       set))
+       get-chain-ids))
