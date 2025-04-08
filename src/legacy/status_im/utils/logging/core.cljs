@@ -114,6 +114,11 @@
                     (config/log-level))]
     (not (string/blank? log-level))))
 
+(rf/defn trigger-archive-logs
+  {:events [:logging/trigger-archive-logs]}
+  [_ db-json callback-handler]
+  {:logs/archive-logs [db-json callback-handler]})
+
 (rf/defn send-logs
   {:events [:logging.ui/send-logs-pressed]}
   [{:keys [db]} transport hide-bottom-sheet?]
@@ -135,7 +140,12 @@
                                       :dimensions/window])))]
     {:fx [(when hide-bottom-sheet? [:dispatch [:hide-bottom-sheet]])
           (if log-enabled?
-            [:logs/archive-logs [db-json (if (= transport :email) ::send-email ::share-logs-file)]]
+            [:dispatch-later
+             {:ms       1000 ;; wait for hide-bottom-sheet to be processed, otherwise we won't see
+                             ;; the share dialog on iOS
+              :dispatch [:logging/trigger-archive-logs
+                         db-json
+                         (if (= transport :email) ::send-email ::share-logs-file)]}]
             [:dispatch [::send-email nil]])]}))
 
 (rf/defn send-logs-on-error
