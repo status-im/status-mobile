@@ -18,6 +18,7 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
 
     companion object {
         private const val TAG = "Utils"
+        const val LOGS_DIRECTORY_NAME = "logs"
     }
 
     override fun getName(): String {
@@ -38,8 +39,17 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
         return getNoBackupDirectory()
     }
 
-    fun getLogDirectory(): File? {
-        return File(getNoBackupDirectory(), "logs")
+    fun getLogDirectory(useDownloadAsLogDir: Boolean): File? {
+        return if (useDownloadAsLogDir) {
+            StatusBackendClient.getInstance()?.let { client ->
+                if (client.serverEnabled && client.rootDataDir != null) {
+                    return File(client.rootDataDir!!, LOGS_DIRECTORY_NAME)
+                }
+            }
+            reactContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+        } else {
+            File(getNoBackupDirectory(), LOGS_DIRECTORY_NAME)
+        }
     }
 
     fun getKeyUID(json: String): String {

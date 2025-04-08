@@ -14,6 +14,7 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
                   jsLogs:(NSString *)jsLogs
+                  useDownloadAsLogDir:(BOOL)useDownloadAsLogDir
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"SendLogs() method called");
@@ -59,7 +60,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
 }
 
 - (void)copyExistingLogsToFolder:(NSURL *)logsFolderPath withFileManager:(NSFileManager *)fileManager {
-    NSString *logDirectory = [self logFileDirectory];
+    NSString *logDirectory = [self logFileDirectory:NO];
     
     // Get all files in the log directory
     NSError *error = nil;
@@ -82,7 +83,7 @@ RCT_EXPORT_METHOD(sendLogs:(NSString *)dbJson
     }
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(logFileDirectory) {
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(logFileDirectory:(BOOL)useDownloadAsLogDir) {
     NSURL *rootUrl = [Utils getRootUrl];
     NSURL *logsUrl = [rootUrl URLByAppendingPathComponent:@"logs"];
     return logsUrl.path;

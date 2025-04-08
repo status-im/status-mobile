@@ -95,14 +95,14 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
     }
 
     @ReactMethod
-    fun sendLogs(dbJson: String, jsLogs: String, callback: Callback) {
+    fun sendLogs(dbJson: String, jsLogs: String, useDownloadAsLogDir: Boolean, callback: Callback) {
         Log.d(TAG, "sendLogs")
         if (!utils.checkAvailability()) {
             return
         }
 
         val context = reactApplicationContext
-        val logsTempDir = File(context.cacheDir, "logs") // This path needs to be in sync with android/app/src/main/res/xml/file_provider_paths.xml
+        val logsTempDir = File(context.cacheDir, Utils.LOGS_DIRECTORY_NAME) // This path needs to be in sync with android/app/src/main/res/xml/file_provider_paths.xml
         logsTempDir.mkdir()
 
         val dbFile = File(logsTempDir, "db.json")
@@ -135,7 +135,7 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
             val filesToZip = mutableListOf<File>(dbFile, statusLogFile)
             
             // Get all files from the log directory
-            val logDirectory = utils.getLogDirectory()
+            val logDirectory = utils.getLogDirectory(useDownloadAsLogDir)
             if (logDirectory != null && logDirectory.exists()) {
                 val logFiles = logDirectory.listFiles()
                 if (logFiles != null) {
@@ -192,8 +192,9 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    fun logFileDirectory(): String? {
-        return utils.getLogDirectory()?.absolutePath
+    fun logFileDirectory(useDownloadAsLogDir: Boolean): String? {
+        Log.d(TAG, "logFileDirectory: useDownloadAsLogDir=$useDownloadAsLogDir")
+        return utils.getLogDirectory(useDownloadAsLogDir)?.absolutePath
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
