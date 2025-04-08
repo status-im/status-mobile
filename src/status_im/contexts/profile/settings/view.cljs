@@ -24,7 +24,8 @@
   (rn/delay-render
    [quo/category
     {:list-type       :settings
-     :container-style {:padding-bottom 12}
+     :container-style {:padding-top    8
+                       :padding-bottom 4}
      :blur?           true
      :data            (doall (filter show-settings-item? data))}]))
 
