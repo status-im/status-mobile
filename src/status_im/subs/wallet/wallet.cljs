@@ -580,7 +580,7 @@
 
 (rf/reg-sub
  :wallet/token-by-symbol-from-first-available-account-with-balance
- :<- [:wallet/accounts]
+ :<- [:wallet/operable-accounts]
  :<- [:wallet/current-viewing-account-or-default]
  :<- [:wallet/network-details]
  (fn [[accounts {:keys [tokens]} networks] [_ token-symbol chain-ids]]

@@ -28,32 +28,18 @@
 
 (defn password-inputs
   [{:keys [set-password set-repeat-password same-password-length? same-passwords?
-           password-long-enough? password-short-enough? non-empty-password?]}]
-  (let [[show-validation?
-         set-show-validation?]    (rn/use-state false)
-        on-change-password        (rn/use-callback
-                                   (fn [new-value]
-                                     (set-password new-value)
-                                     (when same-password-length?
-                                       (set-show-validation? true)))
-                                   [same-password-length?])
-        on-change-repeat-password (rn/use-callback
-                                   (fn [new-value]
-                                     (set-repeat-password new-value)
-                                     (when same-password-length?
-                                       (set-show-validation? true)))
-                                   [same-password-length?])
-        on-blur-repeat-password   (rn/use-callback
-                                   #(set-show-validation? non-empty-password?)
-                                   [non-empty-password?])
-        hint-1-status             (if password-long-enough? :success :default)
-        hint-2-status             (if same-passwords? :success :error)
-        hint-2-text               (if same-passwords?
-                                    (i18n/label :t/password-creation-match)
-                                    (i18n/label :t/password-creation-dont-match))
-        error?                    (and show-validation?
-                                       (not same-passwords?)
-                                       non-empty-password?)]
+           password-long-enough? password-short-enough?]}]
+  (let [hint-1-status      (if password-long-enough? :success :default)
+        hint-2-status      (if same-passwords? :success :error)
+        hint-2-text        (if same-passwords?
+                             (i18n/label :t/password-creation-match)
+                             (i18n/label :t/password-creation-dont-match))
+        [error? set-error] (rn/use-state false)]
+    (rn/use-effect
+     (fn []
+       (when (and (not error?) same-password-length? (not same-passwords?))
+         (set-error true)))
+     [error? same-password-length? same-passwords?])
     [:<>
      [password-with-hint/view
       {:hint           (if (not password-short-enough?)
@@ -64,17 +50,16 @@
                           :status hint-1-status
                           :shown? true})
        :placeholder    (i18n/label :t/password-creation-placeholder-1)
-       :on-change-text on-change-password
+       :on-change-text set-password
        :auto-focus     true}]
      [rn/view {:style style/space-between-inputs}]
      [password-with-hint/view
       {:hint           {:text   hint-2-text
                         :status hint-2-status
-                        :shown? (and non-empty-password? show-validation?)}
-       :error?         error?
+                        :shown? (or same-passwords? error?)}
+       :error?         (and error? (not same-passwords?))
        :placeholder    (i18n/label :t/password-creation-placeholder-2)
-       :on-change-text on-change-repeat-password
-       :on-blur        on-blur-repeat-password}]]))
+       :on-change-text set-repeat-password}]]))
 
 (defn help
   [{:keys [lower-case? upper-case? numbers? symbols?] :as validations}]

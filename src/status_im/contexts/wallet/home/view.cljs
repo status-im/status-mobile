@@ -6,6 +6,7 @@
     [react-native.core :as rn]
     [status-im.common.home.top-nav.view :as common.top-nav]
     [status-im.common.refreshable-flat-list.view :as refreshable-flat-list]
+    [status-im.constants :as constants]
     [status-im.contexts.wallet.home.style :as style]
     [status-im.contexts.wallet.home.tabs.view :as tabs]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
@@ -16,19 +17,33 @@
 
 (defn new-account
   []
-  [quo/action-drawer
-   [[{:icon                :i/add
-      :accessibility-label :start-a-new-chat
-      :label               (i18n/label :t/add-account)
-      :sub-label           (i18n/label :t/add-account-description)
-      :on-press            #(rf/dispatch [:navigate-to :screen/wallet.create-account])}
-     (when (ff/enabled? ::ff/wallet.add-watched-address)
+  (let [watched-accounts             (rf/sub [:wallet/watch-only-accounts])
+        reached-max-watched-account? (>= (count watched-accounts)
+                                         constants/max-allowed-watched-accounts)
+        on-add-address-press         (rn/use-callback
+                                      (fn []
+                                        (if reached-max-watched-account?
+                                          (rf/dispatch [:toasts/upsert
+                                                        {:type :negative
+                                                         :theme :dark
+                                                         :text
+                                                         (i18n/label
+                                                          :t/saved-addresses-limit-reached-toast)}])
+                                          (rf/dispatch [:navigate-to
+                                                        :screen/wallet.add-address-to-watch])))
+                                      [reached-max-watched-account?])]
+    [quo/action-drawer
+     [[{:icon                :i/add
+        :accessibility-label :start-a-new-chat
+        :label               (i18n/label :t/add-account)
+        :sub-label           (i18n/label :t/add-account-description)
+        :on-press            #(rf/dispatch [:navigate-to :screen/wallet.create-account])}
        {:icon                :i/reveal
         :accessibility-label :add-a-contact
         :label               (i18n/label :t/add-address-to-watch)
         :sub-label           (i18n/label :t/add-address-to-watch-description)
-        :on-press            #(rf/dispatch [:navigate-to :screen/wallet.add-address-to-watch])
-        :add-divider?        true})]]])
+        :on-press            on-add-address-press
+        :add-divider?        true}]]]))
 
 (defn- new-account-card-data
   []

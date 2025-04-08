@@ -96,7 +96,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
                         self.wallet_view,
                         "%s on %s: max fees is not shown before Review Send button is clicked" % (asset, network))
 
-                self.wallet_view.confirm_button.click_until_presence_of_element(self.wallet_view.slide_button_track)
+                self.wallet_view.button_one.click_until_presence_of_element(self.wallet_view.slide_button_track)
                 self.wallet_view.just_fyi("Checking Review Send page for %s on %s" % (asset, network))
 
                 sender_short_address = self.sender['wallet_address'].replace(self.sender['wallet_address'][6:-3],
@@ -299,7 +299,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
             except TimeoutException:
                 self.errors.append(self.wallet_view, "%s to %s: 'To' route is not shown" % (network_from, network_to))
 
-            self.wallet_view.confirm_button.click()
+            self.wallet_view.button_one.click()
             self.wallet_view.just_fyi("Checking Bridge screen from %s to %s" % (network_from, network_to))
             containers = {'from': self.wallet_view.from_data_container, 'to': self.wallet_view.to_data_container}
             for name, container in containers.items():

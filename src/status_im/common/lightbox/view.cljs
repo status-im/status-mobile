@@ -138,17 +138,11 @@
          :transparent?          transparent?
          :bottom-text-component bottom-text-component}])]))
 
-(defn- f-lightbox
-  []
-  (let [{:keys [images index bottom-text-component on-options-press]}
-        (quo.context/use-screen-params)
-        props
-        (utils/init-props)
-        state
-        (utils/init-state images index)
-        handle-items-changed
-        (fn [e]
-          (on-viewable-items-changed e props state))]
+(defn- lightbox-internal
+  [{:keys [images index bottom-text-component on-options-press]}]
+  (let [props                (utils/init-props)
+        state                (utils/init-state images index)
+        handle-items-changed (fn [e] (on-viewable-items-changed e props state))]
     (fn []
       (let [animations (utils/init-animations (count images) index)
             derived    (utils/init-derived-animations animations)]
@@ -170,4 +164,5 @@
 
 (defn lightbox
   []
-  [:f> f-lightbox])
+  (let [screen-params (quo.context/use-screen-params)]
+    [lightbox-internal screen-params]))

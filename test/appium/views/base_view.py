@@ -170,6 +170,8 @@ class BaseView(object):
             self.driver, xpath="//*[@content-desc='checkbox-off'][@resource-id='checkbox-component']")
         self.slide_button_track = SlideButton(self.driver)
 
+        self.button_one = Button(self.driver, accessibility_id='button-one')
+
         # external browser
         self.open_in_android_button = Button(self.driver, translation_id="browsing-open-in-android-web-browser")
 

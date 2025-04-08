@@ -26,28 +26,36 @@ class TestProfileOneDevice(MultipleSharedDeviceTestCase):
     @marks.testrail_id(741966)
     def test_profile_back_up_seed_phrase_validation(self):
         self.profile.backup_recovery_phrase_button.click()
-        self.profile.ok_continue_button.click()
+        for checkbox in self.profile.checkbox_button.find_elements():
+            checkbox.click()
+        self.profile.button_one.click()
         recovery_phrase = self.profile.get_recovery_phrase()
-        self.profile.recovery_phrase_next_button.click()
+        self.profile.button_one.click()
         word_number = self.profile.recovery_phrase_word_number.number
-        incorrect_word_number = 11 if word_number == 12 else word_number + 1
-        self.profile.recovery_phrase_word_input.send_keys(recovery_phrase[incorrect_word_number])
-        self.profile.recovery_phrase_next_button.click()
-        if not self.profile.element_by_translation_id('wrong-word').is_element_displayed():
+        self.profile.get_incorrect_word_button(recovery_phrase[word_number]).click()
+        if not self.profile.element_by_translation_id('oops-wrong-word').is_element_displayed():
             self.errors.append(self.profile,
-                               "Error message 'Wrong word' is not shown on the first seed phrase validation step")
-        self.profile.recovery_phrase_word_input.send_keys(recovery_phrase[word_number])
-        self.profile.recovery_phrase_next_button.click()
-        word_number_1 = self.profile.recovery_phrase_word_number.number
-        incorrect_word_number_1 = 11 if word_number_1 == 12 else word_number_1 + 1
-        self.profile.recovery_phrase_word_input.send_keys(recovery_phrase[incorrect_word_number_1])
-        self.profile.done_button.click()
-        if not self.profile.element_by_translation_id('wrong-word').is_element_displayed():
-            self.errors.append(self.profile,
-                               "Error message 'Wrong word' is not shown on the second seed phrase validation step")
-        # self.profile.click_system_back_button() # ToDo: issue with LT emulators, needs investigation
-        # if not self.profile.backup_recovery_phrase_button.is_element_displayed():
-        #     self.errors.append(self.profile, "Backup recovery phrase button is not shown after failed validation")
+                               "Error message 'Oops! Wrong word' is not shown on the first seed phrase validation step")
+        self.profile.get_incorrect_word_button(recovery_phrase[word_number]).click()
+        if not self.profile.element_by_translation_id(
+                'do-not-cheat').is_element_displayed() or not self.profile.element_by_translation_id(
+            'do-not-cheat-description').is_element_displayed():
+            self.errors.append(
+                self.profile,
+                "Expected messages are not shown for the second attempt with incorrect recovery phrase word")
+        self.profile.button_one.find_elements()[1].click()
+        if not self.profile.recovery_phrase_table.is_element_displayed():
+            self.errors.append(self.profile, "Recovery phrase is not shown after failed attempts to check it")
+            self.errors.verify_no_errors()  # the test fails if the recovery phrase is not shown on this step
+
+        self.profile.button_one.click()
+        self.profile.fill_recovery_phrase_checking_words(recovery_phrase)
+        if not self.profile.element_by_translation_id('written-seed-ready').is_element_displayed():
+            self.errors.append(self.profile, "Can't complete backup")
+
+        self.profile.click_system_back_button(3)
+        if not self.profile.backup_recovery_phrase_button.is_element_displayed():
+            self.errors.append(self.profile, "Backup recovery phrase button is not shown after failed validation")
         self.profile.reopen_app(sign_in=True, user_name=self.username)
         self.home.profile_button.click()
         if not self.profile.backup_recovery_phrase_button.is_element_displayed():

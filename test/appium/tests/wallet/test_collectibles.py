@@ -106,7 +106,7 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
         self.wallet_view.continue_button.click()
         self.wallet_view.collectibles_tab_on_select_token_view.click()
         self.wallet_view.get_collectible_element('BVL').wait_and_click(20)
-        self.wallet_view.confirm_button.click()
+        self.wallet_view.button_one.click()
         data_to_find_on_review = {
             self.account_name: ("From", self.wallet_view.from_data_container),
             self.sender_short_address: ("From", self.wallet_view.from_data_container),

@@ -489,3 +489,5 @@
 (def ^:const status-mobile-url "https://github.com/status-im/status-mobile")
 
 (def ^:const wc-connection-string-identifier "wc")
+
+(def ^:const max-allowed-watched-accounts 20)

@@ -111,32 +111,31 @@
 
 (defn view
   []
-  (let [{:keys [community-id]} (quo.context/use-screen-params)]
+  (let [{:keys [community-id]} (quo.context/use-screen-params)
+        my-public-key (rf/sub [:multiaccount/public-key])
+        {:keys [permissions
+                can-manage-users?
+                admin]}
+        (rf/sub [:communities/community community-id])
+        sorted-members (rf/sub [:communities/sorted-community-members
+                                community-id])]
     (rn/use-mount
      #(rf/dispatch [:community/fetch-requests-to-join community-id]))
-    (fn []
-      (let [my-public-key (rf/sub [:multiaccount/public-key])
-            {:keys [permissions
-                    can-manage-users?
-                    admin]}
-            (rf/sub [:communities/community community-id])
-            sorted-members (rf/sub [:communities/sorted-community-members
-                                    community-id])]
-        [:<>
-         [topbar/topbar
-          {:title    (i18n/label :t/community-members-title)
-           :subtitle (str (count sorted-members))}]
-         [header community-id]
-         (when (and can-manage-users? (= constants/community-on-request-access (:access permissions)))
-           [requests-to-join community-id])
-         [rn/flat-list
-          {:data        sorted-members
-           :render-data {:community-id      community-id
-                         :my-public-key     my-public-key
-                         :can-kick-users?   (and can-manage-users?
-                                                 (not= (:access permissions)
-                                                       constants/community-no-membership-access))
-                         :can-manage-users? can-manage-users?
-                         :admin?            admin}
-           :key-fn      identity
-           :render-fn   render-member}]]))))
+    [:<>
+     [topbar/topbar
+      {:title    (i18n/label :t/community-members-title)
+       :subtitle (str (count sorted-members))}]
+     [header community-id]
+     (when (and can-manage-users? (= constants/community-on-request-access (:access permissions)))
+       [requests-to-join community-id])
+     [rn/flat-list
+      {:data        sorted-members
+       :render-data {:community-id      community-id
+                     :my-public-key     my-public-key
+                     :can-kick-users?   (and can-manage-users?
+                                             (not= (:access permissions)
+                                                   constants/community-no-membership-access))
+                     :can-manage-users? can-manage-users?
+                     :admin?            admin}
+       :key-fn      identity
+       :render-fn   render-member}]]))

@@ -116,25 +116,20 @@
                                         (on-try-again)))}
        :blur?            shell?}]]))
 
-(defn view
-  []
-  (let [random-indices         (random-selection)
-        quiz-index             (reagent/atom 0)
-        incorrect-count        (reagent/atom 0)
-        show-error?            (reagent/atom false)
-        {:keys [on-success
-                on-try-again
-                masked-seed-phrase
-                back-button?
-                theme shell?]} (quo.context/use-screen-params)
-        unmasked-seed-phrase   (security/safe-unmask-data masked-seed-phrase)
-        random-phrase          (reagent/atom [])]
+(defn- view-internal
+  [{:keys [on-success on-try-again masked-seed-phrase back-button? theme shell?]}]
+  (let [random-indices  (random-selection)
+        quiz-index      (reagent/atom 0)
+        incorrect-count (reagent/atom 0)
+        show-error?     (reagent/atom false)
+        random-phrase   (reagent/atom [])]
     (fn []
       (rn/use-mount
        (fn []
          (native-module/get-random-mnemonic #(reset! random-phrase (string/split % #"\s")))))
       (when-not (empty? @random-phrase)
-        (let [current-word-index            (get random-indices
+        (let [unmasked-seed-phrase          (security/safe-unmask-data masked-seed-phrase)
+              current-word-index            (get random-indices
                                                  (min @quiz-index (dec questions-count)))
               current-word                  (get unmasked-seed-phrase current-word-index)
               [options-row-0 options-row-1] (random-words-with-string @random-phrase current-word)
@@ -217,3 +212,8 @@
              {:on-press on-button-press
               :options  options-row-1
               :shell?   shell?}]]])))))
+
+(defn view
+  []
+  (let [screen-params (quo.context/use-screen-params)]
+    [view-internal screen-params]))

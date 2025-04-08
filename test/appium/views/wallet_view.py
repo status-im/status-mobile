@@ -179,7 +179,6 @@ class WalletView(BaseView):
         self.amount_input = EditBox(self.driver, xpath="//android.widget.EditText")
         self.from_network_text = Text(
             self.driver, xpath="(//*[@content-desc='loading']/following-sibling::android.widget.TextView)[1]")
-        self.confirm_button = Button(self.driver, accessibility_id='button-one')
         self.done_button = Button(self.driver, accessibility_id='done')
         self.amount_input_increase_button = Button(self.driver, accessibility_id='amount-input-inc-button')
 
@@ -263,12 +262,12 @@ class WalletView(BaseView):
         self.login_button.click()
 
     def confirm_transaction(self):
-        self.confirm_button.click()
+        self.button_one.click()
         for _ in range(3):
             if self.slide_button_track.is_element_displayed():
                 break
             time.sleep(5)
-            self.confirm_button.click()
+            self.button_one.click()
         self.slide_and_confirm_with_password()
 
     def set_amount(self, amount: str):
@@ -301,7 +300,7 @@ class WalletView(BaseView):
         self.select_network(network_name)
         self.set_amount(str(amount))
         self.max_fees_text.wait_for_visibility_of_element(30)
-        self.confirm_button.click_until_presence_of_element(self.swap_receive_amount_summary_text)
+        self.button_one.click_until_presence_of_element(self.swap_receive_amount_summary_text)
         expected_amount = self.get_receive_swap_amount(decimals_to)
         est_time, slippage, fees = self.est_time_text.text, self.max_slippage_text.text, self.max_fees_text.text
         self.slide_and_confirm_with_password()
@@ -335,7 +334,7 @@ class WalletView(BaseView):
         self.remove_account_button.click()
         if not watch_only:
             self.derivation_path_note_checkbox.click()
-        self.confirm_button.click()
+        self.button_one.click()
 
     def get_activity_element(self, index=1):
         return ActivityElement(self.driver, index=index)

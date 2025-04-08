@@ -16,15 +16,15 @@
 
 (defn view
   []
-  (let [{:keys [address]} (quo.context/use-screen-params)
-        placeholder       (i18n/label :t/default-watched-address-placeholder)
+  (let [placeholder       (i18n/label :t/default-watched-address-placeholder)
         account-name      (reagent/atom "")
         account-color     (reagent/atom (rand-nth colors/account-colors))
         account-emoji     (reagent/atom (emoji-picker.utils/random-emoji))
         name-error        (reagent/atom nil)
         emoji-color-error (reagent/atom nil)]
     (fn []
-      (let [accounts-names             (rf/sub [:wallet/accounts-names])
+      (let [{:keys [address]}          (quo.context/use-screen-params)
+            accounts-names             (rf/sub [:wallet/accounts-names])
             accounts-emojis-and-colors (rf/sub [:wallet/accounts-emojis-and-colors])
             on-change-name             (fn [new-name]
                                          (reset! account-name new-name)

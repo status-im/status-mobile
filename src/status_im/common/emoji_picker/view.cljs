@@ -170,8 +170,7 @@
 
 (defn view
   [_]
-  (let [{:keys [on-select]}       (quo.context/use-screen-params)
-        scroll-ref                (atom nil)
+  (let [scroll-ref                (atom nil)
         set-scroll-ref            #(reset! scroll-ref %)
         search-text               (reagent/atom "")
         filtered-data             (reagent/atom nil)
@@ -197,14 +196,15 @@
                                       :active-category                active-category
                                       :should-update-active-category? (nil? @filtered-data)}))]
     (fn [sheet-opts]
-      [sheet-view
-       (assoc sheet-opts
-              :search-active?            (pos? (count @search-text))
-              :on-change-text            on-change-text
-              :clear-states              clear-states
-              :filtered-data             @filtered-data
-              :set-scroll-ref            set-scroll-ref
-              :on-select                 on-select
-              :on-viewable-items-changed on-viewable-items-changed
-              :active-category           active-category
-              :scroll-ref                scroll-ref)])))
+      (let [{:keys [on-select]} (quo.context/use-screen-params)]
+        [sheet-view
+         (assoc sheet-opts
+                :search-active?            (pos? (count @search-text))
+                :on-change-text            on-change-text
+                :clear-states              clear-states
+                :filtered-data             @filtered-data
+                :set-scroll-ref            set-scroll-ref
+                :on-select                 on-select
+                :on-viewable-items-changed on-viewable-items-changed
+                :active-category           active-category
+                :scroll-ref                scroll-ref)]))))

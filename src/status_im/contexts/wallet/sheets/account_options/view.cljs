@@ -34,7 +34,9 @@
   (let [{:keys [name color emoji address watch-only?
                 default-account?]} (rf/sub [:wallet/current-viewing-account])
         {:keys [derived-from]}     (rf/sub [:wallet/current-viewing-account-keypair])
-        share-title                (i18n/label :t/share-address-title {:address name})]
+        share-title                (i18n/label :t/share-address-title {:address name})
+        deletable?                 (or watch-only?
+                                       (not (or default-account? (string/blank? derived-from))))]
     [rn/view
      {:on-layout #(reset! options-height (oops/oget % "nativeEvent.layout.height"))
       :style     (when show-account-selector? style/options-container)}
@@ -85,7 +87,7 @@
                                  #(rf/dispatch [:wallet/share-account
                                                 {:title share-title :content address}])
                                  600))}
-        (when-not (or default-account? (string/blank? derived-from))
+        (when deletable?
           {:add-divider?        (not show-account-selector?)
            :icon                :i/delete
            :accessibility-label :remove-account

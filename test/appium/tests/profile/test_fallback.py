@@ -261,10 +261,12 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
             self.errors.append(
                 self.profile_2,
                 "Newly added regular account is not shown in profile as on device before importing key pair")
-        self.profile_2.options_button.click()
-        if not self.profile_2.import_by_entering_recovery_phrase_button.is_element_displayed():
+        self.profile_2.get_missing_key_pair_by_name(key_pair_name=generated_key_pair_name).options_button.click()
+        if self.profile_2.import_by_entering_recovery_phrase_button.is_element_displayed():
+            self.profile_2.click_system_back_button(times=4)
+        else:
             self.errors.append(self.profile_2, "Can not import key pair account from profile")
-        self.profile_2.click_system_back_button(times=4)
+            self.profile_2.click_system_back_button(times=3)
 
         wallet_2.just_fyi("Device 2: import key pair")
         wallet_2.get_account_element(account_name=regular_account_name).swipe_left_on_element()

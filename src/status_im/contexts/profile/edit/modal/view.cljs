@@ -187,10 +187,9 @@
         (and new-picture? acceptable-name?)
         (and new-name? valid-name?))))
 
-(defn view
-  []
-  (let [{:keys [pending-event]}        (quo.context/use-screen-params)
-        {initial-display-name :display-name
+(defn view-internal
+  [{:keys [pending-event]}]
+  (let [{initial-display-name :display-name
          initial-color        :customization-color
          [initial-image]      :images} (rf/sub [:profile/profile])
         top                            (safe-area/get-top)
@@ -265,3 +264,8 @@
             :scroll-y     @scroll-y
             :on-submit    update-profile
             :disabled?    disabled?}]]]))))
+
+(defn view
+  []
+  (let [screen-params (quo.context/use-screen-params)]
+    [view-internal screen-params]))

@@ -48,18 +48,18 @@ class AdvancedButton(Button):
 
 class RecoveryPhraseTable(Text):
     def __init__(self, driver):
-        super().__init__(driver, translation_id="your-recovery-phrase",
-                         suffix="/following-sibling::android.view.ViewGroup[1]/android.widget.TextView")
+        super().__init__(driver, translation_id="backup-recovery-phrase",
+                         suffix="/following-sibling::android.view.ViewGroup[2]//android.widget.TextView")
 
 
 class RecoveryPhraseWordNumberText(Text):
     def __init__(self, driver):
-        super().__init__(driver, xpath="//*[contains(@text,'#')]")
+        super().__init__(driver, xpath="//*[@content-desc='number-container']/android.widget.TextView")
 
     @property
     def number(self):
         time.sleep(1)
-        return int(self.find_element().text.split('#')[1])
+        return int(self.find_element().text)
 
 
 class HelpButton(Button):
@@ -117,8 +117,6 @@ class ProfileView(BaseView):
 
         self.recovery_phrase_table = RecoveryPhraseTable(self.driver)
         self.recovery_phrase_word_number = RecoveryPhraseWordNumberText(self.driver)
-        self.recovery_phrase_next_button = Button(self.driver, accessibility_id="Next, icon")
-        self.recovery_phrase_word_input = EditBox(self.driver, xpath="//android.widget.EditText")
 
         # Notifications
         self.profile_notifications_button = Button(self.driver,
@@ -219,20 +217,35 @@ class ProfileView(BaseView):
         text = [i.text for i in self.recovery_phrase_table.find_elements()]
         return dict(zip(map(int, text[::2]), text[1::2]))
 
+    def get_correct_word_button(self, word: str):
+        return Button(self.driver, accessibility_id=word)
+
+    def get_incorrect_word_button(self, word: str):
+        try:
+            button = Button(self.driver,
+                            xpath="//*[@content-desc='%s']/following-sibling::android.view.ViewGroup" % word)
+            button.find_element()
+        except NoSuchElementException:
+            button = Button(self.driver,
+                            xpath="//*[@content-desc='%s']/preceding-sibling::*/*/android.widget.TextView" % word)
+        return button
+
+    def fill_recovery_phrase_checking_words(self, recovery_phrase: dict):
+        for _ in range(4):
+            word_number = self.recovery_phrase_word_number.number
+            self.get_correct_word_button(recovery_phrase[word_number]).click()
+
     def backup_recovery_phrase(self):
         self.just_fyi("Back up recovery phrase")
         self.backup_recovery_phrase_button.click()
-        self.ok_continue_button.click()
+        for checkbox in self.checkbox_button.find_elements():
+            checkbox.click()
+        self.button_one.click()
         recovery_phrase = self.get_recovery_phrase()
-        self.recovery_phrase_next_button.click()
-        word_number = self.recovery_phrase_word_number.number
-        self.recovery_phrase_word_input.send_keys(recovery_phrase[word_number])
-        self.recovery_phrase_next_button.click()
-        word_number_1 = self.recovery_phrase_word_number.number
-        self.recovery_phrase_word_input.send_keys(recovery_phrase[word_number_1])
-        self.done_button.click()
-        self.yes_button.click()
-        self.ok_got_it_button.click()
+        self.button_one.click()
+        self.fill_recovery_phrase_checking_words(recovery_phrase)
+        self.checkbox_button.click()
+        self.button_one.find_elements()[-1].click()
         return ' '.join(recovery_phrase.values())
 
     def edit_profile_picture(self, image_index: int, update_by="Gallery"):
@@ -342,8 +355,13 @@ class ProfileView(BaseView):
         return KeyPairAccountElement(self.driver, account_name)
 
     def get_missing_key_pair_by_name(self, key_pair_name: str):
-        return BaseElement(self.driver,
-                           xpath="//*[@content-desc='missing-keypair-item']//*[@text='%s']" % key_pair_name)
+        class MissingKeyPairElement(BaseElement):
+            def __init__(self, driver, key_pair_name):
+                locator = "//*[@content-desc='missing-keypair-item']//*[@text='%s']" % key_pair_name
+                super().__init__(driver, xpath=locator)
+                self.options_button = Button(driver, xpath=locator + "/../..//*[@content-desc='options-button']")
+
+        return MissingKeyPairElement(self.driver, key_pair_name)
 
     def turn_new_contact_requests_toggle(self, state: str = 'on'):
         self.profile_messages_button.click()
