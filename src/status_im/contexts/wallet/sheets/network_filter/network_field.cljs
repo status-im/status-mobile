@@ -5,8 +5,7 @@
             [react-native.core :as rn]
             [status-im.contexts.wallet.common.fiat-text.view :as fiat-text]
             [status-im.contexts.wallet.sheets.network-filter.style :as style]
-            [utils.i18n :as i18n]
-            [utils.money :as money]))
+            [utils.i18n :as i18n]))
 
 (defn- icon
   [{:keys [source]}]
@@ -39,18 +38,16 @@
 
 (defn- network-balances
   [{:keys [balance n-collectibles]}]
-  (let [balance?      (money/above-zero? balance)
-        collectibles? (not (zero? n-collectibles))]
+  (let [collectibles? (not (zero? n-collectibles))]
     [rn/view {:style style/item-balances-container}
-     (when balance?
-       [fiat-text/view
-        {:amount balance
-         :color  colors/neutral-80-opa-95
-         :size   :paragraph-2}])
-     (when (and balance? collectibles?)
-       [quo/dot-separator])
+     [fiat-text/view
+      {:amount balance
+       :color  colors/neutral-80-opa-95
+       :size   :paragraph-2}]
      (when collectibles?
-       [collectibles-count {:amount n-collectibles}])]))
+       [:<>
+        [quo/dot-separator]
+        [collectibles-count {:amount n-collectibles}]])]))
 
 (defn view
   [{:keys [image-source title balance n-collectibles on-press new? network-toggled? disabled?

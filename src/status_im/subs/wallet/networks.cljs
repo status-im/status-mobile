@@ -147,7 +147,7 @@
  :<- [:wallet/balances-by-network]
  (fn [[current-address current-account-balances balances] [_ chain-id]]
    (-> (if (seq current-address) current-account-balances balances)
-       (get chain-id))))
+       (get chain-id 0))))
 
 (re-frame/reg-sub
  :wallet/collectibles-count-for-network-filter
