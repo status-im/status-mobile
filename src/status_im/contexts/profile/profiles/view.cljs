@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [quo.context :as quo.context]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
@@ -278,7 +279,8 @@
 
 (defn view
   []
-  (let [[show-profiles? set-show-profiles] (rn/use-state true)
+  (let [{:keys [default-screen-profiles?]} (quo.context/use-screen-params)
+        [show-profiles? set-show-profiles] (rn/use-state default-screen-profiles?)
         show-profiles                      (rn/use-callback #(set-show-profiles true))
         hide-profiles                      (rn/use-callback #(set-show-profiles false))]
     (rn/use-mount #(rf/dispatch [:centralized-metrics/check-user-confirmation]))

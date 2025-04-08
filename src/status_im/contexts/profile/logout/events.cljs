@@ -36,7 +36,8 @@
     :fx [[:hide-popover nil]
          [:effects.profile/logout nil]
          [:profile.settings/webview-debug-changed false]
-         [:profile/get-profiles-overview #(rf/dispatch [:profile/get-profiles-overview-success %])]]}))
+         [:profile/get-profiles-overview
+          #(rf/dispatch [:profile/get-profiles-overview-success % {:logout-phase? true}])]]}))
 
 (rf/reg-event-fx
  :profile/logout

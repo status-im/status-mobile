@@ -77,14 +77,15 @@
 (rf/defn init-root
   "WARNING: Use `:update-theme-and-init-root` instead. `:init-root` should not be used directly."
   {:events [:init-root]}
-  [{:keys [db]} root-id]
-  {:set-root [root-id (:theme db)]})
+  [{:keys [db]} root-id screen-params]
+  {:db       (all-screens-params db root-id screen-params)
+   :set-root [root-id (:theme db)]})
 
 (rf/defn update-theme-and-init-root
   {:events [:update-theme-and-init-root]}
-  [_ root-id]
+  [_ root-id screen-params]
   {:fx [[:dispatch [:theme/switch {:view-id root-id}]]
-        [:dispatch [:init-root root-id]]]})
+        [:dispatch [:init-root root-id screen-params]]]})
 
 (rf/defn hide-bottom-sheet
   {:events [:hide-bottom-sheet]}
