@@ -60,7 +60,13 @@
      :image       :icon
      :blur?       true
      :action      :arrow}]
-   [{:title       (i18n/label :t/privacy-and-security)
+   [{:title       (i18n/label :t/network-settings)
+     :blur?       true
+     :image       :icon
+     :image-props :i/networks
+     :on-press    #(rf/dispatch [:open-modal :screen/settings.network-settings])
+     :action      :arrow}
+    {:title       (i18n/label :t/privacy-and-security)
      :on-press    #(rf/dispatch [:open-modal :screen/settings-privacy-and-security])
      :image-props :i/privacy
      :image       :icon
