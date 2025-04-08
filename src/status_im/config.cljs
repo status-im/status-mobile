@@ -133,4 +133,8 @@
 (def sentry-enabled? (enabled? (get-config :SENTRY_ENABLED "0")))
 (def sentry-dsn-status-go SENTRY_DSN_STATUS_GO)
 
-(def use-download-as-log-dir? (enabled? (get-config :USE_DOWNLOAD_AS_LOG_DIR "0")))
+;; this flag should only be used for e2e builds, because 
+;; relying on UI to pull logs, share them somewhere, and 
+;; download via Appium doesn't seem like a solid long-term 
+;; approach for QA team
+(def use-public-log-dir? (enabled? (get-config :USE_PUBLIC_LOG_DIR "0")))

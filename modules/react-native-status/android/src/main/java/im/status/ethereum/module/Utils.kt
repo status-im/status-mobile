@@ -39,8 +39,8 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
         return getNoBackupDirectory()
     }
 
-    fun getLogDirectory(useDownloadAsLogDir: Boolean): File? {
-        return if (useDownloadAsLogDir) {
+    fun getLogDirectory(usePublicLogDir: Boolean): File? {
+        return if (usePublicLogDir) {
             StatusBackendClient.getInstance()?.let { client ->
                 if (client.serverEnabled && client.rootDataDir != null) {
                     return File(client.rootDataDir!!, LOGS_DIRECTORY_NAME)

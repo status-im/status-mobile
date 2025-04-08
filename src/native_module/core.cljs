@@ -304,7 +304,7 @@
 (defn send-logs
   [dbJson js-logs callback]
   (log/debug "[native-module] send-logs")
-  (.sendLogs ^js (log-manager) dbJson js-logs config/use-download-as-log-dir? callback))
+  (.sendLogs ^js (log-manager) dbJson js-logs config/use-public-log-dir? callback))
 
 ;; workaround for android since react-native-share is not working for zip files
 (defn share-logs
@@ -520,7 +520,7 @@
 
 (defn log-file-directory
   []
-  (.logFileDirectory ^js (log-manager) config/use-download-as-log-dir?))
+  (.logFileDirectory ^js (log-manager) config/use-public-log-dir?))
 
 (defn get-random-mnemonic
   [callback]
