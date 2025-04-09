@@ -59,7 +59,7 @@
       :rootKeystoreDir     (native-module/keystore-dir)
       :logLevel            (when log-enabled? (config/log-level))
       :logEnabled          log-enabled?
-      :logFilePath         (native-module/log-file-directory)
+      :logFilePath         (native-module/log-file-directory config/use-public-log-dir?)
       :wakuV2Fleet         config/fleet
       :previewPrivacy      config/blank-preview?
       :testNetworksEnabled config/test-networks-enabled?})))

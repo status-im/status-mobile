@@ -26,6 +26,7 @@
    (native-module/send-logs
     db-json
     (string/join "\n" (common-log/get-logs-queue))
+    config/use-public-log-dir?
     #(re-frame/dispatch [callback-handler %]))))
 
 (rf/defn store-web3-client-version

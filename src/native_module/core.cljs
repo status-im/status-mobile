@@ -4,7 +4,6 @@
     [clojure.string :as string]
     [native-module.utils :as native-utils]
     [react-native.platform :as platform]
-    [status-im.config :as config]
     [taoensso.timbre :as log]
     [utils.transforms :as types]))
 
@@ -302,9 +301,9 @@
    (.signTypedDataV4 ^js (encryption) data account hashed-password callback)))
 
 (defn send-logs
-  [dbJson js-logs callback]
+  [dbJson js-logs use-public-log-dir? callback]
   (log/debug "[native-module] send-logs")
-  (.sendLogs ^js (log-manager) dbJson js-logs config/use-public-log-dir? callback))
+  (.sendLogs ^js (log-manager) dbJson js-logs use-public-log-dir? callback))
 
 ;; workaround for android since react-native-share is not working for zip files
 (defn share-logs
@@ -519,8 +518,8 @@
   (.keystoreDir ^js (utils)))
 
 (defn log-file-directory
-  []
-  (.logFileDirectory ^js (log-manager) config/use-public-log-dir?))
+  [use-public-log-dir?]
+  (.logFileDirectory ^js (log-manager) use-public-log-dir?))
 
 (defn get-random-mnemonic
   [callback]

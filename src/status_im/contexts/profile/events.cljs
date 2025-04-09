@@ -41,7 +41,7 @@
      :mediaServerEnableTLS (config/enabled? config/STATUS_BACKEND_SERVER_MEDIA_SERVER_ENABLE_TLS)
      :logEnabled           (not (string/blank? (config/log-level)))
      :logLevel             (config/log-level)
-     :logDir               (native-module/log-file-directory)
+     :logDir               (native-module/log-file-directory config/use-public-log-dir?)
      :apiLoggingEnabled    config/api-logging-enabled?}
     callback)))
 
