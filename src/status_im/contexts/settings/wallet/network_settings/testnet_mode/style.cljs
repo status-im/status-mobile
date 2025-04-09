@@ -9,5 +9,10 @@
   {:padding-bottom 4
    :padding-top    12})
 
+(def infobox
+  {:padding-top       4
+   :padding-bottom    12
+   :margin-horizontal 20})
+
 (def bottom-actions-container
   {:flex 1})

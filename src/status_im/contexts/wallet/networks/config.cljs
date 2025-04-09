@@ -33,6 +33,8 @@
     base-chain-id
     base-sepolia-chain-id})
 
+(def ^:const chain-id-for-new-network-banner base-chain-id)
+
 ;; NOTE: add client-side chain details below for `mainnet` and `testnet`
 ;; respectively.
 

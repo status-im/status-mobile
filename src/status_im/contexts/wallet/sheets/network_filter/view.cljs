@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [status-im.contexts.wallet.networks.config :as networks.config]
     [status-im.contexts.wallet.networks.core :as networks]
     [status-im.contexts.wallet.sheets.network-filter.network-field :as network-field]
     [status-im.contexts.wallet.sheets.network-filter.style :as style]
@@ -34,20 +35,29 @@
 
 (defn view
   []
-  (let [active-chain-ids (rf/sub [:wallet/active-chain-ids])]
+  (let [active-chain-ids (rf/sub [:wallet/active-chain-ids])
+        banner-network   (rf/sub [:wallet/network-by-id
+                                  networks.config/chain-id-for-new-network-banner])]
     [rn/view {:style {:padding-horizontal 20}}
      [rn/view {:style style/header-container}
       [quo/text
        {:size   :heading-2
         :weight :semi-bold}
-       (i18n/label :t/active-networks)]]
+       (i18n/label :t/show-network-balances)]]
      [quo/item-list
       {:data            active-chain-ids
        :render-fn       render-network
        :container-style {:margin-top 12}}]
+
+     [quo/information-box
+      {:type  :default
+       :icon  :i/info
+       :style {:margin-top 12}}
+      (i18n/label :t/new-network-info {:network (:full-name banner-network)})]
      [quo/button
       {:type            :outline
        :container-style {:margin-vertical 12}
-       :size            50
+       :size            40
+       :icon-left       :i/settings
        :on-press        #(rf/dispatch [:open-modal :screen/settings.network-settings])}
       [quo/text {:weight :medium} (i18n/label :t/manage-networks)]]]))
