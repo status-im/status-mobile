@@ -25,7 +25,7 @@
   (rf/reg-event-fx :biometric/authenticate
    (fn [_ [{:keys [on-success]}]] (on-success)))
   (rf/reg-event-fx :profile.login/biometric-success (fn [_]))
-  (rf/dispatch [:profile.login/login-with-biometric-if-available :key-uid-1])
+  (rf/dispatch [:profile.login/select-profile-and-login-with-biometric-if-available :key-uid-1])
   (rf-test/wait-for [:profile.login/biometric-success]
     (on-done)))
 

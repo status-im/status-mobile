@@ -140,9 +140,9 @@
                                :color           customization-color
                                :profile-picture profile-picture})
       :on-card-press        (fn []
-                              (rf/dispatch-sync [:profile/profile-selected key-uid])
                               (rf/dispatch
-                               [:profile.login/login-with-biometric-if-available key-uid])
+                               [:profile.login/select-profile-and-login-with-biometric-if-available
+                                key-uid])
                               (set-hide-profiles))}]))
 
 (defn- profiles-section

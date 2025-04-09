@@ -79,23 +79,21 @@
       [{accounts                               :accounts
         {:keys [userConfirmed enabled userID]} :centralizedMetricsInfo}
        {:keys [logout-phase?]}]]
-   (let [profiles                (reduce-profiles accounts)
-         profiles-key-uids       (keys profiles)
-         recently-opened-profile (when-not logout-phase?
-                                   (:key-uid (first (sort-by :timestamp > (vals profiles)))))
-         new-db                  (cond-> db
-                                   :always
-                                   (assoc :centralized-metrics/user-confirmed? userConfirmed
-                                          :centralized-metrics/enabled?        enabled
-                                          :centralized-metrics/user-id         userID)
+   (let [profiles          (reduce-profiles accounts)
+         profiles-key-uids (keys profiles)
+         new-db            (cond-> db
+                             :always
+                             (assoc :centralized-metrics/user-confirmed? userConfirmed
+                                    :centralized-metrics/enabled?        enabled
+                                    :centralized-metrics/user-id         userID)
 
-                                   (seq profiles)
-                                   (assoc :profile/profiles-overview profiles))]
+                             (seq profiles)
+                             (assoc :profile/profiles-overview profiles))]
      {:db new-db
       :fx [(when-not logout-phase?
-             [:dispatch [:profile/profile-selected recently-opened-profile]])
-           (when-not logout-phase?
-             [:dispatch [:profile.login/login-with-biometric-if-available recently-opened-profile]])
+             [:dispatch
+              [:profile.login/select-profile-and-login-with-biometric-if-available
+               (-> profiles profile.data-store/recently-opened-profile :key-uid)]])
            [:dispatch [:profile/get-profiles-auth-method profiles-key-uids]]
            (if (profile.data-store/accepted-terms? accounts)
              [:dispatch

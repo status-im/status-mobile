@@ -178,9 +178,10 @@
            [:dispatch [:profile.login/login-existing-profile settings account]]]})))
 
 (rf/reg-event-fx
- :profile.login/login-with-biometric-if-available
+ :profile.login/select-profile-and-login-with-biometric-if-available
  (fn [_ [key-uid]]
-   {:fx [[:effects.biometric/check-if-available
+   {:fx [[:dispatch [:profile/profile-selected key-uid]]
+         [:effects.biometric/check-if-available
           {:key-uid    key-uid
            :on-success (fn [auth-method]
                          (rf/dispatch
