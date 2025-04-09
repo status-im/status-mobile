@@ -142,3 +142,6 @@
 ;; download via Appium doesn't seem like a solid long-term
 ;; approach for QA team
 (def use-public-log-dir? (enabled? (get-config :USE_PUBLIC_LOG_DIR "0")))
+
+;; A flag for enabling hidden view-id-tracker view, required for e2e testing
+(def enable-view-id-tracker? (enabled? (get-config :VIEW_ID_TRACKER "0")))

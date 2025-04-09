@@ -2,6 +2,7 @@
   (:require
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
+    [status-im.config :as config]
     [status-im.contexts.shell.bottom-tabs.view :as bottom-tabs]
     [status-im.contexts.shell.home-stack.view :as home-stack]
     [status-im.contexts.shell.shared-values :as shared-values]
@@ -15,6 +16,16 @@
     (rf/dispatch [:navigate-back])
     true))
 
+;; A hidden view-id-tracker view, required for e2e testing
+(defn- view-id-tracker
+  []
+  (let [view-id (rf/sub [:view-id])]
+    [rn/view
+     {:accessible          true
+      :accessibility-label :view-id-tracker
+      :style               {:position :absolute :z-index -1}}
+     [rn/text {:color :transparent} view-id]]))
+
 (defn shell-stack
   []
   (let [shared-values (shared-values/calculate-and-set-shared-values)]
@@ -23,5 +34,7 @@
        (rn/hw-back-add-listener navigate-back-handler)
        #(rn/hw-back-remove-listener navigate-back-handler)))
     [rn/view {:style {:background-color colors/neutral-100 :flex 1}}
+     (when config/enable-view-id-tracker?
+       [view-id-tracker])
      [home-stack/view shared-values]
      [bottom-tabs/view shared-values]]))
