@@ -1,5 +1,6 @@
 (ns status-im.contexts.profile.logout.events
-  (:require [status-im.contexts.profile.logout.effects]
+  (:require [status-im.config :as config]
+            [status-im.contexts.profile.logout.effects]
             [status-im.db :as db]
             [utils.re-frame :as rf]))
 
@@ -27,7 +28,8 @@
          :initials-avatar-font-file           initials-avatar-font-file
          :keycard                             (dissoc keycard :secrets :pin :application-info)
          :biometrics                          biometrics
-         :syncing                             nil))
+         :syncing                             nil
+         :log-level/pre-login-log-level       (config/log-level)))
 
 (rf/reg-event-fx
  :profile.logout/reset-state
