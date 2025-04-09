@@ -84,6 +84,11 @@
               (datetime/timestamp->long-date
                (datetime/now))]))))
 
+(rf/defn dialog-closed
+  {:events [:logging/dialog-left]}
+  [{:keys [db]}]
+  {:db (dissoc db :logging/dialog-shown?)})
+
 (rf/defn send-email
   [_ opts callback]
   {:email/send [opts callback]})
@@ -164,8 +169,14 @@
 
 (rf/defn show-logs-dialog
   {:events [:shake-event]}
-  [_]
-  {:dispatch [:show-bottom-sheet {:content view/logs-management-drawer}]})
+  [{:keys [db]}]
+  (when-not (:logging/dialog-shown? db)
+    {:db (assoc db :logging/dialog-shown? true)
+     :fx [[:dispatch [:show-bottom-sheet {:content view/logs-management-drawer}]]
+          [:dispatch-later
+           {:ms       2000 ;; process :shake-event after 2 seconds, use :logging/dialog-shown? to
+                           ;; avoid handling :shake-event multiple times in a short time
+            :dispatch [:logging/dialog-left]}]]}))
 
 (re-frame/reg-fx
  :email/send
