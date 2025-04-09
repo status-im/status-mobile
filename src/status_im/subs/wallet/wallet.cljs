@@ -982,34 +982,34 @@
  :<- [:wallet/tx-settings-max-base-fee-route]
  :<- [:wallet/tx-settings-max-base-fee-user]
  (fn [[value-from-routes value-set-by-user]]
-   (or value-set-by-user value-from-routes)))
+   (or value-from-routes value-set-by-user)))
 
 (rf/reg-sub
  :wallet/tx-settings-priority-fee
  :<- [:wallet/tx-settings-gas-fees]
  :<- [:wallet/tx-settings-priority-fee-user]
  (fn [[gas-fees value-set-by-user]]
-   (or value-set-by-user (:tx-priority-fee gas-fees))))
+   (or (:tx-priority-fee gas-fees) value-set-by-user)))
 
 (rf/reg-sub
  :wallet/tx-settings-gas-amount
  :<- [:wallet/tx-settings-gas-amount-route]
  :<- [:wallet/tx-settings-gas-amount-user]
  (fn [[value-from-routes value-set-by-user]]
-   (or value-set-by-user value-from-routes)))
+   (or value-from-routes value-set-by-user)))
 
 (rf/reg-sub
  :wallet/tx-settings-nonce
- :<- [:wallet/send-route]
+ :<- [:wallet/route]
  :<- [:wallet/tx-settings-nonce-user]
  (fn [[route value-set-by-user]]
-   (or value-set-by-user (:nonce (first route)))))
+   (or (:nonce route) value-set-by-user)))
 
 (rf/reg-sub
  :wallet/tx-settings-suggested-nonce
- :<- [:wallet/send-route]
+ :<- [:wallet/route]
  (fn [route]
-   (:suggested-tx-nonce (first route))))
+   (:suggested-tx-nonce route)))
 
 (rf/reg-sub
  :wallet/tx-settings-suggested-max-priority-fee
