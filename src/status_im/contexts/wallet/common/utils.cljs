@@ -500,15 +500,15 @@
         sent-transaction?    (and sent-transaction (> (-> sent-transaction :hash count) 0))]
     (if sent-transaction?
       (cond-> send-details
-        true                    (assoc :tx-to toAddress)
+        :always                 (assoc :tx-to        toAddress
+                                       :tx-hash      hash
+                                       :approval-tx? approvalTx)
         (> fromChain 0)         (assoc :from-chain fromChain)
         (> toChain 0)           (assoc :to-chain toChain)
         (not= amount-in "0")    (assoc :from-amount amount-in)
         (not= amount-out "0")   (assoc :to-amount amount-out)
         (> (count fromToken) 0) (assoc :from-asset fromToken)
-        (> (count toToken) 0)   (assoc :to-asset toToken)
-        true                    (assoc :tx-hash hash)
-        true                    (assoc :approval-tx? approvalTx))
+        (> (count toToken) 0)   (assoc :to-asset toToken))
       send-details)))
 
 (defn contact-name-by-address
@@ -520,8 +520,8 @@
   "Returns the transaction name that will be used for certain types of transactions."
   [send-type]
   (cond
-    (= send-type constants/send-type-bridge) "Hop"
-    (= send-type constants/send-type-swap)   "ParaSwap"
+    (= send-type constants/send-type-bridge) constants/bridge-name-hop
+    (= send-type constants/send-type-swap)   (:full-name constants/swap-provider-paraswap)
     :else                                    nil))
 
 (defn transaction-approval-required?

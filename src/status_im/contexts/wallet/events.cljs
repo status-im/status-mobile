@@ -846,7 +846,6 @@
                {:status       status
                 :send-details details}]]]}))))
 
-
 (rf/reg-event-fx
  :wallet/set-max-base-fee
  (fn [{db :db} [value]]
@@ -937,4 +936,3 @@
 (rf/reg-event-fx :wallet/mark-user-tx-settings-for-deletion
  (fn [{db :db}]
    {:db (assoc-in db [:wallet :ui :user-tx-settings :delete-on-routes-update?] true)}))
-

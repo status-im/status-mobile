@@ -612,48 +612,48 @@
                                               :receive-token-symbol (:to-asset send-details)})}]}]]}))))
 
 (rf/reg-event-fx :wallet/get-swap-proposal-fee
-  (fn [{:keys [db]} [{:keys [amount-in amount-out]}]]
-    (let [request-uuid (str (random-uuid))
-          params       (get-swap-proposal-params
-                         {:db           db
-                          :amount-in    amount-in
-                          :amount-out   amount-out
-                          :request-uuid request-uuid})]
-      {:db            (update-in db db-path/swap assoc :loading-swap-proposal-fee? true)
-       :json-rpc/call [{:method     "wallet_getSuggestedRoutes"
-                        :params     params
-                        :on-success (fn [data]
-                                      (let [swap-proposal (data-store/fix-routes data)]
-                                        (rf/dispatch [:wallet/swap-proposal-fee-success
-                                                      swap-proposal])))
-                        :on-error   (fn [error]
-                                      (rf/dispatch [:wallet/swap-proposal-fee-error])
-                                      (log/error "failed to get suggested routes"
-                                                 {:event  :wallet/get-swap-proposal-fee
-                                                  :error  (:message error)
-                                                  :params params}))}]})))
+ (fn [{:keys [db]} [{:keys [amount-in amount-out]}]]
+   (let [request-uuid (str (random-uuid))
+         params       (get-swap-proposal-params
+                       {:db           db
+                        :amount-in    amount-in
+                        :amount-out   amount-out
+                        :request-uuid request-uuid})]
+     {:db            (update-in db db-path/swap assoc :loading-swap-proposal-fee? true)
+      :json-rpc/call [{:method     "wallet_getSuggestedRoutes"
+                       :params     params
+                       :on-success (fn [data]
+                                     (let [swap-proposal (data-store/fix-routes data)]
+                                       (rf/dispatch [:wallet/swap-proposal-fee-success
+                                                     swap-proposal])))
+                       :on-error   (fn [error]
+                                     (rf/dispatch [:wallet/swap-proposal-fee-error])
+                                     (log/error "failed to get suggested routes"
+                                                {:event  :wallet/get-swap-proposal-fee
+                                                 :error  (:message error)
+                                                 :params params}))}]})))
 
 (rf/reg-event-fx
-  :wallet/swap-proposal-fee-success
-  (fn [{:keys [db]} [swap-proposal]]
-    (let [best-routes         (:best swap-proposal)
-          selected-route      (first best-routes)
-          relevant-fee-fields [:gas-amount :gas-fees :token-fees :approval-required
-                               :approval-fee :approval-l-1-fee :bonder-fees]
-          fee-data            (select-keys selected-route relevant-fee-fields)]
-      {:db (update-in db
-                      db-path/swap
-                      assoc
-                      :loading-swap-proposal-fee? false
-                      :swap-proposal
-                      (when-not (empty? best-routes)
-                        fee-data))})))
+ :wallet/swap-proposal-fee-success
+ (fn [{:keys [db]} [swap-proposal]]
+   (let [best-routes         (:best swap-proposal)
+         selected-route      (first best-routes)
+         relevant-fee-fields [:gas-amount :gas-fees :token-fees :approval-required
+                              :approval-fee :approval-l-1-fee :bonder-fees]
+         fee-data            (select-keys selected-route relevant-fee-fields)]
+     {:db (update-in db
+                     db-path/swap
+                     assoc
+                     :loading-swap-proposal-fee? false
+                     :swap-proposal
+                     (when-not (empty? best-routes)
+                       fee-data))})))
 
 (rf/reg-event-fx
-  :wallet/swap-proposal-fee-error
-  (fn [{:keys [db]}]
-    {:db (update-in db
-                    db-path/swap
-                    assoc
-                    :loading-swap-proposal-fee?
-                    false)}))
+ :wallet/swap-proposal-fee-error
+ (fn [{:keys [db]}]
+   {:db (update-in db
+                   db-path/swap
+                   assoc
+                   :loading-swap-proposal-fee?
+                   false)}))
