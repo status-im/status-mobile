@@ -457,8 +457,7 @@
   details we've received from `status-go`. The new one contains only
   the keys we need."
   [send-details]
-  (let [{:keys [uuid
-                sendType
+  (let [{:keys [sendType
                 fromAddress
                 toAddress
                 fromChain
@@ -470,7 +469,7 @@
                 username
                 publicKey
                 packId]} send-details]
-    {:uuid         uuid
+    {:uuid         (:uuid send-details)
      :send-type    sendType
      :address-from fromAddress
      :address-to   toAddress
@@ -493,7 +492,7 @@
   [send-details sent-transaction]
   (let [send-details         (send-details-map send-details)
         {:keys [toAddress fromChain toChain amountIn
-                amountOut fromToken toToken hash
+                amountOut fromToken toToken
                 approvalTx]} sent-transaction
         amount-in            (money/from-hex amountIn)
         amount-out           (money/from-hex amountOut)
@@ -501,7 +500,7 @@
     (if sent-transaction?
       (cond-> send-details
         :always                 (assoc :tx-to        toAddress
-                                       :tx-hash      hash
+                                       :tx-hash      (:hash sent-transaction)
                                        :approval-tx? approvalTx)
         (> fromChain 0)         (assoc :from-chain fromChain)
         (> toChain 0)           (assoc :to-chain toChain)
