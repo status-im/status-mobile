@@ -94,6 +94,10 @@ class ActivityElement(BaseElement):
         return Text(self.driver, prefix=self.locator, xpath="//*[@content-desc='transaction-timestamp']").text
 
     @property
+    def options(self):
+        return Button(self.driver, prefix=self.locator, xpath="//*[@content-desc='transaction-timestamp']/following::*[@content-desc='icon'][1]")
+
+    @property
     def amount(self):
         return Text(self.driver, prefix=self.locator,
                     xpath="//*[@content-desc='context-tag'][1]/android.widget.TextView").text
@@ -444,7 +448,8 @@ class WalletView(BaseView):
                                            send_to_account='',
                                            swap_asset_to = 'SNT',
                                            swap_amount_to = '0.000000000000000000',
-                                           network='Status Network'):
+                                           network='Status Network',
+                                           get_back_to_main_wallet_view = True):
         errors = list()
         current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
         expected_time = "Today %s" % current_time.strftime('%-I:%M %p')
@@ -493,7 +498,8 @@ class WalletView(BaseView):
         except NoSuchElementException:
             errors.append("Can't find the last transaction")
         finally:
-            self.close_account_button.click_until_presence_of_element(self.show_qr_code_button)
+            if get_back_to_main_wallet_view:
+                self.close_account_button.click_until_presence_of_element(self.show_qr_code_button)
         return errors
 
     def get_balance(self, asset='Ether', fiat=False):
