@@ -17,7 +17,7 @@
    {:text     (i18n/label :t/chat-with-friends)
     :sub-text (i18n/label :t/with-full-encryption)}
    {:text     (i18n/label :t/store-your-asets-on-keycard)
-    :sub-text (i18n/label :t/be-safe-with-secure-cold-wallet)}])
+    :sub-text (i18n/label :t/a-card-shaped-hardware-wallet)}])
 
 (defn background-image
   [window-width]
