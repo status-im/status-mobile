@@ -22,14 +22,11 @@
       :accessible          true
       :accessibility-label accessibility-label
       :style               (style/container
-                            {:label               label
-                             :type                type
+                            {:type                type
                              :blur?               blur?
                              :customization-color customization-color
                              :theme               theme
-                             :container-style     container-style
-                             :value               value
-                             :max-value           max-value})}
+                             :container-style     container-style})}
      [text/text
       {:weight :medium
        :size   :label
