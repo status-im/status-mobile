@@ -4,6 +4,8 @@
             [native-module.core :as native-module]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.networks.db :as networks.db]
+            [status-im.contexts.wallet.wallet-connect.modals.change-network.view :as
+             change-network-modal]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks.utils]
@@ -85,35 +87,89 @@
  (fn [{:keys [db]} [prepared-tx chain-id]]
    (let [{:keys [tx-args tx-hash]} prepared-tx
          tx                        (bean/->clj tx-args)
-         address                   (-> tx :from string/lower-case)
          display-data              (transactions/beautify-transaction tx)]
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
-                     :address      address
                      :raw-data     prepared-tx
                      :transaction  tx
                      :chain-id     chain-id
                      :display-data display-data)
       :fx [[:dispatch [:wallet-connect/store-prepared-hash tx-hash]]]})))
 
-(rf/reg-event-fx
- :wallet-connect/process-eth-send-transaction
- (fn [{:keys [db]} [{:keys [on-success]}]]
+(rf/reg-event-fx :wallet-connect/adapt-network
+ (fn [{:keys [db]} [{:keys [activate-chain-id deactivate-chain-id]}]]
+   (let [activate-network-name   (-> db
+                                     (networks.db/get-network-details
+                                      activate-chain-id)
+                                     :full-name)
+         deactivate-network-name (-> db
+                                     (networks.db/get-network-details
+                                      deactivate-chain-id)
+                                     :full-name)]
+     {:fx [(if deactivate-chain-id
+             [:dispatch
+              [:wallet/deactivate-and-activate-another-network
+               {:activate-chain-id   activate-chain-id
+                :deactivate-chain-id deactivate-chain-id
+                :on-success          #(rf/dispatch [:toasts/upsert
+                                                    {:type :positive
+                                                     :text (i18n/label
+                                                            :t/network-activated-and-deactivated
+                                                            {:network-activated activate-network-name
+                                                             :network-deactivated
+                                                             deactivate-network-name})}])}]]
+             [:dispatch
+              [:wallet/toggle-network-active activate-chain-id
+               #(rf/dispatch [:toasts/upsert
+                              {:type :positive
+                               :text (i18n/label :t/network-activated
+                                                 {:network activate-network-name})}])]])]})))
+
+(rf/reg-event-fx :wallet-connect/prepare-transaction
+ (fn [{:keys [db]} [on-success]]
    (let [event    (data-store/get-db-current-request-event db)
          tx       (-> event data-store/get-request-params first)
          chain-id (-> event
                       (get-in [:params :chainId])
                       networks.utils/eip155->chain-id)]
+     {:fx [[:effects.wallet-connect/prepare-transaction
+            {:tx         tx
+             :chain-id   chain-id
+             :on-success (fn [data]
+                           (rf/dispatch [:wallet-connect/prepare-transaction-success data
+                                         chain-id])
+                           (when on-success
+                             (rf/call-continuation on-success)))
+             :on-error   #(rf/dispatch [:wallet-connect/on-processing-error %])}]]})))
+
+(rf/reg-event-fx
+ :wallet-connect/process-eth-send-transaction
+ (fn [{:keys [db]} [{:keys [on-success]}]]
+   (let [event               (data-store/get-db-current-request-event db)
+         tx                  (-> event data-store/get-request-params first)
+         address             (-> tx :from string/lower-case)
+         chain-id            (-> event
+                                 (get-in [:params :chainId])
+                                 networks.utils/eip155->chain-id)
+         active-chain-ids    (networks.db/get-active-chain-ids db)
+         chain-active?       (contains? active-chain-ids chain-id)
+         deactivate-chain-id (last active-chain-ids)
+         max-active-reached? (networks.db/max-active-networks-reached? db)
+         prepare-tx-effect   [:wallet-connect/prepare-transaction on-success]]
      (when tx
-       {:fx [[:effects.wallet-connect/prepare-transaction
-              {:tx         tx
-               :chain-id   chain-id
-               :on-success (fn [data]
-                             (rf/dispatch [:wallet-connect/prepare-transaction-success data chain-id])
-                             (when on-success
-                               (rf/call-continuation on-success)))
-               :on-error   #(rf/dispatch [:wallet-connect/on-processing-error %])}]]}))))
+       {:db (assoc-in db [:wallet-connect/current-request :address] address)
+        :fx [(if chain-active?
+               [:dispatch prepare-tx-effect]
+               [:dispatch
+                [:show-bottom-sheet
+                 {:content (fn []
+                             [change-network-modal/view
+                              {:activate-chain-id   chain-id
+                               :deactivate-chain-id (when max-active-reached?
+                                                      deactivate-chain-id)
+                               :on-success          #(rf/dispatch
+                                                      prepare-tx-effect)}])}]])]}))))
 
 (rf/reg-event-fx
  :wallet-connect/process-sign-typed

@@ -3,9 +3,9 @@
     [clojure.string :as string]
     [quo.context]
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [status-im.common.floating-button-page.view :as floating-button-page]
+    [status-im.contexts.wallet.wallet-connect.modals.common.list-info-box.view :as list-info-box]
     [status-im.contexts.wallet.wallet-connect.modals.session-proposal.style :as style]
     [status-im.contexts.wallet.wallet-connect.utils.data-store :as data-store]
     [utils.i18n :as i18n]
@@ -35,28 +35,10 @@
 
 (defn- approval-note
   []
-  (let [dapp-name (rf/sub [:wallet-connect/session-proposer-name])
-        labels    [(i18n/label :t/check-your-account-balance-and-activity)
-                   (i18n/label :t/request-txns-and-message-signing)]
-        theme     (quo.context/use-theme)]
-    [rn/view {:style (style/approval-note-container theme)}
-     [quo/text
-      {:style  style/approval-note-title
-       :weight :regular
-       :size   :paragraph-2}
-      (i18n/label :t/dapp-will-be-able-to {:dapp-name dapp-name})]
-     (map-indexed
-      (fn [idx label]
-        ^{:key (str idx label)}
-        [rn/view {:style style/approval-note-li}
-         [quo/icon :i/bullet
-          {:color colors/neutral-40}]
-         [quo/text
-          {:weight :regular
-           :size   :paragraph-2
-           :color  colors/neutral-40}
-          label]])
-      labels)]))
+  (let [dapp-name (rf/sub [:wallet-connect/session-proposer-name])]
+    [list-info-box/view
+     {:dapp-name       dapp-name
+      :container-style {:margin-horizontal 20}}]))
 
 (defn- format-network-name
   [network]

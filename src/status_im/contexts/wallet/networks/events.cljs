@@ -34,7 +34,7 @@
          [:dispatch [:wallet/check-new-networks-seen]]]}))
 
 (rf/reg-event-fx :wallet/toggle-network-active
- (fn [{:keys [db]} [chain-id]]
+ (fn [{:keys [db]} [chain-id on-success]]
    (let [{:keys [active? deactivatable?]} (networks.db/get-network-details db chain-id)
          max-active-reached?              (networks.db/max-active-networks-reached? db)
          should-activate?                 (not active?)]
@@ -50,12 +50,24 @@
                [:effects.wallet/set-network-active
                 {:chain-id   chain-id
                  :active?    should-activate?
-                 :on-success #(when-not active?
-                                (debounce/debounce-and-dispatch
-                                 [:wallet/on-active-networks-change]
-                                 500))
+                 :on-success #(do (when-not active?
+                                    (debounce/debounce-and-dispatch
+                                     [:wallet/on-active-networks-change]
+                                     500))
+                                  (when on-success (on-success)))
                  :on-error   #(rf/dispatch
                                [:wallet/update-network-active chain-id active?])}]]})))))
+
+(rf/reg-event-fx :wallet/deactivate-and-activate-another-network
+ (fn [_ [{:keys [activate-chain-id deactivate-chain-id on-success]}]]
+   {:fx [[:effects.wallet/deactivate-and-activate-another-network
+          {:activate-chain-id   activate-chain-id
+           :deactivate-chain-id deactivate-chain-id
+           :on-success          (fn []
+                                  (rf/dispatch [:wallet/update-network-active deactivate-chain-id false])
+                                  (rf/dispatch [:wallet/update-network-active activate-chain-id true])
+                                  (rf/dispatch [:wallet/on-active-networks-change])
+                                  (when on-success (on-success)))}]]}))
 
 (rf/reg-event-fx :wallet/on-active-networks-change
  (fn [_]

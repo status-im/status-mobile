@@ -1,32 +1,22 @@
 (ns status-im.contexts.wallet.wallet-connect.modals.common.header.view
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [react-native.core :as rn]
-            [status-im.contexts.wallet.wallet-connect.modals.common.header.style :as style]
-            [status-im.contexts.wallet.wallet-connect.utils.data-store :as
-             data-store]))
+  (:require
+    [status-im.contexts.wallet.wallet-connect.modals.common.header.components :as header]
+    [status-im.contexts.wallet.wallet-connect.utils.data-store :as
+     data-store]))
 
 (defn view
   [{:keys [label dapp account]}]
-  [rn/view {:style style/header-container}
+  [header/title-container
    (let [{:keys [name iconUrl url]} dapp
          image-source               (data-store/compute-dapp-icon-path iconUrl url)]
-     [rn/view {:style style/dapp-container}
-      [quo/summary-tag
-       {:type         :dapp
-        :label        name
-        :image-source image-source}]])
-   (for [word (string/split label #" ")]
-     ^{:key word}
-     [rn/view {:style style/word-container}
-      [quo/text
-       {:size   :heading-1
-        :weight :semi-bold}
-       (str " " word)]])
+     [header/title-summary
+      {:type         :dapp
+       :label        name
+       :image-source image-source}])
+   [header/title-text {:text label}]
    (let [{:keys [emoji customization-color name]} account]
-     [rn/view {:style style/account-container}
-      [quo/summary-tag
-       {:type                :account
-        :emoji               emoji
-        :label               name
-        :customization-color customization-color}]])])
+     [header/title-summary
+      {:type                :account
+       :emoji               emoji
+       :label               name
+       :customization-color customization-color}])])

@@ -60,7 +60,7 @@
    :padding-top        (if include-button? 10 11)
    :padding-bottom     (if include-button? 12 11)
    :flex-direction     :row
-   :padding-horizontal 16})
+   :padding-horizontal 12})
 
 (def icon
   {:margin-top 1 :margin-right 8})

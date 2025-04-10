@@ -21,6 +21,14 @@
        (promesa/then on-success)
        (promesa/catch on-error))))
 
+(rf/reg-fx :effects.wallet/deactivate-and-activate-another-network
+ (fn [{:keys [deactivate-chain-id activate-chain-id on-success on-error]}]
+   (-> (promesa/do
+         (rpc/call-async "wallet_setChainActive" true deactivate-chain-id false)
+         (rpc/call-async "wallet_setChainActive" true activate-chain-id true))
+       (promesa/then on-success)
+       (promesa/catch on-error))))
+
 (rf/reg-fx
  :effects.wallet/new-networks-seen?
  (fn [{:keys [chain-ids on-success on-error]}]
