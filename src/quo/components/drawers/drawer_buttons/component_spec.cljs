@@ -32,7 +32,7 @@
 
   (h/test "it clicks the top card"
     (let [event (h/mock-fn)]
-      (with-redefs [safe-area/get-top (fn [] 10)]
+      (with-redefs [safe-area/top 10]
         (h/render [drawer-buttons/view
                    {:top-card    {:on-press event
                                   :heading  :top-heading}
