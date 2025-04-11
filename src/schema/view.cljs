@@ -11,7 +11,7 @@
   (when (seq @schema.state/errors)
     [rn/pressable
      {:on-press schema.state/clear-errors
-      :style    (style/container {:bottom-inset (safe-area/get-bottom)})}
+      :style    (style/container {:bottom-inset safe-area/bottom})}
      [quo/icon :i/close {:size 12 :color "#ddd" :container-style style/icon}]
      [rn/text {:style style/text}
       "Schema error(s)"

@@ -7,8 +7,8 @@
 
 (defn view
   [{:keys [type container-style top-inset? bottom-inset? insets?]} & children]
-  (let [top-style    (when (or insets? top-inset?) {:padding-top (safe-area/get-top)})
-        bottom-style (when (or insets? bottom-inset?) {:padding-bottom (safe-area/get-bottom)})]
+  (let [top-style    (when (or insets? top-inset?) {:padding-top safe-area/top})
+        bottom-style (when (or insets? bottom-inset?) {:padding-bottom safe-area/bottom})]
     [rn/view {:style (style/overlay-background type)}
      (if (= type :shell)
        [blur/view
