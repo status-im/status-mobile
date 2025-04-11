@@ -223,7 +223,6 @@
      :bonder-fees               (to-bignumber :tx-bonder-fees)
      :token-fees                (to-bignumber :tx-token-fees)
      :from                      (:from-chain new-path)
-     :amount-in-locked          (:amount-in-locked new-path)
      :amount-in                 (:amount-in new-path)
      :bridge-name               (:processor-name new-path)
      :amount-out                (:amount-out new-path)

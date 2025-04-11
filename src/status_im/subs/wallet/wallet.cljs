@@ -831,7 +831,6 @@
  :<- [:wallet/suggested-gas-fees-for-setting]
  (fn [[account route currency currency-symbol prices-per-token fees-for-settings]
       [_ transaction-setting]]
-   (println "route" route)
    (let [token-symbol-for-fees (get-in route [:from :native-currency-symbol])]
      (when token-symbol-for-fees
        (let [tokens              (:tokens account)
@@ -982,28 +981,28 @@
  :<- [:wallet/tx-settings-max-base-fee-route]
  :<- [:wallet/tx-settings-max-base-fee-user]
  (fn [[value-from-routes value-set-by-user]]
-   (or value-from-routes value-set-by-user)))
+   (or value-set-by-user value-from-routes)))
 
 (rf/reg-sub
  :wallet/tx-settings-priority-fee
  :<- [:wallet/tx-settings-gas-fees]
  :<- [:wallet/tx-settings-priority-fee-user]
  (fn [[gas-fees value-set-by-user]]
-   (or (:tx-priority-fee gas-fees) value-set-by-user)))
+   (or value-set-by-user (:tx-priority-fee gas-fees))))
 
 (rf/reg-sub
  :wallet/tx-settings-gas-amount
  :<- [:wallet/tx-settings-gas-amount-route]
  :<- [:wallet/tx-settings-gas-amount-user]
  (fn [[value-from-routes value-set-by-user]]
-   (or value-from-routes value-set-by-user)))
+   (or value-set-by-user value-from-routes)))
 
 (rf/reg-sub
  :wallet/tx-settings-nonce
  :<- [:wallet/route]
  :<- [:wallet/tx-settings-nonce-user]
  (fn [[route value-set-by-user]]
-   (or (:nonce route) value-set-by-user)))
+   (or value-set-by-user (:nonce route))))
 
 (rf/reg-sub
  :wallet/tx-settings-suggested-nonce
