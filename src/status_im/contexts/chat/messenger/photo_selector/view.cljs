@@ -40,7 +40,7 @@
      {:colors [:black :transparent]
       :start  {:x 0 :y 1}
       :end    {:x 0 :y 0}
-      :style  (style/gradient-container (safe-area/get-bottom))}
+      :style  (style/gradient-container safe-area/bottom)}
      [quo/button
       {:customization-color customization-color
        :container-style     {:align-self        :stretch
@@ -132,7 +132,7 @@
              :data                    camera-roll-photos
              :num-columns             3
              :content-container-style {:width          "100%"
-                                       :padding-bottom (+ (safe-area/get-bottom) 100)
+                                       :padding-bottom (+ safe-area/bottom 100)
                                        :padding-top    64}
              :on-scroll               on-scroll
              :scroll-enabled          @scroll-enabled?

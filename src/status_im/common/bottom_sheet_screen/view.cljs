@@ -51,7 +51,7 @@
         on-scroll-update    #(on-scroll % curr-scroll)]
     (fn [{:keys [content skip-background?]}]
       (let [theme                    (quo.context/use-theme)
-            {:keys [top] :as insets} (safe-area/get-insets)
+            {:keys [top] :as insets} safe-area/insets
             alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
             padding-top              (+ alert-banners-top-margin
                                         (if platform/ios? top (+ top 10)))

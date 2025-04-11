@@ -49,7 +49,7 @@
            on-options-press]}]
   (let [{:keys [data transparent? scroll-index
                 set-full-height?]} state
-        insets                     (safe-area/get-insets)
+        insets                     safe-area/insets
         window                     (rn/get-window)
         window-width               (:width window)
         alert-banners-top-margin   (rf/sub [:alert-banners/top-margin])

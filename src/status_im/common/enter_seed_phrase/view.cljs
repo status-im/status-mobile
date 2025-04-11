@@ -219,7 +219,7 @@
 
 (defn screen
   [{:keys [title keypair navigation-icon on-success render-controls]}]
-  (let [[insets _]    (rn/use-state (safe-area/get-insets))
+  (let [[insets _]    (rn/use-state safe-area/insets)
         banner-offset (rf/sub [:alert-banners/top-margin])]
     [rn/view {:style style/full-layout}
      [rn/keyboard-avoiding-view {:style style/page-container}

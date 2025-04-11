@@ -90,7 +90,7 @@
   []
   (let [{:keys [chat-id chat-type]
          :as   chat}           (rf/sub [:chats/current-chat-chat-view])
-        top-insets             (safe-area/get-top)
+        top-insets             safe-area/top
         screen-id              (quo.context/use-screen-id)
         navigation-view-height (+ top-insets messages.constants/top-bar-height)]
     [rn/view {:style (style/navigation-view navigation-view-height)}

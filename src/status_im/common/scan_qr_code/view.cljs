@@ -196,7 +196,7 @@
 
 (defn view
   [{:keys [title subtitle validate-fn on-success-scan error-message share-button?]}]
-  (let [insets             (safe-area/get-insets)
+  (let [insets             safe-area/insets
         qr-code-succeed?   (reagent/atom false)
         qr-view-finder     (reagent/atom {})
         torch?             (reagent/atom false)

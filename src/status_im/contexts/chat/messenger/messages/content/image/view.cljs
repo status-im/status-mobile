@@ -28,8 +28,7 @@
            image-height fallback-image-height}}
    {:keys [on-long-press]}
    message-container-data]
-  (let [insets                        (safe-area/get-insets)
-        {:keys [window-width padding-left padding-right avatar-container-width
+  (let [{:keys [window-width padding-left padding-right avatar-container-width
                 message-margin-left]} message-container-data
         max-container-width           (- window-width
                                          padding-left
@@ -55,7 +54,7 @@
                                       {:images [(lightbox-utils/convert-message-to-lightbox-image
                                                  message)]
                                        :index 0
-                                       :insets insets
+                                       :insets safe-area/insets
                                        :bottom-text-component
                                        [lightbox/bottom-text-for-lightbox message]
                                        :on-options-press (fn [images index]
