@@ -13,7 +13,7 @@
   (let [{:keys [name images]}                   (rf/sub [:communities/community id])
         [content-height set-content-height]     (rn/use-state 0)
         [sheet-header-height set-header-height] (rn/use-state 0)
-        insets                                  (safe-area/get-insets)
+        insets                                  safe-area/insets
         {window-height :height}                 (rn/get-window)
         sheet-max-height                        (- window-height (:top insets))
         max-height                              (- sheet-max-height sheet-header-height)]
