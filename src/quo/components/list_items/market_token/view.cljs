@@ -44,8 +44,12 @@
        token-rank]
       [token/view {:token token :size :size-32}]
       [rn/view style/left-text-block
-       [rn/view style/token-name-container
-        [text/text {:weight :semi-bold} token-name]
+       [rn/text
+        ;; If we place 2 texts of different styles within parent _view_ component they won't be
+        ;; aligned to the same baseline. So they should be a children of the same _text_ component
+        ;; to share same basline and look nice. But that means we can't use precise margins anymore
+        ;; and have to rely on whitespaces to split 2 texts.
+        [text/text style/token-name (str token-name " ")]
         [text/text
          {:weight :medium
           :size   :paragraph-2

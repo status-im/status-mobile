@@ -38,9 +38,12 @@
   {:flex-direction :row
    :align-items    :center})
 
-(def token-name-container
-  {:flex-direction :row
-   :align-items    :center})
+(def token-name
+  {:weight :semi-bold})
+
+(defn token-short-name
+  [theme]
+  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
 
 (def arrow
   {:margin-left 4})
@@ -51,9 +54,4 @@
 (defn market-cap
   [theme]
   {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
-
-(defn token-short-name
-  [theme]
-  {:color       (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-   :margin-left 4})
 
