@@ -36,7 +36,8 @@ jest.mock('react-native-safe-area-context', () => ({
               top: 0,
               bottom: 0
             }
-      }
+      },
+  SafeAreaProvider:{}
 }));
 
 jest.mock('react-native-permissions', () => require('react-native-permissions/mock'));
@@ -115,7 +116,8 @@ jest.mock('react-native-safe-area-context', () => ({
               top: 0,
               bottom: 0
             }
-      }
+      },
+  SafeAreaProvider:{}
 }));
 
 NativeModules.ReactLocalization = {
