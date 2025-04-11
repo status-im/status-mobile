@@ -29,7 +29,7 @@
                                (fn []
                                  (set-state :active)
                                  (js/setTimeout #(set-state :default) 300)
-                                 on-press))]
+                                 (on-press)))]
     [rn/pressable
      {:style               (style/container customization-color bg-opacity theme)
       :on-press-in         on-press-in

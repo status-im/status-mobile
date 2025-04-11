@@ -49,6 +49,7 @@
     [status-im.contexts.keycard.pin.create.view :as keycard.pin.create]
     [status-im.contexts.keycard.pin.enter.view :as keycard.pin.enter]
     [status-im.contexts.keycard.unblock.view :as keycard.unblock]
+    [status-im.contexts.market.token.view :as market.token]
     [status-im.contexts.onboarding.create-password.view :as create-password]
     [status-im.contexts.onboarding.create-profile.view :as create-profile]
     [status-im.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
@@ -751,6 +752,14 @@
     :options   options/dark-screen
     :component wallet-scan-dapp/view}])
 
+(def market-screens
+  [{:name      :screen/market.token
+    :metrics   {:track?   true
+                :alias-id :wallet-market.select-token}
+    :options   {:modalPresentationStyle :overCurrentContext
+                :insets                 {:top? true}}
+    :component market.token/view}])
+
 (def onboarding-intro
   {:name      :screen/onboarding.intro
    :metrics   {:track? true}
@@ -1169,6 +1178,7 @@
    wallet-bridge-screens
    wallet-swap-screens
    wallet-connect-screens
+   market-screens
    onboarding-screens
    keycard-screens
 
