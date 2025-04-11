@@ -21,9 +21,7 @@
     | -> (reveal-action) -> show
     | -> (clear-action) -> empty -> (derive-action) -> choose -> (choose-action) -> show"
   [{:keys [on-reset]}]
-  (let [top              (safe-area/get-top)
-        bottom           (safe-area/get-bottom)
-        input-focused?   (reagent/atom false)
+  (let [input-focused?   (reagent/atom false)
         path-value       (reagent/atom "")
         input-ref        (reagent/atom nil)
         reset-path-value (fn [_]
@@ -66,7 +64,7 @@
                         (rn/hw-back-add-listener navigate-back-handler)
                         #(rn/hw-back-remove-listener navigate-back-handler)))
         [rn/view
-         {:style (style/screen top)}
+         {:style (style/screen safe-area/top)}
          [quo/page-nav
           {:background :blur
            :icon-name  :i/close
@@ -128,7 +126,7 @@
                          :has-activity :t/address-activity
                          :no-activity  :t/address-no-activity
                          :t/scanning-for-activity))]]
-         [rn/view {:style (style/save-button-container bottom)}
+         [rn/view {:style (style/save-button-container safe-area/bottom)}
           [quo/bottom-actions
            {:actions          :one-action
             :button-one-label (i18n/label :t/save)
@@ -139,7 +137,7 @@
            [quo/numbered-keyboard
             {:left-action     :dot
              :delete-key?     true
-             :container-style (style/keyboard bottom)
+             :container-style (style/keyboard safe-area/bottom)
              :on-press        (fn [value]
                                 (reset! path-value (str @path-value value))
                                 (on-change-text))

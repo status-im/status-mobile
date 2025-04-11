@@ -218,7 +218,7 @@
        :header                   [quo/page-nav
                                   {:icon-name           :i/arrow-left
                                    :on-press            on-close-action
-                                   :margin-top          (safe-area/get-top)
+                                   :margin-top          safe-area/top
                                    :background          :blur
                                    :accessibility-label :top-bar}]
        :footer                   [footer]

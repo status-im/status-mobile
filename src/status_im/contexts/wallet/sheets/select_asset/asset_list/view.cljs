@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
+    [react-native.safe-area :as safe-area]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
@@ -71,33 +72,34 @@
 (defn view
   [{:keys [search-text on-token-press preselected-token-symbol network hide-token-fn
            disable-token-fn]}]
-  (let [my-tokens       (rf/sub [:wallet/current-viewing-account-tokens-filtered
-                                 {:query         search-text
-                                  :chain-ids     #{(:chain-id network)}
-                                  :hide-token-fn hide-token-fn}])
-        popular-tokens  (rf/sub [:wallet/tokens-filtered
-                                 {:query         search-text
-                                  :chain-ids     #{(:chain-id network)}
-                                  :hide-token-fn hide-token-fn}])
-        currency        (rf/sub [:profile/currency])
-        currency-symbol (rf/sub [:profile/currency-symbol])
-        sectioned-data  (cond-> []
-                          (pos? (count my-tokens))
-                          (conj {:title (i18n/label :t/your-assets-on-network
-                                                    {:network (:full-name network)})
-                                 :data  (map #(assoc % :type constants/swap-tokens-my)
-                                             my-tokens)})
+  (let [{:keys [bottom]} safe-area/insets
+        my-tokens        (rf/sub [:wallet/current-viewing-account-tokens-filtered
+                                  {:query         search-text
+                                   :chain-ids     #{(:chain-id network)}
+                                   :hide-token-fn hide-token-fn}])
+        popular-tokens   (rf/sub [:wallet/tokens-filtered
+                                  {:query         search-text
+                                   :chain-ids     #{(:chain-id network)}
+                                   :hide-token-fn hide-token-fn}])
+        currency         (rf/sub [:profile/currency])
+        currency-symbol  (rf/sub [:profile/currency-symbol])
+        sectioned-data   (cond-> []
+                           (pos? (count my-tokens))
+                           (conj {:title (i18n/label :t/your-assets-on-network
+                                                     {:network (:full-name network)})
+                                  :data  (map #(assoc % :type constants/swap-tokens-my)
+                                              my-tokens)})
 
-                          (pos? (count popular-tokens))
-                          (conj {:title (i18n/label :t/popular-assets-on-network
-                                                    {:network (:full-name network)})
-                                 :data  (map #(assoc % :type constants/swap-tokens-popular)
-                                             popular-tokens)}))
-        render-data     {:currency                 currency
-                         :currency-symbol          currency-symbol
-                         :on-token-press           on-token-press
-                         :preselected-token-symbol preselected-token-symbol
-                         :disable-token-fn         disable-token-fn}]
+                           (pos? (count popular-tokens))
+                           (conj {:title (i18n/label :t/popular-assets-on-network
+                                                     {:network (:full-name network)})
+                                  :data  (map #(assoc % :type constants/swap-tokens-popular)
+                                              popular-tokens)}))
+        render-data      {:currency                 currency
+                          :currency-symbol          currency-symbol
+                          :on-token-press           on-token-press
+                          :preselected-token-symbol preselected-token-symbol
+                          :disable-token-fn         disable-token-fn}]
     [gesture/section-list
      {:data                           sectioned-data
       :sections                       sectioned-data
@@ -106,7 +108,7 @@
       :sticky-section-headers-enabled false
       :render-section-header-fn       section-header
       :style                          {:flex 1}
-      :content-container-style        {:padding-bottom 20}
+      :content-container-style        {:padding-bottom (+ bottom 20)}
       :keyboard-should-persist-taps   :handled
       :key-fn                         (fn [{:keys [type title] :as token}]
                                         (str (:symbol token) "-" type "-" title))

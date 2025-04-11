@@ -124,7 +124,7 @@
          set-crypto-currency]         (rn/use-state initial-crypto-currency?)
         [input-state set-input-state] (rn/use-state controlled-input/init-state)
         active-screen?                (= view-id current-screen-id)
-        bottom                        (safe-area/get-bottom)
+        bottom                        safe-area/bottom
         token-balance                 (or default-limit-crypto total-balance)
         usd-conversion-rate           (utils/token-usd-price token prices-per-token)
         conversion-rate               (utils/token-price-by-symbol prices-per-token
@@ -315,4 +315,3 @@
                                (debounce/clear-all)
                                (set-input-state controlled-input/delete-all)
                                (rf/dispatch-sync [:wallet/stop-and-clean-suggested-routes]))}]]))
-

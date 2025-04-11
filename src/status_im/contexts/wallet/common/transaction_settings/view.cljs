@@ -254,7 +254,7 @@
        :button-one-props {:disabled? (= (:status condition) :error)
                           :on-press  #(on-save (controlled-input/value-numeric input-state))}}]
      [quo/numbered-keyboard
-      {:container-style      {:padding-bottom (safe-area/get-bottom)}
+      {:container-style      {:padding-bottom safe-area/bottom}
        :left-action          (if with-decimals? :dot :none)
        :delete-key?          true
        :on-press             (fn [c]

@@ -28,7 +28,7 @@
 (views/defview wakuv2-settings
   []
   (views/letsubs [nodes [:wakuv2-nodes/list]]
-    [react/view {:flex 1 :padding-bottom (safe-area/get-bottom)}
+    [react/view {:flex 1 :padding-bottom safe-area/bottom}
      [topbar/topbar
       {:title (i18n/label :t/wakuv2-settings)
        :navigation :none

@@ -71,7 +71,7 @@
                                                      {:content
                                                       transaction-settings/custom-settings-sheet}]))}}]
      [quo/numbered-keyboard
-      {:container-style      {:padding-bottom (safe-area/get-bottom)}
+      {:container-style      {:padding-bottom safe-area/bottom}
        :left-action          :none
        :delete-key?          true
        :on-press             (fn [c]

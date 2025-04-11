@@ -14,7 +14,7 @@
 
 (defn view
   []
-  (let [bottom                (safe-area/get-bottom)
+  (let [bottom                safe-area/bottom
         {:keys [customization-color]
          :as   account}       (rf/sub [:wallet-connect/current-request-account-details])
         dapp                  (rf/sub [:wallet-connect/current-request-dapp])
@@ -54,4 +54,3 @@
        [fees-data-item/view
         {:fees       max-fees-fiat-formatted
          :fees-error error-state}]]]]))
-
