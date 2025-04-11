@@ -12,13 +12,13 @@
 
 (def chat-button
   {:position :absolute
-   :bottom   (safe-area/get-bottom)
+   :bottom   safe-area/bottom
    :left     20
    :right    20})
 
 (defn no-contacts
   []
-  {:margin-bottom   (+ 96 (safe-area/get-bottom))
+  {:margin-bottom   (+ 96 safe-area/bottom)
    :flex            1
    :justify-content :center
    :align-items     :center})
