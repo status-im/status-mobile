@@ -175,9 +175,7 @@
 (def react-native-biometrics #js {:default {}})
 (def react-native-safe-area-context
   #js {:initialWindowMetrics #js {}
-       :SafeAreaProvider     #js {}
-       :SafeAreaView         #js {}
-       :useSafeAreaInsets    #js {}})
+       :SafeAreaProvider     #js {}})
 
 (def back-handler
   #js

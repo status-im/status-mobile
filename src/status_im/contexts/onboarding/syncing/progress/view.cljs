@@ -1,13 +1,13 @@
 (ns status-im.contexts.onboarding.syncing.progress.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [status-im.common.resources :as resources]
-   [status-im.contexts.onboarding.common.background.view :as background]
-   [status-im.contexts.onboarding.syncing.progress.style :as style]
-   [utils.debounce :as debounce]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [status-im.common.resources :as resources]
+    [status-im.contexts.onboarding.common.background.view :as background]
+    [status-im.contexts.onboarding.syncing.progress.style :as style]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn pairing-progress
   [status]
