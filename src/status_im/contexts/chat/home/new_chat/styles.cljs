@@ -23,7 +23,7 @@
 
 (defn no-contacts
   []
-  {:margin-bottom   (+ 96 (safe-area/get-bottom))
+  {:margin-bottom   (+ 96 safe-area/bottom)
    :flex            1
    :justify-content :center
    :align-items     :center})
