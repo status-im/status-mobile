@@ -25,7 +25,7 @@
 
 (defn home-container
   []
-  {:margin-top (+ (safe-area/get-top) 8)
+  {:margin-top safe-area/top
    :flex       1})
 
 (defn header-container
