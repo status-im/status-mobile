@@ -6,7 +6,7 @@
 
 (def flex-spacer {:flex 1})
 
-(def category-nav-height (+ (safe-area/get-bottom) constants/categories-selector-height))
+(def category-nav-height (+ safe-area/bottom constants/categories-selector-height))
 
 (def search-input-container
   {:padding-horizontal 20

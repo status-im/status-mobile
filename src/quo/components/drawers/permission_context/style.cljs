@@ -23,7 +23,7 @@
                                                    colors/neutral-95
                                                    theme))
    :padding-top             12
-   :padding-bottom          (+ 12 (safe-area/get-bottom))
+   :padding-bottom          (+ 12 safe-area/bottom)
    :justify-content         :center
    :padding-horizontal      20
    :border-top-left-radius  radius
