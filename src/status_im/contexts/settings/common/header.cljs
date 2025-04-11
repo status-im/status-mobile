@@ -6,7 +6,7 @@
 
 (defn view
   [{:keys [title]}]
-  [rn/view {:style {:padding-top (safe-area/get-top)}}
+  [rn/view {:style {:padding-top safe-area/top}}
    [quo/page-nav
     {:background :blur
      :icon-name  :i/arrow-left
