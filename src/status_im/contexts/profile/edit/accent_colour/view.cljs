@@ -11,8 +11,7 @@
 
 (defn f-view
   [{:keys [customization-color]}]
-  (let [insets                (safe-area/get-insets)
-        {window-width :width} (rn/get-window)
+  (let [{window-width :width} (rn/get-window)
         unsaved-custom-color  (reagent/atom customization-color constants/profile-default-color)
         on-change             #(reset! unsaved-custom-color %)]
     (fn [{:keys [customization-color]}]
@@ -25,7 +24,7 @@
          [customization-color])
         [quo/overlay
          {:type            :shell
-          :container-style (style/page-wrapper insets)}
+          :container-style (style/page-wrapper safe-area/insets)}
          [quo/page-nav
           {:key        :header
            :background :blur

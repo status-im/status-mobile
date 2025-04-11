@@ -54,7 +54,7 @@
 
 (defn view
   []
-  (let [insets (safe-area/get-insets)]
+  (let [insets safe-area/insets]
     [rn/view {:style (style/page-container insets)}
      [page-title]
      [enable-biometrics-simple]

@@ -181,7 +181,7 @@
                                        :icon-name           :i/close
                                        :behind-overlay?     true
                                        :on-press            navigate-back
-                                       :margin-top          (safe-area/get-top)
+                                       :margin-top          safe-area/top
                                        :accessibility-label :add-address-to-save-page-nav}]
        :footer                       (when (= screen-id :screen/settings.add-address-to-save)
                                        [quo/button

@@ -29,8 +29,7 @@
 
 (defn view
   []
-  (let [insets (safe-area/get-insets)]
-    [rn/view {:style (style/page-container insets)}
-     [:<>
-      [title]
-      [content]]]))
+  [rn/view {:style (style/page-container safe-area/insets)}
+   [:<>
+    [title]
+    [content]]])

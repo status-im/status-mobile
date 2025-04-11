@@ -72,7 +72,7 @@
      [background/view false]
      [quo/bottom-actions
       (cond->
-        {:container-style  (style/bottom-actions-container (safe-area/get-bottom))
+        {:container-style  (style/bottom-actions-container safe-area/bottom)
          :description      :bottom
          :description-text [terms]}
 

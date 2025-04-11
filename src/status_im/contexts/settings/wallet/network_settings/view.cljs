@@ -88,7 +88,7 @@
 (defn view
   []
   (let [blur?            true
-        insets           (safe-area/get-insets)
+        insets           safe-area/insets
         theme            (quo.context/use-theme)
         networks-by-name (rf/sub [:wallet/network-details-by-network-name])
         testnet-mode?    (rf/sub [:profile/test-networks-enabled?])

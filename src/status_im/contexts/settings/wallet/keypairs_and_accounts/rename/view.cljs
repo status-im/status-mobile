@@ -16,9 +16,7 @@
 
 (defn view
   []
-  (let [insets                                          (safe-area/get-insets)
-
-        {existing-keypair-name :name
+  (let [{existing-keypair-name :name
          :keys                 [key-uid]}               (quo.context/use-screen-params)
         existing-keypair-names                          (rf/sub [:wallet/keypair-names])
         customization-color                             (rf/sub [:profile/customization-color])
@@ -53,7 +51,7 @@
       {:footer-container-padding 0
        :blur?                    true
        :header                   [quo/page-nav
-                                  {:margin-top          (:top insets)
+                                  {:margin-top          safe-area/top
                                    :icon-name           :i/close
                                    :background          :blur
                                    :on-press            navigate-back

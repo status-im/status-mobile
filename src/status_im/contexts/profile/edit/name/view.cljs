@@ -15,8 +15,7 @@
 
 (defn view
   []
-  (let [insets                   (safe-area/get-insets)
-        profile                  (rf/sub [:profile/profile-with-image])
+  (let [profile                  (rf/sub [:profile/profile-with-image])
         customization-color      (rf/sub [:profile/customization-color])
         display-name             (profile.utils/displayed-name profile)
         alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
@@ -35,7 +34,7 @@
     (fn []
       [quo/overlay
        {:type            :shell
-        :container-style (style/page-wrapper insets)}
+        :container-style (style/page-wrapper safe-area/insets)}
        [quo/page-nav
         {:key        :header
          :background :blur

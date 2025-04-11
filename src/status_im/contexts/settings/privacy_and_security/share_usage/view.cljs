@@ -68,7 +68,7 @@
 
 (defn view
   []
-  (let [insets                       (safe-area/get-insets)
+  (let [insets                       safe-area/insets
         telemetry-enabled?           (rf/sub [:profile/telemetry-enabled?])
         centralized-metrics-enabled? (rf/sub [:centralized-metrics/enabled?])]
     [quo/overlay

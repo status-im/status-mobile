@@ -17,7 +17,7 @@
 
 (defn view
   []
-  (let [{:keys [top bottom]}     (safe-area/get-insets)
+  (let [{:keys [top bottom]}     safe-area/insets
         alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
         current-step             (rf/sub [:settings/change-password-current-step])]
     (rn/use-unmount #(rf/dispatch [:change-password/reset]))

@@ -155,11 +155,10 @@
                 same-passwords?]}    (use-repeat-password-checks password repeat-password)
         on-submit                    (rn/use-callback
                                       #(on-confirm-password password)
-                                      [password])
-        top                          (safe-area/get-top)]
+                                      [password])]
     [floating-button/view
-     {:header                               [page-nav top]
-      :initial-header-height                (+ style/page-nav-height top)
+     {:header                               [page-nav safe-area/top]
+      :initial-header-height                (+ style/page-nav-height safe-area/top)
       :keyboard-should-persist-taps         :handled
       :content-avoid-keyboard?              true
       :automatically-adjust-keyboard-insets true

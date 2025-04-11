@@ -31,7 +31,7 @@
                          [universal-profile-url])]
     [quo/overlay {:type :shell}
      [rn/view
-      {:style {:padding-top (safe-area/get-top)}
+      {:style {:padding-top safe-area/top}
        :key   :share-community}
       [quo/page-nav
        {:icon-name           :i/close

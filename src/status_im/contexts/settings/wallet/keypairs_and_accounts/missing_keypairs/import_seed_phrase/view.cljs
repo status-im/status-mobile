@@ -64,4 +64,4 @@
        :navigation-icon :i/close
        :render-controls import-seed-phrase-controls
        :title           (i18n/label :t/enter-recovery-phrase)
-       :initial-insets  (safe-area/get-insets)}]]))
+       :initial-insets  safe-area/insets}]]))
