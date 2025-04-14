@@ -495,7 +495,7 @@
 (rf/reg-sub
  :wallet/current-viewing-account-tokens-filtered
  :<- [:wallet/current-viewing-account-or-default]
- :<- [:wallet/filtered-networks]
+ :<- [:wallet/active-networks]
  :<- [:wallet/wallet-send]
  :<- [:profile/currency]
  :<- [:wallet/prices-per-token]
