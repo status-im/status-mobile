@@ -13,11 +13,6 @@
   []
   (rf/dispatch [:hide-bottom-sheet]))
 
-(defn- on-press-activate
-  [deactivate-chain-id]
-  (rf/dispatch [:wallet-connect/adapt-network {:deactivate-chain-id deactivate-chain-id}])
-  (rf/dispatch [:hide-bottom-sheet]))
-
 (defn- make-list-item
   [customization-color set-deactivate-chain-id deactivate-chain-id network]
   (let [{:keys [full-name source chain-id]} network
@@ -50,7 +45,10 @@
         success-pressed?                              (rn/use-ref-atom false)
         on-press-success                              (fn []
                                                         (reset! success-pressed? true)
-                                                        (on-press-activate deactivate-chain-id)
+                                                        (rf/dispatch
+                                                         [:wallet-connect/activate-request-network
+                                                          {:deactivate-chain-id deactivate-chain-id}])
+                                                        (rf/dispatch [:hide-bottom-sheet])
                                                         ;; FIXME: not the most reliable way to make
                                                         ;; sure the balance was updated on the
                                                         ;; status-go side

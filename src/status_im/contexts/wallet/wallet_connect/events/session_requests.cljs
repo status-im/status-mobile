@@ -4,8 +4,6 @@
             [native-module.core :as native-module]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.networks.db :as networks.db]
-            [status-im.contexts.wallet.wallet-connect.modals.change-network.view :as
-             change-network-modal]
             [status-im.contexts.wallet.wallet-connect.utils.data-store :as
              data-store]
             [status-im.contexts.wallet.wallet-connect.utils.networks :as networks.utils]
@@ -97,32 +95,6 @@
                      :display-data display-data)
       :fx [[:dispatch [:wallet-connect/store-prepared-hash tx-hash]]]})))
 
-(rf/reg-event-fx :wallet-connect/adapt-network
- (fn [{:keys [db]} [{:keys [deactivate-chain-id]}]]
-   (let [event                 (data-store/get-db-current-request-event db)
-         chain-id              (data-store/get-request-chain-id event)
-         activate-network-name (networks.db/get-network-name db chain-id)]
-     {:fx [(if deactivate-chain-id
-             [:dispatch
-              [:wallet/deactivate-and-activate-another-network
-               {:activate-chain-id   chain-id
-                :deactivate-chain-id deactivate-chain-id
-                :on-success          #(rf/dispatch [:toasts/upsert
-                                                    {:type :positive
-                                                     :text (i18n/label
-                                                            :t/network-activated-and-deactivated
-                                                            {:network-activated activate-network-name
-                                                             :network-deactivated
-                                                             (networks.db/get-network-name
-                                                              db
-                                                              deactivate-chain-id)})}])}]]
-             [:dispatch
-              [:wallet/toggle-network-active chain-id
-               #(rf/dispatch [:toasts/upsert
-                              {:type :positive
-                               :text (i18n/label :t/network-activated
-                                                 {:network activate-network-name})}])]])]})))
-
 (rf/reg-event-fx :wallet-connect/prepare-transaction
  (fn [{:keys [db]} [on-success]]
    (let [event    (data-store/get-db-current-request-event db)
@@ -154,10 +126,8 @@
         :fx [(if chain-active?
                [:dispatch prepare-tx-effect]
                [:dispatch
-                [:show-bottom-sheet
-                 {:content (fn []
-                             [change-network-modal/view
-                              {:on-success #(rf/dispatch prepare-tx-effect)}])}]])]}))))
+                [:wallet-connect/show-activate-request-network-sheet
+                 {:on-success #(rf/dispatch prepare-tx-effect)}]])]}))))
 
 (rf/reg-event-fx
  :wallet-connect/process-sign-typed
