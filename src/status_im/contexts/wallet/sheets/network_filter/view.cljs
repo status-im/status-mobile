@@ -48,7 +48,6 @@
       {:data            active-chain-ids
        :render-fn       render-network
        :container-style {:margin-top 12}}]
-
      [quo/information-box
       {:type  :default
        :icon  :i/info

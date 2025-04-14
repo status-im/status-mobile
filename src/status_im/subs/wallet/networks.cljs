@@ -166,3 +166,17 @@
    (-> ui
        (get :networks/new-marked-as-seen? true)
        not)))
+
+(re-frame/reg-sub
+ :wallet/max-active-networks-reached?
+ :<- [:wallet/active-chain-ids]
+ (fn [active-chain-ids]
+   (-> active-chain-ids
+       count
+       (>= (networks/get-max-active-networks)))))
+
+(re-frame/reg-sub
+ :wallet/deactivatable-networks
+ :<- [:wallet/active-networks]
+ (fn [active-networks]
+   (filter :deactivatable? active-networks)))

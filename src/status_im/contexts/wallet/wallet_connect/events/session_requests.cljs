@@ -98,13 +98,14 @@
       :fx [[:dispatch [:wallet-connect/store-prepared-hash tx-hash]]]})))
 
 (rf/reg-event-fx :wallet-connect/adapt-network
- (fn [{:keys [db]} [{:keys [activate-chain-id deactivate-chain-id]}]]
-   (let [activate-network-name   (networks.db/get-network-name db activate-chain-id)
-         deactivate-network-name (networks.db/get-network-name db deactivate-chain-id)]
+ (fn [{:keys [db]} [{:keys [deactivate-chain-id]}]]
+   (let [event                 (data-store/get-db-current-request-event db)
+         chain-id              (data-store/get-request-chain-id event)
+         activate-network-name (networks.db/get-network-name db chain-id)]
      {:fx [(if deactivate-chain-id
              [:dispatch
               [:wallet/deactivate-and-activate-another-network
-               {:activate-chain-id   activate-chain-id
+               {:activate-chain-id   chain-id
                 :deactivate-chain-id deactivate-chain-id
                 :on-success          #(rf/dispatch [:toasts/upsert
                                                     {:type :positive
@@ -112,9 +113,11 @@
                                                             :t/network-activated-and-deactivated
                                                             {:network-activated activate-network-name
                                                              :network-deactivated
-                                                             deactivate-network-name})}])}]]
+                                                             (networks.db/get-network-name
+                                                              db
+                                                              deactivate-chain-id)})}])}]]
              [:dispatch
-              [:wallet/toggle-network-active activate-chain-id
+              [:wallet/toggle-network-active chain-id
                #(rf/dispatch [:toasts/upsert
                               {:type :positive
                                :text (i18n/label :t/network-activated
@@ -140,17 +143,12 @@
 (rf/reg-event-fx
  :wallet-connect/process-eth-send-transaction
  (fn [{:keys [db]} [{:keys [on-success]}]]
-   (let [event               (data-store/get-db-current-request-event db)
-         tx                  (-> event data-store/get-request-params first)
-         address             (-> tx :from string/lower-case)
-         chain-id            (-> event
-                                 (get-in [:params :chainId])
-                                 networks.utils/eip155->chain-id)
-         active-chain-ids    (networks.db/get-active-chain-ids db)
-         chain-active?       (contains? active-chain-ids chain-id)
-         deactivate-chain-id (last active-chain-ids)
-         max-active-reached? (networks.db/max-active-networks-reached? db)
-         prepare-tx-effect   [:wallet-connect/prepare-transaction on-success]]
+   (let [event             (data-store/get-db-current-request-event db)
+         chain-id          (data-store/get-request-chain-id event)
+         tx                (-> event data-store/get-request-params first)
+         address           (-> tx :from string/lower-case)
+         chain-active?     (networks.db/network-active? db chain-id)
+         prepare-tx-effect [:wallet-connect/prepare-transaction on-success]]
      (when tx
        {:db (assoc-in db [:wallet-connect/current-request :address] address)
         :fx [(if chain-active?
@@ -159,11 +157,7 @@
                 [:show-bottom-sheet
                  {:content (fn []
                              [change-network-modal/view
-                              {:activate-chain-id   chain-id
-                               :deactivate-chain-id (when max-active-reached?
-                                                      deactivate-chain-id)
-                               :on-success          #(rf/dispatch
-                                                      prepare-tx-effect)}])}]])]}))))
+                              {:on-success #(rf/dispatch prepare-tx-effect)}])}]])]}))))
 
 (rf/reg-event-fx
  :wallet-connect/process-sign-typed

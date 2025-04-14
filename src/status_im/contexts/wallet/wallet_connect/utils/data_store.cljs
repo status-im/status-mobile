@@ -4,6 +4,7 @@
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.utils :as wallet-utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [status-im.contexts.wallet.wallet-connect.utils.networks :as networks.utils]
     utils.string))
 
 (defn compute-dapp-name
@@ -39,6 +40,12 @@
 (defn get-request-params
   [event]
   (get-in event [:params :request :params]))
+
+(defn get-request-chain-id
+  [event]
+  (-> event
+      (get-in [:params :chainId])
+      networks.utils/eip155->chain-id))
 
 (defn get-db-current-request-event
   [db]

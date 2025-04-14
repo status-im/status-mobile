@@ -68,3 +68,9 @@
  :<- [:wallet-connect/current-request-method]
  typed-data/typed-data-request?)
 
+
+(rf/reg-sub
+ :wallet-connect/dapp-icon
+ :<- [:wallet-connect/current-request-dapp]
+ (fn [{:keys [url iconUrl]}]
+   (data-store/compute-dapp-icon-path iconUrl url)))

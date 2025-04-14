@@ -77,3 +77,9 @@
   (-> db
       get-chain-ids
       (set/intersection networks.config/new-networks)))
+
+(defn network-active?
+  [db chain-id]
+  (-> db
+      get-active-chain-ids
+      (contains? chain-id)))
