@@ -122,7 +122,9 @@
         :style               (style/field-container false theme)
         :keyboard-appearance theme
         :on-change-text      (fn [text]
-                               (set-field-value (utils.number/parse-int text default))
+                               (set-field-value (if (or (= "-" text) (string/ends-with? text "."))
+                                                  text
+                                                  (utils.number/parse-float text default)))
                                (when-not (fn? set-state)
                                  (reagent/flush)))}]]]))
 

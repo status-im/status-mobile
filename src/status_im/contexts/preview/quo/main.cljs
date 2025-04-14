@@ -109,6 +109,7 @@
     [status-im.contexts.preview.quo.list-items.approval-info :as approval-info]
     [status-im.contexts.preview.quo.list-items.channel :as channel]
     [status-im.contexts.preview.quo.list-items.dapp :as dapp]
+    [status-im.contexts.preview.quo.list-items.market-token :as market-token]
     [status-im.contexts.preview.quo.list-items.missing-keypair :as missing-keypair]
     [status-im.contexts.preview.quo.list-items.network-list :as network-list]
     [status-im.contexts.preview.quo.list-items.preview-lists :as preview-lists]
@@ -420,6 +421,8 @@
                         :component token-network/view}
                        {:name      :screen/token-value
                         :component token-value/view}
+                       {:name      :screen/market-token
+                        :component market-token/view}
                        {:name      :screen/user-list
                         :options   {:topBar {:visible true}}
                         :component user-list/view}

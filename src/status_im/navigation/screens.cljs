@@ -75,6 +75,7 @@
     [status-im.contexts.profile.settings.screens.messages.blocked-users.view :as
      settings.blocked-users]
     [status-im.contexts.profile.settings.screens.messages.view :as settings.messages]
+    [status-im.contexts.profile.settings.screens.notifications.view :as settings.notifications]
     [status-im.contexts.profile.settings.screens.password.change-password.loading :as
      change-password-loading]
     [status-im.contexts.profile.settings.screens.password.change-password.view :as change-password]
@@ -406,6 +407,11 @@
     :metrics   {:track? true}
     :options   options/transparent-modal-screen-options
     :component settings.syncing/view}
+
+   {:name      :screen/settings.notifications
+    :metrics   {:track? true}
+    :options   options/transparent-modal-screen-options
+    :component settings.notifications/view}
 
    {:name      :screen/paired-devices
     :metrics   {:track?   true

@@ -73,7 +73,7 @@
      :blur?       true
      :action      :arrow}
     {:title       (i18n/label :t/notifications)
-     :on-press    #(rf/dispatch [:open-modal :screen/legacy-notifications])
+     :on-press    #(rf/dispatch [:open-modal :screen/settings.notifications])
      :image-props :i/activity-center
      :image       :icon
      :blur?       true

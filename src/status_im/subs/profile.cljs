@@ -307,3 +307,17 @@
  :profile/mnemonic
  :<- [:profile/profile]
  :-> :mnemonic)
+
+(re-frame/reg-sub
+ :profile/notifications-settings
+ :<- [:profile/profile]
+ (fn [{:keys [notifications-enabled?
+              news-notifications-enabled?
+              messenger-notifications-enabled?
+              push-notifications-block-mentions?
+              push-notifications-from-contacts-only?]}]
+   {:notifications-enabled?                    (boolean notifications-enabled?)
+    :news-notifications-enabled?               (boolean news-notifications-enabled?)
+    :messenger-notifications-enabled?          (boolean messenger-notifications-enabled?)
+    :non-contact-notifications-enabled?        (not (boolean push-notifications-from-contacts-only?))
+    :community-mentions-notifications-enabled? (not (boolean push-notifications-block-mentions?))}))

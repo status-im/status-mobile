@@ -13,7 +13,7 @@
  :onboarding/finish-onboarding
  (fn [_ [notifications-enabled?]]
    {:fx [(when notifications-enabled?
-           [:dispatch [:push-notifications/switch true]])
+           [:dispatch [:push-notifications/switch {:notifications-enabled true}]])
          [:dispatch [:shell/change-tab shell.constants/default-selected-stack]]
          [:dispatch [:update-theme-and-init-root :screen/shell-stack]]
          [:dispatch [:profile/show-testnet-mode-banner-if-enabled]]

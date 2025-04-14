@@ -66,6 +66,9 @@ abstract_target 'Status' do
   pod "Keycard", git: "https://github.com/status-im/Keycard.swift.git", tag: '3.1.1'
   pod 'secp256k1', git: "https://github.com/status-im/secp256k1.swift.git", submodules: true
 
+  pod 'FirebaseCore', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
+
   target 'StatusIm' do
 
     target 'StatusImTests' do

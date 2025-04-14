@@ -230,6 +230,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi("Check that can remove user from logged out state")
         self.home.reopen_app(sign_in=False)
+        self.sign_in.show_profiles_button.click_if_shown()
         user_card = self.sign_in.get_user_profile_by_name(username=recover_user_name)
         user_card.open_user_options()
         self.sign_in.remove_profile_button.click()
@@ -954,7 +955,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.device_2.just_fyi("Sender checks the reaction for a message with a mention")
         try:
             self.channel_2.chat_element_by_text(self.username_1).emojis_below_message(
-                emoji="sad").wait_for_element_text(1)
+                emoji="sad").wait_for_element_text(text=1, wait_time=60)
         except (Failed, NoSuchElementException):
             self.errors.append(self.channel_2, "Message reaction is not shown for the sender")
 
@@ -1013,7 +1014,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
                     self.channel_2,
                     '%s is not displayed with markdown in community channel for the sender \n' % message)
 
-            if not self.channel_1.chat_element_by_text(message).is_element_displayed():
+            if not self.channel_1.chat_element_by_text(message).is_element_displayed(60):
                 self.errors.append(
                     self.channel_1,
                     '%s is not displayed with markdown in community channel for the recipient \n' % message)
@@ -1034,7 +1035,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
                 self.errors.append(
                     self.chat_1, '%s is not displayed with markdown in 1-1 chat for the sender (device 1) \n' % message)
 
-            if not self.chat_2.chat_element_by_text(message).is_element_displayed(30):
+            if not self.chat_2.chat_element_by_text(message).is_element_displayed(60):
                 self.errors.append(
                     self.chat_2,
                     '%s is not displayed with markdown in 1-1 chat for the recipient (device 2) \n' % message)

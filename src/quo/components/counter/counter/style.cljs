@@ -14,24 +14,18 @@
     nil))
 
 (defn container
-  [{:keys [type label container-style customization-color theme value max-value blur?]}]
-  (let [width (case (count label)
-                1 16
-                2 20
-                28)]
-    (cond-> [{:align-items     :center
-              :justify-content :center
-              :border-radius   6
-              :width           width
-              :height          16
-              :margin          2}
-             container-style]
-      (= type :outline)
-      (conj {:border-width 1
-             :border-color (get-color type customization-color theme blur?)})
+  [{:keys [type container-style customization-color theme blur?]}]
+  (cond-> [{:align-items        :center
+            :justify-content    :center
+            :align-self         :flex-start
+            :border-radius      6
+            :height             16
+            :padding-horizontal 5
+            :margin             2}
+           container-style]
+    (= type :outline)
+    (conj {:border-width 1
+           :border-color (get-color type customization-color theme blur?)})
 
-      (not= type :outline)
-      (conj {:background-color (get-color type customization-color theme blur?)})
-
-      (> value max-value)
-      (conj {:padding-left 0.5}))))
+    (not= type :outline)
+    (conj {:background-color (get-color type customization-color theme blur?)})))

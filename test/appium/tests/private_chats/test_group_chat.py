@@ -125,9 +125,9 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         def _check_reactions_count(chat_view_index):
             self.chats[chat_view_index].just_fyi("Checking reactions count for each group member and admin")
             chat_element = self.chats[chat_view_index].chat_element_by_text(message)
-            chat_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(2)
-            chat_element.emojis_below_message(emoji="love").wait_for_element_text(1)
-            chat_element.emojis_below_message(emoji="laugh").wait_for_element_text(1)
+            chat_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(text=2, wait_time=60)
+            chat_element.emojis_below_message(emoji="love").wait_for_element_text(text=1, wait_time=60)
+            chat_element.emojis_below_message(emoji="laugh").wait_for_element_text(text=1, wait_time=60)
 
         self.loop.run_until_complete(run_in_parallel((
             (_check_reactions_count, {'chat_view_index': 0}),
@@ -181,9 +181,9 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
                 "Checking reactions count for each group member and admin after they were changed")
             chat_element = self.chats[chat_view_index].chat_element_by_text(message)
             try:
-                chat_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
-                chat_element.emojis_below_message(emoji="love").wait_for_element_text(1)
-                chat_element.emojis_below_message(emoji="sad").wait_for_element_text(2)
+                chat_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(text=1, wait_time=60)
+                chat_element.emojis_below_message(emoji="love").wait_for_element_text(text=1, wait_time=60)
+                chat_element.emojis_below_message(emoji="sad").wait_for_element_text(text=2, wait_time=60)
             except (Failed, NoSuchElementException):
                 self.errors.append(self.chats[chat_view_index],
                                    "Incorrect reactions count for %s after changing the reactions" % self.usernames[
@@ -203,9 +203,9 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].just_fyi("Admin checks reactions count after relogin")
         message_element = self.chats[0].chat_element_by_text(message)
         try:
-            message_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
-            message_element.emojis_below_message(emoji="love").wait_for_element_text(1)
-            message_element.emojis_below_message(emoji="sad").wait_for_element_text(2)
+            message_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(text=1, wait_time=60)
+            message_element.emojis_below_message(emoji="love").wait_for_element_text(text=1, wait_time=60)
+            message_element.emojis_below_message(emoji="sad").wait_for_element_text(text=2, wait_time=60)
         except (Failed, NoSuchElementException):
             self.errors.append(self.chats[0], "Incorrect reactions count after relogin")
 
@@ -349,7 +349,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         def _check_messages(index):
             self.chats[index].just_fyi("Check that messages are shown for user %s" % self.usernames[index])
             for message_text in (message_1, message_2):
-                if not self.chats[index].chat_element_by_text(message_text).is_element_displayed(30):
+                if not self.chats[index].chat_element_by_text(message_text).is_element_displayed(60):
                     self.errors.append(self.chats[index], '%s if not shown for device %s' % (message_text, index))
 
         self.loop.run_until_complete(run_in_parallel((
@@ -361,6 +361,8 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702732)
+    @marks.xfail(
+        reason="Can not unpin messages from pinned messages menu - https://github.com/status-im/status-mobile/issues/22497")
     def test_group_chat_pin_messages(self):
         [self.homes[i].navigate_back_to_home_view() for i in range(3)]
         [self.homes[i].get_chat(self.chat_name).click() for i in range(3)]
@@ -372,6 +374,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].send_message(self.message_1)
         self.chats[0].pin_message(self.message_1, "pin-to-chat")
         for chat in self.chats[0], self.chats[1]:
+            chat.chat_element_by_text(self.message_1).wait_for_visibility_of_element(60)
             if not chat.chat_element_by_text(self.message_1).pinned_by_label.is_element_displayed(30):
                 self.errors.append(chat, "Message 1 is not pinned in group chat!")
 
@@ -401,6 +404,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             self.chats[0].send_message(message)
             self.chats[0].pin_message(message, 'pin-to-chat')
             for chat in self.chats[0], self.chats[1]:
+                chat.chat_element_by_text(message).wait_for_visibility_of_element(60)
                 if not chat.chat_element_by_text(message).pinned_by_label.is_element_displayed(30):
                     self.errors.append(chat, "%s is not pinned in group chat!" % message)
 
@@ -408,10 +412,10 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].send_message(self.message_4)
         self.chats[0].pin_message(self.message_4, 'pin-to-chat')
         self.chats[0].view_pinned_messages_button.click_until_presence_of_element(self.chats[0].pinned_messages_list)
-        unpin_element = self.chats[0].element_by_translation_id('unpin-from-chat')
-        self.chats[0].pinned_messages_list.message_element_by_text(self.message_2).long_press_without_release()
-        unpin_element.click_until_absense_of_element(desired_element=unpin_element)
-        self.chats[0].chat_element_by_text(self.message_4).click()
+        if self.chats[0].pinned_messages_list.message_element_by_text(self.message_4).is_element_displayed():
+            self.errors.append(self.chats[0], "Can pin more than 3 messages")
+        self.chats[0].tap_by_coordinates(500, 100)
+        self.chats[0].pin_message(self.message_2, action='unpin-from-chat')
         self.chats[0].pin_message(self.message_4, 'pin-to-chat')
         for chat in self.chats[0], self.chats[1]:
             if not chat.chat_element_by_text(self.message_4).pinned_by_label.is_element_displayed(30):
@@ -438,7 +442,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
                 else:
                     self.errors.append(self.chats[index],
                                        "Message '%s' is missed on Pinned messages list for user %s" % (
-                                           message, self.usernames[index])
+                                           message_text, self.usernames[index])
                                        )
 
         self.loop.run_until_complete(run_in_parallel((

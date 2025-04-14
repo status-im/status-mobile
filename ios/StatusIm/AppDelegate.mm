@@ -8,6 +8,7 @@
  */
 
 #import "AppDelegate.h"
+#import <Firebase.h>
 #import <ReactNativeNavigation/ReactNativeNavigation.h>
 
 #import <asl.h>
@@ -45,6 +46,7 @@ extern "C" NSString* StatusgoImageServerTLSCert();
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [FIRApp configure];
 
   if (!self.bridge) {
     self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];

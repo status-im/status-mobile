@@ -127,6 +127,71 @@ You can provide `--storage-opt size=30G` flag if Docker complains about running 
 
 You should also run `lint` and `rewritemeta` for the App ID to verify and fix the YAML metadata formatting.
 
+# Scanning Builds Locally
+
+Based on the documentation provided here: https://gitlab.com/fdroid/wiki/-/wikis/Tips-for-fdroiddata-contributors/Setting-up-app-submission-development-environment-locally
+
+We can locally scan our source code and pre-built APKS by using the FDroid CLI tool. We can prepare a FDroid environment by
+following [the steps mentioned in these instructions](https://gitlab.com/fdroid/wiki/-/wikis/Tips-for-fdroiddata-contributors/Setting-up-app-submission-development-environment-locally). 
+  * Note, at the time of writing (March 2025), the easiest way to follow these instructions involved:
+    * Creating a new empty directory outside of the status-mobile repository.
+      * For this example, let's refer to this directory as `status-fdroid-server`
+    * Then git cloning the two referenced git repos inside the `status-fdroid-server` directory:
+      ```shell
+        git clone https://gitlab.com/fdroid/fdroiddata.git --depth=1
+        git clone https://gitlab.com/fdroid/fdroidserver.git --depth=1
+      ```
+    * Then create a subdirectory inside `status-fdroid-server` named `apks`
+    * Then create a subdirectory inside `status-fdroid-server` named `scripts`
+      * Create a file inside the `scripts` folder named `env.sh`
+        ```shell
+          source /etc/profile.d/bsenv.sh
+          export GRADLE_USER_HOME=$home_vagrant/.gradle
+          export fdroid="sudo --preserve-env --user vagrant
+                 env PATH=$fdroidserver:$PATH
+                 env PYTHONPATH=$fdroidserver:$fdroidserver/examples
+                 env PYTHONUNBUFFERED=true
+                 env TERM=$TERM
+                 env HOME=$home_vagrant
+                 fdroid"
+
+          export build=im.status.ethereum
+        ```
+      * Create a file inside the `scripts` folder named `prep.sh`
+        ```shell
+          apt-get update && apt-get install -y make xz-utils
+        ```
+      * Create a file inside the `scripts` folder named `run.sh`
+        ```shell
+          docker run --rm -i -t --privileged --pid=host --entrypoint "/bin/bash" \
+            -v ${ANDROID_SDK_ROOT}:/opt/android-sdk:Z \
+            -v $(pwd)/fdroidserver:/home/vagrant/fdroidserver:Z \
+            -v $(pwd)/scripts:/scripts:z \
+            -v $(pwd)/fdroiddata:/build:z \
+            -v $(pwd)/apks:/apks:z \
+            registry.gitlab.com/fdroid/fdroidserver:buildserver
+        ```
+      * Create a file inside the `scripts` folder named `latest-version-code.sh`
+        ```shell
+          prefix="versionCode: "
+          resultLine=$(grep $prefix ./metadata/$build.yml | tail -n 1)
+          echo $resultLine | sed -e "s/^$prefix//" 
+        ```
+    * Then inside a terminal shell run the following command:
+      * `env ANDROID_SDK_ROOT=<insert sdk directory> sh scripts/run.sh`
+        * Ensure you replace `<insert sdk directory>` with the path to Android SDK folder.
+          * On macOS, the value could be: `$HOME/Library/Android/sdk`
+    * Once inside the Docker shell environment run the following commands:
+      * `sh /scripts/prep.sh`
+        * This command should install `xz` utils packages for installing the Nix package manager.
+      * `source /scripts/env.sh`
+        * This command should populate the Docker shell environment with the `$fdroid` command.
+    * Next we can run `cd /build` to enter the `fdroiddata` directory that has been mounted inside the docker environment.
+    * And now we can run `$fdroid scanner $build:$(sh /scripts/latest-version-code.sh)` to scan the latest version of the status app that has been registered in the `fdroiddata/metadata/im.status.ethereum.yml` file.
+      * Alternatively, we can also copy an APK into the `apks` folder and run `$fdroid scanner /apks/<insert-apk-file-name>`.
+        * Ensure that you replace the `<insert-apk-file-name>` with the correct name of the pre-built APK.
+          * For example, after running `make release-fdroid`, you can copy the `app-arm64-v8a-release-unsigned.apk` file into the `apks` folder and run `$fdroid scanner /apks/app-arm64-v8arelease-unsigned.apk` inside the docker shell environment.
+
 # Details
 
 The original research was done in [#8512](https://github.com/status-im/status-mobile/issues/8512).

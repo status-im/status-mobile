@@ -339,3 +339,8 @@ task hemroidBuild(type: Exec) {
 preBuild.dependsOn hemroidBuild
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+def googleServicesConfigFile = "./googleServices.gradle";
+if (project.file(googleServicesConfigFile).exists()) {
+   apply from: file(googleServicesConfigFile)
+}
