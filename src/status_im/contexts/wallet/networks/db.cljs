@@ -10,7 +10,7 @@
   (if (profile.db/testnet? db) :test :prod))
 
 (defn get-network-details
-  "Returns the network details based on the `chain-id` from the db"
+  "returns the network details based on the `chain-id` from the db"
   [db chain-id]
   (get-in db [:wallet :networks/by-id chain-id]))
 
@@ -45,6 +45,11 @@
   (-> db
       get-networks
       (networks/get-chain-id network-name)))
+
+(defn get-network-name
+  "returns the network name based on the `chain-id` from the db"
+  [db chain-id]
+  (-> db (get-network-details chain-id) :full-name))
 
 (defn get-block-explorer-address-url
   "Returns the block-explorer address url for a chain"

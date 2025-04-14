@@ -99,14 +99,8 @@
 
 (rf/reg-event-fx :wallet-connect/adapt-network
  (fn [{:keys [db]} [{:keys [activate-chain-id deactivate-chain-id]}]]
-   (let [activate-network-name   (-> db
-                                     (networks.db/get-network-details
-                                      activate-chain-id)
-                                     :full-name)
-         deactivate-network-name (-> db
-                                     (networks.db/get-network-details
-                                      deactivate-chain-id)
-                                     :full-name)]
+   (let [activate-network-name   (networks.db/get-network-name db activate-chain-id)
+         deactivate-network-name (networks.db/get-network-name db deactivate-chain-id)]
      {:fx [(if deactivate-chain-id
              [:dispatch
               [:wallet/deactivate-and-activate-another-network
