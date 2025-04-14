@@ -8,14 +8,11 @@
      networks)
     networks))
 
-(defn toggle-by-id
+(defn- toggle-by-id
   [filtered-chain-ids chain-id]
-  (let [already-filtered?     (contains? filtered-chain-ids chain-id)
-        filter-remains-empty? (and already-filtered?
-                                   (= 1 (count filtered-chain-ids)))]
+  (let [already-filtered? (contains? filtered-chain-ids chain-id)]
     (cond
       (nil? filtered-chain-ids) #{chain-id}
-      filter-remains-empty?     nil
       already-filtered?         (disj filtered-chain-ids chain-id)
       (not already-filtered?)   (conj filtered-chain-ids chain-id)
       :else                     filtered-chain-ids)))
@@ -28,5 +25,6 @@
 
 (defn has-filters?
   [network-filter]
-  (and (seq network-filter)
-       (every? some? (vals network-filter))))
+  (boolean
+   (and (seq network-filter)
+        (every? (complement empty?) (vals network-filter)))))

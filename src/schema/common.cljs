@@ -15,7 +15,9 @@
    :int
    :string
    [:map
-    [:uri [:maybe [:string]]]]])
+    [:uri [:maybe [:string]]]]
+   ;; NOTE: jest tests resolve requires as #js objects
+   [:fn object?]])
 
 (def ^:private ?rpc-call
   [:sequential
