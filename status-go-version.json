@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v10.7.4",
-    "commit-sha1": "7808151ac95129ce24ea15ca1354610545a1fd44",
-    "src-sha256": "11mdxb67wy5bjlcxpjywbpchq9ln9ywyy6p21c5kplibbhzw4ywh"
+    "version": "fix/mobile-add-base-paraswap-partner-address",
+    "commit-sha1": "4fbdc23018b18a9f3dfe4feb4231901a49dbb51a",
+    "src-sha256": "1fzggqicm99mf3p33xk0djc7dxb8zmzdra7614x4f9lc0lmxa8xw"
 }
