@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.common.account-switcher.view
   (:require
     [quo.core :as quo]
-    [react-native.core :as rn]
     [status-im.contexts.wallet.sheets.account-options.view :as account-options]
     [status-im.contexts.wallet.sheets.network-filter.view :as network-filter]
     [status-im.contexts.wallet.sheets.select-account.view :as select-account]

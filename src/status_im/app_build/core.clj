@@ -4,7 +4,6 @@
     [clojure.java.shell :as shell]
     [clojure.string :as string]))
 
-;; TEST
 (defmacro get-build-no
   []
   (-> (shell/sh "bash" "./scripts/version/build_no.sh")
