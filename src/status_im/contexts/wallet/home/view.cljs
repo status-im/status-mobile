@@ -82,10 +82,10 @@
 
 (defn- call-to-actions
   []
-  (let [account-cards-data    (rf/sub [:wallet/account-cards-data])
+  (let [operable-accounts     (rf/sub [:wallet/operable-accounts])
         testnet-mode?         (rf/sub [:profile/test-networks-enabled?])
-        multiple-accounts?    (> (count account-cards-data) 1)
-        first-account-address (:address (first account-cards-data))
+        multiple-accounts?    (> (count operable-accounts) 1)
+        first-account-address (:address (first operable-accounts))
         on-send-press         (rn/use-callback
                                (fn []
                                  (rf/dispatch [:wallet/clean-send-data])
