@@ -45,13 +45,19 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
         driver = self.drivers[0]
         etherscan_url = "https://sepolia.etherscan.io/tx/0xec2da91a664fde85054a6cdb6d133b78c7546464aa48d9f37a07467ac5fba7e5"
 
+        # driver.set_clipboard(etherscan_url)
+        #
+        # new_url = driver.get_clipboard()
+
+
         # Initialize Chrome handler
         chrome_handler = ChromeBrowserHandler(driver)
 
         # Open URL using the Chrome handler
         chrome_handler.open_url(etherscan_url)
         chrome_handler.wait_for_text("Success")
-        chrome_handler.switch_to_native()
+        chrome_handler.switch_to_app()
+        # chrome_handler.switch_to_native()
 
 
 

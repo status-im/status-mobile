@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from  tests.base_test_case import get_app_package
 
 
 class ChromeBrowserHandler:
@@ -80,23 +81,25 @@ class ChromeBrowserHandler:
             self.driver.info(f"An error occurred while waiting for text '{text}': {e}")
             raise
 
-    def switch_to_native(self):
+    def switch_to_app(self, app_activity=".MainActivity"):
         """
-        Switches the driver context back to the native app.
+        Switches back to the app, leaving Chrome in the background.
+        Dynamically determines the app package if no package is explicitly provided.
+
+        :param app_activity: The app's activity name (default is 'MainActivity').
         """
         try:
-            self.driver.info("Switching back to native app context...")
+            # Get the app package dynamically based on the APK configuration
 
-            # Wait until the native app context is available
-            WebDriverWait(self.driver, 10).until(
-                lambda d: "NATIVE_APP" in d.contexts
-            )
-            self.driver.switch_to.context("NATIVE_APP")
-            self.driver.info("Switched back to native app context successfully.")
+            app_package = get_app_package()
 
+            self.driver.info(f"Switching back to app (package: {app_package}, activity: {app_activity})...")
+            self.driver.start_activity(app_package, app_activity)
+            self.driver.info("Switched back to app successfully.")
         except Exception as e:
-            self.driver.info(f"An error occurred while switching back to the native app context: {e}")
+            self.driver.info(f"An error occurred while switching back to the app: {e}")
             raise
+
 
 
 
