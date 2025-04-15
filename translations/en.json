@@ -2598,6 +2598,7 @@
   "suggested-min-tip": "Suggested min. tip",
   "suggested-price-limit": "Suggested price limit",
   "sun": "Sun",
+  "time-24h": "24h",
   "swap": "Swap",
   "swap-details": "Swap details",
   "swap-exchange-rate-in-crypto": "1 {{receive-token-symbol}} ≈ {{exchange-rate}} {{pay-token-symbol}}",
