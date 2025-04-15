@@ -77,7 +77,11 @@
 
 (rf/reg-event-fx :wallet/switch-current-viewing-account
  (fn [{:keys [db]} [address]]
-   {:db (assoc-in db [:wallet :current-viewing-account-address] address)}))
+   (let [{:keys [tx-type]} (db/send db)
+         bridge-tx?        (= tx-type :tx/bridge)]
+     {:db (cond-> db
+            :always    (assoc-in [:wallet :current-viewing-account-address] address)
+            bridge-tx? (update-in db-path/send assoc :to-address address))})))
 
 (rf/reg-event-fx :wallet/clean-current-viewing-account
  (fn [{:keys [db]} [ignore-just-completed-transaction?]]
