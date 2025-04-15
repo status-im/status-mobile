@@ -304,6 +304,7 @@
                                  (i18n/label :t/insufficient-funds-for-swaps)
                                  (swap-utils/error-message-from-code error-response-code
                                                                      error-response-details))
+        native-token-symbol    (rf/sub [:wallet/swap-network-native-token-symbol])
         props                  (cond-> {:container-style      style/alert-banner
                                         :text-number-of-lines 0
                                         :text                 error-text}
@@ -325,7 +326,8 @@
                                                              [:show-bottom-sheet
                                                               {:content (fn []
                                                                           [buy-token/view])}]))
-                                         :button-text     (i18n/label :t/add-eth)}))]
+                                         :button-text     (i18n/label :t/add-token
+                                                                      {:token native-token-symbol})}))]
     (when (or pay-input-error? error-response)
       [quo/alert-banner props])))
 

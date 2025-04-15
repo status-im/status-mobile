@@ -162,6 +162,11 @@
                                          enabled-from-chain-ids))))))
 
 (rf/reg-sub
+ :wallet/bridge-token
+ :<- [:wallet/wallet-send]
+ :-> :token)
+
+(rf/reg-sub
  :wallet/wallet-send-token-symbol
  :<- [:wallet/wallet-send]
  (fn [{:keys [token-symbol token]}]

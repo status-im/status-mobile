@@ -160,14 +160,6 @@
       swap-data)
     (is (match? "SNT" (rf/sub [sub-name])))))
 
-(h/deftest-sub :wallet/swap-asset-to-pay-networks
-  [sub-name]
-  (testing "Return the available networks for the swap asset-to-pay"
-    (swap! rf-db/app-db assoc-in
-      db-path/swap
-      swap-data)
-    (is (match? networks (rf/sub [sub-name])))))
-
 (h/deftest-sub :wallet/swap-asset-to-pay-network-balance
   [sub-name]
   (testing "Return swap asset-to-pay"

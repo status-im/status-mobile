@@ -60,7 +60,9 @@
 
 (defn- sort-networks
   [networks]
-  (sort-by (juxt :layer :short-name) networks))
+  ;; Placing the ethereum chains (including testnet) in the top of the list during sorting
+  (sort-by (juxt #(not (contains? networks.config/ethereum-chain-ids (:chain-id %))) :layer :short-name)
+           networks))
 
 (defn rpc->networks
   [networks-data]

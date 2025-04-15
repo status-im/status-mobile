@@ -38,6 +38,7 @@
 
 (def ^:private networks
   {:arbitrum (js/require "../resources/images/networks/Arbitrum.png")
+   :bsc      (js/require "../resources/images/networks/Binance.png")
    :ethereum (js/require "../resources/images/networks/Ethereum.png")
    :mainnet  (js/require "../resources/images/networks/Ethereum.png")
    :gnosis   (js/require "../resources/images/networks/Gnosis.png")

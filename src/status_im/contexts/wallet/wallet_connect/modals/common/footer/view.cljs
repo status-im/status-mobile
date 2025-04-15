@@ -42,8 +42,9 @@
 
 (defn view
   [{:keys [warning-label slide-button-text error-state]} & children]
-  (let [offline? (rf/sub [:network/offline?])
-        theme    (quo.context/use-theme)]
+  (let [offline?            (rf/sub [:network/offline?])
+        native-token-symbol (rf/sub [:wallet-connect/current-request-network-native-token-symbol])
+        theme               (quo.context/use-theme)]
     [:<>
      (when (or offline? error-state)
        [quo/alert-banner
@@ -56,7 +57,7 @@
 
                                           :not-enough-assets
                                           :t/not-enough-assets-for-transaction)))
-         :button-text     (i18n/label :t/add-eth)
+         :button-text     (i18n/label :t/add-token {:token native-token-symbol})
          :on-button-press (rn/use-callback (fn []
                                              (rf/dispatch [:centralized-metrics/track
                                                            :metric/dapp-buy-eth])

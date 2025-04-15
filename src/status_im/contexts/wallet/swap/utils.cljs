@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
+            [status-im.contexts.wallet.networks.config :as networks.config]
             [utils.i18n :as i18n]))
 
 (defn error-message-from-code
@@ -71,8 +72,13 @@
                              keyword)]
     (get updated-prices token-symbol 0)))
 
-(defn default-asset-to-receive
-  [pay-token-symbol]
-  (cond (= pay-token-symbol "SNT") "ETH"
-        (= pay-token-symbol "ETH") "USDC"
-        :else                      "SNT"))
+(defn get-default-asset-to-receive
+  [tokens pay-token-symbol chain-id]
+  (let [asset-to-receive
+        (cond
+          (and (= pay-token-symbol "ETH") (not= chain-id networks.config/bsc-chain-id)) "USDC"
+          (and (= pay-token-symbol "BNB") (= chain-id networks.config/bsc-chain-id))    "USDC"
+          (and (not= pay-token-symbol "BNB") (= chain-id networks.config/bsc-chain-id)) "BNB"
+          (= pay-token-symbol "SNT")                                                    "ETH"
+          :else                                                                         "SNT")]
+    (some #(when (and (= (:symbol %) asset-to-receive) (= (:chain-id %) chain-id)) %) tokens)))

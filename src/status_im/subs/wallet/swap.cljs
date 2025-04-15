@@ -39,6 +39,11 @@
  :-> :network)
 
 (rf/reg-sub
+ :wallet/swap-network-native-token-symbol
+ :<- [:wallet/swap-network]
+ :-> :native-currency-symbol)
+
+(rf/reg-sub
  :wallet/swap-start-point
  :<- [:wallet/swap]
  :-> :start-point)
@@ -67,18 +72,6 @@
  :wallet/swap-updated-token-prices-usd
  :<- [:wallet/swap]
  :-> :updated-token-prices)
-
-(rf/reg-sub
- :wallet/swap-asset-to-pay-networks
- :<- [:wallet/swap-asset-to-pay]
- (fn [token]
-   (let [{token-networks :networks} token
-         grouped-networks           (group-by :layer
-                                              token-networks)
-         mainnet-network            (first (get grouped-networks constants/layer-1-network))
-         layer-2-networks           (get grouped-networks constants/layer-2-network)]
-     {:mainnet-network  mainnet-network
-      :layer-2-networks layer-2-networks})))
 
 (rf/reg-sub
  :wallet/swap-asset-to-pay-network-balance

@@ -1,12 +1,10 @@
 (ns status-im.contexts.wallet.send.input-amount.view
   (:require
-    [clojure.string :as string]
     [quo.context]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.controlled-input.utils :as controlled-input]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
     [status-im.contexts.wallet.common.utils :as utils]
@@ -49,11 +47,11 @@
     (i18n/label :t/no-routes-found)]])
 
 (defn- not-enough-asset
-  []
+  [native-token-symbol]
   [quo/alert-banner
    {:action?         true
     :text            (i18n/label :t/not-enough-assets-to-pay-gas-fees)
-    :button-text     (i18n/label :t/add-eth)
+    :button-text     (i18n/label :t/add-token {:token native-token-symbol})
     :on-button-press #(rf/dispatch [:show-bottom-sheet
                                     {:content buy-token/view}])}])
 
@@ -73,15 +71,15 @@
     :else (rf/dispatch [:wallet/stop-and-clean-suggested-routes])))
 
 (defn- insufficient-asset-amount?
-  [{:keys [token-symbol owned-eth-token input-state limit-exceeded? enough-assets?]}]
-  (let [eth-selected?              (= token-symbol (string/upper-case constants/mainnet-short-name))
-        zero-owned-eth?            (money/equal-to (:total-balance owned-eth-token) 0)
+  [{:keys [token-symbol native-token input-state limit-exceeded? enough-assets?]}]
+  (let [native-token-selected?     (= token-symbol (:symbol native-token))
+        zero-owned-native-token?   (money/equal-to (:total-balance native-token) 0)
         input-at-max-owned-amount? (money/equal-to
                                     (controlled-input/value-bn input-state)
                                     (controlled-input/upper-limit-bn input-state))
-        exceeded-input?            (if eth-selected?
+        exceeded-input?            (if native-token-selected?
                                      input-at-max-owned-amount?
-                                     zero-owned-eth?)]
+                                     zero-owned-native-token?)]
     (or exceeded-input?
         limit-exceeded?
         (false? enough-assets?))))
@@ -113,9 +111,7 @@
         current-address               (rf/sub [:wallet/current-viewing-account-address])
         current-color                 (rf/sub [:wallet/current-viewing-account-color])
         enough-assets?                (rf/sub [:wallet/wallet-send-enough-assets?])
-        owned-eth-token               (rf/sub [:wallet/token-by-symbol
-                                               (string/upper-case constants/mainnet-short-name)
-                                               [(:chain-id network)]])
+        native-token                  (rf/sub [:wallet/send-native-token])
         suggested-routes              (rf/sub [:wallet/wallet-send-suggested-routes])
         tx-type                       (rf/sub [:wallet/wallet-send-tx-type])
         token-decimals                (rf/sub [:wallet/send-display-token-decimals])
@@ -156,7 +152,7 @@
         not-enough-asset?             (insufficient-asset-amount?
                                        {:enough-assets?  enough-assets?
                                         :token-symbol    token-symbol
-                                        :owned-eth-token owned-eth-token
+                                        :native-token    native-token
                                         :input-state     input-state
                                         :limit-exceeded? limit-exceeded?})
         should-try-again?             (and (not limit-exceeded?)
@@ -268,7 +264,7 @@
        [routes/view]
        [rn/view {:style {:flex 1}}])
      (when not-enough-asset?
-       [not-enough-asset])
+       [not-enough-asset (:symbol native-token)])
      (when (or loading-routes? route)
        [estimated-fees/view
         {:not-enough-asset? not-enough-asset?

@@ -98,4 +98,9 @@
           :render-fn                collectible-item
           :on-end-reached           on-end-reached
           :key-fn                   :unique-id
+          :header                   [quo/information-box
+                                     {:type  :default
+                                      :icon  :i/info
+                                      :style {:margin-horizontal 10}}
+                                     (i18n/label :t/bsc-collectibles-not-supported)]
           :on-end-reached-threshold 4}]))))
