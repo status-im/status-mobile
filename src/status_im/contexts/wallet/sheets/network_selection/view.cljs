@@ -29,9 +29,9 @@
     :or   {source :swap
            title  (i18n/label :t/select-network)}}]
   (let [{token-networks :networks} (case source
-                                     :swap    (rf/sub [:wallet/swap-asset-to-pay])
-                                     :bridge  (rf/sub [:wallet/bridge-token])
-                                     :default (rf/sub [:wallet/wallet-send-token]))
+                                     :swap   (rf/sub [:wallet/swap-asset-to-pay])
+                                     :bridge (rf/sub [:wallet/bridge-token])
+                                     (rf/sub [:wallet/wallet-send-token]))
         render-fn                  (rn/use-callback (fn [network]
                                                       [network-item
                                                        {:network           network
