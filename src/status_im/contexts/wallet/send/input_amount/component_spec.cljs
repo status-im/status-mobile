@@ -13,11 +13,12 @@
 
 (def sub-mocks
   {:profile/profile                              {:currency :usd}
-   :wallet/active-networks                       [{:source           525
+   :wallet/filtered-networks                     [{:source           525
                                                    :short-name       "eth"
                                                    :network-name     :mainnet
                                                    :chain-id         1
                                                    :related-chain-id 5}]
+   :wallet/network-filter?                       false
    :wallet/show-new-chain-indicator?             false
    :wallet/current-viewing-account-address       "0x1"
    :wallet/current-viewing-account               {:path "m/44'/60'/0'/0/1"
