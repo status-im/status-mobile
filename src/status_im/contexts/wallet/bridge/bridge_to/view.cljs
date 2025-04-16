@@ -14,7 +14,7 @@
 
 (defn- bridge-token-component
   []
-  (fn [{:keys [chain-id network-name]} token]
+  (fn [{:keys [chain-id full-name]} token]
     (let [network          (rf/sub [:wallet/network-details-by-chain-id chain-id])
           currency         (rf/sub [:profile/currency])
           currency-symbol  (rf/sub [:profile/currency-symbol])
