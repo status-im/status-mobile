@@ -94,7 +94,7 @@
   [state]
   (case (:network state)
     :mainnet           [{:network      :mainnet
-                         :full-name    "Mainnet"
+                         :full-name    "Ethereum"
                          :state        (:state-mainnet state)
                          :counter      @counter
                          :total-box    total-box

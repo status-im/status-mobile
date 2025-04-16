@@ -32,7 +32,7 @@
           fiat-formatted   (utils/fiat-formatted-for-ui currency-symbol
                                                         fiat-value)]
       [quo/network-list
-       {:label         (name network-name)
+       {:label         full-name
         :network-image (quo.resources/get-network (:network-name network))
         :token-value   (str crypto-value " " token-symbol)
         :fiat-value    fiat-formatted
