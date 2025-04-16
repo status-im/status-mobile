@@ -27,12 +27,11 @@ class BaseTestReport:
 
     def save_logs(self, logs: dict):
         logs_paths = {}
-        for log in logs.keys():
-            log_path = os.path.join(self.TEST_REPORT_DIR, log)
-            result = open(log_path, 'wb')
-            result.write(logs[log])
-            result.close()
-            logs_paths[log] = log_path
+        for log_name, log_content in logs.items():
+            log_path = os.path.join(self.TEST_REPORT_DIR, log_name)
+            with open(log_path, "wb") as archive_file:
+                archive_file.write(log_content)
+            logs_paths[log_name] = log_path
         return logs_paths
 
     def save_test(self, test, geth: dict = None, requests_log: dict = None):
