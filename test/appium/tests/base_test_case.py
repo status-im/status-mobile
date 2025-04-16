@@ -86,13 +86,8 @@ def get_app_path():
     return app_path
 
 
-def pull_geth(driver):
-    result = driver.pull_file(get_app_path() + 'geth.log')
-    return base64.b64decode(result)
-
-
-def pull_requests_log(driver):
-    result = driver.pull_file(get_app_path() + 'api.log')
+def pull_logs_folder(driver):
+    result = driver.pull_folder(get_app_path())
     return base64.b64decode(result)
 
 
@@ -260,14 +255,13 @@ class MultipleSharedDeviceTestCase(AbstractTestCase):
                 self.print_lt_session_info(self.drivers[driver])
                 self.add_alert_text_to_report(self.drivers[driver])
                 log_names.append(
-                    '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
-                log_contents.append(pull_geth(self.drivers[driver]))
-                log_names.append(
-                    '%s_requests%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
-                log_contents.append(pull_requests_log(self.drivers[driver]))
+                    '%s_logs_%s.zip' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
+                log_contents.append(pull_logs_folder(self.drivers[driver]))
             except (WebDriverException, AttributeError, RemoteDisconnected, ProtocolError):
                 pass
             finally:
+                if not log_contents:
+                    test_suite_data.current_test.testruns[-1].error += "/nCan't extract logs!"
                 try:
                     logs = {log_names[i]: log_contents[i] for i in range(len(log_names))}
                     test_suite_data.current_test.logs_paths = github_report.save_logs(logs)
@@ -296,10 +290,11 @@ class MultipleSharedDeviceTestCase(AbstractTestCase):
         try:
             for i, driver in cls.drivers.items():
                 if group_setup_failed:
-                    log_contents.append(pull_geth(driver=driver))
-                    log_names.append('%s_geth%s.log' % (cls.__name__, i))
-                    log_contents.append(pull_requests_log(driver=driver))
-                    log_names.append('%s_requests%s.log' % (cls.__name__, i))
+                    try:
+                        log_contents.append(pull_logs_folder(driver=driver))
+                        log_names.append('%s_logs_%s.zip' % (cls.__name__, i))
+                    except (WebDriverException, AttributeError, RemoteDisconnected, ProtocolError):
+                        test_suite_data.current_test.testruns[-1].error += "/nCan't extract logs!"
                     lt_session_status = "failed"
                 else:
                     lt_session_status = "passed"
