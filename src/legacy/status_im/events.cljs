@@ -107,6 +107,8 @@
   (let [new-account?            (get db :onboarding/new-account?)
         app-in-background-since (get db :app-in-background-since)
         signed-up?              (get-in db [:profile/profile :signed-up?])
+        notifications-settings? (= (get-in db [:view-id])
+                                   :screen/settings.notifications)
         requires-bio-auth       (and
                                  signed-up?
                                  (= (:auth-method db) "biometric")
@@ -121,7 +123,9 @@
               #(when-let [chat-id (:current-chat-id db)]
                  {:dispatch [:chat/mark-all-as-read chat-id]})
               #(when requires-bio-auth
-                 {:dispatch [:biometric/authenticate {:on-fail on-biometric-auth-fail}]}))))
+                 {:dispatch [:biometric/authenticate {:on-fail on-biometric-auth-fail}]})
+              #(when notifications-settings?
+                 {:dispatch [:notifications/check-notifications-blocked]}))))
 
 (rf/defn on-going-in-background
   [{:keys [db now]}]

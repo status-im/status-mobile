@@ -5,6 +5,7 @@
     [react-native.platform :as platform]
     [status-im.common.events-helper :as events-helper]
     [status-im.config :as config]
+    [status-im.contexts.profile.settings.screens.notifications.styles :as styles]
     [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -30,7 +31,7 @@
   (rf/dispatch [:push-notifications/switch-block-mentions community-mentions-notifications-enabled?]))
 
 (defn notifications-enabled-setting
-  [{:keys [notifications-enabled?]}]
+  [{:keys [notifications-blocked? notifications-enabled?]}]
   (let [on-change (rn/use-callback
                    #(toggle-notifications-enabled notifications-enabled?)
                    [notifications-enabled?])]
@@ -38,7 +39,8 @@
      :title        (i18n/label :t/show-notifications)
      :action       :selector
      :action-props {:on-change on-change
-                    :checked?  notifications-enabled?}}))
+                    :checked?  (and (not notifications-blocked?)
+                                    notifications-enabled?)}}))
 
 (defn chat-non-contacts-notifications-setting
   [{:keys [notifications-enabled?
@@ -103,12 +105,26 @@
 (defn view
   []
   (let [notifications-settings (rf/sub [:profile/notifications-settings])]
+    (rn/use-mount #(rf/dispatch [:notifications/check-notifications-blocked]))
     [quo/overlay {:type :shell :top-inset? true}
      [quo/page-nav
       {:background :blur
        :icon-name  :i/arrow-left
        :on-press   events-helper/navigate-back}]
      [quo/page-top {:title (i18n/label :t/notifications)}]
+     (when (:notifications-blocked? notifications-settings)
+       [quo/information-box
+        {:type            :error
+         :style           styles/information-box
+         :blur?           false
+         :on-button-press #(rf/dispatch [:notifications/open-notifications-settings])
+         :button-label    [rn/view {:style styles/information-box-button-label}
+                           [quo/text {:size :paragraph-2}
+                            (i18n/label :t/enabled-push-notifications)]
+                           [quo/icon :i/external {:size 12}]]}
+        (i18n/label (if platform/ios?
+                      :t/push-notifications-blocked-ios
+                      :t/push-notifications-blocked-android))])
      [quo/category
       {:blur?     true
        :list-type :settings

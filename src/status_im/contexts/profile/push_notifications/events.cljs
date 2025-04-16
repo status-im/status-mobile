@@ -192,3 +192,40 @@
             (save-profile-setting-fx setting))]}))
 
 (rf/reg-event-fx :notifications/news-notifications-switch news-notifications-switch)
+
+(defn check-notifications-blocked
+  [_]
+  {:fx [[:effects/check-notifications-permissions
+         {:on-success [:notifications/determine-notifications-blocked]
+          :on-error   [:log/debug "failed to check notification permissions"]}]]})
+
+(rf/reg-event-fx :notifications/check-notifications-blocked check-notifications-blocked)
+
+(defn determine-notifications-blocked
+  [{:keys [db]} [{:keys [denied? undetermined? authorized?]}]]
+  (let [{:keys [notifications-enabled?
+                messenger-notifications-enabled?
+                news-notifications-enabled?
+                notifications-blocked?]} (get-in db [:profile/profile])
+        blocked?                         (if platform/ios?
+                                           denied?
+                                           (and notifications-enabled? undetermined?))]
+    {:db (assoc-in db [:profile/profile :notifications-blocked?] (boolean blocked?))
+     :fx [(when (and notifications-blocked?
+                     authorized?
+                     notifications-enabled?
+                     messenger-notifications-enabled?)
+            [:effects/push-notifications-enable #{:enable-chat-notifications?}])
+          (when (and notifications-blocked?
+                     authorized?
+                     notifications-enabled?
+                     news-notifications-enabled?)
+            [:effects/push-notifications-enable #{:enable-news-notifications?}])]}))
+
+(rf/reg-event-fx :notifications/determine-notifications-blocked determine-notifications-blocked)
+
+(defn open-notifications-settings
+  [_ _]
+  {:fx [[:effects/open-notifications-settings]]})
+
+(rf/reg-event-fx :notifications/open-notifications-settings open-notifications-settings)

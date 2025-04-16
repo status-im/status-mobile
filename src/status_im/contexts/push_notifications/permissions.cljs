@@ -6,6 +6,10 @@
 
 (def request-notification-permissions permissions/request-notification-permissions)
 
+(def check-notification-permissions permissions/check-notification-permissions)
+
+(def open-notifications-settings permissions/open-notification-settings)
+
 (defn release-notification-permissions
   []
   (when platform/ios?

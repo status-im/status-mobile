@@ -129,3 +129,13 @@
      (doseq [chat-id chat-ids]
        (native-module.pn/clear-message-notifications chat-id))
      (pn-notifications/clear-received-notifications))))
+
+(rf/reg-fx :effects/check-notifications-permissions
+ (fn [{:keys [on-success on-error]}]
+   (-> (pn-permissions/check-notification-permissions)
+       (promesa/then (partial rf/call-continuation on-success))
+       (promesa/catch (partial rf/call-continuation on-error)))))
+
+(rf/reg-fx :effects/open-notifications-settings
+ (fn []
+   (pn-permissions/open-notifications-settings)))

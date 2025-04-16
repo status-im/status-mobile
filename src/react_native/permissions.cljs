@@ -1,7 +1,7 @@
 (ns react-native.permissions
   (:require
     ["react-native-permissions" :refer
-     [check checkNotifications PERMISSIONS requestMultiple
+     [check checkNotifications openSettings PERMISSIONS requestMultiple
       requestNotifications RESULTS]]
     [clojure.string :as string]
     [promesa.core :as promesa]
@@ -95,3 +95,7 @@
   []
   (-> (checkNotifications)
       (promesa/then notification-permissions->notification-permission-statuses)))
+
+(defn open-notification-settings
+  []
+  (openSettings "notifications"))
