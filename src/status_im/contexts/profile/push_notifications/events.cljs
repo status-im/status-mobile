@@ -145,8 +145,7 @@
                news-notifications-enabled?      (conj :disable-news-notifications?)
                messenger-notifications-enabled? (conj :disable-chat-notifications?))]
             :else nil)
-          (when enabled?
-            (save-profile-setting-fx permission-setting))
+          (save-profile-setting-fx permission-setting)
           (when should-enable-messenger-notifications?
             (save-profile-setting-fx messenger-setting))]}))
 
