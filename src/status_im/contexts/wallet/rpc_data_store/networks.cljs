@@ -1,6 +1,7 @@
 (ns status-im.contexts.wallet.rpc-data-store.networks
   (:require [schema.core :as schema]
             [status-im.contexts.wallet.networks.config :as networks.config]
+            [status-im.contexts.wallet.networks.core :as networks]
             [status-im.contexts.wallet.rpc-data-store.utils :as utils]))
 
 (defn- make-network
@@ -61,8 +62,7 @@
 (defn- sort-networks
   [networks]
   ;; Placing the ethereum chains (including testnet) in the top of the list during sorting
-  (sort-by (juxt #(not (contains? networks.config/ethereum-chain-ids (:chain-id %))) :layer :short-name)
-           networks))
+  (sort-by (juxt (complement networks/ethereum-network?) :layer :short-name) networks))
 
 (defn rpc->networks
   [networks-data]

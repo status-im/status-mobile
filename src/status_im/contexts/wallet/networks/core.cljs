@@ -15,6 +15,10 @@
   [chain-id]
   (contains? networks.config/new-networks chain-id))
 
+(defn ethereum-network?
+  [network]
+  (contains? networks.config/ethereum-chain-ids (:chain-id network)))
+
 (defn eth-mainnet?
   "Checks if the passed network is the Ethereum Mainnet chain"
   [network]
