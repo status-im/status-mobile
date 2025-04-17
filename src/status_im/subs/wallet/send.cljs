@@ -255,8 +255,6 @@
  :<- [:wallet/active-networks]
  :<- [:wallet/send-network]
  (fn [[networks send-network]]
-   (let [available-networks-for-bridge (remove #(= (:chain-id send-network)
-                                                   (:chain-id %))
-                                               networks)]
-     {:layer-1 (networks/get-networks-for-layer available-networks-for-bridge 1)
-      :layer-2 (networks/get-networks-for-layer available-networks-for-bridge 2)})))
+   (filter #(and (networks/bridge-supported-network? %)
+                 (not= (:chain-id %) (:chain-id send-network)))
+           networks)))

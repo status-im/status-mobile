@@ -1,7 +1,6 @@
 (ns status-im.contexts.wallet.sheets.network-selection.view
   (:require [quo.core :as quo]
             [react-native.core :as rn]
-            [status-im.contexts.wallet.networks.core :as networks]
             [status-im.contexts.wallet.sheets.network-selection.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -14,15 +13,14 @@
                                        (rf/sub [:wallet/swap-asset-to-pay-network-balance
                                                 chain-id])
                                        (rf/sub [:wallet/send-token-network-balance
-                                                chain-id]))
-        mainnet?                     (networks/eth-mainnet? network)]
+                                                chain-id]))]
     [quo/network-list
      {:label           full-name
       :network-image   (:source network)
       :token-value     balance-in-crypto
       :fiat-value      balance-in-fiat
       :on-press        #(on-select-network network)
-      :container-style (style/network-list-container mainnet?)}]))
+      :container-style style/network-list-container}]))
 
 (defn view
   [{:keys [token-symbol on-select-network source title]
