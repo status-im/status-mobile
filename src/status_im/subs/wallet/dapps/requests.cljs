@@ -66,7 +66,7 @@
 (rf/reg-sub
  :wallet-connect/current-request-network-native-token-symbol
  :<- [:wallet-connect/current-request-network]
- :-> :native-token-symbol)
+ :-> :native-currency-symbol)
 
 (rf/reg-sub
  :wallet-connect/typed-data-request?
