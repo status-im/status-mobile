@@ -36,12 +36,14 @@
                                  :symbol-out    "ETH"
                                  :sender        "0x1"
                                  :recipient     "0x2"
+                                 :chain-id-out  1
                                  :timestamp     1588291200}
                               3 {:activity-type constants/wallet-activity-type-bridge
                                  :amount-out    "0x1"
                                  :symbol-out    "ETH"
                                  :sender        "0x1"
                                  :recipient     "0x1"
+                                 :chain-id-out  1
                                  :timestamp     1588464000}
                               4 {:activity-type constants/wallet-activity-type-swap
                                  :amount-out    "0x1"
@@ -50,18 +52,21 @@
                                  :symbol-in     "SNT"
                                  :sender        "0x1"
                                  :recipient     "0x1"
+                                 :chain-id-out  1
                                  :timestamp     1588464100}
                               5 {:activity-type constants/wallet-activity-type-send
                                  :amount-out    "0x1"
                                  :symbol-out    "ETH"
                                  :sender        "0x1"
                                  :recipient     "0x4"
+                                 :chain-id-out  1
                                  :timestamp     1588464050}}
                        "0x3" {6 {:activity-type constants/wallet-activity-type-receive
                                  :amount-in     "0x1"
                                  :symbol-out    "ETH"
                                  :sender        "0x4"
                                  :recipient     "0x3"
+                                 :chain-id-in   1
                                  :timestamp     1588464000}}})
             (assoc-in [:wallet :current-viewing-account-address] "0x1"))))
     (is

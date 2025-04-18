@@ -5,7 +5,6 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.common.floating-button-page.view :as floating-button-page]
-    [status-im.constants :as constants]
     [status-im.contexts.wallet.common.transaction-settings.view :as transaction-settings]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
@@ -134,8 +133,7 @@
 
 (defn- transaction-details
   []
-  (let [max-fees               (rf/sub [:wallet/wallet-swap-proposal-fee-fiat
-                                        constants/token-for-fees-symbol])
+  (let [max-fees               (rf/sub [:wallet/wallet-swap-proposal-fee-fiat])
         currency-symbol        (rf/sub [:profile/currency-symbol])
         max-fees-formatted     (utils/fiat-formatted-for-ui
                                 currency-symbol

@@ -47,11 +47,10 @@
  :wallet/suggested-routes-success
  (fn [{:keys [db]} [suggested-routes-data enough-assets?]]
    (let [chosen-route                            (:best suggested-routes-data)
-         {:keys [token collectible token-display-name
+         {:keys [token collectible native-token?
                  receiver-network-values
                  sender-network-values tx-type]} (get-in db db-path/send)
          token-decimals                          (if collectible 0 (:decimals token))
-         native-token?                           (and token (= token-display-name "ETH"))
          to-network-amounts-by-chain             (send-utils/network-amounts-by-chain
                                                   {:route          chosen-route
                                                    :token-decimals token-decimals
@@ -221,7 +220,10 @@
               network      (update-in db-path/send
                                       #(-> %
                                            (dissoc :collectible)
-                                           (assoc :network network)))
+                                           (assoc :network       network
+                                                  :native-token? (= (or token-symbol
+                                                                        (:symbol token-data))
+                                                                    (:native-currency-symbol network)))))
               token-symbol (update-in db-path/send assoc :token-symbol token-symbol)
               token-data   (update-in db-path/send
                                       #(assoc %

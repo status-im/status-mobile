@@ -18,20 +18,19 @@
       str))
 
 (defn- hex->amount
-  [hex-str token-symbol token-decimals]
-  (let [native-token? (= token-symbol constants/native-token-symbol)]
-    (-> hex-str
-        hex->number
-        (send-utils/convert-wei-to-eth native-token? token-decimals)
-        str)))
+  [hex-str native-token? token-decimals]
+  (-> hex-str
+      hex->number
+      (send-utils/convert-wei-to-eth native-token? token-decimals)
+      str))
 
 (defn- get-token-amount
-  [{:keys [token-type]} token-symbol amount decimals]
+  [{:keys [token-type]} naitve-token? amount decimals]
   (if (#{activity-constants/wallet-activity-token-type-erc-721
          activity-constants/wallet-activity-token-type-erc-1155}
        token-type)
     (hex->number amount)
-    (hex->amount amount token-symbol decimals)))
+    (hex->amount amount naitve-token? decimals)))
 
 (defn- get-address-context-tag
   [accounts-and-saved-addresses address]
@@ -68,23 +67,25 @@
            chain-id-in chain-id-out activity-status]
     :as   activity}
    {:keys [chain-id->network-details accounts-and-saved-addresses tokens-by-symbol]}]
-  (let [token-id    (some-> (or token-in token-out)
-                            :token-id
-                            hex->number)
-        amount-out  (when amount-out
-                      (get-token-amount token-out
-                                        symbol-out
-                                        amount-out
-                                        (get-in tokens-by-symbol
-                                                [symbol-out :decimals])))
-        amount-in   (when amount-in
-                      (get-token-amount token-in
-                                        symbol-in
-                                        amount-in
-                                        (get-in tokens-by-symbol
-                                                [symbol-in :decimals])))
-        network-in  (chain-id->network-details chain-id-in)
-        network-out (chain-id->network-details chain-id-out)]
+  (let [token-id          (some-> (or token-in token-out)
+                                  :token-id
+                                  hex->number)
+        network-in        (chain-id->network-details chain-id-in)
+        network-out       (chain-id->network-details chain-id-out)
+        native-token-in?  (= (:native-currency-symbol network-in) symbol-in)
+        native-token-out? (= (:native-currency-symbol network-out) symbol-out)
+        amount-out        (when amount-out
+                            (get-token-amount token-out
+                                              native-token-out?
+                                              amount-out
+                                              (get-in tokens-by-symbol
+                                                      [symbol-out :decimals])))
+        amount-in         (when amount-in
+                            (get-token-amount token-in
+                                              native-token-in?
+                                              amount-in
+                                              (get-in tokens-by-symbol
+                                                      [symbol-in :decimals])))]
     (assoc activity
            :relative-date    (datetime/timestamp->relative (* timestamp 1000))
            :sender-tag       (get-address-context-tag accounts-and-saved-addresses sender)

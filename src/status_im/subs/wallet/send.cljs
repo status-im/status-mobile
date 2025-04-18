@@ -136,8 +136,8 @@
 (rf/reg-sub
  :wallet/send-native-token?
  :<- [:wallet/wallet-send]
- (fn [{:keys [token token-display-name]}]
-   (and token (= token-display-name "ETH"))))
+ (fn [{:keys [token token-symbol network]}]
+   (and token (= token-symbol (:native-currency-symbol network)))))
 
 (rf/reg-sub
  :wallet/total-amount

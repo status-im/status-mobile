@@ -12,40 +12,49 @@
 (def arbitrum-name :arbitrum)
 
 (def mainnet
-  {:test?              false
-   :short-name         "eth"
-   :network-name       mainnet-name
-   :chain-id           mainnet-chain-id
-   :related-chain-id   mainnet-chain-id
-   :abbreviated-name   "Eth."
-   :full-name          "Mainnet"
-   :block-explorer-url "https://eth.block-explorer.com/"
-   :active?            true
-   :layer              1})
+  {:test?                    false
+   :short-name               "eth"
+   :network-name             mainnet-name
+   :chain-id                 mainnet-chain-id
+   :related-chain-id         mainnet-chain-id
+   :abbreviated-name         "Eth."
+   :full-name                "Mainnet"
+   :block-explorer-url       "https://eth.block-explorer.com/"
+   :active?                  true
+   :layer                    1
+   :native-currency-symbol   "ETH"
+   :native-currency-name     "Ether"
+   :native-currency-decimals 18})
 
 (def arbitrum
-  {:test?              false
-   :short-name         "arb1"
-   :network-name       arbitrum-name
-   :chain-id           arbitrum-chain-id
-   :related-chain-id   arbitrum-chain-id
-   :abbreviated-name   "Arb1."
-   :block-explorer-url "https://arb.block-explorer.com/"
-   :full-name          "Arbitrum"
-   :active?            true
-   :layer              2})
+  {:test?                    false
+   :short-name               "arb1"
+   :network-name             arbitrum-name
+   :chain-id                 arbitrum-chain-id
+   :related-chain-id         arbitrum-chain-id
+   :abbreviated-name         "Arb1."
+   :block-explorer-url       "https://arb.block-explorer.com/"
+   :full-name                "Arbitrum"
+   :active?                  true
+   :layer                    2
+   :native-currency-symbol   "ETH"
+   :native-currency-name     "Ether"
+   :native-currency-decimals 18})
 
 (def optimism
-  {:test?              false
-   :short-name         "oeth"
-   :network-name       optimism-name
-   :chain-id           optimism-chain-id
-   :related-chain-id   optimism-chain-id
-   :abbreviated-name   "Opt."
-   :full-name          "Optimism"
-   :block-explorer-url "https://opt.block-explorer.com/"
-   :active?            true
-   :layer              2})
+  {:test?                    false
+   :short-name               "oeth"
+   :network-name             optimism-name
+   :chain-id                 optimism-chain-id
+   :related-chain-id         optimism-chain-id
+   :abbreviated-name         "Opt."
+   :full-name                "Optimism"
+   :block-explorer-url       "https://opt.block-explorer.com/"
+   :active?                  true
+   :layer                    2
+   :native-currency-symbol   "ETH"
+   :native-currency-name     "Ether"
+   :native-currency-decimals 18})
 
 (def sepolia
   (assoc mainnet

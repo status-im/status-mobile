@@ -450,8 +450,6 @@
 (def ^:const swap-tokens-my :my)
 (def ^:const swap-tokens-popular :popular)
 
-(def ^:const token-for-fees-symbol "ETH")
-
 ;; The 15% buffer accounts for Ethereum's EIP-1559 fee mechanism, where the base fee can increase
 ;; by up to 12.5% per block in periods of high congestion. The extra 2.5% provides additional
 ;; safety to prevent failed transactions due to rapid gas price fluctuations.
@@ -480,8 +478,6 @@
    :more-than-five-minutes  4})
 
 (def ^:const wallet-connect-transaction-refresh-interval-ms 10000)
-
-(def ^:const native-token-symbol "ETH")
 
 ;; About app links
 (def ^:const status-app-url "http://status.app")

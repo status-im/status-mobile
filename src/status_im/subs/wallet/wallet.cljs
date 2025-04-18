@@ -163,8 +163,9 @@
 
 (rf/reg-sub
  :wallet/bridge-token
- :<- [:wallet/wallet-send]
- :-> :token)
+ :<- [:wallet/wallet-send-token]
+ (fn [token]
+   (update token :networks #(filter networks/bridge-supported-network? %))))
 
 (rf/reg-sub
  :wallet/wallet-send-token-symbol
