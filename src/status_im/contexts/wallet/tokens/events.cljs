@@ -11,7 +11,7 @@
 (rf/reg-event-fx
  :wallet.tokens/reset-tokens
  (fn [{:keys [db]}]
-   {:db (update-in db [:wallet] dissoc :tokens)}))
+   {:db (update db :wallet dissoc :tokens)}))
 
 (rf/reg-event-fx
  :wallet.tokens/get-token-list

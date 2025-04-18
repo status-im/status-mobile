@@ -15,10 +15,7 @@
   [rn/view {:style style/single-network-container}
    [fast-image/fast-image
     {:source (or (:source item) item)
-     :style  {:width         20
-              :height        20
-              :border-radius 10
-              :margin-right  4}}]
+     :style  style/single-network-image}]
    [text/text
     {:weight :medium
      :size   :paragraph-2} (:full-name item)]])

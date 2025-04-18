@@ -51,3 +51,9 @@
   {:flex-direction  :row
    :align-items     :center
    :justify-content :center})
+
+(def single-network-image
+  {:width         20
+   :height        20
+   :border-radius 10
+   :margin-right  4})
