@@ -1,6 +1,5 @@
 (ns status-im.contexts.settings.wallet.network-settings.testnet-mode.view
   (:require [quo.core :as quo]
-            [react-native.core :as rn]
             [status-im.contexts.settings.wallet.network-settings.testnet-mode.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -23,12 +22,6 @@
        :blur?           blur?
        :container-style style/drawer-top}]
      [quo/text {:style style/description} description]
-     [rn/view {:style style/infobox}
-      [quo/information-box
-       {:type  :default
-        :blur? blur?
-        :icon  :i/info}
-       (i18n/label :t/change-testnet-mode-logout-info)]]
      [quo/bottom-actions
       {:container-style  {:style style/bottom-actions-container}
        :actions          :two-actions
