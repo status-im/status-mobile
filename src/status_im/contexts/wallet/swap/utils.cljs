@@ -76,8 +76,9 @@
   [tokens pay-token-symbol chain-id]
   (let [asset-to-receive
         (cond
-          (and (= pay-token-symbol "ETH") (not= chain-id networks.config/bsc-chain-id)) "USDC"
-          (and (= pay-token-symbol "BNB") (= chain-id networks.config/bsc-chain-id))    "USDC"
+          ;; Temporary workaround as USDC has 6 decimals on ETH/OPT/ARB/BASE and 18 decimals on BSC
+          (and (= pay-token-symbol "ETH") (not= chain-id networks.config/bsc-chain-id)) "USDC(6)"
+          (and (= pay-token-symbol "BNB") (= chain-id networks.config/bsc-chain-id))    "USDC(18)"
           (and (not= pay-token-symbol "BNB") (= chain-id networks.config/bsc-chain-id)) "BNB"
           (= pay-token-symbol "SNT")                                                    "ETH"
           :else                                                                         "SNT")]

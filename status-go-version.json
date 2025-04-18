@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "feat/bnb-smart-chain",
-    "commit-sha1": "3ce5431e62c93c1677012bde85fa053c4b2e4b05",
-    "src-sha256": "18iqvj3bjv22jqlnf979hqxmc2a9grl2n6vb2119inhlprfh6a7n"
+    "version": "fix/token-collison",
+    "commit-sha1": "ec89daf4cf89a7e28d3e1f54e578729af587adf9",
+    "src-sha256": "12n0r7hwgs4cibxxyxr30nqlsgcmcns3k592nyx4cqlsxw9vrp0i"
 }
