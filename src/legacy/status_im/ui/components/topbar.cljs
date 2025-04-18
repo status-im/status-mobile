@@ -40,7 +40,7 @@
     [quo/header
      (merge {:left-accessories navigation
              :title-component  content
-             :insets           (when use-insets (safe-area/get-insets))
+             :insets           (when use-insets safe-area/insets)
              :left-width       (when navigation
                                  default-button-width)
              :border-bottom    border-bottom?}

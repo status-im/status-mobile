@@ -192,7 +192,6 @@
   (let [{initial-display-name :display-name
          initial-color        :customization-color
          [initial-image]      :images} (rf/sub [:profile/profile])
-        top                            (safe-area/get-top)
         scroll-y                       (reagent/atom 0)
         display-name                   (reagent/atom "")
         validation-msg                 (reagent/atom (profile-validator/validation-name @display-name))
@@ -241,7 +240,7 @@
         [quo/overlay {:type :shell}
          [rn/view {:style style/page-container}
           [quo/page-nav
-           {:margin-top top
+           {:margin-top safe-area/top
             :background :blur
             :icon-name  :i/close
             :on-press   on-close}]

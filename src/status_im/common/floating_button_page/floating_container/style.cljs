@@ -4,7 +4,7 @@
 
 (defn content-container
   [blur? keyboard-shown? {:keys [padding-vertical padding-horizontal]}]
-  (let [margin-bottom (if keyboard-shown? 0 (safe-area/get-bottom))]
+  (let [margin-bottom (if keyboard-shown? 0 safe-area/bottom)]
     (cond-> {:margin-top         :auto
              :overflow           :hidden
              :margin-bottom      margin-bottom

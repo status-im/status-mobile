@@ -48,7 +48,7 @@
          :or   {initial-tab        :profile
                 hide-tab-selector? false}} (quo.context/use-screen-params)
         [selected-tab set-selected-tab]    (rn/use-state initial-tab)]
-    [rn/view {:style {:padding-top (safe-area/get-top)}}
+    [rn/view {:style {:padding-top safe-area/top}}
      [header]
      (when-not hide-tab-selector?
        [rn/view {:style style/tabs-container}

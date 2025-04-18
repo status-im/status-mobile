@@ -58,7 +58,7 @@
 
 (defn view
   []
-  (let [insets (safe-area/get-insets)]
+  (let [insets safe-area/insets]
     [rn/view {:style (style/page-container insets)}
      [rn/view {:style style/page-heading}
       [quo/page-nav {:type :no-title :background :blur}]

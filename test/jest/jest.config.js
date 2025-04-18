@@ -16,7 +16,7 @@ const transformIgnorePatterns = () => {
     'react-native-redash',
     'react-native-shadow-2',
     'react-native-shake',
-    'react-native-static-safe-area-insets',
+    'react-native-safe-area-context',
   ].join('|');
 
   return [`/node_modules/(?!(${libs})/).*/`];

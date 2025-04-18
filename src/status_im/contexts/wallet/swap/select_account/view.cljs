@@ -39,7 +39,7 @@
     [floating-button-page/view
      {:footer-container-padding 0
       :header                   [quo/page-nav
-                                 {:margin-top (safe-area/get-top)
+                                 {:margin-top safe-area/top
                                   :icon-name  :i/close
                                   :on-press   on-close}]}
      [quo/page-top

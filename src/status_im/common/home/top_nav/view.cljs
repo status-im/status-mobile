@@ -37,7 +37,6 @@
         avatar                           {:online?         online?
                                           :full-name       (profile.utils/displayed-name profile)
                                           :profile-picture (profile.utils/photo profile)}
-
         unread-count                     (rf/sub [:activity-center/unread-count])
         indicator                        (rf/sub [:activity-center/unread-indicator])
         notification-type                (case indicator

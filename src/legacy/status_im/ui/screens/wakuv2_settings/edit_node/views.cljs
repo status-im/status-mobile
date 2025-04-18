@@ -34,7 +34,7 @@
       [react/keyboard-avoiding-view
        {:style         {:flex 1}
         :ignore-offset true}
-       [react/view {:flex 1 :padding-bottom (safe-area/get-bottom)}
+       [react/view {:flex 1 :padding-bottom safe-area/bottom}
         [topbar/topbar {:title (i18n/label (if name :t/node-details :t/add-node))}]
         [react/scroll-view {:keyboard-should-persist-taps :handled}
          [react/view styles/edit-node-view

@@ -43,7 +43,7 @@ class TestProfileOneDevice(MultipleSharedDeviceTestCase):
             self.errors.append(
                 self.profile,
                 "Expected messages are not shown for the second attempt with incorrect recovery phrase word")
-        self.profile.button_one.find_elements()[1].click()
+        self.profile.button_one.click()
         if not self.profile.recovery_phrase_table.is_element_displayed():
             self.errors.append(self.profile, "Recovery phrase is not shown after failed attempts to check it")
             self.errors.verify_no_errors()  # the test fails if the recovery phrase is not shown on this step

@@ -1,7 +1,7 @@
-(ns status-im.contexts.wallet.send.transaction-settings.max-fee.view
+(ns status-im.contexts.wallet.common.transaction-settings.max-fee.view
   (:require
     [quo.context]
-    [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
+    [status-im.contexts.wallet.common.transaction-settings.view :as transaction-settings]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -27,9 +27,9 @@
 
 (defn view
   []
-  (let [network-base-fee (rf/sub [:wallet.send/tx-settings-network-base-fee-route])
-        max-base-fee     (rf/sub [:wallet.send/tx-settings-max-base-fee])
-        priority-fee     (rf/sub [:wallet.send/tx-settings-priority-fee])
+  (let [network-base-fee (rf/sub [:wallet/tx-settings-network-base-fee-route])
+        max-base-fee     (rf/sub [:wallet/tx-settings-max-base-fee])
+        priority-fee     (rf/sub [:wallet/tx-settings-priority-fee])
         conditions       (partial hint-and-status network-base-fee priority-fee)]
     [transaction-settings/custom-setting-screen
      {:screen-title  (i18n/label :t/max-base-fee)
@@ -39,7 +39,7 @@
       :info-title    (i18n/label :t/max-base-fee)
       :info-content  (i18n/label :t/about-max-base-fee)
       :on-save       (fn [new-val]
-                       (rf/dispatch [:wallet.send/set-max-base-fee new-val])
+                       (rf/dispatch [:wallet/set-max-base-fee new-val])
                        (rf/dispatch [:navigate-back])
                        (rf/dispatch [:show-bottom-sheet
                                      {:content transaction-settings/custom-settings-sheet}]))}]))

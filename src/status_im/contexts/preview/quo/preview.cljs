@@ -382,7 +382,7 @@
                          (rf/dispatch [:theme/switch {:theme :light}]))))
                    [blur? blur-dark-only?])
     [rn/view
-     {:style {:top  (safe-area/get-top)
+     {:style {:top  safe-area/top
               :flex 1}}
      [common/navigation-bar {:title title}]
      [rn/scroll-view

@@ -1,7 +1,7 @@
-(ns status-im.contexts.wallet.send.transaction-settings.priority-fee.view
+(ns status-im.contexts.wallet.common.transaction-settings.priority-fee.view
   (:require
     [quo.context]
-    [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
+    [status-im.contexts.wallet.common.transaction-settings.view :as transaction-settings]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -25,10 +25,10 @@
 
 (defn view
   []
-  (let [priority-fee (rf/sub [:wallet.send/tx-settings-priority-fee])
-        max-base-fee (rf/sub [:wallet.send/tx-settings-max-base-fee])
-        spectrum     {:low  (rf/sub [:wallet.send/tx-settings-suggested-min-priority-fee])
-                      :high (rf/sub [:wallet.send/tx-settings-suggested-max-priority-fee])}
+  (let [priority-fee (rf/sub [:wallet/tx-settings-priority-fee])
+        max-base-fee (rf/sub [:wallet/tx-settings-max-base-fee])
+        spectrum     {:low  (rf/sub [:wallet/tx-settings-suggested-min-priority-fee])
+                      :high (rf/sub [:wallet/tx-settings-suggested-max-priority-fee])}
         conditions   (partial hint-and-status priority-fee spectrum max-base-fee)]
     [transaction-settings/custom-setting-screen
      {:screen-title  (i18n/label :t/priority-fee)
@@ -38,7 +38,7 @@
       :info-title    (i18n/label :t/priority-fee)
       :info-content  (i18n/label :t/about-priority-fee)
       :on-save       (fn [new-val]
-                       (rf/dispatch [:wallet.send/set-priority-fee new-val])
+                       (rf/dispatch [:wallet/set-priority-fee new-val])
                        (rf/dispatch [:navigate-back])
                        (rf/dispatch [:show-bottom-sheet
                                      {:content transaction-settings/custom-settings-sheet}]))}]))

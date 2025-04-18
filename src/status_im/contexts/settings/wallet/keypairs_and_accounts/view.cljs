@@ -95,7 +95,7 @@
 
 (defn view
   []
-  (let [insets                        (safe-area/get-insets)
+  (let [insets                        safe-area/insets
         compressed-key                (rf/sub [:profile/compressed-key])
         profile-picture               (rf/sub [:profile/image])
         customization-color           (rf/sub [:profile/customization-color])

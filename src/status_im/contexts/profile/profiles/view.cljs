@@ -5,6 +5,7 @@
     [quo.context :as quo.context]
     [quo.core :as quo]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [status-im.common.confirmation-drawer.view :as confirmation-drawer]
@@ -147,8 +148,9 @@
 
 (defn- profiles-section
   [{:keys [hide-profiles]}]
-  (let [profiles    (vals (rf/sub [:profile/profiles-overview]))
-        translate-x (reanimated/use-shared-value @translate-x-atom)]
+  (let [{:keys [top bottom]} safe-area/insets
+        profiles             (vals (rf/sub [:profile/profiles-overview]))
+        translate-x          (reanimated/use-shared-value @translate-x-atom)]
     (rn/use-mount (fn []
                     (reset! push-animation-fn-atom #(push-animation translate-x))
                     (reset! pop-animation-fn-atom #(pop-animation translate-x))
@@ -159,7 +161,7 @@
                       (reset! push-animation-fn-atom nil)
                       (reset! pop-animation-fn-atom nil))))
     [reanimated/view {:style (style/profiles-container translate-x)}
-     [rn/view {:style style/profiles-header}
+     [rn/view {:style (style/profiles-header top)}
       [quo/text
        {:size   :heading-1
         :weight :semi-bold
@@ -176,7 +178,7 @@
      [rn/flat-list
       {:data                    (sort-by :timestamp > profiles)
        :key-fn                  :key-uid
-       :content-container-style {:padding-bottom 20}
+       :content-container-style {:padding-bottom (+ bottom 20)}
        :render-data             {:last-index        (dec (count profiles))
                                  :set-hide-profiles hide-profiles}
        :render-fn               profile-card}]]))
@@ -208,7 +210,8 @@
 
 (defn login-section
   [{:keys [show-profiles]}]
-  (let [{:keys [key-uid name keycard-pairing auth-method
+  (let [{:keys [top bottom]}          safe-area/insets
+        {:keys [key-uid name keycard-pairing auth-method
                 customization-color]} (rf/sub [:profile/login-profile])
         sign-in-enabled?              (rf/sub [:sign-in-enabled?])
         profile-picture               (rf/sub [:profile/login-profiles-picture key-uid])
@@ -218,8 +221,9 @@
                                        :error-message error-message}
         login-profile                 (rn/use-callback #(rf/dispatch [:profile.login/login]))]
     [rn/keyboard-avoiding-view
-     {:style                    style/login-container
-      :keyboard-vertical-offset (- (safe-area/get-bottom))}
+     (cond-> {:style                    (style/login-container top)
+              :keyboard-vertical-offset (- bottom)}
+       platform/android? (assoc :behavior :height))
      [rn/view {:style style/multi-profile-button-container}
       (when config/quo-preview-enabled?
         [quo/button
@@ -274,7 +278,7 @@
          :icon-left           :i/unlocked
          :disabled?           (or (not sign-in-enabled?) processing)
          :on-press            login-profile
-         :container-style     {:margin-bottom (+ (safe-area/get-bottom) 12)}}
+         :container-style     {:margin-bottom (+ bottom 12)}}
         (i18n/label :t/log-in)])]))
 
 (defn view

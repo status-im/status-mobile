@@ -41,4 +41,18 @@
                 :show-new-chain-indicator? true}
                networks-list])
     (h/is-truthy (h/query-by-label-text :network-dropdown))
-    (h/is-truthy (h/query-by-label-text :new-chain-indicator))))
+    (h/is-truthy (h/query-by-label-text :new-chain-indicator)))
+
+  (h/test "Should show label"
+    (h/render [network-dropdown/view
+               {:state :default
+                :label "Mainnet"}
+               networks-list])
+    (h/is-truthy (h/get-by-text "Mainnet")))
+
+  (h/test "Should show dropdown icon"
+    (h/render [network-dropdown/view
+               {:state          :default
+                :dropdown-icon? true}
+               networks-list])
+    (h/is-truthy (h/query-by-label-text :dropdown-icon))))

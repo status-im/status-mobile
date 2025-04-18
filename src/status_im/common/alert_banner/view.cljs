@@ -46,7 +46,7 @@
         banners-count (count banners)
         alert-banner  (:alert banners)
         error-banner  (:error banners)
-        safe-area-top (safe-area/get-top)
+        safe-area-top safe-area/top
         colors-map    (get-colors-map theme)]
     (when-not hide-banners?
       [hole-view/hole-view

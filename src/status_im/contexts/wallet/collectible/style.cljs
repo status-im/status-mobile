@@ -8,7 +8,7 @@
 
 (defn- header-height
   []
-  (+ 56 (safe-area/get-top)))
+  (+ 56 safe-area/top))
 
 (defn preview-container
   []

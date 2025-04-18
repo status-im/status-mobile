@@ -156,7 +156,7 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
     @marks.testrail_id(741841)
     def test_wallet_collectible_send_from_expanded_info_view(self):
         self.wallet_view.collectibles_tab.click()
-        self.wallet_view.get_collectible_element('Glitch Punks').wait_for_element().click()
+        self.wallet_view.get_collectible_element('Glitch Punks').scroll_and_click()
         self.wallet_view.send_from_collectible_info_button.click()
         self.wallet_view.address_text_input.send_keys(self.receiver['wallet_address'])
         self.wallet_view.continue_button.click()

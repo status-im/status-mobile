@@ -23,8 +23,19 @@
     {:weight :medium
      :size   :paragraph-2} (:full-name item)]])
 
+(defn dropdown-icon
+  [theme]
+  (let [{:keys [background foreground]} (style/dropdown-icon-colors theme)]
+    [rn/view {:style style/dropdown-icon-container}
+     [icon/icon
+      :i/dropdown
+      {:size                20
+       :accessibility-label :dropdown-icon
+       :color               background
+       :color-2             foreground}]]))
+
 (defn view
-  [{:keys [on-press networks-filtered? state show-new-chain-indicator?] :as props}
+  [{:keys [on-press networks-filtered? state show-new-chain-indicator? label dropdown-icon?] :as props}
    networks]
   (let [theme                  (quo.context/use-theme)
         [pressed? set-pressed] (rn/use-state false)
@@ -57,4 +68,13 @@
         {:type      :network
          :list-size (count networks)
          :size      :size-20}
-        networks])]))
+        networks])
+     (when label
+       [text/text
+        {:size            :paragraph-1
+         :weight          :medium
+         :style           (style/dropdown-text theme)
+         :number-of-lines 1}
+        label])
+     (when dropdown-icon?
+       [dropdown-icon theme])]))

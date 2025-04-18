@@ -71,7 +71,7 @@
                                  {:type       :no-title
                                   :icon-name  :i/close
                                   :on-press   events-helper/navigate-back
-                                  :margin-top (safe-area/get-top)
+                                  :margin-top safe-area/top
                                   :background :blur}]}
      [quo/page-top
       {:title                     (i18n/label :t/from-label)

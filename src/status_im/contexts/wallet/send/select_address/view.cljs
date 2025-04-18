@@ -199,7 +199,7 @@
           :keyboard-should-persist-taps :always
           :header                       [account-switcher/view
                                          {:on-press      #(rf/dispatch [:navigate-back])
-                                          :margin-top    (safe-area/get-top)
+                                          :margin-top    safe-area/top
                                           :switcher-type :select-account}]
           :footer                       (when-not (string/blank? @input-value)
                                           [footer @input-value])}

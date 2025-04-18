@@ -132,10 +132,9 @@
     {:db             (assoc db :view-id view-id)
      :set-view-id-fx [view-id (:theme db)]}))
 
-(rf/defn reload-status-nav-color
-  {:events [:reload-status-nav-color]}
-  [{:keys [db]} view-id]
-  {:reload-status-nav-color-fx [(or view-id (:view-id db)) (:theme db)]})
+(rf/reg-event-fx :reload-status-nav-color
+ (fn [{:keys [db]} [view-id]]
+   {:fx [[:reload-status-nav-color-fx [(or view-id (:view-id db)) (:theme db)]]]}))
 
 (defn open-share
   [_ [config]]

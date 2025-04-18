@@ -245,7 +245,7 @@ class ProfileView(BaseView):
         self.button_one.click()
         self.fill_recovery_phrase_checking_words(recovery_phrase)
         self.checkbox_button.click()
-        self.button_one.find_elements()[-1].click()
+        self.button_one.click()
         return ' '.join(recovery_phrase.values())
 
     def edit_profile_picture(self, image_index: int, update_by="Gallery"):

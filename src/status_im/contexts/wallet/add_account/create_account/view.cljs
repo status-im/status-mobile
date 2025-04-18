@@ -143,8 +143,7 @@
 
 (defn- floating-button
   [_ & _]
-  (let [top    (safe-area/get-top)
-        header [quo/page-nav
+  (let [header [quo/page-nav
                 {:type       :no-title
                  :background :blur
                  :right-side [{:icon-name :i/info
@@ -157,7 +156,7 @@
        [floating-button-page/view
         {:gradient-cover?          true
          :footer-container-padding 0
-         :header-container-style   {:padding-top top}
+         :header-container-style   {:padding-top safe-area/top}
          :customization-color      account-color
          :header                   header
          :footer                   footer}]

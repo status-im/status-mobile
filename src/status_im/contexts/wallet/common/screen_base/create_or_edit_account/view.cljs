@@ -32,7 +32,7 @@
       :footer                   footer
       :gradient-cover?          true
       :footer-container-padding 0
-      :header-container-style   {:padding-top (safe-area/get-top)}
+      :header-container-style   {:padding-top safe-area/top}
       :customization-color      account-color}
      (into
       [:<>

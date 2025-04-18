@@ -137,7 +137,7 @@
        :customization-color color}]
      [quo/page-nav
       {:type       :no-title
-       :margin-top (safe-area/get-top)
+       :margin-top safe-area/top
        :background :photo
        :right-side [{:icon-name :i/options
                      :on-press  #(rf/dispatch [:show-bottom-sheet

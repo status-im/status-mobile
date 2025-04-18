@@ -62,7 +62,7 @@
         [rn/view {:style {:margin-top 0}}
          top-nav]
         [quo/page-nav
-         (cond-> {:margin-top     (safe-area/get-top)
+         (cond-> {:margin-top     safe-area/top
                   :type           :no-title
                   :background     (if (or (:blur? page-nav-props)
                                           (= 1 (reanimated/get-shared-value opacity-animation)))

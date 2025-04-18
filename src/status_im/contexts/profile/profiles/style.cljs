@@ -25,10 +25,11 @@
     :bottom   0
     :right    0}))
 
-(def profiles-header
+(defn profiles-header
+  [top]
   {:flex-direction     :row
    :padding-horizontal 20
-   :padding-top        112
+   :padding-top        (+ 56 top)
    :margin-bottom      20})
 
 (def profiles-header-text
@@ -37,20 +38,21 @@
 
 ;; Login Section
 
-(def login-container
+(defn login-container
+  [top]
   {:position           :absolute
    :left               0
    :top                0
    :right              0
    :bottom             0
-   :padding-top        56
+   :padding-top        top
    :padding-horizontal 20})
 
 (def multi-profile-button-container
-  {:flex-direction  :row
-   :justify-content :flex-end
-   :margin-bottom   20})
+  {:flex-direction   :row
+   :padding-vertical 12
+   :justify-content  :flex-end
+   :margin-bottom    8})
 
 (def login-profile-card
   {:margin-bottom 20})
-

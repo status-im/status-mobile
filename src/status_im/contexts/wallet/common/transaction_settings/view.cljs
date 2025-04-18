@@ -1,4 +1,4 @@
-(ns status-im.contexts.wallet.send.transaction-settings.view
+(ns status-im.contexts.wallet.common.transaction-settings.view
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
@@ -11,11 +11,12 @@
 
 (defn custom-settings-sheet
   [_]
-  (let [max-base-fee   (rf/sub [:wallet.send/tx-settings-max-base-fee])
-        priority-fee   (rf/sub [:wallet.send/tx-settings-priority-fee])
-        max-gas-amount (rf/sub [:wallet.send/tx-settings-gas-amount])
-        nonce          (rf/sub [:wallet.send/tx-settings-nonce])
-        account-color  (rf/sub [:wallet/current-viewing-account-color])]
+  (let [max-base-fee   (rf/sub [:wallet/tx-settings-max-base-fee])
+        priority-fee   (rf/sub [:wallet/tx-settings-priority-fee])
+        max-gas-amount (rf/sub [:wallet/tx-settings-gas-amount])
+        nonce          (rf/sub [:wallet/tx-settings-nonce])
+        account-color  (rf/sub [:wallet/current-viewing-account-color])
+        current-screen (rf/sub [:view-id])]
     [rn/view
      [quo/drawer-top
       {:title (i18n/label :t/custom)}]
@@ -28,7 +29,7 @@
                     :action            :arrow
                     :on-press          #(rf/dispatch [:navigate-to-within-stack
                                                       [:screen/wallet.tx-settings-max-fee
-                                                       :screen/wallet.transaction-confirmation]])
+                                                       current-screen]])
                     :label             :text
                     :preview-size      :size-32}
                    {:title             (i18n/label :t/priority-fee)
@@ -38,7 +39,7 @@
                     :action            :arrow
                     :on-press          #(rf/dispatch [:navigate-to-within-stack
                                                       [:screen/wallet.tx-settings-priority-fee
-                                                       :screen/wallet.transaction-confirmation]])
+                                                       current-screen]])
                     :label             :text
                     :preview-size      :size-32}
                    {:title             (i18n/label :t/max-gas-amount)
@@ -48,7 +49,7 @@
                     :action            :arrow
                     :on-press          #(rf/dispatch [:navigate-to-within-stack
                                                       [:screen/wallet.tx-settings-gas-amount
-                                                       :screen/wallet.transaction-confirmation]])
+                                                       current-screen]])
                     :label             :text
                     :preview-size      :size-32}
                    {:title             (i18n/label :t/nonce)
@@ -58,14 +59,14 @@
                     :action            :arrow
                     :on-press          #(rf/dispatch [:navigate-to-within-stack
                                                       [:screen/wallet.tx-settings-nonce
-                                                       :screen/wallet.transaction-confirmation]])
+                                                       current-screen]])
                     :label             :text
                     :preview-size      :size-32}]}]
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-props {:on-press            (fn []
                                                  (rf/dispatch
-                                                  [:wallet.send/custom-transaction-settings-confirmed])
+                                                  [:wallet/custom-transaction-settings-confirmed])
                                                  (rf/dispatch [:hide-bottom-sheet]))
                           :customization-color account-color}
        :button-one-label (i18n/label :t/confirm)}]]))
@@ -94,7 +95,7 @@
 
 (defn settings-sheet
   []
-  (let [current-transaction-setting                   (rf/sub [:wallet.send/tx-settings-fee-mode])
+  (let [current-transaction-setting                   (rf/sub [:wallet/tx-settings-fee-mode])
         fees-by-mode                                  (rf/sub [:wallet/suggested-gas-fees-for-setting])
         account-color                                 (rf/sub [:wallet/current-viewing-account-color])
         [transaction-setting set-transaction-setting] (rn/use-state current-transaction-setting)
@@ -117,7 +118,7 @@
        :data
        [{:title             (title :tx-fee-mode/normal)
          :image-props       "🍿"
-         :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
+         :description-props {:text (rf/sub [:wallet/wallet-transaction-setting-fiat-formatted
                                             :tx-fee-mode/normal])}
          :image             :emoji
          :description       :text
@@ -137,7 +138,7 @@
          :preview-size      :size-32}
         {:title             (title :tx-fee-mode/fast)
          :image-props       "🚗"
-         :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
+         :description-props {:text (rf/sub [:wallet/wallet-transaction-setting-fiat-formatted
                                             :tx-fee-mode/fast])}
          :image             :emoji
          :description       :text
@@ -151,7 +152,7 @@
          :preview-size      :size-32}
         {:title             (title :tx-fee-mode/urgent)
          :image-props       "🚀"
-         :description-props {:text (rf/sub [:wallet/wallet-send-transaction-setting-fiat-formatted
+         :description-props {:text (rf/sub [:wallet/wallet-transaction-setting-fiat-formatted
                                             :tx-fee-mode/urgent])}
          :image             :emoji
          :description       :text
@@ -179,7 +180,7 @@
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-props {:on-press            (fn []
-                                                 (rf/dispatch [:wallet.send/quick-fee-mode-confirmed
+                                                 (rf/dispatch [:wallet/quick-fee-mode-confirmed
                                                                transaction-setting])
                                                  (rf/dispatch [:hide-bottom-sheet]))
                           :customization-color account-color}
@@ -253,7 +254,7 @@
        :button-one-props {:disabled? (= (:status condition) :error)
                           :on-press  #(on-save (controlled-input/value-numeric input-state))}}]
      [quo/numbered-keyboard
-      {:container-style      {:padding-bottom (safe-area/get-bottom)}
+      {:container-style      {:padding-bottom safe-area/bottom}
        :left-action          (if with-decimals? :dot :none)
        :delete-key?          true
        :on-press             (fn [c]

@@ -73,7 +73,7 @@
 
 (defn view
   []
-  (let [insets               (safe-area/get-insets)
+  (let [insets               safe-area/insets
         active-network-count (count (rf/sub [:wallet/active-chain-ids]))]
     [quo/overlay
      {:type            :shell

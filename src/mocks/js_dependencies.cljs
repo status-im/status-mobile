@@ -173,7 +173,9 @@
 
 (def net-info #js {:addEventListener identity})
 (def react-native-biometrics #js {:default {}})
-(def react-native-static-safe-area-insets #js {:default {}})
+(def react-native-safe-area-context
+  #js {:initialWindowMetrics #js {}
+       :SafeAreaProvider     #js {}})
 
 (def back-handler
   #js
@@ -402,7 +404,7 @@
     "react-native-background-timer"                    background-timer
     "react-native-image-crop-picker"                   image-crop-picker
     "react-native-gesture-handler"                     react-native-gesture-handler
-    "react-native-static-safe-area-insets"             react-native-static-safe-area-insets
+    "react-native-safe-area-context"                   react-native-safe-area-context
     "react-native-config"                              config
     "react-native-mmkv"                                react-native-mmkv
     "react-native-iphone-x-helper"                     (clj->js {:getStatusBarHeight (fn [])

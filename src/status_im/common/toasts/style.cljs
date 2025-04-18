@@ -5,7 +5,7 @@
   []
   {:elevation       2
    :pointer-events  :box-none
-   :padding-top     (+ (safe-area/get-top) 6)
+   :padding-top     (+ safe-area/top 6)
    :flex-direction  :column
    :justify-content :center
    :align-items     :center})

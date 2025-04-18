@@ -68,11 +68,10 @@
 
 (defn view
   []
-  (let [{:keys [top]} (safe-area/get-insets)
-        window-height (rf/sub [:dimensions/window-height])]
+  (let [window-height (rf/sub [:dimensions/window-height])]
     [rn/view {:style style/content-container}
      [quo/page-nav
-      {:margin-top top
+      {:margin-top safe-area/top
        :type       :no-title
        :background :blur
        :icon-name  :i/arrow-left

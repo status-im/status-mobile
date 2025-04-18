@@ -77,7 +77,7 @@
 (defn view
   []
   (let [theme                (quo.context/use-theme)
-        insets               (safe-area/get-insets)
+        insets               safe-area/insets
         customization-color  (rf/sub [:profile/customization-color])
         scroll-y             (reanimated/use-shared-value 0)
         profile              (rf/sub [:profile/profile])

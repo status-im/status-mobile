@@ -6,7 +6,7 @@
 (defn container-main
   []
   {:background-color colors/neutral-95
-   :padding-top      (safe-area/get-top)
+   :padding-top      safe-area/top
    :flex             1})
 
 (def page-container
@@ -41,4 +41,3 @@
 (def valid-cs-container
   {:flex   1
    :margin 12})
-

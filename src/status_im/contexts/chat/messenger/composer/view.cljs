@@ -37,7 +37,7 @@
 (defn view
   [layout-height]
   (let [theme     (quo.context/use-theme)
-        bottom    (safe-area/get-bottom)
+        bottom    safe-area/bottom
         input-ref (rn/use-ref-atom nil)
         set-ref   (rn/use-callback (fn [value]
                                      (rf/dispatch [:chat/set-input-ref value])

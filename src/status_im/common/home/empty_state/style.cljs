@@ -6,6 +6,6 @@
 (defn empty-state-container
   []
   {:flex            1
-   :margin-top      (+ constants/header-height (safe-area/get-top))
+   :margin-top      (+ constants/header-height safe-area/top)
    :margin-bottom   44
    :justify-content :center})

@@ -26,13 +26,12 @@
 
 (defn view
   []
-  (let [insets           (safe-area/get-insets)
-        next-screen      (:next-screen (quo.context/use-screen-params))
+  (let [next-screen      (:next-screen (quo.context/use-screen-params))
         share-usage-data (rn/use-callback #(share-usage-data-fn true next-screen))
         maybe-later      (rn/use-callback #(share-usage-data-fn false next-screen))]
     [rn/view {:style style/page}
      [quo/page-nav
-      {:margin-top (:top insets)
+      {:margin-top safe-area/top
        :background :blur
        :icon-name  :i/close
        :on-press   events-helper/navigate-back
@@ -50,7 +49,7 @@
       {:resize-mode :contain
        :style       (style/page-illustration (:width (rn/get-window)))
        :source      (resources/get-image :usage-data)}]
-     [rn/view {:style (style/buttons insets)}
+     [rn/view {:style (style/buttons safe-area/insets)}
       [quo/button
        {:size                40
         :accessibility-label :share-usage-data

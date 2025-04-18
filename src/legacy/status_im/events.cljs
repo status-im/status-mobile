@@ -83,13 +83,13 @@
   [{:keys [db]} path gfycat]
   {:db (assoc-in db path gfycat)})
 
-(rf/defn system-theme-mode-changed
-  {:events [:system-theme-mode-changed]}
-  [{:keys [db] :as cofx} _]
-  (let [appearance-type (get-in cofx [:db :profile/profile :appearance])]
-    (when (and (multiaccounts.model/logged-in? db)
-               (= appearance-type status-im.constants/appearance-type-system))
-      {:dispatch [:theme/switch]})))
+(rf/reg-event-fx
+ :system-theme-mode-changed
+ (fn [{:keys [db]}]
+   (let [appearance-type (-> db :profile/profile :appearance)]
+     (when (and (multiaccounts.model/logged-in? db)
+                (= appearance-type status-im.constants/appearance-type-system))
+       {:fx [[:dispatch [:theme/switch]]]}))))
 
 (defn- on-biometric-auth-fail
   [{:keys [code]}]
@@ -217,5 +217,3 @@
                     :params     []
                     :on-success (fn [on-ramps]
                                   (re-frame/dispatch [::crypto-loaded on-ramps]))}]})
-
-
