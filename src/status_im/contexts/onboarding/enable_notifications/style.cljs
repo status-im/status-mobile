@@ -24,3 +24,20 @@
   [insets]
   {:margin        default-margin
    :margin-bottom (+ 14 (:bottom insets))})
+
+(def background-image
+  {:position :absolute
+   :top      0
+   :bottom   0
+   :left     0
+   :right    0})
+
+(def news-notifications-checkbox-container
+  {:flex-direction     :row
+   :gap                8
+   :padding-top        8
+   :padding-bottom     12
+   :padding-horizontal 20})
+
+(def news-notifications-checkbox-text
+  {:flex 1})

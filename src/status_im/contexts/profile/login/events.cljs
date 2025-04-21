@@ -97,11 +97,10 @@
 
                   (or pairing-completed? (get db :onboarding/new-account?))
                   [[:dispatch [:onboarding/finalize-setup]]
-                   [:dispatch [:onboarding/finish-onboarding false]]]
+                   [:dispatch [:onboarding/finish-onboarding]]]
 
                   :else
-                  [[:dispatch [:update-theme-and-init-root :screen/shell-stack]]
-                   [:dispatch [:profile/toggle-testnet-mode-banner]]]))})))
+                  [[:dispatch [:shell/show-root-view]]]))})))
 
 ;; login phase 2: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/get-chats-callback

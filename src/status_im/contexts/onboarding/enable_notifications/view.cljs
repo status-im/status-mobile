@@ -1,9 +1,12 @@
 (ns status-im.contexts.onboarding.enable-notifications.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [status-im.common.resources :as resources]
+    [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.onboarding.enable-notifications.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -17,38 +20,77 @@
     :description                     (i18n/label :t/enable-notifications-sub-title)
     :description-accessibility-label :notifications-sub-title}])
 
-(defn enable-notification-buttons
-  [{:keys [insets]}]
-  (let [profile-color   (rf/sub [:onboarding/customization-color])
-        ask-permission  (fn []
-                          (rf/dispatch
-                           [:request-notifications
-                            {:on-allowed (fn []
-                                           (js/setTimeout
-                                            #(rf/dispatch [:onboarding/finish-onboarding true])
-                                            300))
-                             :on-denied  (fn []
-                                           (js/setTimeout
-                                            #(rf/dispatch [:onboarding/finish-onboarding false])
-                                            300))}]))
-        skip-permission #(rf/dispatch [:onboarding/finish-onboarding false])]
-    [rn/view {:style (style/buttons insets)}
-     [quo/button
-      {:on-press            ask-permission
-       :type                :primary
-       :icon-left           :i/notifications
-       :accessibility-label :enable-notifications-button
-       :customization-color profile-color}
-      (i18n/label :t/intro-wizard-title6)]
-     [quo/button
-      {:on-press            skip-permission
-       :accessibility-label :enable-notifications-later-button
-       :type                :grey
-       :background          :blur
-       :container-style     {:margin-top 12}}
-      (i18n/label :t/maybe-later)]]))
+(defn on-notifications-setup-start
+  [params]
+  (rf/dispatch [:onboarding/notifications-setup-start params]))
 
-(defn enable-notifications-simple
+(defn notifications-info-view
+  [{:keys [blur?]}]
+  [quo/documentation-drawers
+   {:title        "Enable Notifications"
+    :show-button? true
+    :shell?       blur?
+    :button-label (i18n/label :t/read-more)
+    :button-icon  :i/info}
+   [quo/text "Describe how using Firebase affects privacy."]])
+
+(defn on-open-info
+  [{:keys [blur? theme]
+    :or   {blur? true}}]
+  (rf/dispatch [:show-bottom-sheet
+                {:content (fn []
+                            [notifications-info-view {:blur? blur?}])
+                 :theme   theme
+                 :shell?  blur?}]))
+
+(defn enable-notification-form
+  [{:keys [insets params]}]
+  (let [profile-color             (rf/sub [:onboarding/customization-color])
+        [third-party-checked?
+         set-third-party-checked] (rn/use-state true)
+        on-enable-notifications   (rn/use-callback
+                                   (fn []
+                                     (on-notifications-setup-start
+                                      (assoc params
+                                             :enable-notifications?      true
+                                             :enable-news-notifications? third-party-checked?)))
+                                   [params third-party-checked?])
+        on-skip-notifications     (rn/use-callback
+                                   (fn []
+                                     (on-notifications-setup-start
+                                      (assoc params
+                                             :enable-notifications?      false
+                                             :enable-news-notifications? false))))]
+    [rn/view
+     (when platform/android?
+       [rn/view
+        {:style style/news-notifications-checkbox-container}
+        [quo/selectors
+         {:type      :checkbox
+          :blur?     true
+          :checked?  third-party-checked?
+          :on-change set-third-party-checked}]
+        [quo/text
+         {:size  :paragraph-2
+          :style style/news-notifications-checkbox-text}
+         (i18n/label :t/enable-news-notifications-third-party)]])
+     [rn/view {:style (style/buttons insets)}
+      [quo/button
+       {:on-press            on-enable-notifications
+        :type                :primary
+        :icon-left           :i/notifications
+        :accessibility-label :enable-notifications-button
+        :customization-color profile-color}
+       (i18n/label :t/intro-wizard-title6)]
+      [quo/button
+       {:on-press            on-skip-notifications
+        :accessibility-label :enable-notifications-later-button
+        :type                :grey
+        :background          :blur
+        :container-style     {:margin-top 12}}
+       (i18n/label :t/maybe-later)]]]))
+
+(defn enable-notifications-illustration
   []
   (let [width (:width (rn/get-window))]
     [rn/image
@@ -56,12 +98,28 @@
       :style       (style/page-illustration width)
       :source      (resources/get-image :notifications)}]))
 
+(defn background-image
+  []
+  [rn/view {:style style/background-image}
+   [background/view true]])
+
 (defn view
   []
-  (let [insets safe-area/insets]
-    [rn/view {:style (style/page-container insets)}
-     [rn/view {:style style/page-heading}
-      [quo/page-nav {:type :no-title :background :blur}]
-      [page-title]]
-     [enable-notifications-simple]
-     [enable-notification-buttons {:insets insets}]]))
+  (let [insets safe-area/insets
+        params (quo.context/use-screen-params)]
+    [:<>
+     (when-not (:onboarding? params)
+       [background-image])
+     [rn/view {:style (style/page-container insets)}
+      [rn/view {:style style/page-heading}
+       [quo/page-nav
+        {:type       :no-title
+         :background :blur
+         :right-side [{:icon-name           :i/info
+                       :on-press            on-open-info
+                       :accessibility-label :notifications-info-button}]}]
+       [page-title]]
+      [enable-notifications-illustration]
+      [enable-notification-form
+       {:insets insets
+        :params params}]]]))

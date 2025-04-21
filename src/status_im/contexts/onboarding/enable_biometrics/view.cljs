@@ -22,9 +22,10 @@
   [insets]
   (let [supported-biometric-type (rf/sub [:biometrics/supported-type])
         bio-type-label           (biometric/get-label-by-type supported-biometric-type)
-        profile-color            (or (:color (rf/sub [:onboarding/profile]))
+        onboarding-profile       (rf/sub [:onboarding/profile])
+        profile-color            (or (:color onboarding-profile)
                                      (rf/sub [:profile/customization-color]))
-        syncing?                 (= (rf/sub [:view-id]) :screen/onboarding.syncing-biometric)
+        syncing?                 (:syncing? onboarding-profile)
         biometric-type           (rf/sub [:biometrics/supported-type])]
     [rn/view {:style (style/buttons insets)}
      [quo/button
@@ -32,15 +33,17 @@
        :accessibility-label :enable-biometrics-button
        :icon-left           (biometric/get-icon-by-type biometric-type)
        :customization-color profile-color
-       :on-press            #(rf/dispatch [:onboarding/enable-biometrics])}
+       :on-press            #(rf/dispatch [:onboarding/biometrics-setup-start
+                                           {:enable-biometrics? true
+                                            :syncing?           syncing?}])}
       (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})]
      [quo/button
       {:accessibility-label :maybe-later-button
        :background          :blur
        :type                :grey
-       :on-press            #(rf/dispatch (if syncing?
-                                            [:onboarding/finish-onboarding false]
-                                            [:onboarding/create-account-and-login]))
+       :on-press            #(rf/dispatch [:onboarding/biometrics-setup-start
+                                           {:enable-biometrics? false
+                                            :syncing?           syncing?}])
        :container-style     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
