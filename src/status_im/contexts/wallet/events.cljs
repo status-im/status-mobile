@@ -17,6 +17,7 @@
     [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.db-path :as db-path]
     [status-im.contexts.wallet.item-types :as item-types]
+    [status-im.contexts.wallet.networks.config :as networks.config]
     [status-im.contexts.wallet.networks.db :as networks.db]
     status-im.contexts.wallet.networks.events
     [status-im.contexts.wallet.send.utils :as send-utils]
@@ -293,22 +294,25 @@
 
 (rf/reg-event-fx
  :wallet/get-balance-history-for-all-tokens
- (fn [_ {:keys [addresses symbols time-interval]}]
-   {:fx [(map (fn [token-symbol]
-                [:dispatch
-                 [:wallet/get-balance-history-for-token
-                  {:addresses     addresses
-                   :token-symbol  token-symbol
-                   :time-interval time-interval}]])
-              symbols)]}))
+ (fn [_ [{:keys [addresses symbols time-interval]}]]
+   {:fx (into []
+              (map (fn [token-symbol]
+                     [:dispatch
+                      [:wallet/get-balance-history-for-token
+                       {:addresses     addresses
+                        :token-symbol  token-symbol
+                        :time-interval time-interval}]])
+                   symbols))}))
 
 (rf/reg-event-fx
  :wallet/get-balance-history-for-token
- (fn [{:keys [db]} {:keys [addresses token-symbol time-interval]}]
+ (fn [{:keys [db]} [{:keys [addresses token-symbol time-interval]}]]
    (let [testnet-mode?   (get-in db [:profile/profile :test-networks-enabled?])
          currency-symbol (get-in db [:profile/profile :currency-symbol])
          chain-ids       (vec
-                          (if testnet-mode? constants/sepolia-chain-ids constants/mainnet-chain-ids))]
+                          (if testnet-mode?
+                            (keys networks.config/testnets)
+                            (keys networks.config/mainnets)))]
      {:fx [[:json-rpc/call
             [{:method     "wallet_getBalanceHistory"
               :params     [chain-ids addresses token-symbol currency-symbol time-interval]
