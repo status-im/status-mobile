@@ -1038,6 +1038,8 @@ PODS:
     - React-Core
   - react-native-pdf (6.7.5):
     - React-Core
+  - react-native-safe-area-context (4.14.1):
+    - React-Core
   - react-native-shake (3.4.0):
     - React
   - react-native-slider (3.0.0):
@@ -1220,14 +1222,14 @@ PODS:
     - React
   - ReactNativeCameraKit (14.0.0-beta15):
     - React-Core
-  - ReactNativeNavigation (7.39.0):
+  - ReactNativeNavigation (7.43.0):
     - HMSegmentedControl
     - React-Core
     - React-CoreModules
     - React-RCTImage
     - React-RCTText
-    - ReactNativeNavigation/Core (= 7.39.0)
-  - ReactNativeNavigation/Core (7.39.0):
+    - ReactNativeNavigation/Core (= 7.43.0)
+  - ReactNativeNavigation/Core (7.43.0):
     - HMSegmentedControl
     - React-Core
     - React-CoreModules
@@ -1282,8 +1284,6 @@ PODS:
     - React-Core
     - ReactCommon/turbomodule/core
   - RNShare (10.0.2):
-    - React-Core
-  - RNStaticSafeAreaInsets (2.2.0):
     - React-Core
   - RNSVG (13.10.0):
     - React-Core
@@ -1350,6 +1350,7 @@ DEPENDENCIES:
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-orientation-locker (from `../node_modules/react-native-orientation-locker`)
   - react-native-pdf (from `../node_modules/react-native-pdf`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-shake (from `../node_modules/react-native-shake`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-status (from `../modules/react-native-status`)
@@ -1393,7 +1394,6 @@ DEPENDENCIES:
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNShare (from `../node_modules/react-native-share`)
-  - RNStaticSafeAreaInsets (from `../node_modules/react-native-static-safe-area-insets`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - secp256k1 (from `https://github.com/status-im/secp256k1.swift.git`)
   - SSZipArchive (= 2.4.3)
@@ -1516,6 +1516,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-orientation-locker"
   react-native-pdf:
     :path: "../node_modules/react-native-pdf"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   react-native-shake:
     :path: "../node_modules/react-native-shake"
   react-native-slider:
@@ -1602,8 +1604,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNShare:
     :path: "../node_modules/react-native-share"
-  RNStaticSafeAreaInsets:
-    :path: "../node_modules/react-native-static-safe-area-insets"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   secp256k1:
@@ -1686,6 +1686,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: ddaca8bbb9e6e914b1a23787ccb879bc642931c9
   react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-pdf: 103940c90d62adfd259f63cca99c7c0c306b514c
+  react-native-safe-area-context: 141eca0fd4e4191288dfc8b96a7c7e1c2983447a
   react-native-shake: de052eaa3eadc4a326b8ddd7ac80c06e8d84528c
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-status: 21f75d492fd311dc111303da38a7a2b23a8a8466
@@ -1713,7 +1714,7 @@ SPEC CHECKSUMS:
   ReactCommon: 2947b0bffd82ea0e58ca7928881152d4c6dae9af
   ReactNativeAudioToolkit: de9610f323e855ac6574be8c99621f3d57c5df06
   ReactNativeCameraKit: 71343efc1256720184ce980f164c7eedb78d5c16
-  ReactNativeNavigation: 679d8c8bf3b8ae98d285bce810964d10da85dbdb
+  ReactNativeNavigation: 6ef5f2d34477e0c50e0969e4c6f88d2ad7e866ae
   RNCAsyncStorage: c913ede1fa163a71cea118ed4670bbaaa4b511bb
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
   RNCMaskedView: 71fc32d971f03b7f03d6ab6b86b730c4ee64f5b6
@@ -1729,7 +1730,6 @@ SPEC CHECKSUMS:
   RNPermissions: 08e619529cced22695f4b6d0efcc0a233e278903
   RNReanimated: dee37576492f1a375017515f5c77e66e5eec696b
   RNShare: 859ff710211285676b0bcedd156c12437ea1d564
-  RNStaticSafeAreaInsets: 055ddbf5e476321720457cdaeec0ff2ba40ec1b8
   RNSVG: 80584470ff1ffc7994923ea135a3e5ad825546b9
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
