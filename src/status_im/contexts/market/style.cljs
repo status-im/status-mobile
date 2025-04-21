@@ -6,8 +6,7 @@
 
 (defn header-background
   [theme]
-  (colors/theme-colors colors/white colors/neutral-95 theme)
-)
+  (colors/theme-colors colors/white colors/neutral-95 theme))
 
 (defn swap-header-container
   [theme]

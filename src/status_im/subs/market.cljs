@@ -1,13 +1,11 @@
 (ns status-im.subs.market
   (:require
-    [re-frame.core :as rf]
-    [utils.collection]
-    [utils.number]))
+    [re-frame.core :as rf]))
 
 
 (rf/reg-sub
  :market/tokens
- (fn [db _]
+ (fn [_db _]
    [{:token             :btc
      :token-rank        1
      :token-name        "Bitcoin"
@@ -91,5 +89,4 @@
      :token-name        "Tether"
      :market-cap        "$144.24B"
      :price             "$0.9993"
-     :percentage-change -0.0001}]
-   #_[1 2 3 4]))
+     :percentage-change -0.0001}]))

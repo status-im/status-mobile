@@ -8,6 +8,7 @@
     [status-im.config :as config]
     [status-im.contexts.shell.bottom-tabs.style :as style]
     [status-im.contexts.shell.constants :as shell.constants]
+    [status-im.feature-flags :as ff]
     [utils.re-frame :as rf]))
 
 (defn bottom-tab
@@ -45,7 +46,8 @@
       {:style (style/bottom-tabs-container (:bottom-tabs-height shared-values))}
       [rn/view {:style (style/bottom-tabs)}
        [bottom-tab :i/wallet :screen/wallet-stack shared-values]
-       [bottom-tab :i/swap :screen/market-stack shared-values]
+       (when (ff/enabled? ::ff/market)
+         [bottom-tab :i/swap :screen/market-stack shared-values])
        [gesture/gesture-detector {:gesture messages-double-tap-gesture}
         [bottom-tab :i/messages :screen/chats-stack shared-values]]
        [gesture/gesture-detector {:gesture communities-double-tab-gesture}
