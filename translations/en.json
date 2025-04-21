@@ -1598,6 +1598,8 @@
   "mark-as-read": "Mark as read",
   "mark-untrustworthy": "Mark as Untrustworthy",
   "mark-user-untrustworthy": "Mark {{username}} as untrustworthy",
+  "market": "Market",
+  "market-cap": "Market cap",
   "master-account": "Master account",
   "max": "Max: {{number}}",
   "max-2-decimals": "Max. 2 decimals",

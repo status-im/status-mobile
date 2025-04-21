@@ -10,6 +10,7 @@
     status-im.subs.contact
     status-im.subs.general
     status-im.subs.keycard
+    status-im.subs.market
     status-im.subs.messages
     status-im.subs.onboarding
     status-im.subs.pairing
