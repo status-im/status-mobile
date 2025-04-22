@@ -1,6 +1,7 @@
 (ns status-im.contexts.profile.settings.screens.notifications.view
   (:require
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [status-im.common.events-helper :as events-helper]
@@ -51,13 +52,15 @@
         on-change (rn/use-callback
                    #(toggle-non-contact-notifications non-contact-notifications-enabled?)
                    [non-contact-notifications-enabled?])]
-    {:blur?        true
-     :title        (i18n/label :t/notifications-non-contacts)
-     :action       :selector
-     :action-props {:on-change (when-not disabled? on-change)
-                    :disabled? disabled?
-                    :checked?  (and (not disabled?)
-                                    non-contact-notifications-enabled?)}}))
+    {:blur?             true
+     :title             (i18n/label :t/notifications-non-contacts)
+     :description       :text
+     :description-props {:text (i18n/label :t/notifications-non-contacts-description)}
+     :action            :selector
+     :action-props      {:on-change (when-not disabled? on-change)
+                         :disabled? disabled?
+                         :checked?  (and (not disabled?)
+                                         non-contact-notifications-enabled?)}}))
 
 (defn chat-community-mentions-notifications-setting
   [{:keys [notifications-enabled?
@@ -68,13 +71,15 @@
         on-change (rn/use-callback
                    #(toggle-community-mentions-notifications community-mentions-notifications-enabled?)
                    [community-mentions-notifications-enabled?])]
-    {:blur?        true
-     :title        (i18n/label :t/allow-mention-notifications)
-     :action       :selector
-     :action-props {:on-change (when-not disabled? on-change)
-                    :disabled? disabled?
-                    :checked?  (and (not disabled?)
-                                    community-mentions-notifications-enabled?)}}))
+    {:blur?             true
+     :title             (i18n/label :t/communities)
+     :description       :text
+     :description-props {:text (i18n/label :t/allow-community-mentions-notifications-description)}
+     :action            :selector
+     :action-props      {:on-change (when-not disabled? on-change)
+                         :disabled? disabled?
+                         :checked?  (and (not disabled?)
+                                         community-mentions-notifications-enabled?)}}))
 
 (defn messenger-notifications-setting
   [{:keys [notifications-enabled? messenger-notifications-enabled?]}]
@@ -82,12 +87,17 @@
         on-change (rn/use-callback
                    #(toggle-messenger-notifications messenger-notifications-enabled?)
                    [messenger-notifications-enabled?])]
-    {:blur?        true
-     :title        (i18n/label :t/allow-messenger-notifications)
-     :action       :selector
-     :action-props {:on-change (when-not disabled? on-change)
-                    :disabled? disabled?
-                    :checked?  messenger-notifications-enabled?}}))
+    (cond-> {:blur?        true
+             :title        (i18n/label :t/allow-messenger-notifications)
+             :action       :selector
+             :action-props {:on-change (when-not disabled? on-change)
+                            :disabled? disabled?
+                            :checked?  messenger-notifications-enabled?}}
+      platform/android?
+      (assoc :title             (i18n/label :t/allow-messages-and-communities-notifications)
+             :description       :text
+             :description-props {:text (i18n/label
+                                        :t/allow-messages-and-communities-notifications-description)}))))
 
 (defn news-notifications-setting
   [{:keys [notifications-enabled? news-notifications-enabled?]}]
@@ -95,12 +105,53 @@
         on-change (rn/use-callback
                    #(toggle-news-notifications news-notifications-enabled?)
                    [news-notifications-enabled?])]
-    {:blur?        true
-     :title        (i18n/label :t/allow-news-notifications)
-     :action       :selector
-     :action-props {:on-change (when-not disabled? on-change)
-                    :disabled? disabled?
-                    :checked?  news-notifications-enabled?}}))
+    (cond-> {:blur?        true
+             :title        (i18n/label :t/allow-news-notifications)
+             :action       :selector
+             :action-props {:on-change (when-not disabled? on-change)
+                            :disabled? disabled?
+                            :checked?  news-notifications-enabled?}}
+      platform/android?
+      (assoc :description       :text
+             :description-props {:text (i18n/label :t/allow-news-notifications-description)}))))
+
+(defn- nested-setting
+  [item & _rest]
+  [quo/category
+   {:blur?           true
+    :list-type       :settings
+    :container-style {:padding-horizontal 8
+                      :padding-top        0
+                      :paddong-bottom     0}
+    :data            [item]}])
+
+(defn- messenger-notifications-settings
+  [notifications-settings]
+  (let [{:keys [action-props title]} (messenger-notifications-setting notifications-settings)]
+    [rn/pressable
+     {:on-press (:on-change action-props)
+      :style    {:margin-horizontal 20
+                 :margin-vertical   8
+                 :border-width      1
+                 :border-radius     20
+                 :border-color      colors/white-opa-5}}
+     [rn/view
+      {:style {:flex-direction   :row
+               :padding-left     16
+               :padding-right    12
+               :padding-vertical 13
+               :gap              12}}
+      [quo/text {:style {:flex 1}} title]
+      [quo/selectors
+       {:type      :toggle
+        :checked?  (:checked? action-props)
+        :on-change (:on-change action-props)}]]
+     [rn/view {}
+      [rn/flat-list
+       {:data      [(chat-non-contacts-notifications-setting notifications-settings)
+                    (chat-community-mentions-notifications-setting notifications-settings)]
+        :render-fn nested-setting
+        :separator [rn/view {:style {:height 0}}]}]]]))
 
 (defn view
   []
@@ -136,12 +187,8 @@
        [:<>
         (cond
           platform/ios?
-          [quo/category
-           {:blur?     true
-            :list-type :settings
-            :data      [(messenger-notifications-setting notifications-settings)
-                        (chat-non-contacts-notifications-setting notifications-settings)
-                        (chat-community-mentions-notifications-setting notifications-settings)]}]
+          [messenger-notifications-settings notifications-settings]
+
           platform/android?
           [quo/category
            {:blur?     true
