@@ -58,7 +58,7 @@
                                  {:refreshing (and tokens-loading? init-loaded?)
                                   :colors     [colors/neutral-40]
                                   :tint-color colors/neutral-40
-                                  :on-refresh #(rf/dispatch [:wallet/get-accounts])}]
+                                  :on-refresh #()}]
        :header                  [rn/view
                                  [swap-header]
                                  [sort-header]]
@@ -66,4 +66,3 @@
        :sticky-header-indices   [0]
        :data                    tokens
        :render-fn               token}]]))
-

@@ -39,4 +39,3 @@
   []
   {:margin-top safe-area/top
    :flex       1})
-
