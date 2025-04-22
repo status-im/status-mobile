@@ -42,7 +42,7 @@
        {:fx [[:dispatch
               [:show-bottom-sheet
                {:content max-active-networks-sheet/view
-                :theme   (:theme db)
+                :theme   :dark
                 :shell?  true}]]]}
        (when deactivatable?
          {:fx [[:dispatch
