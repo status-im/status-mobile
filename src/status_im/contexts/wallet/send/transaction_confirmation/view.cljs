@@ -107,7 +107,7 @@
         [quo/summary-tag
          {:type                :network
           :image-source        (:source to-network)
-          :label               (string/capitalize (name (:network-name to-network)))
+          :label               (:full-name to-network)
           :customization-color to-network-color}]
         [quo/summary-tag (assoc recipient :type (:recipient-type recipient))])]
      (when (= transaction-type :tx/bridge)

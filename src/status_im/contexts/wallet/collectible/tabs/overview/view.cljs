@@ -36,10 +36,7 @@
 
 (defn- info
   [{:keys [chain-id account]}]
-  (let [{:keys [network-name]} (rf/sub [:wallet/network-details-by-chain-id chain-id])
-        subtitle               (some-> network-name
-                                       name
-                                       string/capitalize)]
+  (let [{:keys [network-name full-name]} (rf/sub [:wallet/network-details-by-chain-id chain-id])]
     [rn/view {:style style/info-container}
      [rn/view {:style style/account}
       [quo/data-item
@@ -59,7 +56,7 @@
         :size          :default
         :title         (i18n/label :t/network)
         :network-image (quo.resources/get-network network-name)
-        :subtitle      subtitle}]]]))
+        :subtitle      full-name}]]]))
 
 (defn view
   [collectible]
