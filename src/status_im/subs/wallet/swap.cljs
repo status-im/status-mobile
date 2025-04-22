@@ -268,7 +268,7 @@
  :<- [:wallet/swap-asset-to-pay]
  :<- [:wallet/swap-network-native-token-symbol]
  (fn [[asset-to-pay native-token-symbol]]
-   (let [token-symbol (or (:symbol asset-to-pay) native-token-symbol)]
+   (when-let [token-symbol (or (:symbol asset-to-pay) native-token-symbol)]
      @(rf/subscribe [:wallet/token-by-symbol token-symbol]))))
 
 (rf/reg-sub
@@ -311,16 +311,17 @@
  :<- [:wallet/prices-per-token]
  :<- [:wallet/swap-network-native-token-symbol]
  (fn [[account approval-fee currency prices-per-token native-token-symbol]]
-   (let [tokens         (:tokens account)
-         token-for-fees (first (filter #(= (string/lower-case (:symbol %))
-                                           (string/lower-case native-token-symbol))
-                                       tokens))
-         fee-in-fiat    (utils/calculate-token-fiat-value
-                         {:currency         currency
-                          :balance          approval-fee
-                          :token            token-for-fees
-                          :prices-per-token prices-per-token})]
-     fee-in-fiat)))
+   (when native-token-symbol
+     (let [tokens         (:tokens account)
+           token-for-fees (first (filter #(= (string/lower-case (:symbol %))
+                                             (string/lower-case native-token-symbol))
+                                         tokens))
+           fee-in-fiat    (utils/calculate-token-fiat-value
+                           {:currency         currency
+                            :balance          approval-fee
+                            :token            token-for-fees
+                            :prices-per-token prices-per-token})]
+       fee-in-fiat))))
 
 ;; NOTE: updated route prices come only in USD (for now). When the router will
 ;; allow to define the currency, we should use only the updated prices, but till
