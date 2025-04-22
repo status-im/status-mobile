@@ -36,8 +36,8 @@
   "Returns all active networks from db"
   [db]
   (->> db
-       get-active-chain-ids
-       (get-network-details db)))
+       get-networks
+       networks/get-active-networks))
 
 (defn get-chain-id
   "Returns the `chain-id` based on the `network-name`"
