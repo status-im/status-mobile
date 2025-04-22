@@ -64,7 +64,8 @@
 
 (defn rpc->networks
   [networks-data]
-  (map make-network networks-data))
+  (->> (map make-network networks-data)
+       (filter (comp not nil? :source))))
 
 (defn network-chain-ids
   [networks]

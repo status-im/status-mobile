@@ -258,6 +258,26 @@
          addresses)}))
 
 (rf/reg-event-fx
+ :wallet/set-all-tokens-loading
+ (fn [{:keys [db]}]
+   {:db (reduce (fn [db address]
+                  (assoc-in db [:wallet :ui :tokens-loading address] true))
+                db
+                (account.db/get-accounts-addresses db))}))
+
+(rf/reg-event-fx
+ :wallet/reset-accounts-tokens
+ (fn [{:keys [db]}]
+   (let [reset-tokens (fn [stored-accounts]
+                        (reduce-kv
+                         (fn [accounts address _]
+                           (update accounts address assoc :tokens []))
+                         stored-accounts
+                         stored-accounts))]
+     {:db (update-in db [:wallet :accounts] reset-tokens)
+      :fx [[:dispatch [:wallet/set-all-tokens-loading]]]})))
+
+(rf/reg-event-fx
  :wallet/store-wallet-token
  (fn [{:keys [db]} [addresses raw-tokens-data]]
    (let [supported-chains-by-token-symbol (get-in db [:wallet :tokens :supported-chains-by-symbol])

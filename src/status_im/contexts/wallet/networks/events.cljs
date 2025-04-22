@@ -50,10 +50,9 @@
                [:effects.wallet/set-network-active
                 {:chain-id   chain-id
                  :active?    should-activate?
-                 :on-success #(do (when-not active?
-                                    (debounce/debounce-and-dispatch
-                                     [:wallet/on-active-networks-change]
-                                     500))
+                 :on-success #(do (debounce/debounce-and-dispatch
+                                   [:wallet/on-active-networks-change]
+                                   500)
                                   (when on-success (on-success)))
                  :on-error   #(rf/dispatch
                                [:wallet/update-network-active chain-id active?])}]]})))))
@@ -71,7 +70,8 @@
 
 (rf/reg-event-fx :wallet/on-active-networks-change
  (fn [_]
-   {:fx [[:dispatch [:wallet/reload-cached-balances]]
+   {:fx [[:dispatch [:wallet/reset-accounts-tokens]]
+         [:dispatch [:wallet/reload-cached-balances]]
          [:dispatch [:wallet/reload-collectibles]]
          [:dispatch [:wallet.tokens/reset-tokens]]
          [:dispatch [:wallet.tokens/get-token-list]]
