@@ -3,7 +3,7 @@ Status, takma adlı gizlilik odaklı mesajlaşmayı ve güvenli kripto cüzdanı
 Status, Ethereum işletim sisteminizdir.
 
 GÜVENLİ ETHEREUM CÜZDANI
-Status kripto cüzdanı, ETH, SNT, DAI gibi sabit paralar ve koleksiyonluk eşyalar gibi Ethereum varlıklarını güvenli bir şekilde göndermenize, saklamanıza ve değiştirmenize olanak tanır. Ana ağ, Arbitrum ve Optimism'i destekleyen çok zincirli Ethereum cüzdan uygulamamızla kripto paranızın ve dijital varlıklarınızın kontrolünü güvenle ele alın. Status blok zinciri cüzdanı şu anda yalnızca ETH, ERC-20, ERC-721 ve ERC-1155 varlıklarını destekliyor; Bitcoin'i desteklemiyor.
+Status kripto cüzdanı, ETH, SNT, DAI gibi sabit paralar ve koleksiyonluk eşyalar gibi Ethereum varlıklarını güvenli bir şekilde göndermenize, saklamanıza ve değiştirmenize olanak tanır. Ana ağ, Base, Arbitrum ve Optimism'i destekleyen çok zincirli Ethereum cüzdan uygulamamızla kripto paranızın ve dijital varlıklarınızın kontrolünü güvenle ele alın. Status blok zinciri cüzdanı şu anda yalnızca ETH, ERC-20, ERC-721 ve ERC-1155 varlıklarını destekliyor; Bitcoin'i desteklemiyor.
 
 ÖZEL MESAJLAŞMACI
 İletişimlerinizi kimse gözetlemeden özel 1:1 ve özel grup sohbetleri gönderin. Status, daha fazla gizlilik ve güvenli mesajlaşma için merkezi mesaj iletimlerini ortadan kaldıran bir mesajlaşma uygulamasıdır. Tüm mesajlar uçtan uca şifrelemeyle şifrelenir. Ayrıca, hiçbir mesaj yazarının veya hedeflenen alıcının kim olduğunu ifşa etmez, bu nedenle hiç kimse, Status bile kimin kiminle konuştuğunu veya ne söylendiğini bilmez.

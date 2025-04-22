@@ -3,7 +3,7 @@ Status combina una mensajería seudónima centrada en la privacidad y una Billet
 Status es tu sistema operativo Ethereum.
 
 BILLETERA ETHEREUM SEGURA
-La Billetera de criptomonedas Status te permite enviar, almacenar e intercambiar de forma segura activos Ethereum como ETH, SNT, stablecoins como DAI, así como coleccionables. Toma el control de tu criptomoneda y activos digitales con confianza con nuestra Billetera multicadena, compatible con Ethereum Mainnet, Arbitrum y Optimism. La Billetera Status actualmente solo admite activos ETH, ERC-20, ERC-721 y ERC-1155; no admite Bitcoin.
+La Billetera de criptomonedas Status te permite enviar, almacenar e intercambiar de forma segura activos Ethereum como ETH, SNT, stablecoins como DAI, así como coleccionables. Toma el control de tu criptomoneda y activos digitales con confianza con nuestra Billetera multicadena, compatible con Ethereum Mainnet, Base, Arbitrum y Optimism. La Billetera Status actualmente solo admite activos ETH, ERC-20, ERC-721 y ERC-1155; no admite Bitcoin.
 
 MENSAJERÍA PRIVADA
 Envía chats privados 1:1 y grupales sin que nadie espíe tus comunicaciones. Status es una aplicación de mensajería que elimina los servidores de mensajes centralizados para una mayor privacidad y una mensajería segura. Todos los mensajes están encriptados de extremo a extremo. Además, ningún mensaje expone quién es el autor o el destinatario previsto, por lo que nadie, ni siquiera Status, sabe quién está hablando con quién o qué se dijo.
