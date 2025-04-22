@@ -16,7 +16,7 @@
            [:dispatch [:push-notifications/switch {:notifications-enabled true}]])
          [:dispatch [:shell/change-tab shell.constants/default-selected-stack]]
          [:dispatch [:update-theme-and-init-root :screen/shell-stack]]
-         [:dispatch [:profile/show-testnet-mode-banner-if-enabled]]
+         [:dispatch [:profile/toggle-testnet-mode-banner]]
          [:dispatch [:universal-links/process-stored-event]]]}))
 
 (rf/defn enable-biometrics

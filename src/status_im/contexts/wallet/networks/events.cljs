@@ -103,7 +103,8 @@
  :wallet/toggle-testnet-mode-success
  (fn [{:keys [db]} [testnet?]]
    {:db (assoc-in db [:profile/profile :test-networks-enabled?] testnet?)
-    :fx [[:dispatch [:wallet/on-active-networks-change]]]}))
+    :fx [[:dispatch [:profile/toggle-testnet-mode-banner]]
+         [:dispatch [:wallet/on-active-networks-change]]]}))
 
 (rf/reg-event-fx
  :wallet/mark-new-networks-as-seen

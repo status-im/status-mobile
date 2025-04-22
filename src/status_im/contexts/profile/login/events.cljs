@@ -101,7 +101,7 @@
 
                   :else
                   [[:dispatch [:update-theme-and-init-root :screen/shell-stack]]
-                   [:dispatch [:profile/show-testnet-mode-banner-if-enabled]]]))})))
+                   [:dispatch [:profile/toggle-testnet-mode-banner]]]))})))
 
 ;; login phase 2: we want to load and show chats faster, so we split login into 2 phases
 (rf/reg-event-fx :profile.login/get-chats-callback
@@ -276,12 +276,19 @@
    {:db (update db :profile/login assoc :password password :error error)}))
 
 (rf/reg-event-fx
- :profile/show-testnet-mode-banner-if-enabled
+ :profile/toggle-testnet-mode-banner
  (fn [{:keys [db]}]
-   (when (and (profile.db/testnet? db)
-              config/enable-alert-banner?)
-     {:fx [[:dispatch
-            [:alert-banners/add
-             {:type     :alert
-              :text     (i18n/label :t/testnet-mode-enabled)
-              :on-press #(rf/dispatch [:wallet/show-disable-testnet-mode-confirmation])}]]]})))
+   (when config/enable-alert-banner?
+     (let [testnet?      (profile.db/testnet? db)
+           banner-added? (-> db :alert-banners :alert seq)]
+       {:fx [(cond
+               (and testnet? (not banner-added?))
+               [:dispatch
+                [:alert-banners/add
+                 {:type     :alert
+                  :text     (i18n/label :t/testnet-mode-enabled)
+                  :on-press #(rf/dispatch [:wallet/show-disable-testnet-mode-confirmation])}]]
+
+               (and (not testnet?) banner-added?)
+               [:dispatch
+                [:alert-banners/remove :alert]])]}))))
