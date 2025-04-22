@@ -229,7 +229,7 @@
          view-id                     (:view-id db)
          request-uuid                (:uuid swap-proposal)
          best-routes                 (:best swap-proposal)
-         updated-token-prices        (:updated-prices swap-proposal)
+         updated-token-prices        (:updated-token-prices swap-proposal)
          error-response              (:error-response swap-proposal)]
      (when (and (= request-uuid last-request-uuid)
                 (or (and (empty? best-routes) error-response)

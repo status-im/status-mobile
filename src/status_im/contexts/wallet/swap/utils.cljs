@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.swap.utils
-  (:require [clojure.string :as string]
-            [status-im.constants :as constants]
+  (:require [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
             [status-im.contexts.wallet.networks.config :as networks.config]
             [utils.i18n :as i18n]))
@@ -68,7 +67,6 @@
   [token updated-prices]
   (let [token-symbol (some-> token
                              :symbol
-                             string/lower-case
                              keyword)]
     (get updated-prices token-symbol 0)))
 

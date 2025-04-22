@@ -331,8 +331,9 @@
   (comp ->old-route-paths remove-invalid-bonder-fees-routes))
 
 (defn fix-routes
-  [data]
+  [{:keys [UpdatedPrices] :as data}]
   (-> data
       (rpc->suggested-routes)
       (update :best best-routes-fix)
-      (update :candidates candidates-fix)))
+      (update :candidates candidates-fix)
+      (assoc :updated-token-prices UpdatedPrices)))
