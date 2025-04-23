@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "shivekkhurana/rename-mainnet-to-eth",
-    "commit-sha1": "652ef93a09bc659bf8e277d6c420cb9d5caf683f",
-    "src-sha256": "1splm89smwml4w2jp1qasa3bv4kgixs89xcx5riqsi337k347x5l"
+    "version": "develop",
+    "commit-sha1": "40936e1b97a2a0ae052926dc49b4a258416e5c56",
+    "src-sha256": "0vninypfrisqaswzyzg0ljs3yp15f66v1c37irv2lcvdw1n2fa56"
 }
