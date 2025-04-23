@@ -4,7 +4,7 @@ import time
 
 from appium.webdriver import WebElement
 from appium.webdriver.applicationstate import ApplicationState
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -115,6 +115,7 @@ class BaseView(object):
         from views.sign_in_view import LogInButton
         self.login_button = LogInButton(self.driver)
         self.continue_button = Button(self.driver, accessibility_id='continue-button')
+        self.view_id_tracker = Text(self.driver, xpath="//*[@content-desc='view-id-tracker']/android.widget.TextView")
 
         # Tabs
         self.communities_tab = CommunitiesTab(self.driver)
@@ -225,11 +226,31 @@ class BaseView(object):
                 self.driver.press_keycode(4)
 
     def navigate_back_to_home_view(self):
-        while not self.chat_floating_screen.is_element_disappeared(1) \
-                or not self.community_floating_screen.is_element_disappeared(1) \
-                or not self.discover_communities_floating_screen.is_element_disappeared(1):
-            self.driver.press_keycode(4)
-        self.click_system_back_button_until_presence_of_element(self.chats_tab)
+        home_views_texts = ['wallet-stack', 'chats-stack', 'communities-stack']
+        for _ in range(4):
+            try:
+                if self.view_id_tracker.text in home_views_texts:
+                    return
+                else:
+                    self.click_system_back_button()
+            except NoSuchElementException:
+                self.click_system_back_button()
+            except StaleElementReferenceException:
+                continue
+
+        # while not self.chat_floating_screen.is_element_disappeared(1) \
+        #         or not self.community_floating_screen.is_element_disappeared(1) \
+        #         or not self.discover_communities_floating_screen.is_element_disappeared(1):
+        #     self.driver.press_keycode(4)
+        # self.click_system_back_button_until_presence_of_element(self.chats_tab)
+
+    def navigate_to_chats_view(self):
+        self.navigate_back_to_home_view()
+        self.chats_tab.click()
+
+    def navigate_to_communities_view(self):
+        self.navigate_back_to_home_view()
+        self.communities_tab.click()
 
     def navigate_back_to_chat_view(self):
         self.click_system_back_button_until_presence_of_element(self.get_chat_view().chat_message_input)

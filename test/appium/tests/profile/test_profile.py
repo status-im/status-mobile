@@ -53,7 +53,7 @@ class TestProfileOneDevice(MultipleSharedDeviceTestCase):
         if not self.profile.element_by_translation_id('written-seed-ready').is_element_displayed():
             self.errors.append(self.profile, "Can't complete backup")
 
-        self.profile.click_system_back_button(3)
+        self.profile.navigate_back_to_main_profile_view()
         if not self.profile.backup_recovery_phrase_button.is_element_displayed():
             self.errors.append(self.profile, "Backup recovery phrase button is not shown after failed validation")
         self.profile.reopen_app(sign_in=True, user_name=self.username)
@@ -94,15 +94,13 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
         self.public_key_2 = self.home_2.get_public_key()
         self.profile_1 = self.home_1.get_profile_view()
         self.profile_2 = self.home_2.get_profile_view()
-        [home.navigate_back_to_home_view() for home in self.homes]
-        [home.chats_tab.click() for home in self.homes]
+        self.home_1.navigate_to_chats_view()
         self.home_1.add_contact(self.public_key_2)
+        self.home_2.navigate_to_chats_view()
         self.home_2.handle_contact_request(self.username_1)
 
         self.home_1.get_chat(self.username_2).wait_for_visibility_of_element()
-        self.chat_1 = self.home_1.get_chat(self.username_2).click()
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
-        self.home_1.navigate_back_to_home_view()
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
@@ -113,20 +111,18 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
 
         self.community_1, self.community_2 = self.home_1.get_community_view(), self.home_2.get_community_view()
         self.community_1.invite_to_community(self.community_name, self.username_2)
-        self.home_1.get_to_community_channel_from_home(self.community_name)
+        self.channel_1 = self.home_1.get_to_community_channel_from_home(self.community_name)
         self.community_2.join_community()
         self.community_2.get_channel(self.channel_name).click()
         self.message_community_2 = "message community from User 2"
         self.chat_2.send_message(self.message_community_2)
         self.message_community_1 = 'message in community from User 1'
-        self.chat_1.send_message(self.message_community_1)
-        self.chat_1.navigate_back_to_home_view()
-        self.home_1.chats_tab.click()
-        self.home_1.get_chat(self.username_2).click()
+        self.channel_1.send_message(self.message_community_1)
+        self.channel_1.navigate_to_chats_view()
+        self.chat_1 = self.home_1.get_chat(self.username_2).click()
         self.message_1_1_from_1 = "message 1-1 chat from user 1"
         self.message_1_1_from_2 = "message 1-1 chat from user 2"
-        self.chat_2.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
+        self.chat_2.navigate_to_chats_view()
         self.home_2.get_chat(self.username_1).click()
         self.chat_2.send_message(self.message_1_1_from_2)
         self.chat_1.send_message(self.message_1_1_from_1)
@@ -139,13 +135,12 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("User 1 updates username in the profile")
         self.home_1.profile_button.click()
         self.profile_1.edit_username(self.new_username_1)
-        self.profile_1.click_system_back_button()
+        self.profile_1.navigate_back_to_main_profile_view()
         if self.profile_1.default_username_text.text != self.new_username_1:
             pytest.fail("Device 1: Username is not updated")
 
         self.home_2.just_fyi("User 2 checks updated username in the community channel and mentions list")
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.communities_tab.click()
+        self.home_2.navigate_to_communities_view()
         self.home_2.get_to_community_channel_from_home(self.community_name)
         self.chat_2.chat_element_by_text(self.message_community_1).wait_for_element(30)
         if self.chat_2.chat_element_by_text(self.message_community_1).username.text != self.new_username_1:
@@ -155,8 +150,7 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
         self.chat_2.mentions_list.wait_for_element()
         if not self.chat_2.user_list_element_by_name(self.new_username_1).is_element_displayed():
             self.errors.append(self.chat_2, "Updated username is not shown in the mentions list")
-        self.chat_2.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
+        self.chat_2.navigate_to_chats_view()
 
         self.home_2.just_fyi("User 2 checks updated username in the contacts list")
         self.home_2.contacts_tab.click()
@@ -197,15 +191,13 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("User 1 checks updated profile photo in the community channel")
         self.home_1.click_system_back_button_until_absence_of_element(self.profile_1.default_username_text)
-        self.home_1.navigate_back_to_home_view()
-        self.home_1.communities_tab.click()
+        self.home_1.navigate_to_communities_view()
         self.home_1.get_to_community_channel_from_home(self.community_name)
         self.chat_1.chat_element_by_text(self.message_community_2).wait_for_element(30)
         if self.chat_1.chat_element_by_text(self.message_community_2).member_photo.is_element_differs_from_template(
                 "profile_image_in_1_1_chat.png", diff=7):
             self.errors.append(self.chat_1, "Updated image is not shown in the community channel")
-        self.chat_1.navigate_back_to_home_view()
-        self.home_1.chats_tab.click()
+        self.chat_1.navigate_to_chats_view()
 
         self.home_1.just_fyi("User 1 checks updated profile photo in the contacts list")
         self.home_1.contacts_tab.click()
@@ -254,15 +246,14 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
             self.errors.append(self.profile_2, "Error message is not shown for 241 chars in the edit bio input field")
         self.profile_2.driver.press_keycode(67)  # deleting the last character
         self.profile_2.save_bio_button.click()
-        self.profile_2.click_system_back_button()
+        self.profile_2.navigate_back_to_main_profile_view()
         if self.profile_2.bio_text.text != new_bio:
             self.errors.append(self.profile_2, "Updated bio is not displayed in the user's profile")
         self.profile_2.click_system_back_button()
 
         self.home_1.just_fyi("User 1 checks updated bio in the user's 2 profile")
         self.home_1.click_system_back_button_until_absence_of_element(self.profile_1.default_username_text)
-        self.home_1.navigate_back_to_home_view()
-        self.home_1.chats_tab.click()
+        self.home_1.navigate_to_chats_view()
         self.home_1.contacts_tab.click()
         self.home_1.get_chat(self.username_2).find_element().click()
         if self.chat_1.contact_bio_text.text != new_bio:
@@ -275,7 +266,7 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("User 1 changes accent colour")
         self.home_1.profile_button.click()
         self.profile_1.change_accent_colour(colour_name='magenta')
-        self.profile_1.click_system_back_button()
+        self.profile_1.navigate_back_to_main_profile_view()
         red, green, blue = self.profile_1.user_avatar.get_element_rgb()
         if red < 70 or blue < 30:
             self.errors.append(
@@ -285,8 +276,7 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
                                                                                                              blue))
         self.home_2.just_fyi("User 2 checks updated accent color of user 1 in 1-1 chat and his profile")
         self.home_2.click_system_back_button_until_absence_of_element(self.profile_2.default_username_text)
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
+        self.home_2.navigate_to_chats_view()
         if self.home_2.get_chat(self.username_1).is_element_displayed():
             chat_element = self.home_2.get_chat(self.username_1)
         else:
@@ -341,8 +331,7 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
         self.profile_1.click_system_back_button()
 
         self.home_2.just_fyi("Device 2 adds newly created user as a contact")
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
+        self.home_2.navigate_to_chats_view()
         self.home_2.add_contact(public_key=public_key, close_profile=False)
 
         self.home_1.just_fyi("Device 1 checks that no contact request is received")
