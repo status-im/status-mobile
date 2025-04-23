@@ -26,7 +26,7 @@
      :customization-color :yellow}
     :network
     {:image-source (quo.resources/get-network :ethereum)
-     :label        "Mainnet"}
+     :label        "Ethereum"}
     :saved-address
     {:customization-color :pink
      :label               "Peter Lambo"}

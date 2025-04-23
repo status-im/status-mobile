@@ -49,7 +49,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
                 self.errors.append(self.wallet_view, "For the %s the wrong value %s is shown, expected %s in total" %
                                    (asset, real_balance[asset], self.total_balance[asset]))
         expected_balances = {
-            'Mainnet': self.mainnet_balance,
+            'Ethereum': self.mainnet_balance,
             'Arbitrum': self.arb_balance,
             'Optimism': self.optimism_balance,
             'Base, NEW': self.base_balance
@@ -77,8 +77,8 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.wallet_view.continue_button.click()
 
         asset_data = {
-            'Ether': {'networks': ['Mainnet', 'Arbitrum'], 'amount': '0.00001'},
-            'Status': {'networks': ['Mainnet', 'Optimism'], 'amount': '1'}
+            'Ether': {'networks': ['Ethereum', 'Arbitrum'], 'amount': '0.00001'},
+            'Status': {'networks': ['Ethereum', 'Optimism'], 'amount': '1'}
         }
         for asset, data in asset_data.items():
             for network in data['networks']:
@@ -163,7 +163,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.home_view.wallet_tab.click()
         self.wallet_view.get_account_element().wait_for_rendering_ended_and_click()
         self.wallet_view.swap_button.wait_for_rendering_ended_and_click()
-        for network in ['Mainnet', 'Optimism']:
+        for network in ['Ethereum', 'Optimism']:
             self.wallet_view.just_fyi("Checking the Swap flow for SNT on %s" % network)
             self.wallet_view.select_asset('Status')
             self.wallet_view.select_network(network)

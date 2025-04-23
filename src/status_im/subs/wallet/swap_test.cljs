@@ -45,7 +45,7 @@
 
 (def networks
   {:mainnet-network
-   {:full-name        "Mainnet"
+   {:full-name        "Ethereum"
     :network-name     :mainnet
     :chain-id         1
     :related-chain-id 5

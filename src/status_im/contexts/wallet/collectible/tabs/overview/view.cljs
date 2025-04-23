@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.collectible.tabs.overview.view
   (:require
-    [clojure.string :as string]
     [quo.context]
     [quo.core :as quo]
     [quo.foundations.resources :as quo.resources]
@@ -36,10 +35,7 @@
 
 (defn- info
   [{:keys [chain-id account]}]
-  (let [{:keys [network-name]} (rf/sub [:wallet/network-by-id chain-id])
-        subtitle               (some-> network-name
-                                       name
-                                       string/capitalize)]
+  (let [{:keys [network-name full-name]} (rf/sub [:wallet/network-by-id chain-id])]
     [rn/view {:style style/info-container}
      [rn/view {:style style/account}
       [quo/data-item
@@ -59,7 +55,7 @@
         :size          :default
         :title         (i18n/label :t/network)
         :network-image (quo.resources/get-network network-name)
-        :subtitle      subtitle}]]]))
+        :subtitle      full-name}]]]))
 
 (defn view
   [collectible]

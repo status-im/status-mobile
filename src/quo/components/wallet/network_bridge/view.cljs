@@ -26,9 +26,9 @@
 
 (defn- network->text
   [network]
-  (cond (not network)         ""
-        (= network :ethereum) "Mainnet"
-        :else                 (string/capitalize (name network))))
+  (cond (not network)        ""
+        (= network :mainnet) "Ethereum"
+        :else                (string/capitalize (name network))))
 
 (defn view-internal
   [{:keys [network status amount container-style on-press on-long-press] :as args}]

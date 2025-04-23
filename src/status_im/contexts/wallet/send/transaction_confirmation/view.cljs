@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.send.transaction-confirmation.view
   (:require
-    [clojure.string :as string]
     [quo.context :as quo.context]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
@@ -40,14 +39,11 @@
        (doall
         (map-indexed
          (fn [idx path]
-           (let [from-network             (:from path)
-                 chain-id                 (:chain-id from-network)
-                 network                  (rf/sub [:wallet/network-by-id chain-id])
-                 network-name             (:network-name network)
-                 network-name-text        (name network-name)
-                 network-name-capitalized (when (seq network-name-text)
-                                            (string/capitalize network-name-text))
-                 network-color            (if (= network-name :mainnet) :ethereum network-name)]
+           (let [from-network  (:from path)
+                 chain-id      (:chain-id from-network)
+                 network       (rf/sub [:wallet/network-by-id chain-id])
+                 network-name  (:network-name network)
+                 network-color (if (= network-name :mainnet) :ethereum network-name)]
              (with-meta
                [rn/view
                 {:style {:flex-direction :row
@@ -61,7 +57,7 @@
                      :accessibility-label :send-label}
                     (i18n/label :t/from)]
                    [quo/summary-tag
-                    {:label               network-name-capitalized
+                    {:label               (:full-name network)
                      :type                :network
                      :image-source        (:source network)
                      :customization-color network-color}]]
@@ -73,7 +69,7 @@
                      :accessibility-label :send-label}
                     (str (i18n/label :t/and) " ")]
                    [quo/summary-tag
-                    {:label               network-name-capitalized
+                    {:label               (:full-name network)
                      :type                :network
                      :image-source        (:source network)
                      :customization-color network-color}]])]
@@ -106,7 +102,7 @@
         [quo/summary-tag
          {:type                :network
           :image-source        (:source to-network)
-          :label               (string/capitalize (name (:network-name to-network)))
+          :label               (:full-name to-network)
           :customization-color to-network-color}]
         [quo/summary-tag (assoc recipient :type (:recipient-type recipient))])]
      (when (= transaction-type :tx/bridge)

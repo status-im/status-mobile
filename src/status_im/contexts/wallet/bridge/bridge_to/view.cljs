@@ -14,7 +14,7 @@
 
 (defn- bridge-token-component
   []
-  (fn [{:keys [chain-id network-name]} token]
+  (fn [{:keys [chain-id full-name]} token]
     (let [network          (rf/sub [:wallet/network-by-id chain-id])
           currency         (rf/sub [:profile/currency])
           currency-symbol  (rf/sub [:profile/currency-symbol])
@@ -32,7 +32,7 @@
           fiat-formatted   (utils/fiat-formatted-for-ui currency-symbol
                                                         fiat-value)]
       [quo/network-list
-       {:label         (name network-name)
+       {:label         full-name
         :network-image (quo.resources/get-network (:network-name network))
         :token-value   (str crypto-value " " token-symbol)
         :fiat-value    fiat-formatted

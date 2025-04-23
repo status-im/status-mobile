@@ -72,7 +72,7 @@
   {:size         24
    :type         :network
    :network-logo (quo.resources/get-network :ethereum)
-   :network-name "Mainnet"})
+   :network-name "Ethereum"})
 
 (def optimism
   {:size         24

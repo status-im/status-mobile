@@ -21,7 +21,7 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:network :ethereum
+  (let [state (reagent/atom {:network :mainnet
                              :status  :default
                              :amount  "50 SNT"})]
     (fn []

@@ -200,7 +200,7 @@
                 :picture            (resources/get-mock-image :photo1)
                 :community-name     "Rarible"
                 :community-logo     (resources/get-mock-image :coinbase)
-                :network-name       "Mainnet"
+                :network-name       "Ethereum"
                 :network-logo       (resources/get-mock-image :diamond)
                 :networks           networks})]
     (fn []
