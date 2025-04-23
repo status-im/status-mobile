@@ -5,6 +5,7 @@
     [status-im.contexts.wallet.common.activity-tab.constants :as activity-tab-constants]
     [status-im.contexts.wallet.common.utils :as common-utils]
     [status-im.contexts.wallet.common.utils.networks :as network-utils]
+    [status-im.contexts.wallet.networks.core :as networks]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [utils.money :as money]
     [utils.number :as number]))
@@ -248,3 +249,14 @@
           (merge acc (network-utils/network-summary network-name token-symbol amount-fixed))))
       {}
       network-values))))
+
+(rf/reg-sub
+ :wallet/bridge-to-networks
+ :<- [:wallet/active-networks]
+ :<- [:wallet/send-network]
+ (fn [[networks send-network]]
+   (let [available-networks-for-bridge (remove #(= (:chain-id send-network)
+                                                   (:chain-id %))
+                                               networks)]
+     {:layer-1 (networks/get-networks-for-layer available-networks-for-bridge 1)
+      :layer-2 (networks/get-networks-for-layer available-networks-for-bridge 2)})))

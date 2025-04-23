@@ -48,8 +48,9 @@
         network-name     (:full-name network)
         token-symbol     (:symbol token)
         tokens           (:tokens account)
-        mainnet          (rf/sub [:wallet/eth-mainnet-network])
-        layer-2-networks (rf/sub [:wallet/layer-2-networks])
+        to-networks      (rf/sub [:wallet/bridge-to-networks])
+        mainnet          (-> to-networks :layer-1 first)
+        layer-2-networks (:layer-2 to-networks)
         account-token    (some #(when (= token-symbol (:symbol %)) %) tokens)
         account-token    (when account-token
                            (assoc account-token
