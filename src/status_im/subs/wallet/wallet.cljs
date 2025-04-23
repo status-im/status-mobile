@@ -376,7 +376,7 @@
 
 (rf/reg-sub
  :wallet/balances-by-network
- :<- [:wallet/accounts]
+ :<- [:wallet/operable-accounts]
  :<- [:profile/currency]
  :<- [:wallet/active-chain-ids]
  :<- [:wallet/prices-per-token]
