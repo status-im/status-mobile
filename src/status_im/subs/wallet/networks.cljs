@@ -96,6 +96,19 @@
    (networks/get-active-networks networks)))
 
 (re-frame/reg-sub
+ :wallet/max-available-active-networks
+ :<- [:wallet/chain-ids]
+ (fn [chain-ids]
+   (min (count chain-ids)
+        (networks/get-max-active-networks))))
+
+(re-frame/reg-sub
+ :wallet/active-networks-count
+ :<- [:wallet/active-chain-ids]
+ (fn [chain-ids]
+   (count chain-ids)))
+
+(re-frame/reg-sub
  :wallet/filtered-networks
  :<- [:wallet/active-networks]
  :<- [:wallet/network-filter]

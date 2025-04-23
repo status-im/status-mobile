@@ -5,7 +5,6 @@
             [react-native.safe-area :as safe-area]
             [status-im.contexts.settings.wallet.network-settings.style :as style]
             [status-im.contexts.settings.wallet.network-settings.testnet-mode.view :as testnet]
-            [status-im.contexts.wallet.networks.core :as networks]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -73,8 +72,9 @@
 
 (defn view
   []
-  (let [insets               safe-area/insets
-        active-network-count (count (rf/sub [:wallet/active-chain-ids]))]
+  (let [insets                safe-area/insets
+        max-active-networks   (rf/sub [:wallet/max-available-active-networks])
+        active-networks-count (rf/sub [:wallet/active-networks-count])]
     [quo/overlay
      {:type            :shell
       :container-style (style/page-wrapper (:top insets))}
@@ -91,8 +91,8 @@
       [quo/fraction-counter
        {:blur?                 true
         :show-counter-warning? true
-        :left-value            active-network-count
-        :right-value           (networks/get-max-active-networks)
+        :left-value            active-networks-count
+        :right-value           max-active-networks
         :suffix                (i18n/label :t/active)}]]
      [rn/scroll-view
       {:style                   {:flex 1}

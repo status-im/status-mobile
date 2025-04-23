@@ -1,6 +1,5 @@
 (ns status-im.contexts.settings.wallet.network-settings.max-active-networks-sheet
   (:require [quo.core :as quo]
-            [status-im.contexts.wallet.networks.core :as networks]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
@@ -10,11 +9,12 @@
 
 (defn view
   []
-  (let [customization-color (rf/sub [:profile/customization-color])]
+  (let [customization-color (rf/sub [:profile/customization-color])
+        max-active-networks (rf/sub [:wallet/max-available-active-networks])]
     [:<>
      [quo/drawer-top
       {:title           (i18n/label :t/max-active-networks-title
-                                    {:count (networks/get-max-active-networks)})
+                                    {:count max-active-networks})
        :blur?           true
        :container-style {:padding-bottom 16
                          :padding-top    12}}]
