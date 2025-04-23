@@ -33,7 +33,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.sender_username = self.home_view.get_username()
         self.profile_view = self.home_view.profile_button.click()
         self.profile_view.switch_network()
-        self.sign_in_view.sign_in(user_name=self.sender_username)
+        self.home_view.navigate_back_to_home_view()
         self.wallet_view = self.home_view.wallet_tab.click()
         self.account_name = 'Account 1'
 

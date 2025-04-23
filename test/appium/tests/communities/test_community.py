@@ -254,10 +254,9 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.just_fyi("Turn off testnet in the profile settings")
         profile = self.home.profile_button.click()
         profile.switch_network()
-        self.sign_in.sign_in(user_name=self.username)
 
         self.home.just_fyi("Check Discover Communities content")
-        self.home.communities_tab.click()
+        self.home.navigate_to_communities_view().click()
         self.home.discover_communities_button.click()
         self.home.community_card_item.wait_for_elements(seconds=120)
 
