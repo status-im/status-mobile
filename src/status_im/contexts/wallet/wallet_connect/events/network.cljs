@@ -8,7 +8,7 @@
             [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :wallet-connect/show-activate-request-network-sheet
- (fn [_ {:keys [on-success]}]
+ (fn [_ [{:keys [on-success]}]]
    {:fx [[:dispatch
           [:show-bottom-sheet
            {:content (fn []

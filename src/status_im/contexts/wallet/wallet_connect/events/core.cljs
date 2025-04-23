@@ -3,6 +3,7 @@
             [react-native.wallet-connect :as wallet-connect]
             [status-im.constants :as constants]
             status-im.contexts.wallet.wallet-connect.events.effects
+            status-im.contexts.wallet.wallet-connect.events.network
             status-im.contexts.wallet.wallet-connect.events.session-proposals
             status-im.contexts.wallet.wallet-connect.events.session-requests
             status-im.contexts.wallet.wallet-connect.events.session-responses

@@ -86,6 +86,7 @@
    (let [{:keys [tx-args tx-hash]} prepared-tx
          tx                        (bean/->clj tx-args)
          display-data              (transactions/beautify-transaction tx)]
+     (log/info "WC transaction prepared")
      {:db (update-in db
                      [:wallet-connect/current-request]
                      assoc
@@ -102,6 +103,7 @@
          chain-id (-> event
                       (get-in [:params :chainId])
                       networks.utils/eip155->chain-id)]
+     (log/info "Preparing WC transaction")
      {:fx [[:effects.wallet-connect/prepare-transaction
             {:tx         tx
              :chain-id   chain-id

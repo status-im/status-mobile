@@ -52,7 +52,8 @@
                                                         ;; FIXME: not the most reliable way to make
                                                         ;; sure the balance was updated on the
                                                         ;; status-go side
-                                                        (js/setTimeout on-success 500))]
+                                                        (when on-success
+                                                          (js/setTimeout on-success 1000)))]
     (rn/use-unmount (fn []
                       (when-not @success-pressed?
                         (rf/dispatch [:wallet-connect/on-request-modal-dismissed]))))
