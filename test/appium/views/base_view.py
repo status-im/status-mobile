@@ -193,7 +193,6 @@ class BaseView(object):
 
     def just_fyi(self, some_str):
         self.driver.info('# STEP: %s' % some_str, device=False)
-        # self.driver.execute_script("sauce:context=STEP: %s" % some_str)
         self.driver.log_event("appium", "STEP: %s" % some_str)
 
     def hide_keyboard_if_shown(self):
@@ -237,12 +236,6 @@ class BaseView(object):
                 self.click_system_back_button()
             except StaleElementReferenceException:
                 continue
-
-        # while not self.chat_floating_screen.is_element_disappeared(1) \
-        #         or not self.community_floating_screen.is_element_disappeared(1) \
-        #         or not self.discover_communities_floating_screen.is_element_disappeared(1):
-        #     self.driver.press_keycode(4)
-        # self.click_system_back_button_until_presence_of_element(self.chats_tab)
 
     def navigate_to_chats_view(self):
         self.navigate_back_to_home_view()

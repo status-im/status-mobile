@@ -266,7 +266,7 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("User 1 changes accent colour")
         self.home_1.profile_button.click()
         self.profile_1.change_accent_colour(colour_name='magenta')
-        self.profile_1.navigate_back_to_main_profile_view()
+        self.profile_1.click_system_back_button()
         red, green, blue = self.profile_1.user_avatar.get_element_rgb()
         if red < 70 or blue < 30:
             self.errors.append(

@@ -77,8 +77,8 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
     @marks.testrail_id(739307)
     def test_deep_links_communities(self):
         closed_community_name, snt_community_name = "closed community", "SNT community"
-        self.home.navigate_back_to_home_view()
-        self.home.communities_tab.click()
+        self.sign_in.reopen_app(sign_in=True, user_name=self.username)
+        self.home.navigate_to_communities_view()
         self.home.create_community(community_type="closed")
         if not self.community_view.community_options_button.is_element_displayed():
             self.home.get_chat(closed_community_name, community=True).click()
@@ -111,8 +111,7 @@ class TestDeepLinksOneDevice(MultipleSharedDeviceTestCase):
                     self.errors.append(self.community_view,
                                        "Community '%s' was not requested to join by the deep link %s" % (text, link))
             if text != closed_community_name:  # the last one
-                self.home.navigate_back_to_home_view()
-                self.home.browser_tab.click()
+                self.home.click_system_back_button()
         self.errors.verify_no_errors()
 
     @marks.testrail_id(704614)
