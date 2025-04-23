@@ -15,6 +15,17 @@ class StatusPackage(private val rootedDevice: Boolean) : ReactPackage {
                 requestBody = "",
                 statusgoFunction = { Statusgo.imageServerTLSCert() }
             )
+            
+        fun switchToLowMemoryMode() {
+            // use pool to execute the request to avoid android.os.NetworkOnMainThreadException
+            StatusThreadPoolExecutor.getInstance().execute {
+                StatusBackendClient.executeStatusGoRequest(
+                    endpoint = "SwitchToLowMemoryMode",
+                    requestBody = "",
+                    statusgoFunction = { Statusgo.switchToLowMemoryMode() }
+                )
+            }
+        }
     }
 
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
