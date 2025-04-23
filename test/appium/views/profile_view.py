@@ -213,7 +213,7 @@ class ProfileView(BaseView):
 
     def switch_network(self):
         self.driver.info("Toggling test mode")
-        self.profile_networks_button.click()
+        self.profile_networks_button.scroll_and_click()
         self.testnet_mode_toggle.click()
         self.confirm_testnet_mode_change_button.click()
 
