@@ -53,7 +53,7 @@
 
 (defn handle-orientation
   [result {:keys [flat-list-ref]} {:keys [scroll-index]} animations]
-  (let [insets        (safe-area/get-insets)
+  (let [insets        safe-area/insets
         window        (rn/get-window)
         window-width  (:width window)
         window-height (:height window)

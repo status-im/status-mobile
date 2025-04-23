@@ -29,7 +29,7 @@
 
 (defn view
   []
-  (let [padding-top (:top (safe-area/get-insets))]
+  (let [padding-top (:top safe-area/insets)]
     (fn []
       (let [{:keys [address color emoji watch-only?]
              :as   account}     (rf/sub [:wallet/current-viewing-account])

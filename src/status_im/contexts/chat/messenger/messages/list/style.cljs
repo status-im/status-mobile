@@ -17,7 +17,7 @@
 
 (defn list-paddings
   [add-padding-bottom?]
-  (let [{:keys [top bottom]} (safe-area/get-insets)]
+  (let [{:keys [top bottom]} safe-area/insets]
     ;; WARNING: the flat-list is reversed, so the paddings are applied inverted
     {:padding-top    (if add-padding-bottom?
                        (+ distance-from-last-message permission-context-height bottom)

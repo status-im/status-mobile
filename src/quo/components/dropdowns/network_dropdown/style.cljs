@@ -24,6 +24,19 @@
    :border-color       (container-border-color props)
    :align-items        :center})
 
+(defn dropdown-text
+  [theme]
+  {:color        (colors/theme-colors colors/neutral-100 colors/white theme)
+   :padding-left 8})
+
+(def dropdown-icon-container
+  {:padding-left 8})
+
+(defn dropdown-icon-colors
+  [theme]
+  {:background (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+   :foreground (colors/theme-colors colors/neutral-100 colors/white theme)})
+
 (def new-chain-indicator
   {:position :absolute
    :right    0})

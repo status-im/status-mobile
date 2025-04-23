@@ -26,6 +26,7 @@ class TestrailReport(BaseTestReport):
 
         self.outcomes = {
             'passed': 1,
+            'failed': 5,
             'undefined_fail': 10,
             'skipped': 11}
 
@@ -170,7 +171,10 @@ class TestrailReport(BaseTestReport):
             if last_testrun.xfail and not last_testrun.run:
                 status_id = self.outcomes['skipped']
             elif last_testrun.error:
-                status_id = self.outcomes['undefined_fail']
+                if last_testrun.xfail:
+                    status_id = self.outcomes['failed']
+                else:
+                    status_id = self.outcomes['undefined_fail']
             else:
                 status_id = self.outcomes['passed']
             data.append(

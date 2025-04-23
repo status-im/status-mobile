@@ -56,7 +56,7 @@
   [{:keys [header-comp main-comp back-button-on-press] :as params}]
   (let [theme                   (quo.context/use-theme)
         window-height           (:height (rn/get-window))
-        {:keys [top bottom]}    (safe-area/get-insets)
+        {:keys [top bottom]}    safe-area/insets
         ;; view height calculation is different because window height is different on iOS and
         ;; Android:
         view-height             (if platform/ios?

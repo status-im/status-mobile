@@ -5,6 +5,7 @@
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
+    [react-native.safe-area-context :as safe-area-context]
     [reagent.core :as reagent]
     schema.view
     [status-im.common.alert-banner.view :as alert-banner]
@@ -47,9 +48,9 @@
     :margin-top       alert-banners-top-margin
     :background-color (or background-color (colors/theme-colors colors/white colors/neutral-95 theme))}
    (when bottom?
-     {:padding-bottom (safe-area/get-bottom)})
+     {:padding-bottom safe-area/bottom})
    (when top?
-     {:padding-top (safe-area/get-top)})))
+     {:padding-top safe-area/top})))
 
 (defn screen
   [screen-key]
@@ -69,18 +70,18 @@
            app-theme                        (rf/sub [:theme])
            theme                            (or theme app-theme)]
        ^{:key (str "root" screen-key @reloader/cnt)}
-       [quo.context/provider
-        {:theme theme :screen-id name :screen-params screen-params}
-        [rn/view
-         {:style (wrapped-screen-style (assoc
-                                        insets
-                                        :theme                    theme
-                                        :background-color         background-color
-                                        :alert-banners-top-margin alert-banners-top-margin))}
-         [inactive]
-         (if sheet?
-           [bottom-sheet-screen/view {:content component :skip-background? skip-background?}]
-           [component])]
+       [quo.context/provider {:theme theme :screen-id name :screen-params screen-params}
+        [safe-area-context/safe-area-provider
+         [rn/view
+          {:style (wrapped-screen-style (assoc
+                                         insets
+                                         :theme                    theme
+                                         :background-color         background-color
+                                         :alert-banners-top-margin alert-banners-top-margin))}
+          [inactive]
+          (if sheet?
+            [bottom-sheet-screen/view {:content component :skip-background? skip-background?}]
+            [component])]]
         (when js/goog.DEBUG
           [:<>
            [reloader/reload-view]
@@ -96,21 +97,23 @@
            {:keys [theme screen-id]} sheet
            screen-id-value           (or screen-id view-id)
            screen-params             (rf/sub [:get-screen-params screen-id-value])
-           insets                    (safe-area/get-insets)
+           insets                    safe-area/insets
            keyboard-vertical-offset  (- (max 20 (:bottom insets)))]
        ^{:key (str "sheet" @reloader/cnt)}
        [quo.context/provider
         {:theme         (or theme app-theme)
          :screen-id     screen-id-value
          :screen-params screen-params}
-        [inactive]
-        [rn/keyboard-avoiding-view
-         {:style                    {:position :relative :flex 1}
-          :keyboard-vertical-offset keyboard-vertical-offset}
-         (when sheet
-           [bottom-sheet/view
-            {:insets insets :hide? hide?}
-            sheet])]]))))
+        [safe-area-context/safe-area-provider
+         [:<>
+          [inactive]
+          [rn/keyboard-avoiding-view
+           {:style                    {:flex 1}
+            :keyboard-vertical-offset keyboard-vertical-offset}
+           (when sheet
+             [bottom-sheet/view
+              {:insets insets :hide? hide?}
+              sheet])]]]]))))
 
 (def toasts (reagent/reactify-component toasts/toasts))
 

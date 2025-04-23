@@ -30,12 +30,11 @@
   (let [{:keys [primary-name nickname public-key]} contact
         entered-nickname                           (reagent/atom (or nickname ""))
         photo-path                                 (rf/sub [:chats/photo-path public-key])
-        theme                                      (quo.context/use-theme)
-        insets                                     (safe-area/get-insets)]
+        theme                                      (quo.context/use-theme)]
     (fn [{:keys [title description accessibility-label
                  close-button-text]}]
       [rn/view
-       {:style               (style/nickname-container insets)
+       {:style               (style/nickname-container safe-area/insets)
         :accessibility-label accessibility-label}
        [quo/text
         {:weight :semi-bold

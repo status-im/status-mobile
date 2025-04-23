@@ -26,8 +26,7 @@
 
 (defn view
   []
-  (let [insets (safe-area/get-insets)
-        customization-color (rf/sub [:profile/customization-color])
+  (let [customization-color (rf/sub [:profile/customization-color])
 
         preview-privacy? (rf/sub [:profile/preview-privacy?])
         see-profile-pictures-from (rf/sub [:profile/pictures-visibility])
@@ -62,7 +61,7 @@
                          [show-profile-pictures-to])]
     [quo/overlay
      {:type            :shell
-      :container-style (style/page-wrapper (:top insets))}
+      :container-style (style/page-wrapper safe-area/top)}
      [quo/page-nav
       {:key        :header
        :background :blur

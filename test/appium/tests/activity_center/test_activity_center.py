@@ -23,8 +23,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.public_key_1 = self.home_1.get_public_key()
         self.profile_link_2 = self.home_2.get_link_to_profile()
         self.home_2.close_share_tab_button.click_until_absense_of_element(self.home_2.link_to_profile_button)
-        [home.navigate_back_to_home_view() for home in self.homes]
-        [home.chats_tab.click() for home in self.homes]
+        [home.navigate_to_chats_view() for home in self.homes]
 
     @marks.testrail_id(702850)
     def test_activity_center_contact_request_decline(self):
@@ -141,8 +140,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
                                "Contact was not added to contact list after accepting contact request (as receiver)")
 
         self.device_2.just_fyi('Device1 check that contact appeared in contact list mutually')
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
+        self.home_2.navigate_to_chats_view()
         self.home_2.contacts_tab.click()
         if not self.home_2.contact_details_row(username=self.username_1).is_element_displayed(20):
             self.errors.append(self.home_2,
@@ -245,10 +243,10 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
         self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
         self.public_key_2 = self.home_2.get_public_key()
-        self.home_2.navigate_back_to_home_view()
-        [home.chats_tab.click() for home in self.homes]
 
+        self.home_1.navigate_to_chats_view()
         self.home_1.add_contact(self.public_key_2)
+        self.home_2.navigate_to_chats_view()
         self.home_2.handle_contact_request(self.username_1)
         self.text_message = 'hello'
 
@@ -291,14 +289,12 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702947)
     def test_activity_center_reply_read_unread_delete_filter_swipe(self):
         message_to_reply, reply_to_message_from_sender = 'something to reply to', 'this is a reply'
-        self.home_1.navigate_back_to_home_view()
-        self.home_1.communities_tab.click()
+        self.home_1.navigate_to_communities_view()
         self.home_1.get_chat(self.community_name, community=True).click()
         self.community_1.get_channel(self.channel_name).click()
         self.channel_1.send_message(message_to_reply)
 
-        self.home_1.navigate_back_to_home_view()
-        self.home_1.communities_tab.click()
+        self.home_1.navigate_to_communities_view()
         self.channel_2.chat_element_by_text(message_to_reply).wait_for_visibility_of_element(120)
         self.channel_2.quote_message(message_to_reply)
         self.channel_2.send_message(reply_to_message_from_sender)
@@ -356,8 +352,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         reply_element.click()
         if not self.channel_1.chat_element_by_text(reply_to_message_from_sender).is_element_displayed():
             self.errors.append(self.home_1, "Was not redirected to chat after tapping on reply!")
-        self.home_1.navigate_back_to_home_view()
-        self.home_1.communities_tab.click()
+        self.home_1.navigate_to_communities_view()
         if self.home_1.notifications_unread_badge.is_element_displayed():
             self.errors.append(self.home_1,
                                "Notification was not marked as read after opening it in community channel!")
@@ -388,10 +383,10 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
         self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
         self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
         self.public_key_2 = self.home_2.get_public_key()
-        self.home_2.navigate_back_to_home_view()
-        [home.chats_tab.click() for home in self.homes]
 
+        self.home_1.navigate_to_chats_view()
         self.home_1.add_contact(self.public_key_2)
+        self.home_2.navigate_to_chats_view()
         self.home_2.handle_contact_request(self.username_1)
         self.text_message = 'hello'
 
@@ -414,8 +409,7 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702957)
     def test_activity_center_mentions(self):
-        self.home_1.navigate_back_to_home_view()
-        self.home_1.communities_tab.click()
+        self.home_1.navigate_to_communities_view()
 
         self.device_2.just_fyi("Invited member sends a message with a mention")
         self.channel_2.mention_user(self.username_1)
@@ -451,8 +445,7 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702958)
     def test_activity_center_admin_notification_accept_swipe(self):
         self.home_2.just_fyi("Clearing history")
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
+        self.home_2.navigate_to_chats_view()
         self.home_2.clear_chat_long_press(self.username_1)
 
         [home.navigate_back_to_home_view() for home in (self.home_1, self.home_2)]
@@ -466,13 +459,11 @@ class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
         self.community_1.invite_to_community(community_name, self.username_2)
 
         self.home_2.just_fyi("Request access to community")
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
+        self.home_2.navigate_to_chats_view()
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
         self.community_2.join_community(open_community=False)
         for home in self.home_1, self.home_2:
-            home.navigate_back_to_home_view()
-            home.communities_tab.click()
+            home.navigate_to_communities_view()
 
         self.home_1.just_fyi("Checking unread indicators")
         try:

@@ -34,7 +34,7 @@
 
 (defn screen-title
   []
-  [rn/view {:style (style/screen-title-container (safe-area/get-top))}
+  [rn/view {:style (style/screen-title-container safe-area/top)}
    [quo/text
     {:accessibility-label :communities-screen-title
      :weight              :semi-bold
@@ -193,7 +193,7 @@
   [{:keys [selected-tab scroll-height]}]
   (when (> @scroll-height 360)
     [rn/view
-     {:style (style/blur-tabs-header (safe-area/get-top))}
+     {:style (style/blur-tabs-header safe-area/top)}
      [discover-communities-segments selected-tab true]]))
 
 (defn discover-screen-content

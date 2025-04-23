@@ -17,8 +17,7 @@
 
 (defn view
   []
-  (let [insets                             (safe-area/get-insets)
-        [minimum-loading-timeout-done?
+  (let [[minimum-loading-timeout-done?
          set-minimum-loading-timeout-done] (rn/use-state false)
         loading?                           (rf/sub [:settings/change-password-loading])
         logging-out?                       (rf/sub [:profile/logging-out?])
@@ -30,7 +29,7 @@
     [quo/overlay {:type :shell}
      [rn/view
       {:key   :change-password-loading
-       :style (style/loading-container insets)}
+       :style (style/loading-container safe-area/insets)}
       [quo/page-nav]
       [quo/page-top
        {:description      :text
@@ -52,4 +51,3 @@
          {:container-style style/logout-container
           :disabled?       logging-out?
           :on-press        handle-logout}])]]))
-

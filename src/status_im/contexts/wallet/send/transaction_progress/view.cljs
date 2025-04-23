@@ -60,7 +60,7 @@
                                      {:type                :no-title
                                       :background          :blur
                                       :icon-name           :i/close
-                                      :margin-top          (safe-area/get-top)
+                                      :margin-top          safe-area/top
                                       :on-press            leave-page
                                       :accessibility-label :top-bar}]
           :footer                   [footer

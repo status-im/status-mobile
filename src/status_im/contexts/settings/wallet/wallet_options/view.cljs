@@ -59,17 +59,16 @@
 
 (defn view
   []
-  (let [inset-top (safe-area/get-top)]
-    [quo/overlay
-     {:type            :shell
-      :container-style (style/page-wrapper inset-top)}
-     [quo/page-nav
-      {:key        :header
-       :background :blur
-       :icon-name  :i/arrow-left
-       :on-press   navigate-back}]
-     [quo/page-top
-      {:title                     (i18n/label :t/wallet)
-       :title-accessibility-label :wallet-settings-header}]
-     [basic-settings]
-     [advanced-settings]]))
+  [quo/overlay
+   {:type            :shell
+    :container-style (style/page-wrapper safe-area/top)}
+   [quo/page-nav
+    {:key        :header
+     :background :blur
+     :icon-name  :i/arrow-left
+     :on-press   navigate-back}]
+   [quo/page-top
+    {:title                     (i18n/label :t/wallet)
+     :title-accessibility-label :wallet-settings-header}]
+   [basic-settings]
+   [advanced-settings]])

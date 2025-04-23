@@ -243,7 +243,7 @@
 
 (defn- get-title-bottom-y-position
   [y-element-position element-height]
-  (let [{:keys [top]} (safe-area/get-insets)
+  (let [{:keys [top]} safe-area/insets
         title-height  -56]
     (+ y-element-position
        element-height
@@ -252,7 +252,7 @@
 
 (defn view
   [_]
-  (let [{:keys [top]}      (safe-area/get-insets)
+  (let [{:keys [top]}      safe-area/insets
         theme              (quo.context/use-theme)
         title-bottom-coord (rn/use-ref-atom 0)
         set-title-bottom   (rn/use-callback

@@ -19,7 +19,13 @@
     :type    :select
     :options [{:key 1}
               {:key 2}
-              {:key 3}]}])
+              {:key 3}]}
+   {:key     :dropdown-icon?
+    :type    :select
+    :options [{:key true}
+              {:key false}]}
+   {:key  :label
+    :type :text}])
 
 (def ^:private networks-list
   [{:source (quo.resources/get-network :ethereum)}
@@ -28,7 +34,11 @@
 
 (defn view
   []
-  (let [component-state (reagent/atom {:state :default :blur? false :amount 3})]
+  (let [component-state (reagent/atom {:state          :default
+                                       :blur?          false
+                                       :amount         3
+                                       :dropdown-icon? false
+                                       :label          nil})]
     (fn []
       [preview/preview-container
        {:state                 component-state

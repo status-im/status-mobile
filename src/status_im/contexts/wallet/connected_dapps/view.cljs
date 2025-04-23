@@ -82,7 +82,7 @@
 
 (defn view
   []
-  (let [{:keys [bottom]}                   (safe-area/get-insets)
+  (let [{:keys [bottom]}                   safe-area/insets
         {:keys [color] :as wallet-account} (rf/sub [:wallet/current-viewing-account])
         customization-color                (rf/sub [:profile/customization-color])
         sessions                           (rf/sub

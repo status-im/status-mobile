@@ -505,7 +505,7 @@
      [account-switcher/view
       {:on-press      #(on-close start-point)
        :icon-name     :i/arrow-left
-       :margin-top    (safe-area/get-top)
+       :margin-top    safe-area/top
        :switcher-type :select-account
        :params        {:show-account-balances? true
                        :asset-symbol           (:symbol asset-to-pay)

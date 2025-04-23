@@ -207,21 +207,18 @@
    :channel   48
    :separator 8})
 
-(defn- unusable-area-height
-  []
-  (+ (safe-area/get-top)
-     32
-     11 ;;top page buttons & button's padding
-     (safe-area/get-bottom)))
+(def unusable-area-height
+  (+ 32 11 safe-area/bottom))  ;;top page buttons, button's padding & safe area
 
 (defn- calc-scrollable-content
   [scrollable-height]
-  (- (+ scrollable-height (unusable-area-height))
-     (:height (rn/get-window))))
+  (- scrollable-height
+     (- (:height safe-area/window) unusable-area-height)))
 
 (defn- calc-listing-height
   []
-  (- (:height (rn/get-window)) (unusable-area-height)))
+  (+ (- (:height safe-area/window) unusable-area-height)
+     safe-area/bottom))
 
 (defn- channel-listing
   [{:keys [community-id scroll-amount header-height set-max-scroll]}]
@@ -263,7 +260,7 @@
      {:ref                     flat-list-ref
       :style                   [(style/channel-listing theme listing-height) channels-styles]
       :data                    flatten-channels
-      :content-container-style (when platform/ios? {:padding-bottom (safe-area/get-bottom)})
+      :content-container-style [(when platform/ios? {:padding-bottom safe-area/bottom})]
       :sticky-header-indices   categories-indexes
       :scroll-enabled          false
       :render-fn               render-fn
@@ -495,10 +492,9 @@
 (defn- community-fetching-placeholder
   [id]
   (let [theme     (quo.context/use-theme)
-        top-inset (safe-area/get-top)
         fetching? (rf/sub [:communities/fetching-community id])]
     [rn/view
-     {:style               (style/fetching-placeholder top-inset)
+     {:style               (style/fetching-placeholder safe-area/top)
       :accessibility-label (if fetching?
                              :fetching-community-overview
                              :failed-to-fetch-community-overview)}

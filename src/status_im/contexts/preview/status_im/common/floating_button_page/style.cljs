@@ -5,11 +5,11 @@
 (defn container
   []
   {:flex       1
-   :margin-top (safe-area/get-top)})
+   :margin-top safe-area/top})
 
 (def background-image
   {:position :absolute
-   :top      (- (safe-area/get-top))
+   :top      (- safe-area/top)
    :left     0
    :right    0
    :bottom   200})

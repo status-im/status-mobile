@@ -9,7 +9,7 @@
 (rf/reg-fx :effects.shell/change-tab
  (fn [stack-id]
    (when (and (not= stack-id @state/selected-stack-id-value)
-              (some #(= stack-id %) shell.constants/stacks-ids))
+              (shell.constants/stacks-ids stack-id))
      (some-> @state/selected-stack-id-shared-value
              (reanimated/set-shared-value (name stack-id)))
      (utils/change-selected-stack stack-id)

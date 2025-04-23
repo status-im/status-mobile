@@ -88,8 +88,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(703382)
     def test_community_mute_community_and_channel(self):
-        self.home.navigate_back_to_home_view()
-        self.home.communities_tab.click()
+        self.home.navigate_to_communities_view()
         self.home.just_fyi("Mute community and check that channels are also muted")
         self.home.mute_chat_long_press(chat_name=self.community_name, mute_period="mute-for-1-hour", community=True)
         device_time = self.home.driver.device_time
@@ -123,8 +122,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi("Unmute channel and check that the community is also unmuted")
         self.home.mute_channel_button.click()
-        self.home.navigate_back_to_home_view()
-        self.home.communities_tab.click()
+        self.home.navigate_to_communities_view()
         self.home.get_chat(self.community_name, community=True).long_press_element()
         if not self.home.element_by_text("Mute community").is_element_displayed():
             self.errors.append(self.home, "Community is not unmuted when channel is unmuted")
@@ -149,8 +147,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append(self.home,
                                "Caption with text '%s' is not shown for a muted community channel" % expected_texts[1])
         self.home.click_system_back_button()
-        self.home.navigate_back_to_home_view()
-        self.home.communities_tab.click()
+        self.home.navigate_to_communities_view()
         self.home.get_chat(self.community_name, community=True).long_press_element()
         if self.home.element_by_text_part("Muted until").is_element_displayed() or \
                 self.home.mute_community_button.text != transl["mute-community"]:
@@ -223,8 +220,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi("Check that can login with different user")
         self.home.reopen_app(user_name=self.username)
-        self.home.navigate_back_to_home_view()
-        self.home.communities_tab.click()
+        self.home.navigate_to_communities_view()
         if self.home.element_by_text(waku_user.communities['admin_open']).is_element_displayed(30):
             self.errors.append(self.home, "Community of previous user is shown!")
 
@@ -319,9 +315,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
         self.public_key_2 = self.home_2.get_public_key()
         self.profile_1 = self.home_1.get_profile_view()
-        [home.navigate_back_to_home_view() for home in self.homes]
-        [home.chats_tab.click() for home in self.homes]
+        self.home_1.navigate_to_chats_view()
         self.home_1.add_contact(self.public_key_2)
+        self.home_2.navigate_to_chats_view()
         self.home_2.handle_contact_request(self.username_1)
         self.text_message = 'hello'
 
@@ -330,10 +326,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.chat_1 = self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message('hey')
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
-        self.home_1.navigate_back_to_home_view()
 
         self.home_1.just_fyi("Open community to message")
-        self.home_1.communities_tab.click()
+        self.home_1.navigate_to_communities_view()
         self.community_name = "open community"
         self.channel_name = 'general'
         self.home_1.create_community(community_type="open")
@@ -423,8 +418,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.send_images_with_description(image_description, [0, 1])
 
         self.channel_2.just_fyi("Check gallery on second device")
-        self.channel_2.navigate_back_to_home_view()
-        self.home_2.communities_tab.click()
+        self.channel_2.navigate_to_communities_view()
         self.home_2.get_to_community_channel_from_home(self.community_name)
         chat_element = self.channel_2.chat_element_by_text(image_description)
         try:
@@ -464,7 +458,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.smoke
-    @marks.xfail(reason="Might fail from time to time as reaction are set too slowly") # TODO: needs investigation
+    @marks.xfail(reason="Might fail from time to time as reaction are set too slowly")  # TODO: needs investigation
     @marks.testrail_id(702859)
     def test_community_one_image_send_reply_set_reaction(self):
         self.home_1.just_fyi('Send image in 1-1 chat from Gallery')
@@ -560,8 +554,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.channel_1.just_fyi("Can reply to emojis")
         if not self.channel_2.chat_message_input.is_element_displayed():
-            self.home_2.navigate_back_to_home_view()
-            self.home_2.communities_tab.click()
+            self.home_2.navigate_to_communities_view()
             self.home_2.get_to_community_channel_from_home(self.community_name)
         self.channel_2.quote_message(emoji_unicode)
         message_text = 'test message'
@@ -615,8 +608,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         }
         for home in self.home_1, self.home_2:
             if not home.chat_floating_screen.is_element_displayed():
-                home.navigate_back_to_home_view()
-                home.communities_tab.click()
+                home.navigate_to_communities_view()
                 home.get_to_community_channel_from_home(self.community_name)
 
         for key, data in preview_urls.items():
@@ -667,12 +659,10 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702841)
     def test_community_unread_messages_badge(self):
-        self.channel_1.navigate_back_to_home_view()
-        self.home_1.communities_tab.click()
+        self.channel_1.navigate_to_communities_view()
         message = 'test message'
         if not self.home_2.chat_floating_screen.is_element_displayed():
-            self.home_2.navigate_back_to_home_view()
-            self.home_2.communities_tab.click()
+            self.home_2.navigate_to_communities_view()
             self.home_2.get_to_community_channel_from_home(self.community_name)
         self.channel_2.send_message(message)
         self.home_1.just_fyi('Check new messages badge is shown for community')
@@ -693,8 +683,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     def test_community_contact_block_unblock_offline(self):
         for i, channel in enumerate([self.channel_1, self.channel_2]):
             if not channel.chat_message_input.is_element_displayed():
-                channel.navigate_back_to_home_view()
-                self.homes[i].communities_tab.click()
+                channel.navigate_to_communities_view()
                 self.homes[i].get_to_community_channel_from_home(self.community_name)
 
         self.channel_1.send_message('message to get avatar of user 2 visible in next message')
@@ -713,8 +702,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.chat_1.just_fyi('Check that messages from blocked user are hidden in public chat and close app')
         if not self.chat_1.chat_element_by_text(message_to_disappear).is_element_disappeared(30):
             self.errors.append(self.chat_1, "Messages from blocked user is not cleared in public chat ")
-        self.chat_1.navigate_back_to_home_view()
-        self.home_1.chats_tab.click()
+        self.chat_1.navigate_to_chats_view()
         if not self.home_1.element_by_translation_id("no-messages").is_element_displayed():
             self.errors.append("1-1 chat from blocked user is not removed and messages home is not empty!")
         self.chat_1.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
@@ -792,8 +780,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(703086)
     def test_community_mark_all_messages_as_read(self):
         for home in self.home_1, self.home_2:
-            home.navigate_back_to_home_view()
-            home.communities_tab.click()
+            home.navigate_to_communities_view()
         self.home_2.get_chat(self.community_name, community=True).click()
         self.community_2.get_channel(self.channel_name).click()
         self.channel_2.send_message(self.text_message)
@@ -825,8 +812,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         message_to_edit, message_to_delete = "message to edit", "message to delete"
         self.channel_2.send_message(message_to_edit)
         self.channel_2.send_message(message_to_delete)
-        self.home_1.navigate_back_to_home_view()
-        self.home_1.communities_tab.click()
+        self.home_1.navigate_to_communities_view()
         self.home_1.get_chat(self.community_name, community=True).click()
         self.community_1.get_channel(self.channel_name).click()
         self.channel_1.just_fyi("Receiver is checking if initial messages were delivered")
@@ -864,19 +850,18 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
         self.public_key_2 = self.home_2.get_public_key()
         self.profile_1 = self.home_1.get_profile_view()
-        [home.navigate_back_to_home_view() for home in self.homes]
-        [home.chats_tab.click() for home in self.homes]
+        self.home_1.navigate_to_chats_view()
         self.home_1.add_contact(self.public_key_2)
+        self.home_2.navigate_to_chats_view()
         self.home_2.handle_contact_request(self.username_1)
         self.text_message = 'hello'
 
         self.chat_1 = self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message('hey')
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
-        self.home_1.navigate_back_to_home_view()
 
         self.home_1.just_fyi("Open community to message")
-        self.home_1.communities_tab.click()
+        self.home_1.navigate_to_communities_view()
         self.community_name = "open community"
         self.channel_name = 'general'
         self.home_1.create_community(community_type="open")
@@ -917,8 +902,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             self.errors.append(self.channel_1, "Push notification with the mention was not received by admin")
 
         if not self.channel_1.chat_message_input.is_element_displayed():
-            self.channel_1.navigate_back_to_home_view()
-            self.home_1.communities_tab.click()
+            self.channel_1.navigate_to_communities_view()
             self.home_1.get_to_community_channel_from_home(self.community_name)
 
         if message_received:
@@ -961,8 +945,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
         self.home_2.navigate_back_to_home_view()
         if not self.channel_1.chat_message_input.is_element_displayed():
-            self.channel_1.navigate_back_to_home_view()
-            self.home_1.communities_tab.click()
+            self.channel_1.navigate_to_communities_view()
             self.home_1.get_chat(self.community_name, community=True).click()
             self.community_1.get_channel(self.channel_name).click()
 
@@ -1000,8 +983,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         }
 
         for home in self.homes:
-            home.navigate_back_to_home_view()
-            home.communities_tab.click()
+            home.navigate_to_communities_view()
             community = home.get_chat(self.community_name, community=True).click()
             community.get_channel(self.channel_name).click()
 
@@ -1020,8 +1002,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
                     '%s is not displayed with markdown in community channel for the recipient \n' % message)
 
         for home in self.homes:
-            home.navigate_back_to_home_view()
-            home.chats_tab.click()
+            home.navigate_to_chats_view()
             home.recent_tab.click()
 
         self.home_1.get_chat(self.username_2).click()
@@ -1044,8 +1025,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702845)
     def test_community_leave(self):
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.communities_tab.click()
+        self.home_2.navigate_to_communities_view()
         community = self.home_2.get_chat(self.community_name, community=True)
         community_to_leave = CommunityView(self.drivers[1])
         community.long_press_until_element_is_shown(community_to_leave.leave_community_button)
@@ -1059,10 +1039,8 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
                         "https://github.com/status-im/status-mobile/issues/21776")
     @marks.testrail_id(702948)
     def test_community_hashtag_links_to_community_channels(self):
-        for home in self.homes:
-            home.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
-        self.home_1.communities_tab.click()
+        self.home_2.navigate_to_chats_view()
+        self.home_1.navigate_to_communities_view()
 
         self.home_1.just_fyi("Device 1 creates a closed community")
         self.home_1.create_community(community_type="closed")
@@ -1094,8 +1072,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             not_shown.append("general")
 
         self.home_2.just_fyi("Device 2 joins the community")
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
+        self.home_2.navigate_to_chats_view()
         self.home_2.get_chat(self.username_1).click()
         self.community_2.join_community(open_community=False)
 
@@ -1116,8 +1093,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Device 1 sends a message in the cats channel")
         self.home_1.get_to_community_channel_from_home(community_name=community_name, channel_name=cats_channel)
         self.channel_1.send_message(cats_message)
-        self.channel_1.navigate_back_to_home_view()
-        self.home_1.communities_tab.click()
+        self.channel_1.navigate_to_communities_view()
         self.home_1.get_to_community_channel_from_home(community_name=community_name, channel_name=dogs_channel)
 
         self.home_1.just_fyi("Device 1 sends a message with hashtag in the dogs channel")
@@ -1125,8 +1101,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.channel_1.send_message(message_with_hashtag)
 
         self.home_2.just_fyi("Device 2 clicks on the message with hashtag in the community channel")
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.communities_tab.click()
+        self.home_2.navigate_to_communities_view()
         self.home_2.get_to_community_channel_from_home(community_name, dogs_channel)
         self.channel_2.chat_element_by_text(message_with_hashtag).click_on_link_inside_message_body()
         if not self.channel_2.chat_element_by_text(cats_message).is_element_displayed(30):
@@ -1138,8 +1113,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             self.errors.append(self.channel_1, "Sender was not navigated to the cats channel")
 
         for home in self.homes:
-            home.navigate_back_to_home_view()
-            home.chats_tab.click()
+            home.navigate_to_chats_view()
 
         self.home_2.just_fyi("Device 2 sends a message with hashtag in 1-1 chat")
         self.home_2.get_chat(self.username_1).click()
@@ -1163,10 +1137,9 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
     @marks.testrail_id(703629)
     def test_community_join_when_node_owner_offline(self):
         for home in self.homes:
-            home.navigate_back_to_home_view()
+            home.navigate_to_communities_view()
         if self.home_2.get_chat(self.community_name, community=True).is_element_displayed():
             CommunityView(self.home_2.driver).leave_community(self.community_name)
-        self.home_1.communities_tab.click()
 
         self.home_1.just_fyi("Device 1 creates open community")
         self.home_1.create_community(community_type="open")
@@ -1213,8 +1186,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         else:
             self.errors.append(self.community_2, "Community channel is not displayed for user before join")
         self.community_2.toast_content_element.wait_for_invisibility_of_element(30)
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.communities_tab.click()
+        self.home_2.navigate_to_communities_view()
         self.home_2.pending_communities_tab.click()
         if self.home_2.get_chat(community_name, community=True).is_element_displayed():
             self.home_2.get_chat(community_name, community=True).click()
@@ -1263,19 +1235,18 @@ class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
         self.username_1, self.username_2 = self.home_1.get_username(), self.home_2.get_username()
         self.public_key_2 = self.home_2.get_public_key()
         self.profile_1 = self.home_1.get_profile_view()
-        [home.navigate_back_to_home_view() for home in self.homes]
-        [home.chats_tab.click() for home in self.homes]
+        self.home_1.navigate_to_chats_view()
         self.home_1.add_contact(self.public_key_2)
+        self.home_2.navigate_to_chats_view()
         self.home_2.handle_contact_request(self.username_1)
         self.text_message = 'hello'
 
         self.chat_1 = self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message('hey')
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
-        self.home_1.navigate_back_to_home_view()
 
         self.home_1.just_fyi("Open community to message")
-        self.home_1.communities_tab.click()
+        self.home_1.navigate_to_communities_view()
         self.community_name = "open community"
         self.channel_name = 'general'
         self.home_1.create_community(community_type="open")
@@ -1304,9 +1275,7 @@ class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
         profile_2.syncing_button.scroll_and_click()
         profile_2.sync_and_backup_button.click()
         profile_2.wi_fi_only_button.click()
-        self.device_2.click_system_back_button()
-        self.device_2.click_system_back_button_until_absence_of_element(profile_2.profile_password_button)
-        self.home_2.communities_tab.click()
+        self.home_2.navigate_to_communities_view()
         self.home_2.discover_communities_button.click()
         if self.home_2.community_card_item.is_element_displayed(10):
             self.errors.append(self.home_2,
@@ -1327,8 +1296,7 @@ class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
         self.channel_1.just_fyi("Sender sends messages in the community channel and 1-1 chat when receiver is offline")
         self.channel_1.send_message(message_2)
         self.channel_1.chat_element_by_text(message_2).wait_for_sent_state()
-        self.device_1.navigate_back_to_home_view()
-        self.device_1.chats_tab.click()
+        self.device_1.navigate_to_chats_view()
         self.home_1.get_chat(self.username_2).click()
         message_3 = 'message text 3'
         self.chat_1.send_message(message_3)
@@ -1340,8 +1308,7 @@ class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
             self.errors.append(
                 self.device_2,
                 "Message '%s' in community, which is sent when receiver was offline, is received using mobile data" % message_2)
-        self.device_2.navigate_back_to_home_view()
-        self.device_2.chats_tab.click()
+        self.device_2.navigate_to_chats_view()
         self.home_2.get_chat(self.username_1).click()
         if not self.chat_2.chat_element_by_text(message_3).is_element_displayed(120):
             self.errors.append(
@@ -1350,8 +1317,7 @@ class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
 
         self.device_2.just_fyi("Receiver turns wi-fi on")
         self.device_2.driver.set_network_connection(ConnectionType.WIFI_ONLY)
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.communities_tab.click()
+        self.home_2.navigate_to_communities_view()
         self.home_2.get_to_community_channel_from_home(self.community_name)
         if not self.channel_2.chat_element_by_text(message_2).is_element_displayed(120):
             self.errors.append(
@@ -1367,8 +1333,7 @@ class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
         message_1_1 = 'message in 1-1 chat'
 
         def _send_message_1_1():
-            self.device_1.navigate_back_to_home_view()
-            self.device_1.chats_tab.click()
+            self.device_1.navigate_to_chats_view()
             self.home_1.get_chat(self.username_2).click()
             self.chat_1.send_message(message_1_1)
 
@@ -1378,8 +1343,7 @@ class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
         message_community = 'message community'
 
         def _send_message_community():
-            self.device_2.navigate_back_to_home_view()
-            self.device_2.communities_tab.click()
+            self.device_2.navigate_to_communities_view()
             self.home_2.get_to_community_channel_from_home(self.community_name)
             self.channel_2.send_message(message_community)
 
@@ -1389,8 +1353,7 @@ class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
         self.device_1.driver.set_network_connection(ConnectionType.WIFI_ONLY)
 
         def _check_message_community():
-            self.device_1.navigate_back_to_home_view()
-            self.device_1.communities_tab.click()
+            self.device_1.navigate_to_communities_view()
             self.home_1.get_to_community_channel_from_home(self.community_name)
             if not self.channel_1.chat_element_by_text(message_community).is_element_displayed(120):
                 self.errors.append(
@@ -1401,8 +1364,7 @@ class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
         self.device_2.driver.set_network_connection(ConnectionType.WIFI_ONLY)
 
         def _check_message_1_1():
-            self.device_2.navigate_back_to_home_view()
-            self.device_2.chats_tab.click()
+            self.device_2.navigate_to_chats_view()
             self.home_2.get_chat(self.username_1).click()
             if not self.chat_2.chat_element_by_text(message_1_1).is_element_displayed(120):
                 self.errors.append(
@@ -1420,28 +1382,24 @@ class TestCommunityMultipleDeviceMergedThree(MultipleSharedDeviceTestCase):
         self.device_2.just_fyi("Device 2 turns mobile data on and checks receiving a message in community channel")
         self.device_2.driver.set_network_connection(ConnectionType.DATA_ONLY)
 
-        self.device_1.navigate_back_to_home_view()
-        self.device_1.communities_tab.click()
+        self.device_1.navigate_to_communities_view()
         self.home_1.get_to_community_channel_from_home(self.community_name)
         message_community = 'message community'
         self.channel_1.send_message(message_community)
-        self.device_2.navigate_back_to_home_view()
-        self.device_2.communities_tab.click()
+        self.device_2.navigate_to_communities_view()
         self.home_2.get_to_community_channel_from_home(self.community_name)
         if not self.channel_2.chat_element_by_text(message_community).is_element_displayed(60):
             self.errors.append(self.channel_2,
                                "Message with text '%s' was not received in community" % message_community)
 
         self.device_2.just_fyi("Device 2 sends a message in 1-1 chat")
-        self.device_2.navigate_back_to_home_view()
-        self.device_2.chats_tab.click()
+        self.device_2.navigate_to_chats_view()
         self.home_2.get_chat(self.username_1).click()
         message_1_1 = "message 1-1 chat"
         self.chat_2.send_message(message_1_1)
 
         self.device_1.just_fyi("Device 1 checks a message receiving in 1-1 chat")
-        self.device_1.navigate_back_to_home_view()
-        self.device_1.chats_tab.click()
+        self.device_1.navigate_to_chats_view()
         self.home_1.get_chat(self.username_2).click()
         if not self.chat_1.chat_element_by_text(message_1_1).is_element_displayed(60):
             self.errors.append(self.chat_1,

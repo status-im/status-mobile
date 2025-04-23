@@ -271,7 +271,7 @@ export function onPanEnd({
       endAnimation();
     } else {
       const maxValue = maxScroll.value + expandHeaderLimit;
-      const decelerationRate = isIOS ? { deceleration: 0.9997 } : { deceleration: 0.999 };
+      const decelerationRate = isIOS ? { deceleration: 0.998 } : { deceleration: 0.996 };
 
       scrollStart.value = withDecay({
         ...{

@@ -18,7 +18,7 @@
         expanded?   (reagent/atom false)
         dragging?   (atom false)]
     (fn [{:keys [overlay-opacity overlay-z-index text-sheet-lock? text-component]}]
-      (let [insets           (safe-area/get-insets)
+      (let [insets           safe-area/insets
             window-height    (:height (rn/get-window))
             max-height       (- window-height
                                 constants/text-min-height

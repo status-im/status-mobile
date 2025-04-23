@@ -46,7 +46,7 @@
    :justify-content   :space-between})
 
 (def bottom-part
-  {:margin-bottom   (if platform/ios? (safe-area/get-bottom) 12)
+  {:margin-bottom   (if platform/ios? safe-area/bottom 12)
    :justify-content :flex-end})
 
 (def disclaimer-container

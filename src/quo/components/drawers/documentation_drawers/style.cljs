@@ -5,7 +5,7 @@
 
 (def outer-container
   ;; Margin negative to fill the bottom-sheet container where this component is used
-  {:margin-bottom (- (+ (safe-area/get-bottom) 8))})
+  {:margin-bottom (- (+ safe-area/bottom 8))})
 
 (def container
   {:align-items        :flex-start
@@ -13,7 +13,7 @@
 
 (def content
   {:align-items   :flex-start
-   :margin-bottom (+ (safe-area/get-bottom) 12)})
+   :margin-bottom (+ safe-area/bottom 12)})
 
 (defn title
   [theme]

@@ -9,7 +9,6 @@
     [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.db-path :as db-path]
     [status-im.contexts.wallet.networks.db :as networks.db]
-    [status-im.contexts.wallet.send.transaction-settings.core :as transaction-settings]
     [status-im.contexts.wallet.send.utils :as send-utils]
     [status-im.contexts.wallet.sheets.network-selection.view :as network-selection]
     [taoensso.timbre :as log]
@@ -642,9 +641,9 @@
  (fn [{:keys [db]} [data]]
    (let [{send :send swap? :swap} (-> db :wallet :ui)
          skip-processing-routes?  (:skip-processing-suggested-routes? send)
-         clean-user-tx-settings?  (get-in
-                                   db
-                                   (conj db-path/send :user-tx-settings :delete-on-routes-update?))]
+         clean-user-tx-settings?  (get-in db
+                                          [:wallet :ui :user-tx-settings
+                                           :delete-on-routes-update?])]
      (when (or swap? (not skip-processing-routes?))
        (let [{error-code :code
               :as        error} (:ErrorResponse data)
@@ -657,7 +656,7 @@
                        :error error-message}))
          (merge
           (when clean-user-tx-settings?
-            {:db (update-in db db-path/send dissoc :user-tx-settings)})
+            {:db (update-in db [:wallet :ui] dissoc :user-tx-settings)})
           {:fx [[:dispatch
                  (cond
                    (and failure? swap?) [:wallet/swap-proposal-error error]
@@ -818,100 +817,6 @@
             :always             (update-in db-path/send dissoc :amount :route)
             (not keep-tx-data?) (update-in db-path/send dissoc :tx-type))
       :fx [[:dispatch [:navigate-back]]]})))
-
-(rf/reg-event-fx
- :wallet.send/set-max-base-fee
- (fn [{db :db} [value]]
-   {:db (assoc-in db (conj db-path/send :user-tx-settings :max-base-fee) value)}))
-
-(rf/reg-event-fx
- :wallet.send/set-priority-fee
- (fn [{db :db} [value]]
-   {:db (assoc-in db (conj db-path/send :user-tx-settings :priority-fee) value)}))
-
-(rf/reg-event-fx
- :wallet.send/set-max-gas-amount
- (fn [{db :db} [value]]
-   {:db (assoc-in db (conj db-path/send :user-tx-settings :gas-amount) value)}))
-
-(rf/reg-event-fx
- :wallet.send/set-nonce
- (fn [{db :db} [value]]
-   {:db (assoc-in db (conj db-path/send :user-tx-settings :nonce) value)}))
-
-(defn set-fee-mode-effect
-  [path-tx-identity gas-rate]
-  (let [params [path-tx-identity gas-rate]]
-    [:json-rpc/call
-     [{:method   "wallet_setFeeMode"
-       :params   params
-       :on-error (fn [error]
-                   (log/error "failed to set quick transaction settings"
-                              {:event  :wallet.send/quick-fee-mode-confirmed
-                               :error  (:message error)
-                               :params params}))}]]))
-
-
-(rf/reg-event-fx :wallet.send/quick-fee-mode-confirmed
- (fn [{db :db} [fee-mode]]
-   (let [gas-rate                (transaction-settings/tx-fee-mode->gas-rate fee-mode)
-         {:keys [tx-type route]} (get-in db db-path/send)
-         path                    (first route)
-         ;; bridge consist from 2 transactions - approval and send, so we need to apply
-         ;; setting to both of them by making 2 calls
-         set-fee-effects         (if (= tx-type :tx/bridge)
-                                   [(set-fee-mode-effect (send-utils/path-identity path true) gas-rate)
-                                    (set-fee-mode-effect (send-utils/path-identity path false)
-                                                         gas-rate)]
-                                   [(set-fee-mode-effect (send-utils/path-identity path) gas-rate)])]
-     {:db (update-in db db-path/send assoc :user-fee-mode fee-mode)
-      :fx (conj set-fee-effects
-                [:dispatch [:wallet.send/mark-user-tx-settings-for-deletion]])})))
-
-(defn set-custom-tx-effect
-  [path-tx-identity custom-tx-params]
-  (let [params [path-tx-identity custom-tx-params]]
-    [:json-rpc/call
-     [{:method   "wallet_setCustomTxDetails"
-       :params   params
-       :on-error (fn [error]
-                   (log/error "failed to set custom tx settings"
-                              {:event  :wallet.send/custom-transaction-settings-confirmed
-                               :error  (:message error)
-                               :params params}))}]]))
-
-(rf/reg-event-fx :wallet.send/custom-transaction-settings-confirmed
- (fn [{db :db}]
-   (let [{:keys [tx-type route user-tx-settings]} (get-in db db-path/send)
-         path                                     (first route)
-         custom-tx-params                         (send-utils/path-tx-custom-params user-tx-settings
-                                                                                    path)
-         ;; bridge consist from 2 transactions - approval and send, so we need to apply
-         ;; setting to both of them by making 2 calls
-         custom-tx-details-effects                (if (= tx-type :tx/bridge)
-                                                    [(set-custom-tx-effect
-                                                      (send-utils/path-identity path true)
-                                                      custom-tx-params)
-                                                     (set-custom-tx-effect
-                                                      (send-utils/path-identity path false)
-                                                      custom-tx-params)]
-                                                    [(set-custom-tx-effect (send-utils/path-identity
-                                                                            path)
-                                                                           custom-tx-params)])]
-     {:db (update-in db db-path/send assoc :user-fee-mode :tx-fee-mode/custom)
-      :fx (conj custom-tx-details-effects
-                [:dispatch [:wallet.send/mark-user-tx-settings-for-deletion]])})))
-
-;; There is a delay between the moment when user selected
-;; custom settings and the moment when new route arrived
-;; with those settings applied. During this delay
-;; we should keep user settings for ui. After new route
-;; arrived we should clean the settings.
-
-(rf/reg-event-fx :wallet.send/mark-user-tx-settings-for-deletion
- (fn [{db :db}]
-   {:db (assoc-in db (conj db-path/send :user-tx-settings :delete-on-routes-update?) true)}))
-
 
 (rf/reg-event-fx :wallet.send/set-sign-transactions-callback-fx
  (fn [{:keys [db]} [callback-fx]]

@@ -9,8 +9,8 @@
 (def ^:const bottom-tabs-container-height-ios 82)
 
 ;; Stacks
-(def ^:const stacks-ids
-  [:screen/communities-stack :screen/chats-stack :screen/wallet-stack :screen/browser-stack])
+(def stacks-ids
+  #{:screen/communities-stack :screen/chats-stack :screen/wallet-stack :screen/browser-stack})
 
 ;; Keywords
 (def ^:const stacks-opacity-keywords

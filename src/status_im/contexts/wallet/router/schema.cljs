@@ -42,7 +42,6 @@
    ;; Amounts
    [:amount-in :schema.common/hex]
    [:amount-out :schema.common/hex]
-   [:amount-in-locked :boolean]
    [:required-native-balance nat-int?]
    [:required-token-balance nat-int?]
 

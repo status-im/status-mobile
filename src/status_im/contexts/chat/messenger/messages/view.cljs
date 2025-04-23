@@ -33,7 +33,7 @@
         distance-from-list-top   (reanimated/use-shared-value 0)
         chat-list-scroll-y       (reanimated/use-shared-value 0)
         alert-banners-top-margin (rf/sub [:alert-banners/top-margin])
-        insets                   (safe-area/get-insets)]
+        insets                   safe-area/insets]
     [rn/keyboard-avoiding-view
      {:style                    (style/keyboard-avoiding-container theme)
       :keyboard-vertical-offset (- (if platform/ios? alert-banners-top-margin 0)

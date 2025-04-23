@@ -5,4 +5,4 @@
 
 (defn header-spacing
   []
-  {:height (+ constants/header-height (safe-area/get-top))})
+  {:height (+ constants/header-height safe-area/top)})

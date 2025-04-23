@@ -1,7 +1,7 @@
 import time
 
 import pytest
-from selenium.common import NoSuchElementException
+from selenium.common import NoSuchElementException, StaleElementReferenceException
 
 from tests import common_password
 from tests.base_test_case import AbstractTestCase
@@ -200,6 +200,16 @@ class ProfileView(BaseView):
             self.driver,
             xpath="//*[@text='Currency']/following-sibling::*/*[contains(@content-desc,'label-component, icon')]")
 
+    def navigate_back_to_main_profile_view(self, attempts=3):
+        for _ in range(attempts):
+            try:
+                if self.view_id_tracker.text == 'settings':
+                    return
+            except NoSuchElementException:
+                self.click_system_back_button()
+            except StaleElementReferenceException:
+                continue
+
     def switch_network(self):
         self.driver.info("Toggling test mode")
         self.profile_wallet_button.click()
@@ -245,7 +255,7 @@ class ProfileView(BaseView):
         self.button_one.click()
         self.fill_recovery_phrase_checking_words(recovery_phrase)
         self.checkbox_button.click()
-        self.button_one.find_elements()[-1].click()
+        self.button_one.click()
         return ' '.join(recovery_phrase.values())
 
     def edit_profile_picture(self, image_index: int, update_by="Gallery"):
@@ -378,4 +388,4 @@ class ProfileView(BaseView):
         self.change_currency_button.click()
         self.element_by_text_part(new_currency).click()
         time.sleep(1)
-        self.click_system_back_button(2)
+        self.navigate_back_to_main_profile_view(2)

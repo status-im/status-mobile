@@ -23,7 +23,7 @@
     [rn/view
      {:accessible          true
       :accessibility-label :view-id-tracker
-      :style               {:position :absolute :z-index -1}}
+      :style               {:width 1 :height 1 :margin-top -1}}
      [rn/text {:color :transparent} view-id]]))
 
 (defn shell-stack
@@ -34,7 +34,7 @@
        (rn/hw-back-add-listener navigate-back-handler)
        #(rn/hw-back-remove-listener navigate-back-handler)))
     [rn/view {:style {:background-color colors/neutral-100 :flex 1}}
+     [home-stack/view shared-values]
      (when config/enable-view-id-tracker?
        [view-id-tracker])
-     [home-stack/view shared-values]
      [bottom-tabs/view shared-values]]))

@@ -15,7 +15,7 @@
   [{:keys [window-height keyboard-height footer-container-height content-scroll-y
            content-container-height header-height keyboard-shown?]}]
   (let [available-space    (- window-height
-                              (safe-area/get-top)
+                              safe-area/top
                               header-height
                               keyboard-height ; Already contains the bottom safe area value
                               footer-container-height)
@@ -65,7 +65,7 @@
            ;; Note: Provide `initial-header-height` to avoid a jump due to the on-layout 1-frame
            ;; delay. Revisit this on RN 0.76 since the on-layout delay has been fixed.
            initial-header-height]
-    :or   {footer-container-padding (safe-area/get-top)}}
+    :or   {footer-container-padding safe-area/top}}
    & children]
   (reagent/with-let [scroll-view-ref              (atom nil)
                      set-scroll-ref               #(reset! scroll-view-ref %)
@@ -92,7 +92,7 @@
                      set-content-y-scroll         (fn [event]
                                                     (reset! content-scroll-y
                                                       (oops/oget event "nativeEvent.contentOffset.y")))
-                     bottom-safe-area             (safe-area/get-bottom)]
+                     bottom-safe-area             safe-area/bottom]
     (let [keyboard-shown?          (if platform/ios? @keyboard-will-show? @keyboard-did-show?)
           footer-container-padding (+ footer-container-padding (rf/sub [:alert-banners/top-margin]))
           show-background?         (show-background

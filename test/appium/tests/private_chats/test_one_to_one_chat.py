@@ -29,13 +29,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.public_key_2 = self.home_2.get_public_key()
 
         self.profile_1.just_fyi("Sending contact request via Profile > Contacts")
-        for home in (self.home_1, self.home_2):
-            home.navigate_back_to_home_view()
-            home.chats_tab.click()
         self.username_1 = "user_1"
+        self.home_1.navigate_to_chats_view()
         self.home_1.add_contact(public_key=self.public_key_2, username=self.username_1)
 
         self.home_2.just_fyi("Accepting contact request from activity centre")
+
+        self.home_2.navigate_to_chats_view()
         self.home_2.handle_contact_request(self.username_1)
 
         self.profile_1.just_fyi("Sending message to contact via Messages > Recent")
@@ -192,8 +192,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         reason="Can not unpin messages from pinned messages menu - https://github.com/status-im/status-mobile/issues/22497")
     def test_1_1_chat_pin_messages(self):
         self.home_1.just_fyi("Check that Device1 can pin own message in 1-1 chat")
-        self.chat_2.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
+        self.chat_2.navigate_to_chats_view()
         self.home_2.get_chat(self.username_1).click()
         self.chat_1.send_message(self.message_1)
         self.chat_1.send_message(self.message_2)
@@ -294,8 +293,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message("just a text")  # Sending a message here so the next ones will be in a separate line
 
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
+        self.home_2.navigate_to_chats_view()
         self.home_2.get_chat(self.username_1).click()
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
         for message in messages:
@@ -337,9 +335,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         message_no_pn, message = 'No PN', 'Text push notification'
 
         self.home_1.navigate_back_to_home_view()
-        self.home_2.navigate_back_to_home_view()
+        self.home_2.navigate_to_chats_view()
         self.home_2.profile_button.click()
-        self.home_1.chats_tab.click()
 
         self.device_2.just_fyi("Device 2 puts app on background being on Profile view to receive PN with text")
         app_package = self.device_2.driver.current_package
@@ -390,8 +387,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702855)
     def test_1_1_chat_edit_message(self):
         for home in self.homes:
-            home.navigate_back_to_home_view()
-            home.chats_tab.click()
+            home.navigate_to_chats_view()
         self.home_2.get_chat(self.username_1).click()
         self.home_1.get_chat(self.username_2).click()
 
@@ -419,12 +415,10 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     @marks.testrail_id(703391)
     def test_1_1_chat_send_image_save_and_share(self):
         if not self.chat_2.chat_message_input.is_element_displayed():
-            self.chat_2.navigate_back_to_home_view()
-            self.home_2.chats_tab.click()
+            self.chat_2.navigate_to_chats_view()
             self.home_2.get_chat(self.username_1).click()
         if not self.chat_1.chat_message_input.is_element_displayed():
-            self.chat_1.navigate_back_to_home_view()
-            self.home_1.chats_tab.click()
+            self.chat_1.navigate_to_chats_view()
             self.home_1.get_chat(self.username_2).click()
 
         self.chat_1.just_fyi("Device 1 sends an image")
@@ -486,12 +480,10 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702733)
     def test_1_1_chat_text_message_delete_push_disappear(self):
         if not self.chat_2.chat_message_input.is_element_displayed():
-            self.chat_2.navigate_back_to_home_view()
-            self.home_2.chats_tab.click()
+            self.chat_2.navigate_to_chats_view()
             self.home_2.get_chat(self.username_1).click()
         if not self.chat_1.chat_message_input.is_element_displayed():
-            self.chat_1.navigate_back_to_home_view()
-            self.home_1.chats_tab.click()
+            self.chat_1.navigate_to_chats_view()
             self.home_1.get_chat(self.username_2).click()
         app_package = self.chat_1.driver.current_package
 
@@ -567,12 +559,11 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         self.public_key_2 = self.home_2.get_public_key()
 
         self.profile_1.just_fyi("Sending contact request via Profile > Contacts")
-        for home in (self.home_1, self.home_2):
-            home.navigate_back_to_home_view()
-            home.chats_tab.click()
+        self.home_1.navigate_to_chats_view()
         self.home_1.add_contact(self.public_key_2)
 
         self.home_2.just_fyi("Accepting contact request from activity centre")
+        self.home_2.navigate_to_chats_view()
         self.home_2.handle_contact_request(self.username_1)
 
         self.profile_1.just_fyi("Sending message to contact via Messages > Recent")
@@ -641,8 +632,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
 
     @marks.testrail_id(703496)
     def test_1_1_chat_mute_chat(self):
-        self.home_1.navigate_back_to_home_view()
-        self.home_1.chats_tab.click()
+        self.home_1.navigate_to_chats_view()
         self.home_1.just_fyi("Mute chat")
         self.home_1.mute_chat_long_press(self.username_2)
 
@@ -684,8 +674,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
 
     @marks.testrail_id(702784)
     def test_1_1_chat_delete_via_long_press_relogin(self):
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
+        self.home_2.navigate_to_chats_view()
         self.home_2.get_chat(self.username_1).click()
         self.chat_2.chat_message_input.wait_for_visibility_of_element()
         self.home_2.just_fyi("Getting chat history")
@@ -696,8 +685,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
             self.errors.append(self.chat_2, "No chat history was loaded")
 
         self.home_2.just_fyi("Deleting chat via delete button and check it will not reappear after relaunching app")
-        self.home_2.navigate_back_to_home_view()
-        self.home_2.chats_tab.click()
+        self.home_2.navigate_to_chats_view()
         self.home_2.delete_chat_long_press(username=self.username_1)
         chat = self.home_2.get_chat_from_home_view(self.username_1)
         if chat.is_element_displayed():

@@ -118,7 +118,7 @@
   [{:keys [container-style top-card bottom-card on-init animations-duration animations-delay]}
    child-1
    child-2]
-  (let [max-height           (+ (:height (rn/get-window)) (if platform/android? (safe-area/get-top) 0))
+  (let [max-height           (+ (:height (rn/get-window)) (if platform/android? safe-area/top 0))
         height               (reanimated/use-shared-value default-height)
         top-padding          (reanimated/use-shared-value 12)
         border-radius        (reanimated/use-shared-value 20)
@@ -140,7 +140,7 @@
                                 animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-padding
-                                (+ 68 (safe-area/get-top))
+                                (+ 68 safe-area/top)
                                 animations-duration
                                 :easing4
                                 animations-delay)

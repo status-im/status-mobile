@@ -7,9 +7,9 @@
     [react-native.safe-area :as safe-area]
     [status-im.common.events-helper :as events-helper]
     [status-im.common.floating-button-page.view :as floating-button-page]
+    [status-im.contexts.wallet.common.transaction-settings.view :as transaction-settings]
     [status-im.contexts.wallet.common.utils :as utils]
     [status-im.contexts.wallet.send.transaction-confirmation.style :as style]
-    [status-im.contexts.wallet.send.transaction-settings.view :as transaction-settings]
     [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
     [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
@@ -286,7 +286,7 @@
        :header                   [quo/page-nav
                                   {:icon-name           :i/arrow-left
                                    :on-press            events-helper/navigate-back
-                                   :margin-top          (safe-area/get-top)
+                                   :margin-top          safe-area/top
                                    :background          :blur
                                    :accessibility-label :top-bar}]
        :blur-options             {:padding-horizontal 0}

@@ -28,7 +28,7 @@
         top                     (min constants/mentions-max-height
                                      (* (count suggestions-state) 56)
                                      (- @layout-height
-                                        (+ (safe-area/get-top)
+                                        (+ safe-area/top
                                            messages.constants/top-bar-height
                                            5)))]
     (rn/use-effect

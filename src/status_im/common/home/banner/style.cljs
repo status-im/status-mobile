@@ -3,7 +3,8 @@
     [quo.foundations.colors :as colors]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [react-native.safe-area :as safe-area]))
+    [react-native.safe-area :as safe-area]
+    [status-im.common.home.constants :as constants]))
 
 (def ^:private card-height (+ 56 16))
 (def ^:private max-scroll (+ card-height 8))
@@ -34,7 +35,7 @@
     :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
     :right            0
     :left             0
-    :height           (+ (safe-area/get-top) 244)}))
+    :height           (+ safe-area/top (dec constants/header-height))}))
 
 (defn banner-card-hiding-layer
   [scroll-shared-value theme]
@@ -46,7 +47,7 @@
     :right            0
     :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
     :left             0
-    :padding-top      (+ (safe-area/get-top) 8)}))
+    :padding-top      safe-area/top}))
 
 (defn animated-banner-card
   [scroll-shared-value]
@@ -61,7 +62,7 @@
    {:transform [{:translate-y (animated-card-translation-y scroll-shared-value)}]}
    {:z-index          3
     :position         :absolute
-    :top              (+ (safe-area/get-top) 192)
+    :top              (+ safe-area/top 184)
     :right            0
     :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
     :left             0}))

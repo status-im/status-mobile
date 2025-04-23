@@ -31,8 +31,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
             run_in_parallel(((self.profile_1.backup_recovery_phrase, {}),
                              (self.home_3.get_public_key, {}))))
         self.home_2.driver.get_clipboard_text()  # just pinging 2nd device to save the connection
-        self.profile_1.click_system_back_button()
-        self.home_1.chats_tab.click()
+        self.profile_1.navigate_to_chats_view()
         self.home_1.just_fyi("Device 1: add the 3rd user as a contact")
         self.home_1.add_contact(self.public_key_3)
         self.home_3.just_fyi("Device 3: accepting contact request from the 1st user")
@@ -61,7 +60,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         self.profile_2.syncing_button.scroll_and_click()
         self.profile_2.paired_devices_button.click()
         device_2_name = self.profile_2.get_current_device_name()
-        self.profile_2.click_system_back_button(times=3)
+        self.profile_2.navigate_back_to_home_view()
 
         self.home_3.chats_tab.is_element_displayed()  # just pinging 3rd device to save the connection
 
@@ -76,7 +75,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
         else:
             self.errors.append(self.profile_1,
                                "Device 2 is not shown in Paired devices list for device 1 before pairing")
-        self.profile_1.click_system_back_button(times=3)
+        self.profile_1.navigate_back_to_home_view()
 
         for home in self.home_1, self.home_2:
             home.notifications_unread_badge.wait_for_visibility_of_element(30)
@@ -152,8 +151,7 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
 
         def _check_message(home_view, index):
             home_view.just_fyi("Device %s: check the message from the user 3 is received" % index)
-            home_view.click_system_back_button(times=3)
-            home_view.chats_tab.click()
+            home_view.navigate_to_chats_view()
             try:
                 chat_element = home_view.get_chat(self.user_name_3)
                 chat_element.wait_for_visibility_of_element(60)
@@ -262,11 +260,10 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
                 self.profile_2,
                 "Newly added regular account is not shown in profile as on device before importing key pair")
         self.profile_2.get_missing_key_pair_by_name(key_pair_name=generated_key_pair_name).options_button.click()
-        if self.profile_2.import_by_entering_recovery_phrase_button.is_element_displayed():
-            self.profile_2.click_system_back_button(times=4)
-        else:
+        if not self.profile_2.import_by_entering_recovery_phrase_button.is_element_displayed():
             self.errors.append(self.profile_2, "Can not import key pair account from profile")
-            self.profile_2.click_system_back_button(times=3)
+        self.profile_2.navigate_back_to_home_view()
+        self.home_2.wallet_tab.click()
 
         wallet_2.just_fyi("Device 2: import key pair")
         wallet_2.get_account_element(account_name=regular_account_name).swipe_left_on_element()
@@ -308,7 +305,8 @@ class TestFallbackMultipleDevice(MultipleSharedDeviceTestCase):
             self.errors.append(
                 self.profile_2,
                 "Generated key pair account is not shown in profile as missing after importing the first key pair")
-        self.profile_2.click_system_back_button(times=3)
+        self.profile_2.navigate_back_to_home_view()
+        self.home_2.wallet_tab.click()
 
         # ToDo: Arbiscan API is down, looking for analogue
         # wallet_2.just_fyi("Device 2: check wallet balance")

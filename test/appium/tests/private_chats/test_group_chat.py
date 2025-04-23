@@ -43,7 +43,6 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.public_keys = self.loop.run_until_complete(
             run_in_parallel(
                 (
-                    (self.homes[0].get_public_key,),
                     (self.homes[1].get_public_key,),
                     (self.homes[2].get_public_key,)
                 )
@@ -51,15 +50,13 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         )
 
         self.homes[0].just_fyi('Admin adds future members to contacts')
-
-        for i in range(3):
-            self.homes[i].navigate_back_to_home_view()
-            self.homes[i].chats_tab.click()
-
-        for i in range(1, 3):
+        self.homes[0].navigate_to_chats_view()
+        for i in range(2):
             self.homes[0].add_contact(self.public_keys[i])
 
         self.homes[0].just_fyi('Members add admin to contacts to see PNs and put app in background')
+        for i in range(1, 3):
+            self.homes[i].navigate_to_chats_view()
         self.loop.run_until_complete(
             run_in_parallel(
                 (
@@ -310,8 +307,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702808)
     def test_group_chat_offline_pn(self):
         def _proceed_to_chat(index):
-            self.homes[index].navigate_back_to_home_view()
-            self.homes[index].chats_tab.click()
+            self.homes[index].navigate_to_chats_view()
             self.homes[index].groups_tab.click()
             self.homes[index].get_chat(self.chat_name).click()
 

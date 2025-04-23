@@ -51,7 +51,7 @@
 
 (defn view
   []
-  (let [bottom                               (safe-area/get-bottom)
+  (let [bottom                               safe-area/bottom
         {:keys [customization-color]
          :as   account}                      (rf/sub [:wallet-connect/current-request-account-details])
         dapp                                 (rf/sub [:wallet-connect/current-request-dapp])
@@ -116,4 +116,3 @@
          :subtitle        (if estimated-time
                             (i18n/label :t/time-in-sec {:seconds (str estimated-time)})
                             (i18n/label :t/unknown))}]]]]))
-

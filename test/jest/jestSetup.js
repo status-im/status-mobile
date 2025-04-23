@@ -28,11 +28,16 @@ jest.mock('react-native-navigation', () => ({
 
 jest.mock('react-native-background-timer', () => ({}));
 
-jest.mock('react-native-static-safe-area-insets', () => ({
-  default: {
-    safeAreaInsetsTop: 0,
-    safeAreaInsetsBottom: 0,
-  },
+jest.mock('react-native-safe-area-context', () => ({
+  initialWindowMetrics:
+      {
+        insets:
+            {
+              top: 0,
+              bottom: 0
+            }
+      },
+  SafeAreaProvider:{}
 }));
 
 jest.mock('react-native-permissions', () => require('react-native-permissions/mock'));
@@ -103,11 +108,16 @@ jest.mock('react-native-blob-util', () => ({
 
 jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
 
-jest.mock('react-native-static-safe-area-insets', () => ({
-  default: {
-    safeAreaInsetsTop: 0,
-    safeAreaInsetsBottom: 0,
-  },
+jest.mock('react-native-safe-area-context', () => ({
+  initialWindowMetrics:
+      {
+        insets:
+            {
+              top: 0,
+              bottom: 0
+            }
+      },
+  SafeAreaProvider:{}
 }));
 
 NativeModules.ReactLocalization = {

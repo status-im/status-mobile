@@ -5,7 +5,7 @@
 (defn container
   [theme on-layout-done?]
   {:position         :absolute
-   :padding-top      (safe-area/get-top)
+   :padding-top      safe-area/top
    :top              0
    :left             0
    :right            0

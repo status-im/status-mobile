@@ -90,7 +90,7 @@
            :show-token-icon? (:show-token-icon? @state)
            :swappable?       (:swappable? @state)}]
          [quo/numbered-keyboard
-          {:container-style {:padding-bottom (safe-area/get-top)}
+          {:container-style {:padding-bottom safe-area/top}
            :left-action     :dot
            :delete-key?     true
            :on-press        (fn [c]

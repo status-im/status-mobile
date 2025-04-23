@@ -112,7 +112,7 @@
   (let [window                 (rn/get-window)
         {:keys [width height]} window
         camera-window-height   (* width 1.33)
-        insets                 (safe-area/get-insets)
+        insets                 safe-area/insets
         top                    (/ (- height camera-window-height (:bottom insets)) 2)
         top-landscape          (/ (- height (* width 0.75) (:bottom insets)) 2)
         portrait?              (= @current-orientation orientation/portrait)

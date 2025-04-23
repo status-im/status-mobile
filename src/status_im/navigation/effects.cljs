@@ -1,5 +1,6 @@
 (ns status-im.navigation.effects
   (:require
+    [oops.core :as oops]
     [quo.context]
     [quo.foundations.colors :as colors]
     [react-native.navigation :as navigation]
@@ -21,14 +22,14 @@
                                  @state/alert-banner-shown?)
                            :light
                            :dark)
-        home-stack?      (some #(= view-id %) shell.constants/stacks-ids)
+        home-stack?      (shell.constants/stacks-ids view-id)
         ;; Home screen nav bar always dark due to bottom tabs
         nav-bar-color    (if (or home-stack?
                                  (= view-id :screen/shell-stack)
                                  (= theme :dark))
                            colors/neutral-100
                            colors/white)
-        comp-id          (if (some #(= view-id %) shell.constants/stacks-ids)
+        comp-id          (if (shell.constants/stacks-ids view-id)
                            :screen/shell-stack
                            view-id)]
     [status-bar-theme nav-bar-color comp-id]))
@@ -115,7 +116,8 @@
   ([] (dismiss-modal nil))
   ([comp-id]
    (reset! state/dissmissing true)
-   (navigation/dismiss-modal (name (or comp-id (last @state/modals))))
+   (-> (navigation/dismiss-modal (name (or comp-id (last @state/modals))))
+       (oops/ocall! :then #(rf/dispatch-sync [:reload-status-nav-color])))
    (state/navigation-pop-from comp-id)))
 
 (defn navigate-back

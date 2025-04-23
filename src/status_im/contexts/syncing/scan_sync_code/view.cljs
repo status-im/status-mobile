@@ -278,7 +278,7 @@
 
 (defn f-view
   [_]
-  (let [insets             (safe-area/get-insets)
+  (let [insets             safe-area/insets
         qr-code-succeed?   (reagent/atom false)
         active-tab         (reagent/atom 1)
         qr-view-finder     (reagent/atom {})

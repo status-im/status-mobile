@@ -46,7 +46,7 @@
 
 (defn view
   []
-  (let [bottom          (safe-area/get-bottom)
+  (let [bottom          safe-area/bottom
         {:keys [customization-color]
          :as   account} (rf/sub [:wallet-connect/current-request-account-details])
         dapp            (rf/sub [:wallet-connect/current-request-dapp])]
@@ -66,4 +66,3 @@
        {:warning-label     (i18n/label :t/wallet-connect-sign-warning)
         :slide-button-text (i18n/label :t/slide-to-sign)}
        [fees-data-item/view]]]]))
-

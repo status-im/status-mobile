@@ -25,11 +25,10 @@
 
 (defn view
   []
-  (let [theme  (quo.context/use-theme)
-        insets (safe-area/get-insets)]
+  (let [theme (quo.context/use-theme)]
     [quo/overlay
      {:type            :shell
-      :container-style (style/page-wrapper (:top insets))}
+      :container-style (style/page-wrapper safe-area/top)}
      [quo/page-nav
       {:key        :header
        :background :blur

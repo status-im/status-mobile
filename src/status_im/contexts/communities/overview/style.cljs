@@ -18,7 +18,7 @@
    :background-color background-color
    :height           (+ 20 ;; Area hidden by sheet on top but visible with rounded borders
                         92
-                        (safe-area/get-top))})
+                        safe-area/top)})
 
 (def cover-image {:flex 1})
 
@@ -45,7 +45,7 @@
   [opposite-header-opacity]
   [rn/stylesheet-absolute-fill
    page-nav-container-base-style
-   {:top     (- (safe-area/get-top) 12) ;; -12 to place the button next to the safe-area
+   {:top     (- safe-area/top 12) ;; -12 to place the button next to the safe-area
     :opacity 1}
    {:opacity opposite-header-opacity}])
 
@@ -53,7 +53,7 @@
   [header-opacity]
   [rn/stylesheet-absolute-fill
    page-nav-container-base-style
-   {:top     (- (safe-area/get-top) 12) ;; -12 to place the button next to the safe-area
+   {:top     (- safe-area/top 12) ;; -12 to place the button next to the safe-area
     :opacity 0}
    {:opacity header-opacity}])
 

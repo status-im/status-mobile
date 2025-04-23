@@ -24,7 +24,6 @@
   []
   (let [keypair                       (quo.context/use-screen-params)
         blur?                         true
-        insets                        (safe-area/get-insets)
         customization-color           (rf/sub [:profile/customization-color])
         [private-key set-private-key] (rn/use-state "")
         [flow-state set-flow-state]   (rn/use-state nil)
@@ -89,7 +88,7 @@
      [floating-button-page/view
       {:footer-container-padding 0
        :header                   [quo/page-nav
-                                  {:margin-top (:top insets)
+                                  {:margin-top safe-area/top
                                    :background :blur
                                    :icon-name  :i/close
                                    :on-press   navigate-back}]

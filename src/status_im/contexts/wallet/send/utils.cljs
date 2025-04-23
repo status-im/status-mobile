@@ -57,9 +57,9 @@
   (money/wei->ether (reduce money/add (map path-gas-fee route))))
 
 (defn full-route-gas-fee-for-custom-gas-price
-  "Sums all the routes fees in wei and then convert the total value to ether"
+  "Calculates the gas fee for a route in ether using a custom gas price"
   [route gas-price]
-  (money/wei->ether (reduce money/add (map #(path-gas-fee-for-custom-gas-price % gas-price) route))))
+  (money/wei->ether (path-gas-fee-for-custom-gas-price route gas-price)))
 
 (defn- path-amount-in
   [path]

@@ -61,14 +61,14 @@
                                            [ens ens? address-text])]
     [quo/overlay {:type :shell}
      [floating-button-page/view
-      {:footer-container-padding     (if edit? (+ (safe-area/get-bottom) 12) 0)
+      {:footer-container-padding     (if edit? (+ safe-area/bottom 12) 0)
        :keyboard-should-persist-taps :handled
        :header                       [quo/page-nav
                                       {:type                :no-title
                                        :background          :blur
                                        :icon-name           (if edit? :i/close :i/arrow-left)
                                        :on-press            navigate-back
-                                       :margin-top          (when-not edit? (safe-area/get-top))
+                                       :margin-top          (when-not edit? safe-area/top)
                                        :accessibility-label :save-address-page-nav}]
        :footer                       [quo/button
                                       {:accessibility-label :save-address-button
