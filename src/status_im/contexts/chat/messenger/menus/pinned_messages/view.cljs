@@ -34,8 +34,9 @@
        :description (i18n/label :t/no-pinned-messages-desc)}]]))
 
 (defn view
-  [{:keys [chat-id disable-message-long-press?]}]
+  [{:keys [chat-id]}]
   (let [pinned                 (rf/sub [:chats/pinned-sorted-list chat-id])
+        screen-id              (quo.context/use-screen-id)
         render-data            (rf/sub [:chats/current-chat-message-list-view-context :in-pinned-view])
         current-chat           (rf/sub [:chats/chat-by-id chat-id])
         {:keys [community-id]} current-chat
@@ -61,7 +62,7 @@
      (if (pos? (count pinned))
        [rn/flat-list
         {:data        pinned
-         :render-data (assoc render-data :disable-message-long-press? disable-message-long-press?)
+         :render-data (assoc render-data :disable-message-long-press? (not= screen-id :screen/chat))
          :render-fn   message-render-fn
          :footer      [rn/view {:style style/list-footer}]
          :key-fn      list-key-fn
