@@ -123,7 +123,11 @@
 
 (rf/reg-event-fx :wallet.swap/set-max-slippage
  (fn [{:keys [db]} [max-slippage]]
-   {:db (update-in db db-path/swap assoc :max-slippage (number/parse-float max-slippage))}))
+   (let [amount (get-in db (conj db-path/swap :amount))]
+     {:db (update-in db db-path/swap assoc :max-slippage (number/parse-float max-slippage))
+      :fx [[:dispatch [:wallet/stop-get-swap-proposal]]
+           [:dispatch [:wallet.swap/set-loading-swap-proposal]]
+           [:dispatch [:wallet/start-get-swap-proposal {:amount-in amount}]]]})))
 
 (rf/reg-event-fx :wallet.swap/set-loading-swap-proposal
  (fn [{:keys [db]}]
@@ -131,41 +135,45 @@
 
 (defn- get-swap-proposal-params
   [{:keys [db amount-in amount-out request-uuid]}]
-  (let [wallet-address          (get-in db [:wallet :current-viewing-account-address])
+  (let [wallet-address                       (get-in db [:wallet :current-viewing-account-address])
         {:keys [asset-to-pay asset-to-receive
-                network]}       (get-in db db-path/swap)
-        networks                (networks.db/get-active-networks db)
-        network-chain-ids       (map :chain-id networks)
-        pay-token-decimal       (:decimals asset-to-pay)
-        pay-token-id            (:symbol asset-to-pay)
-        receive-token-id        (:symbol asset-to-receive)
-        gas-rates               constants/gas-rate-medium
-        receive-token-decimals  (:decimals asset-to-receive)
-        amount-in-hex           (if amount-in
-                                  (send-utils/amount-in-hex amount-in pay-token-decimal)
-                                  0)
-        amount-out-hex          (when amount-out
-                                  (send-utils/amount-in-hex amount-out receive-token-decimals))
-        to-address              wallet-address
-        from-address            wallet-address
-        swap-chain-id           (:chain-id network)
-        disabled-to-chain-ids   (filter #(not= % swap-chain-id) network-chain-ids)
-        disabled-from-chain-ids (filter #(not= % swap-chain-id) network-chain-ids)
-        from-locked-amount      {}
-        send-type               constants/send-type-swap
-        params                  [(cond->
-                                   {:uuid                 request-uuid
-                                    :sendType             send-type
-                                    :addrFrom             from-address
-                                    :addrTo               to-address
-                                    :tokenID              pay-token-id
-                                    :toTokenID            receive-token-id
-                                    :disabledFromChainIDs disabled-from-chain-ids
-                                    :disabledToChainIDs   disabled-to-chain-ids
-                                    :gasFeeMode           gas-rates
-                                    :fromLockedAmount     from-locked-amount
-                                    :amountOut            (or amount-out-hex "0x0")}
-                                   amount-in (assoc :amountIn amount-in-hex))]]
+                network max-slippage]
+         :or   {max-slippage
+                constants/default-slippage}} (get-in db db-path/swap)
+        networks                             (networks.db/get-active-networks db)
+        network-chain-ids                    (map :chain-id networks)
+        pay-token-decimal                    (:decimals asset-to-pay)
+        pay-token-id                         (:symbol asset-to-pay)
+        receive-token-id                     (:symbol asset-to-receive)
+        gas-rates                            constants/gas-rate-medium
+        receive-token-decimals               (:decimals asset-to-receive)
+        amount-in-hex                        (if amount-in
+                                               (send-utils/amount-in-hex amount-in pay-token-decimal)
+                                               0)
+        amount-out-hex                       (when amount-out
+                                               (send-utils/amount-in-hex amount-out
+                                                                         receive-token-decimals))
+        to-address                           wallet-address
+        from-address                         wallet-address
+        swap-chain-id                        (:chain-id network)
+        disabled-to-chain-ids                (filter #(not= % swap-chain-id) network-chain-ids)
+        disabled-from-chain-ids              (filter #(not= % swap-chain-id) network-chain-ids)
+        from-locked-amount                   {}
+        send-type                            constants/send-type-swap
+        params                               [(cond->
+                                                {:uuid                 request-uuid
+                                                 :sendType             send-type
+                                                 :addrFrom             from-address
+                                                 :addrTo               to-address
+                                                 :tokenID              pay-token-id
+                                                 :toTokenID            receive-token-id
+                                                 :disabledFromChainIDs disabled-from-chain-ids
+                                                 :disabledToChainIDs   disabled-to-chain-ids
+                                                 :gasFeeMode           gas-rates
+                                                 :fromLockedAmount     from-locked-amount
+                                                 :amountOut            (or amount-out-hex "0x0")
+                                                 :slippagePercentage   max-slippage}
+                                                amount-in (assoc :amountIn amount-in-hex))]]
     params))
 
 (rf/reg-event-fx :wallet/start-get-swap-proposal
@@ -453,11 +461,10 @@
 (rf/reg-event-fx
  :wallet/prepare-signatures-for-swap-transactions
  (fn [{:keys [db]}]
-   (let [{:keys [last-request-uuid max-slippage]} (get-in db db-path/swap)]
+   (let [{:keys [last-request-uuid]} (get-in db db-path/swap)]
      {:fx [[:dispatch
             [:wallet/build-transactions-from-route
-             {:request-uuid last-request-uuid
-              :slippage     max-slippage}]]
+             {:request-uuid last-request-uuid}]]
            [:dispatch
             [:wallet.swap/set-sign-transactions-callback-fx
              [:dispatch [:wallet/prepare-signatures-for-transactions :swap]]]]]})))

@@ -544,60 +544,66 @@
 
 (rf/reg-event-fx :wallet/start-get-suggested-routes
  (fn [{:keys [db]} [{:keys [amount amount-out updated-token] :as args :or {amount-out "0"}}]]
-   (let [wallet-address                (get-in db [:wallet :current-viewing-account-address])
+   (let [wallet-address                       (get-in db [:wallet :current-viewing-account-address])
          {:keys [token tx-type collectible to-address
-                 network bridge-to-chain-id]
-          :or   {token updated-token}} (get-in db db-path/send)
+                 network bridge-to-chain-id max-slippage]
+          :or   {token updated-token
+                 max-slippage
+                 constants/default-slippage}} (get-in db db-path/send)
          ;; NOTE: for some reason, the router considers non-active networks as well when building
          ;; routes, so we should use all the networks when disabling networks for the route
-         network-chain-ids             (networks.db/get-chain-ids db)
-         token-decimal                 (when token (:decimals token))
-         token-id                      (utils/format-token-id token collectible)
-         to-token-id                   ""
-         gas-rates                     constants/gas-rate-medium
-         to-hex                        (fn [v] (send-utils/amount-in-hex v (if token token-decimal 0)))
-         amount-in                     (to-hex amount)
-         amount-out                    (to-hex amount-out)
-         from-address                  wallet-address
-         network-chain-id              (if collectible
-                                         (get-in collectible [:id :contract-id :chain-id])
-                                         (:chain-id network))
-         disabled-from-chain-ids       (filter #(not= % network-chain-id) network-chain-ids)
-         disabled-to-chain-ids         (filter #(not= %
-                                                      (if (= tx-type :tx/bridge)
-                                                        bridge-to-chain-id
-                                                        network-chain-id))
-                                               network-chain-ids)
-         send-type                     (case tx-type
-                                         :tx/collectible-erc-721  constants/send-type-erc-721-transfer
-                                         :tx/collectible-erc-1155 constants/send-type-erc-1155-transfer
-                                         :tx/bridge               constants/send-type-bridge
-                                         constants/send-type-transfer)
-         sender-network-values         (when (= tx-type :tx/bridge)
-                                         (send-utils/loading-network-amounts
-                                          {:networks  [network-chain-id]
-                                           :values    {network-chain-id amount}
-                                           :receiver? false}))
-         receiver-network-values       (when (= tx-type :tx/bridge)
-                                         (send-utils/loading-network-amounts
-                                          {:networks  [bridge-to-chain-id]
-                                           :receiver? true}))
-         request-uuid                  (str (random-uuid))
-         params                        [{:uuid                 request-uuid
-                                         :sendType             send-type
-                                         :addrFrom             from-address
-                                         :addrTo               to-address
-                                         :amountIn             amount-in
-                                         :amountOut            amount-out
-                                         :tokenID              token-id
-                                         :toTokenID            to-token-id
-                                         :disabledFromChainIDs disabled-from-chain-ids
-                                         :disabledToChainIDs   disabled-to-chain-ids
-                                         :gasFeeMode           gas-rates
-                                         :fromLockedAmount     {}
-                                         :username             (:username args)
-                                         :publicKey            (:publicKey args)
-                                         :packID               (:packID args)}]]
+         network-chain-ids                    (networks.db/get-chain-ids db)
+         token-decimal                        (when token (:decimals token))
+         token-id                             (utils/format-token-id token collectible)
+         to-token-id                          ""
+         gas-rates                            constants/gas-rate-medium
+         to-hex                               (fn [v]
+                                                (send-utils/amount-in-hex v (if token token-decimal 0)))
+         amount-in                            (to-hex amount)
+         amount-out                           (to-hex amount-out)
+         from-address                         wallet-address
+         network-chain-id                     (if collectible
+                                                (get-in collectible [:id :contract-id :chain-id])
+                                                (:chain-id network))
+         disabled-from-chain-ids              (filter #(not= % network-chain-id) network-chain-ids)
+         disabled-to-chain-ids                (filter #(not= %
+                                                             (if (= tx-type :tx/bridge)
+                                                               bridge-to-chain-id
+                                                               network-chain-id))
+                                                      network-chain-ids)
+         send-type                            (case tx-type
+                                                :tx/collectible-erc-721
+                                                constants/send-type-erc-721-transfer
+                                                :tx/collectible-erc-1155
+                                                constants/send-type-erc-1155-transfer
+                                                :tx/bridge constants/send-type-bridge
+                                                constants/send-type-transfer)
+         sender-network-values                (when (= tx-type :tx/bridge)
+                                                (send-utils/loading-network-amounts
+                                                 {:networks  [network-chain-id]
+                                                  :values    {network-chain-id amount}
+                                                  :receiver? false}))
+         receiver-network-values              (when (= tx-type :tx/bridge)
+                                                (send-utils/loading-network-amounts
+                                                 {:networks  [bridge-to-chain-id]
+                                                  :receiver? true}))
+         request-uuid                         (str (random-uuid))
+         params                               [{:uuid                 request-uuid
+                                                :sendType             send-type
+                                                :addrFrom             from-address
+                                                :addrTo               to-address
+                                                :amountIn             amount-in
+                                                :amountOut            amount-out
+                                                :tokenID              token-id
+                                                :toTokenID            to-token-id
+                                                :disabledFromChainIDs disabled-from-chain-ids
+                                                :disabledToChainIDs   disabled-to-chain-ids
+                                                :gasFeeMode           gas-rates
+                                                :fromLockedAmount     {}
+                                                :username             (:username args)
+                                                :publicKey            (:publicKey args)
+                                                :packID               (:packID args)
+                                                :slippagePercentage   max-slippage}]]
      (when (and to-address from-address amount-in token-id)
        {:db            (update-in db
                                   db-path/send
@@ -719,10 +725,9 @@
 
 (rf/reg-event-fx
  :wallet/build-transactions-from-route
- (fn [_ [{:keys [request-uuid slippage] :or {slippage constants/default-slippage}}]]
+ (fn [_ [{:keys [request-uuid]}]]
    {:json-rpc/call [{:method   "wallet_buildTransactionsFromRoute"
-                     :params   [{:uuid               request-uuid
-                                 :slippagePercentage slippage}]
+                     :params   [request-uuid]
                      :on-error (fn [error]
                                  (log/error "failed to build transactions from route"
                                             {:event :wallet/build-transactions-from-route
