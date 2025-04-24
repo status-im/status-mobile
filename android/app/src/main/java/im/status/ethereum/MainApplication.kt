@@ -24,6 +24,7 @@ import im.status.ethereum.pushnotifications.PushNotificationPackage
 import im.status.ethereum.StatusOkHttpClientFactory
 import org.json.JSONObject
 import android.content.ComponentCallbacks2
+import android.util.Log
 
 class MainApplication : NavigationApplication() {
 
@@ -57,12 +58,14 @@ class MainApplication : NavigationApplication() {
 
     override fun onLowMemory() {
         super.onLowMemory()
+        Log.i("MainApplication", "onLowMemory called")
         StatusPackage.switchToLowMemoryMode()
         emitEvent(ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
     }
 
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
+        Log.i("MainApplication", "onTrimMemory called with level: $level")
         if (level !in arrayOf(
             ComponentCallbacks2.TRIM_MEMORY_BACKGROUND,
             ComponentCallbacks2.TRIM_MEMORY_MODERATE,
