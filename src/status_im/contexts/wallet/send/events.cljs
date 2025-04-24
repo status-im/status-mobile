@@ -548,7 +548,9 @@
          {:keys [token tx-type collectible to-address
                  network bridge-to-chain-id]
           :or   {token updated-token}} (get-in db db-path/send)
-         network-chain-ids             (networks.db/get-active-chain-ids db)
+         ;; NOTE: for some reason, the router considers non-active networks as well when building
+         ;; routes, so we should use all the networks when disabling networks for the route
+         network-chain-ids             (networks.db/get-chain-ids db)
          token-decimal                 (when token (:decimals token))
          token-id                      (utils/format-token-id token collectible)
          to-token-id                   ""
