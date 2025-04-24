@@ -287,50 +287,43 @@
              :on-success [:wallet.tokens/store-prices]
              :on-error   [:wallet.tokens/fetch-prices-failed]}]
            [:dispatch
-            [:wallet/get-balance-history-for-all-tokens
+            [:wallet/get-balance-history-for-all-accounts
              {:addresses     addresses
               :symbols       symbols
               :time-interval constants/time-interval-1-year}]]]})))
 
 (rf/reg-event-fx
- :wallet/get-balance-history-for-all-tokens
+ :wallet/get-balance-history-for-all-accounts
  (fn [_ [{:keys [addresses symbols time-interval]}]]
    {:fx (into []
-              (map (fn [token-symbol]
+              (map (fn [address]
                      [:dispatch
-                      [:wallet/get-balance-history-for-token
-                       {:addresses     addresses
-                        :token-symbol  token-symbol
+                      [:wallet/get-balance-history-for-account
+                       {:address       address
+                        :token-symbols symbols
                         :time-interval time-interval}]])
-                   symbols))}))
+                   addresses))}))
 
 (rf/reg-event-fx
- :wallet/get-balance-history-for-token
- (fn [{:keys [db]} [{:keys [addresses token-symbol time-interval]}]]
+ :wallet/get-balance-history-for-account
+ (fn [{:keys [db]} [{:keys [address token-symbols time-interval]}]]
    (let [testnet-mode?   (get-in db [:profile/profile :test-networks-enabled?])
-         currency-symbol (get-in db [:profile/profile :currency-symbol])
+         currency-symbol (get-in db [:profile/profile :currency])
          chain-ids       (vec
                           (if testnet-mode?
                             (keys networks.config/testnets)
                             (keys networks.config/mainnets)))]
      {:fx [[:json-rpc/call
-            [{:method     "wallet_getBalanceHistory"
-              :params     [chain-ids addresses token-symbol currency-symbol time-interval]
-              :on-success [:wallet/store-balance-history-for-token addresses token-symbol time-interval]
+            [{:method     "wallet_getAggregateBalanceHistory"
+              :params     [chain-ids address token-symbols currency-symbol time-interval]
+              :on-success [:wallet/store-balance-history-for-account address]
               :on-error   [:wallet/log-rpc-error
                            {:event :wallet/get-balance-history-for-token}]}]]]})))
 
 (rf/reg-event-fx
- :wallet/store-balance-history-for-token
- (fn [{:keys [db]} [addresses token-symbol time-interval balances]]
-   {:db (-> db
-            ((fn [db]
-               (reduce (fn [db address]
-                         (assoc-in db
-                          [:wallet :accounts address :historical-balances token-symbol time-interval]
-                          balances))
-                       db
-                       addresses))))}))
+ :wallet/store-balance-history-for-account
+ (fn [{:keys [db]} [address balances]]
+   {:db (assoc-in db [:wallet :accounts address :historical-balances] balances)}))
 
 (rf/reg-event-fx
  :wallet/get-last-wallet-token-update-if-needed
