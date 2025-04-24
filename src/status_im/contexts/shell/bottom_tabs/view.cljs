@@ -8,11 +8,13 @@
     [status-im.config :as config]
     [status-im.contexts.shell.bottom-tabs.style :as style]
     [status-im.contexts.shell.constants :as shell.constants]
+    [status-im.feature-flags :as ff]
     [utils.re-frame :as rf]))
 
 (defn bottom-tab
-  [icon stack-id shared-values notifications-data]
-  (let [customization-color (rf/sub [:profile/customization-color])
+  [icon stack-id shared-values]
+  (let [notifications-data  (rf/sub [:shell/bottom-tabs-notifications-data])
+        customization-color (rf/sub [:profile/customization-color])
         on-press            (rn/use-callback #(rf/dispatch [:shell/change-tab stack-id]))
         icon-color          (->> stack-id
                                  (get shell.constants/tabs-icon-color-keywords)
@@ -29,8 +31,7 @@
 
 (defn view
   [shared-values]
-  (let [notifications-data             (rf/sub [:shell/bottom-tabs-notifications-data])
-        communities-double-tab-gesture (-> (gesture/gesture-tap)
+  (let [communities-double-tab-gesture (-> (gesture/gesture-tap)
                                            (gesture/number-of-taps 2)
                                            (gesture/on-start
                                             (fn [_event]
@@ -44,10 +45,12 @@
      [reanimated/view
       {:style (style/bottom-tabs-container (:bottom-tabs-height shared-values))}
       [rn/view {:style (style/bottom-tabs)}
-       [bottom-tab :i/wallet :screen/wallet-stack shared-values notifications-data]
+       [bottom-tab :i/wallet :screen/wallet-stack shared-values]
+       (when (ff/enabled? ::ff/market)
+         [bottom-tab :i/swap :screen/market-stack shared-values])
        [gesture/gesture-detector {:gesture messages-double-tap-gesture}
-        [bottom-tab :i/messages :screen/chats-stack shared-values notifications-data]]
+        [bottom-tab :i/messages :screen/chats-stack shared-values]]
        [gesture/gesture-detector {:gesture communities-double-tab-gesture}
-        [bottom-tab :i/communities :screen/communities-stack shared-values notifications-data]]
+        [bottom-tab :i/communities :screen/communities-stack shared-values]]
        (when config/show-not-implemented-features?
-         [bottom-tab :i/browser :screen/browser-stack shared-values notifications-data])]]]))
+         [bottom-tab :i/browser :screen/browser-stack shared-values])]]]))

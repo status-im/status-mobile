@@ -3,7 +3,7 @@ Status é um app de mensagem e uma carteira de criptomoedas focado em privacidad
 Status é o seu sistema operacional para Ethereum.
 
 CARTEIRA ETHEREUM SEGURA
-A carteira de criptomoedas Status permite que você envie, armazene e troque ativos Ethereum, como ETH, SNT, stablecoins como DAI, além de colecionáveis, de forma segura. Controle com confiança suas criptomoedas e ativos digitais com nosso aplicativo de carteira Ethereum multichain, que suporta Mainnet, Arbitrum e Optimism. A carteira blockchain da Status atualmente suporta apenas ativos ETH, ERC-20, ERC-721 e ERC-1155; não suporta Bitcoin.
+A carteira de criptomoedas Status permite que você envie, armazene e troque ativos Ethereum, como ETH, SNT, stablecoins como DAI, além de colecionáveis, de forma segura. Controle com confiança suas criptomoedas e ativos digitais com nosso aplicativo de carteira Ethereum multichain, que suporta Ethereum Mainnet, Base, Arbitrum e Optimism. A carteira blockchain da Status atualmente suporta apenas ativos ETH, ERC-20, ERC-721 e ERC-1155; não suporta Bitcoin.
 
 APP DE MENSAGEM PRIVADO
 Envie mensagens privadas em chats 1:1 ou em grupos. Status é um aplicativo de mensagem descentralizado que foca em privacidade e anonimato. Todas as mensagens são protegidas com criptografia de ponta a ponta. Além disso, nenhuma mensagem revela quem é o(a) autor(a) ou o(a) destinatário(a) pretendido(a), então ninguém, nem mesmo a Status, sabe quem está conversando com quem ou o que foi dito.

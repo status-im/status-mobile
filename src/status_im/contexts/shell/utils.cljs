@@ -17,6 +17,7 @@
     :screen/communities-stack (reset! state/load-communities-stack? true)
     :screen/chats-stack       (reset! state/load-chats-stack? true)
     :screen/wallet-stack      (reset! state/load-wallet-stack? true)
+    :screen/market-stack      (reset! state/load-market-stack? true)
     :screen/browser-stack     (reset! state/load-browser-stack? true)
     ""))
 
@@ -33,4 +34,5 @@
     (reset! state/load-communities-stack? (= selected-stack-id :screen/communities-stack))
     (reset! state/load-chats-stack? (= selected-stack-id :screen/chats-stack))
     (reset! state/load-wallet-stack? (= selected-stack-id :screen/wallet-stack))
+    (reset! state/load-market-stack? (= selected-stack-id :screen/market-stack))
     (reset! state/load-browser-stack? (= selected-stack-id :screen/browser-stack))))

@@ -54,4 +54,3 @@
 (defn market-cap
   [theme]
   {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
-
