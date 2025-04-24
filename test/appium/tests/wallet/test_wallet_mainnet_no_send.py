@@ -20,10 +20,10 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.sign_in_view = SignInView(self.drivers[0])
         self.sender, self.receiver = transaction_senders['ETH_1'], transaction_senders['ETH_2']
         self.total_balance = {'Ether': 0.0362, 'Status': 15.0, 'Uniswap': 0.7, 'Dai Stablecoin': 0.0}
-        self.mainnet_balance = {'Ether': 0.015,  'Status': 10.0, 'Uniswap': 0.2,
+        self.mainnet_balance = {'Ether': 0.015, 'Status': 10.0, 'Uniswap': 0.2,
                                 'Dai Stablecoin': 0.0}
-        self.optimism_balance = {'Ether': 0.0011,  'Status': 5.0, 'Uniswap': 0, 'Dai Stablecoin': 0.0}
-        self.arb_balance = {'Ether': 0.0051,'Status': 0.0, 'Uniswap': 0.5, 'Dai Stablecoin': 0.0}
+        self.optimism_balance = {'Ether': 0.0011, 'Status': 5.0, 'Uniswap': 0, 'Dai Stablecoin': 0.0}
+        self.arb_balance = {'Ether': 0.0051, 'Status': 0.0, 'Uniswap': 0.5, 'Dai Stablecoin': 0.0}
         self.base_balance = {'Ether': 0.015, 'Status': 0.0, 'Uniswap': 0.0, 'Dai Stablecoin': 0.0}
         self.sender['wallet_address'] = '0x' + self.sender['address']
         self.receiver['wallet_address'] = '0x' + self.receiver['address']
@@ -37,7 +37,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
         self.wallet_view = self.home_view.wallet_tab.click()
         self.account_name = 'Account 1'
 
-    @marks.testrail_id(740490) #TODO: add USDc check back when token collision USDc and USDCN is resolved
+    @marks.testrail_id(740490)  # TODO: add USDc check back when token collision USDc and USDCN is resolved
     def test_wallet_balance_mainnet(self):
         self.wallet_view.just_fyi("Checking total balance")
         real_balance = {}
@@ -52,7 +52,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
             'Ethereum': self.mainnet_balance,
             'Arbitrum': self.arb_balance,
             'Optimism': self.optimism_balance,
-            'Base, NEW': self.base_balance
+            'Base': self.base_balance
         }
 
         for network in expected_balances:
@@ -65,7 +65,7 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
                 if real_balance[asset] != expected_balances[network][asset]:
                     self.errors.append(self.wallet_view, "For the %s the wrong value %s is shown, expected %s on %s" %
                                        (asset, real_balance[asset], expected_balances[network][asset], network))
-            self.wallet_view.set_network_in_wallet(network)
+            self.wallet_view.network_drop_down.click()
 
         self.errors.verify_no_errors()
 
@@ -347,7 +347,6 @@ class TestWalletOneDevice(MultipleSharedDeviceTestCase):
                 self.errors.append(self.wallet_view, "%s to %s: can't confirm bridge" % (network_from, network_to))
             self.wallet_view.click_system_back_button(times=5)
         self.errors.verify_no_errors()
-
 
 
 @pytest.mark.xdist_group(name="one_1")

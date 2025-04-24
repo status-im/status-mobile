@@ -256,7 +256,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         profile.switch_network()
 
         self.home.just_fyi("Check Discover Communities content")
-        self.home.navigate_to_communities_view().click()
+        self.home.navigate_to_communities_view()
         self.home.discover_communities_button.click()
         self.home.community_card_item.wait_for_elements(seconds=120)
 

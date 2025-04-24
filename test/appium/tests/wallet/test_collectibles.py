@@ -46,7 +46,7 @@ class TestWalletCollectibles(MultipleSharedDeviceTestCase):
                 return
             time.sleep(5)
 
-        self.wallet_view.set_network_in_wallet(self.network_name + ', NEW')
+        self.wallet_view.set_network_in_wallet(self.network_name)
         collectibles = {
             "BVL": {"quantity": 2,
                     "info": {"Account": "Account 1",
