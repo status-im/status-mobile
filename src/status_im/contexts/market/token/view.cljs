@@ -9,34 +9,30 @@
     [status-im.common.floating-button-page.view :as floating-button-page]
     [status-im.contexts.market.token.style :as style]
     [utils.i18n :as i18n]
-    [utils.number :as number-utils]))
+    [utils.number]))
 
 (defn token-overview
   [{:keys [theme value change]}]
-  (let [formatted-change (-> change
-                             (* 100)
-                             (number-utils/naive-round 2)
-                             (str "%"))]
-    [rn/view {:style (style/token-overview theme)}
-     [quo/text
-      {:size   :heading-2
-       :weight :semi-bold}
-      value]
-     [rn/view {:style style/token-overview-info-row}
-      [icon/icon
-       (if (> change 0)
-         :i/positive
-         :i/negative)
-       (style/token-overview-icon-props theme (> change 0))]
-      [quo/text
-       {:style (style/token-overview-change-text theme (> change 0))
-        :size  :paragraph-2}
-       formatted-change]
-      [quo/text
-       {:style  (style/token-overview-change-time-text theme)
-        :size   :paragraph-2
-        :weight :medium}
-       (i18n/label :t/time-24h)]]]))
+  [rn/view {:style (style/token-overview theme)}
+   [quo/text
+    {:size   :heading-2
+     :weight :semi-bold}
+    value]
+   [rn/view {:style style/token-overview-info-row}
+    [icon/icon
+     (if (pos? change)
+       :i/positive
+       :i/negative)
+     (style/token-overview-icon-props theme (pos? change))]
+    [quo/text
+     {:style (style/token-overview-change-text theme (pos? change))
+      :size  :paragraph-2}
+     (utils.number/format-as-percentage change) "%"]
+    [quo/text
+     {:style  (style/token-overview-change-time-text theme)
+      :size   :paragraph-2
+      :weight :medium}
+     (i18n/label :t/time-24h)]]])
 
 (defn token-parameter
   [{:keys [theme title value first?]}]
@@ -97,13 +93,11 @@
          :value  "€575.56"
          :change -0.101}]]
       [rn/view {:style (style/content-row theme false)}
-       ^{:key "market-cap"}
        [token-parameter
         {:theme  theme
          :title  "Market cap"
          :value  "€84,817,829,837"
          :first? true}]
-       ^{:key "24h-volume"}
        [token-parameter
         {:theme  theme
          :title  "24h Volume"

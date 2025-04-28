@@ -112,3 +112,10 @@
         (money/bignumber)
         (money/div scale)
         (money/to-fixed decimal-places))))
+
+(defn format-as-percentage
+  "Formats a number to be shown as a percentage with two decimal places."
+  [change]
+  (-> change
+      (* 100)
+      (naive-round 2)))
