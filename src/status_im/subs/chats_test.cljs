@@ -207,3 +207,15 @@
         :chats           chats
         :current-chat-id chat-id)
       (is (true? (rf/sub [sub-name]))))))
+
+(h/deftest-sub :group-chat/manage-members-count
+  [sub-name]
+  (testing "calculates the correct count of members in a group chat"
+    (let [contacts              [{:id "0x777"} {:id "0x789"}]
+          selected-participants ["0x123" "0x456"]
+          deselected-members    [{:id "Ox789"}]]
+      (swap! rf-db/app-db assoc
+        :chats                            {chat-id {:contacts contacts}}
+        :group-chat/selected-participants selected-participants
+        :group-chat/deselected-members    deselected-members)
+      (is (= 3 (rf/sub [sub-name chat-id]))))))

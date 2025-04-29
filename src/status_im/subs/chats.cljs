@@ -358,3 +358,37 @@
    (re-frame/subscribe [:chats/chat chat-id]))
  :->
  :image)
+
+(re-frame/reg-sub
+ :group-chat/selected-participants-count
+ :<- [:group-chat/selected-participants]
+ (fn [selected-participants]
+   (count selected-participants)))
+
+(re-frame/reg-sub
+ :group-chat/deselected-members-count
+ :<- [:group-chat/deselected-members]
+ (fn [deselected-members]
+   (count deselected-members)))
+
+(re-frame/reg-sub
+ :group-chat/member-count
+ (fn [[_ chat-id]]
+   (re-frame/subscribe [:chats/chat-by-id chat-id]))
+ (fn [{:keys [contacts]}]
+   (count contacts)))
+
+(re-frame/reg-sub
+ :group-chat/manage-members-count
+ (fn [[_ chat-id]]
+   [(re-frame/subscribe [:group-chat/member-count chat-id])
+    (re-frame/subscribe [:group-chat/selected-participants-count])
+    (re-frame/subscribe [:group-chat/deselected-members-count])])
+ (fn [[member-count selected-count deselected-count]]
+   (+ member-count selected-count (- deselected-count))))
+
+(re-frame/reg-sub
+ :group-chat/manage-members-error-by-chat-id
+ :<- [:group-chat/manage-members-error]
+ (fn [errors [_ chat-id]]
+   (get errors chat-id)))

@@ -129,6 +129,7 @@
 ;;group chat
 (reg-root-key-sub :group-chat/selected-participants :group-chat/selected-participants)
 (reg-root-key-sub :group-chat/deselected-members :group-chat/deselected-members)
+(reg-root-key-sub :group-chat/manage-members-error :group-chat/manage-members-error)
 
 ;;messages
 (reg-root-key-sub :messages/messages :messages)
