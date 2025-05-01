@@ -333,6 +333,7 @@
                                                :t/mark-as-untrusted))
             :on-press            #(handle-press item)
             :danger?             true
+            :add-divider?        true
             :accessibility-label :mark-as-untrusted
             :sub-label           nil
             :chevron?            false})))
