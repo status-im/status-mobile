@@ -495,3 +495,8 @@
 ;; Community help links
 (def ^:const create-community-help-url
   "https://status.app/help/communities/create-a-status-community#create-a-status-community")
+
+;; Contact trust status
+(def ^:const contact-trust-status-unknown 0)
+(def ^:const contact-trust-status-trusted 1)
+(def ^:const contact-trust-status-untrustworthy 2)

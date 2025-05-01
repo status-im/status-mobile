@@ -131,7 +131,7 @@
                                                                   public-key])}])}]))
 
 (defn mark-as-untrusted-action
-  [{:keys [public-key] :as item}]
+  [{:keys [public-key primary-name] :as item}]
   (hide-sheet-and-dispatch
    [:show-bottom-sheet
     {:content (fn []
@@ -142,7 +142,13 @@
                   :context             item
                   :accessibility-label :block-user
                   :button-text         (i18n/label :t/mark-as-untrusted-button)
-                  :on-press            #(print "Not implemented")}])}]))
+                  :on-press            #(hide-sheet-and-dispatch
+                                         [:contact/mark-as-untrusted
+                                          public-key primary-name])}])}]))
+
+(defn remove-untrusted-mark-action
+  [{:keys [public-key primary-name]}]
+  (hide-sheet-and-dispatch [:contact/remove-trust-status public-key primary-name]))
 
 (defn mute-chat-entry
   [chat-id chat-type muted-till]
@@ -314,17 +320,22 @@
           :sub-label           nil
           :chevron?            false}))
 
-(defn mark-untrustworthy-entry
-  [item]
-  (entry {:icon                :i/untrustworthy
-          :label               (i18n/label :t/mark-as-untrusted)
-          ;; :on-press            #(js/alert "TODO: to be implemented, requires status-go impl.")
-          :on-press            #(mark-as-untrusted-action item)
-          :danger?             true
-          :accessibility-label :mark-as-untrusted
-          :sub-label           nil
-          :chevron?            false
-          :add-divider?        true}))
+(defn change-trust-status-entry
+  [{:keys [trust-status] :as item}]
+  (let [handle-press (if (= trust-status
+                            constants/contact-trust-status-untrustworthy)
+                       remove-untrusted-mark-action
+                       mark-as-untrusted-action)]
+    (entry {:icon                :i/untrustworthy
+            :label               (i18n/label (if (= trust-status
+                                                    constants/contact-trust-status-untrustworthy)
+                                               :t/remove-untrusted-mark
+                                               :t/mark-as-untrusted))
+            :on-press            #(handle-press item)
+            :danger?             true
+            :accessibility-label :mark-as-untrusted
+            :sub-label           nil
+            :chevron?            false})))
 
 (defn block-user-entry
   [item]
@@ -460,7 +471,7 @@
        (show-qr-entry public-key)
        (share-profile-entry public-key)]
       [(when-not (= current-pub-key public-key)
-         (mark-untrustworthy-entry contact))
+         (change-trust-status-entry contact))
        (when added? (remove-from-contacts-entry contact))
        (when-not (= current-pub-key public-key) (block-user-entry contact))]
       (when (and admin? chat-id)

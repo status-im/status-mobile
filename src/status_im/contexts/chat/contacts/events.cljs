@@ -22,6 +22,7 @@
    :last-updated          (oops/oget js-contact "lastUpdated")
    :active?               (oops/oget js-contact "active")
    :blocked?              (oops/oget js-contact "blocked")
+   :trust-status          (oops/oget js-contact "trustStatus")
    :added?                (oops/oget js-contact "added")
    :has-added-us?         (oops/oget js-contact "hasAddedUs")
    :mutual?               (oops/oget js-contact "mutual")
