@@ -130,6 +130,20 @@
                   :on-press            #(hide-sheet-and-dispatch [:contact/block-contact
                                                                   public-key])}])}]))
 
+(defn mark-as-untrusted-action
+  [{:keys [public-key] :as item}]
+  (hide-sheet-and-dispatch
+   [:show-bottom-sheet
+    {:content (fn []
+                [confirmation-drawer/confirmation-drawer
+                 {:title               (i18n/label :t/mark-as-untrusted)
+                  :description         (i18n/label :t/mark-as-untrusted-description
+                                                   {:username (:primary-name item)})
+                  :context             item
+                  :accessibility-label :block-user
+                  :button-text         (i18n/label :t/mark-as-untrusted-button)
+                  :on-press            #(print "Not implemented")}])}]))
+
 (defn mute-chat-entry
   [chat-id chat-type muted-till]
   (let [muted? (rf/sub [:chats/muted chat-id])]
@@ -260,7 +274,7 @@
   (entry {:icon                :i/remove-user
           :label               (i18n/label :t/remove-from-contacts)
           :on-press            #(hide-sheet-and-dispatch [:contact.ui/remove-contact-pressed contact])
-          :danger?             false
+          :danger?             true
           :accessibility-label :remove-from-contacts
           :sub-label           nil
           :chevron?            false}))
@@ -300,14 +314,14 @@
           :sub-label           nil
           :chevron?            false}))
 
-;; TODO(OmarBasem): Requires status-go impl.
 (defn mark-untrustworthy-entry
-  []
-  (entry {:icon                :i/alert
-          :label               (i18n/label :t/mark-untrustworthy)
-          :on-press            #(js/alert "TODO: to be implemented, requires status-go impl.")
+  [item]
+  (entry {:icon                :i/untrustworthy
+          :label               (i18n/label :t/mark-as-untrusted)
+          ;; :on-press            #(js/alert "TODO: to be implemented, requires status-go impl.")
+          :on-press            #(mark-as-untrusted-action item)
           :danger?             true
-          :accessibility-label :mark-untrustworthy
+          :accessibility-label :mark-as-untrusted
           :sub-label           nil
           :chevron?            false
           :add-divider?        true}))
@@ -437,6 +451,7 @@
 
 (defn contact-actions
   [{:keys [public-key added?] :as contact} {:keys [chat-id admin?] :as extra-data}]
+  (tap> contact)
   (let [current-pub-key (rf/sub [:multiaccount/public-key])]
     [quo/action-drawer
      [[(view-profile-entry public-key)
@@ -445,8 +460,7 @@
        (show-qr-entry public-key)
        (share-profile-entry public-key)]
       [(when-not (= current-pub-key public-key)
-         (when config/show-not-implemented-features?
-           (mark-untrustworthy-entry)))
+         (mark-untrustworthy-entry contact))
        (when added? (remove-from-contacts-entry contact))
        (when-not (= current-pub-key public-key) (block-user-entry contact))]
       (when (and admin? chat-id)
