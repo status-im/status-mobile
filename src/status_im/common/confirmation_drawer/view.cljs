@@ -9,18 +9,6 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(defn avatar
-  [group-chat color display-name photo-path]
-  (if group-chat
-    [quo/group-avatar
-     {:customization-color color
-      :size                :size-20}]
-    [quo/user-avatar
-     {:full-name         display-name
-      :profile-picture   photo-path
-      :size              :xxs
-      :status-indicator? false}]))
-
 (defn extra-action-view
   [extra-action extra-text extra-action-selected?]
   (when extra-action
@@ -38,7 +26,6 @@
       (let [{:keys [group-chat chat-id public-key color chat-type
                     profile-picture name]} context
             id                             (or chat-id public-key)
-            theme                          (quo.context/use-theme)
             [primary-name _]               (when-not (or group-chat
                                                          (= chat-type constants/public-chat-type))
                                              (rf/sub [:contacts/contact-two-names-by-identity id]))
@@ -56,12 +43,14 @@
          [quo/text
           {:weight :semi-bold
            :size   :heading-2} title]
-         [rn/view {:style (style/context-container theme)}
-          [avatar group-chat color display-name photo-path]
-          [quo/text
-           {:weight :medium
-            :size   :paragraph-2
-            :style  {:margin-left 4}} display-name]]
+         [quo/context-tag
+          {:type                (if group-chat :group :default)
+           :profile-picture     photo-path
+           :full-name           display-name
+           :group-name          display-name
+           :customization-color color
+           :container-style     {:margin-bottom 12 :margin-top 4}
+           :size                24}]
          [quo/text description]
          [extra-action-view extra-action extra-text extra-action-selected?]
          [rn/view {:style style/buttons-container}
