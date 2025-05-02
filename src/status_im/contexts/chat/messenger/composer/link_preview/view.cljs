@@ -1,16 +1,17 @@
 (ns status-im.contexts.chat.messenger.composer.link-preview.view
   (:require
-    [clojure.string :as string]
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [react-native.reanimated :as reanimated]
-    [status-im.common.resources :as resources]
-    [status-im.constants]
-    [status-im.contexts.chat.messenger.composer.constants :as constants]
-    [status-im.contexts.chat.messenger.composer.link-preview.events]
-    [status-im.contexts.chat.messenger.composer.link-preview.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [react-native.reanimated :as reanimated]
+   [status-im.common.resources :as resources]
+   [status-im.constants]
+   [status-im.contexts.chat.messenger.composer.constants :as constants]
+   [status-im.contexts.chat.messenger.composer.link-preview.events]
+   [status-im.contexts.chat.messenger.composer.link-preview.style :as style]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn- use-animated-height
   [previews?]
@@ -21,30 +22,62 @@
      [previews?])
     height))
 
+(defn unfurl-links
+  [previews]
+  [quo/url-preview-list
+   {:key-fn               :url
+    :preview-width        (- (:width (rn/get-window))
+                             (* 2 style/padding-horizontal))
+    :container-style      (when (seq previews) style/preview-list)
+    :container-style-item {:height style/preview-height}
+    :horizontal-spacing   style/padding-horizontal
+    :loading-message      (i18n/label :t/link-preview-loading-message)
+    :on-clear             #(rf/dispatch [:link-preview/clear])
+    :data                 (map
+                           (fn [{:keys [title display-name thumbnail hostname loading? url favicon]}]
+                             {:title     (or display-name title)
+                              :body      (or (when-not display-name hostname)
+                                             status-im.constants/status-hostname)
+                              :logo      (if (string/starts-with? url "https://status.app")
+                                           (resources/get-mock-image :status-logo)
+                                           favicon)
+                              :loading?  loading?
+                              :thumbnail (:data-uri thumbnail)
+                              :url       url})
+                           previews)}])
+
+(defn show-unfurl-link-options
+  [theme]
+  [rn/view
+   {:style {:flex-direction   :row
+            :justify-content  :space-between
+            :align-items      :center
+            :background-color (colors/theme-colors colors/white colors/neutral-80 theme)
+            :border-radius    15
+            :height           48
+            :padding          12}}
+   [quo/text
+    {:size   :paragraph-2}
+    (i18n/label :t/show-link-previews)]
+   [quo/button
+    {:type     :outline
+     :size     24
+     :on-press #(rf/dispatch [:profile.settings/set-unfurl-links-mode 1])}
+    (i18n/label :t/options)]])
+
+
 (defn view
-  []
+  [theme]
   (let [previews (rf/sub [:chats/link-previews-unfurled])
-        height   (use-animated-height (boolean (seq previews)))]
-    [reanimated/view
-     {:style (reanimated/apply-animations-to-style {:height height} {:z-index 1})}
-     [quo/url-preview-list
-      {:key-fn               :url
-       :preview-width        (- (:width (rn/get-window))
-                                (* 2 style/padding-horizontal))
-       :container-style      (when (seq previews) style/preview-list)
-       :container-style-item {:height style/preview-height}
-       :horizontal-spacing   style/padding-horizontal
-       :loading-message      (i18n/label :t/link-preview-loading-message)
-       :on-clear             #(rf/dispatch [:link-preview/clear])
-       :data                 (map
-                              (fn [{:keys [title display-name thumbnail hostname loading? url favicon]}]
-                                {:title     (or display-name title)
-                                 :body      (or (when-not display-name hostname)
-                                                status-im.constants/status-hostname)
-                                 :logo      (if (string/starts-with? url "https://status.app")
-                                              (resources/get-mock-image :status-logo)
-                                              favicon)
-                                 :loading?  loading?
-                                 :thumbnail (:data-uri thumbnail)
-                                 :url       url})
-                              previews)}]]))
+        height   (use-animated-height (boolean (seq previews)))
+        mode     (rf/sub [:profile/url-unfurling-mode])
+        show-previews (atom (or false
+                                (= mode constants/preview-always-share)))]
+    (cond
+      @show-previews
+      [reanimated/view
+       {:style (reanimated/apply-animations-to-style {:height height} {:z-index 1})}
+       [unfurl-links previews]]
+
+      (and (= mode constants/preview-alway-ask) (boolean (seq previews)))
+      [show-unfurl-link-options mode theme])))

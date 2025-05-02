@@ -12,6 +12,10 @@
 (def ^:const links-container-height
   (+ actions-container-height links-padding-top links-padding-bottom))
 
+(def ^:const preview-alway-ask 1)
+(def ^:const preview-always-share 2)
+(def ^:const preview-never-ask 3)
+
 (def ^:const reply-container-height 32)
 
 (def ^:const edit-container-height 32)

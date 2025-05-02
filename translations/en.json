@@ -1270,7 +1270,10 @@
   "include": "Include",
   "incoming": "Incoming",
   "incoming-transaction": "Incoming transaction",
-  "incorrect-code": ["str", "Sorry the code was incorrect, please enter it again"],
+  "incorrect-code": [
+    "str",
+    "Sorry the code was incorrect, please enter it again"
+  ],
   "incorrect-private-key": "This is not the private key for this key pair",
   "increase-gas": "Increase Gas",
   "information-you-input-and-send": "Information you input and send",
@@ -1963,6 +1966,7 @@
   "opensea": "OpenSea",
   "optimal": "Optimal",
   "optional": "optional",
+  "options": "options",
   "or": "OR",
   "or-tap": "or tap",
   "origin": "Origin",
@@ -2494,6 +2498,7 @@
   "show-less": "Show less",
   "show-more": "Show more",
   "show-network-balances": "Show network balances",
+  "show-link-previews": "Do you want to show link previews?",
   "show-notifications": "Show notifications",
   "show-profile-pictures": "See profile pictures from",
   "show-profile-pictures-to": "Show your profile picture to",

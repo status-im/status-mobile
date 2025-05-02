@@ -1,21 +1,21 @@
 (ns status-im.contexts.chat.messenger.composer.view
   (:require
-    [quo.context :as quo.context]
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [status-im.contexts.chat.messenger.composer.actions.view :as actions]
-    [status-im.contexts.chat.messenger.composer.constants :as constants]
-    [status-im.contexts.chat.messenger.composer.edit.view :as edit]
-    [status-im.contexts.chat.messenger.composer.handlers :as handler]
-    [status-im.contexts.chat.messenger.composer.images.view :as images]
-    [status-im.contexts.chat.messenger.composer.link-preview.view :as link-preview]
-    [status-im.contexts.chat.messenger.composer.mentions.view :as mentions]
-    [status-im.contexts.chat.messenger.composer.reply.view :as reply]
-    [status-im.contexts.chat.messenger.composer.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.context :as quo.context]
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [react-native.core :as rn]
+   [react-native.safe-area :as safe-area]
+   [status-im.contexts.chat.messenger.composer.actions.view :as actions]
+   [status-im.contexts.chat.messenger.composer.constants :as constants]
+   [status-im.contexts.chat.messenger.composer.edit.view :as edit]
+   [status-im.contexts.chat.messenger.composer.handlers :as handler]
+   [status-im.contexts.chat.messenger.composer.images.view :as images]
+   [status-im.contexts.chat.messenger.composer.link-preview.view :as link-preview]
+   [status-im.contexts.chat.messenger.composer.mentions.view :as mentions]
+   [status-im.contexts.chat.messenger.composer.reply.view :as reply]
+   [status-im.contexts.chat.messenger.composer.style :as style]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn input
   [_ _]
@@ -51,6 +51,6 @@
        [edit/view input-ref]]
       [input set-ref theme]
       [:<>
-       [link-preview/view]
+       [link-preview/view theme]
        [images/images-list]]
       [actions/view input-ref]]]))

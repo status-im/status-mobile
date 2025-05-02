@@ -87,6 +87,11 @@
    {:fx [[:dispatch [:profile.settings/profile-update :appearance theme]]
          [:dispatch [:theme/switch {:appearance-type theme}]]]}))
 
+
+(rf/reg-event-fx :profile.settings/set-unfurl-links-mode
+  (fn [_ [mode]]
+    {:dispatch [:profile.settings/profile-update :url-unfurling-mode mode]}))
+
 (rf/reg-fx :profile.settings/get-profile-picture
  (fn [key-uid]
    (json-rpc/call {:method     "multiaccounts_getIdentityImages"

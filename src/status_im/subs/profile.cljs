@@ -18,6 +18,12 @@
  (fn [{:keys [customization-color]}]
    (or customization-color constants/profile-default-color)))
 
+(re-frame/reg-sub
+ :profile/url-unfurling-mode
+ :<- [:profile/profile]
+ (fn [{:keys [url-unfurling-mode]}]
+   url-unfurling-mode))
+
 ;; A profile can only be created without accepting terms in Status v1. In Status
 ;; v2, the terms may be unaccepted because we intentionally created a migration
 ;; resetting the flag in case the privacy policy changed.
