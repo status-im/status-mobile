@@ -46,6 +46,22 @@
                               :url       url})
                            previews)}])
 
+(defn link-preview-options
+  []
+  [quo/action-drawer
+   [[{:icon     :i/friend
+      :label    "Show for this message"
+      :on-press #(rf/dispatch [:profile.settings/set-unfurl-links-mode
+                               constants/preview-alway-ask])}
+     {:icon      :i/communities
+      :label     "Always show previews"
+      :on-press   #(rf/dispatch [:profile.settings/set-unfurl-links-mode
+                                 constants/preview-always-share])}
+     {:icon       :i/muted
+      :label      "Never show previews"
+      :on-press    #(rf/dispatch [:profile.settings/set-unfurl-links-mode
+                                  constants/preview-never-ask])}]]])
+
 (defn show-unfurl-link-options
   [theme]
   [rn/view
@@ -62,7 +78,9 @@
    [quo/button
     {:type     :outline
      :size     24
-     :on-press #(rf/dispatch [:profile.settings/set-unfurl-links-mode 1])}
+     :on-press #(rf/dispatch [:show-bottom-sheet
+                              {:content (fn []
+                                          [link-preview-options])}])}
     (i18n/label :t/options)]])
 
 
