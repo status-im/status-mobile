@@ -1,10 +1,10 @@
 (ns status-im.contexts.profile.settings.screens.messages.view
   (:require
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [status-im.common.events-helper :as events-helper]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [react-native.core :as rn]
+   [status-im.common.events-helper :as events-helper]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn- open-blocked-users
   []
@@ -33,6 +33,14 @@
                    {:title    (i18n/label :t/blocked-users)
                     :on-press open-blocked-users
                     :blur?    true
+                    :action   :arrow}]
+       :blur?     true
+       :list-type :settings}]
+     [quo/category
+      {:label     (i18n/label :t/messages)
+       :data      [{:title    (i18n/label :t/preview-link)
+                    :blur?    true
+                    :on-press #(rf/dispatch [:open-modal :screen/link-previews])
                     :action   :arrow}]
        :blur?     true
        :list-type :settings}]]))
