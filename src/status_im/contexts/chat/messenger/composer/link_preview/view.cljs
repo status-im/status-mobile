@@ -52,7 +52,7 @@
    [[{:icon     :i/friend
       :label    "Show for this message"
       :on-press #(rf/dispatch [:profile.settings/set-unfurl-links-mode
-                               constants/preview-alway-ask])}
+                               constants/preview-always-ask])}
      {:icon      :i/communities
       :label     "Always show previews"
       :on-press   #(rf/dispatch [:profile.settings/set-unfurl-links-mode
@@ -97,5 +97,5 @@
        {:style (reanimated/apply-animations-to-style {:height height} {:z-index 1})}
        [unfurl-links previews]]
 
-      (and (= mode constants/preview-alway-ask) (boolean (seq previews)))
+      (and (= mode constants/preview-always-ask) (boolean (seq previews)))
       [show-unfurl-link-options mode theme])))
