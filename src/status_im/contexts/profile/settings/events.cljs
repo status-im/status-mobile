@@ -89,8 +89,8 @@
 
 
 (rf/reg-event-fx :profile.settings/set-unfurl-links-mode
-  (fn [_ [mode]]
-    {:dispatch [:profile.settings/profile-update :url-unfurling-mode mode]}))
+ (fn [_ [mode]]
+   {:dispatch [:profile.settings/profile-update :url-unfurling-mode mode]}))
 
 (rf/reg-fx :profile.settings/get-profile-picture
  (fn [key-uid]

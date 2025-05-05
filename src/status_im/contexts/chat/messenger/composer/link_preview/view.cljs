@@ -1,17 +1,17 @@
 (ns status-im.contexts.chat.messenger.composer.link-preview.view
   (:require
-   [clojure.string :as string]
-   [quo.core :as quo]
-   [quo.foundations.colors :as colors]
-   [react-native.core :as rn]
-   [react-native.reanimated :as reanimated]
-   [status-im.common.resources :as resources]
-   [status-im.constants]
-   [status-im.contexts.chat.messenger.composer.constants :as constants]
-   [status-im.contexts.chat.messenger.composer.link-preview.events]
-   [status-im.contexts.chat.messenger.composer.link-preview.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [status-im.common.resources :as resources]
+    [status-im.constants]
+    [status-im.contexts.chat.messenger.composer.constants :as constants]
+    [status-im.contexts.chat.messenger.composer.link-preview.events]
+    [status-im.contexts.chat.messenger.composer.link-preview.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- use-animated-height
   [previews?]
@@ -53,14 +53,14 @@
       :label    "Show for this message"
       :on-press #(rf/dispatch [:profile.settings/set-unfurl-links-mode
                                constants/preview-always-ask])}
-     {:icon      :i/communities
-      :label     "Always show previews"
-      :on-press   #(rf/dispatch [:profile.settings/set-unfurl-links-mode
-                                 constants/preview-always-share])}
-     {:icon       :i/muted
-      :label      "Never show previews"
-      :on-press    #(rf/dispatch [:profile.settings/set-unfurl-links-mode
-                                  constants/preview-never-ask])}]]])
+     {:icon     :i/communities
+      :label    "Always show previews"
+      :on-press #(rf/dispatch [:profile.settings/set-unfurl-links-mode
+                               constants/preview-always-share])}
+     {:icon     :i/muted
+      :label    "Never show previews"
+      :on-press #(rf/dispatch [:profile.settings/set-unfurl-links-mode
+                               constants/preview-never-ask])}]]])
 
 (defn show-unfurl-link-options
   [theme]
@@ -73,7 +73,7 @@
             :height           48
             :padding          12}}
    [quo/text
-    {:size   :paragraph-2}
+    {:size :paragraph-2}
     (i18n/label :t/show-link-previews)]
    [quo/button
     {:type     :outline
@@ -86,9 +86,9 @@
 
 (defn view
   [theme]
-  (let [previews (rf/sub [:chats/link-previews-unfurled])
-        height   (use-animated-height (boolean (seq previews)))
-        mode     (rf/sub [:profile/url-unfurling-mode])
+  (let [previews      (rf/sub [:chats/link-previews-unfurled])
+        height        (use-animated-height (boolean (seq previews)))
+        mode          (rf/sub [:profile/url-unfurling-mode])
         show-previews (atom (or false
                                 (= mode constants/preview-always-share)))]
     (cond
