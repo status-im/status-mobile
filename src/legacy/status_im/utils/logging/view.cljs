@@ -7,6 +7,7 @@
     [quo.context]
     [quo.core :as quo]
     [re-frame.core :as re-frame]
+    [status-im.config :as config]
     [status-im.constants :as constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])
@@ -72,4 +73,7 @@
         :on-press #(rf/dispatch [:logging.ui/send-logs-pressed :sharing true])}
        (when-not logged-in?
          {:label    (i18n/label :t/set-pre-login-log-level)
-          :on-press #(rf/dispatch [:show-bottom-sheet {:content pre-login-log-level-settings}])})]]]))
+          :on-press #(rf/dispatch [:show-bottom-sheet {:content pre-login-log-level-settings}])})
+       (when config/quo-preview-enabled?
+         {:label    (i18n/label :t/feature-flags)
+          :on-press #(rf/dispatch [:open-modal :screen/feature-flags])})]]]))

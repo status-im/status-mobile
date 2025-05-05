@@ -124,7 +124,7 @@
        :blur?       true
        :image-props :i/light})
     (when config/quo-preview-enabled?
-      {:title       "Feature Flags"
+      {:title       (i18n/label :t/feature-flags)
        :on-press    #(rf/dispatch [:open-modal :screen/feature-flags])
        :action      :arrow
        :image       :icon
