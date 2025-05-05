@@ -41,14 +41,6 @@
 
 (def ^:const chain-id-for-new-network-banner bsc-chain-id)
 
-;; NOTE: if the network should be highlighted as "new" in the UI, add
-;; the chain id to `new-networks`. Otherwise, remove if no longer "new".
-
-(def ^:const new-networks
-  #{bsc-chain-id
-    bsc-testnet-chain-id
-    status-sepolia-chain-id})
-
 ;; NOTE: if the network should be supported in Bridge (Hop), add
 ;; the chain id to the following set. Otherwise, remove if no longer
 ;; supported.
