@@ -415,7 +415,7 @@
 (def ^:const bridge-name-hop "Hop")
 
 ;; remove the decimal from the token symbol once we move to CoinGecko token list
-(def ^:const bridge-assets #{"ETH" "USDT(6)" "USDC(6)" "DAI"})
+(def ^:const bridge-assets #{"ETH" "USDT (EVM)" "USDC (EVM)" "DAI"})
 
 (def ^:const wallet-contract-type-erc-1155 3)
 

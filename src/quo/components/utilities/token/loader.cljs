@@ -7,15 +7,15 @@
 
 ;; NOTE: temporarily workaround added to show USDC and USDT on different chains
 ;; with different decimals. This should be removed when the we move to CoinGecko API
-(def ^:private dt-tokens #{"usdc(6)" "usdc(18)" "usdt(6)" "usdt(18)"})
+(def ^:private tokens-with-different-decimals #{"usdc (evm)" "usdc (bsc)" "usdt (evm)" "usdt (bsc)"})
 
 (defn- get-token-image*
   [token]
   (let [lower-case-token-symbol (cond-> token
                                   (keyword? token) name
                                   :always          safe-lower-case)
-        token-symbol            (if (dt-tokens lower-case-token-symbol)
-                                  (string/replace lower-case-token-symbol #"\(\d+\)" "")
+        token-symbol            (if (tokens-with-different-decimals lower-case-token-symbol)
+                                  (-> (string/split lower-case-token-symbol #" ") first)
                                   lower-case-token-symbol)]
     (get tokens token-symbol)))
 
