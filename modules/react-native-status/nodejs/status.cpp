@@ -1373,39 +1373,6 @@ void _WriteHeapProfile(const FunctionCallbackInfo<Value>& args) {
 
 }
 
-void _AddPeer(const FunctionCallbackInfo<Value>& args) {
-	Isolate* isolate = args.GetIsolate();
-        Local<Context> context = isolate->GetCurrentContext();
-
-	if (args.Length() != 1) {
-		// Throw an Error that is passed back to JavaScript
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for AddPeer")));
-		return;
-	}
-
-	// Check the argument types
-
-	if (!args[0]->IsString()) {
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'enode'")));
-		return;
-	}
-
-
-	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
-	char *arg0 = *arg0Obj;
-
-	// Call exported Go function, which returns a C string
-	char *c = AddPeer(arg0);
-
-	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
-	args.GetReturnValue().Set(ret);
-	delete c;
-
-
-}
-
 void _SignHash(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
         Local<Context> context = isolate->GetCurrentContext();
@@ -1889,7 +1856,6 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "callPrivateRPC", _CallPrivateRPC);
 	NODE_SET_METHOD(exports, "sendTransactionWithSignature", _SendTransactionWithSignature);
 	NODE_SET_METHOD(exports, "writeHeapProfile", _WriteHeapProfile);
-	NODE_SET_METHOD(exports, "addPeer", _AddPeer);
 	NODE_SET_METHOD(exports, "signHash", _SignHash);
 	NODE_SET_METHOD(exports, "signGroupMembership", _SignGroupMembership);
 	NODE_SET_METHOD(exports, "callRPC", _CallRPC);
