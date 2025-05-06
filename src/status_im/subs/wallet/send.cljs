@@ -60,7 +60,7 @@
 (rf/reg-sub
  :wallet/send-native-token
  :<- [:wallet/current-viewing-account-or-default]
- :<- [:wallet/network-details]
+ :<- [:wallet/active-networks]
  :<- [:wallet/send-network]
  (fn [[{:keys [tokens]} networks send-network]]
    (->> (common-utils/tokens-with-balance tokens networks [(:chain-id send-network)])
