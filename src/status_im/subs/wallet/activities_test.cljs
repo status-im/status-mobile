@@ -75,28 +75,41 @@
         :timestamp 1588464100
         :data      [{:relative-date    "May 3, 2020"
                      :amount-out       "0"
-                     :network-logo-out nil
                      :recipient        "0x1"
+                     :token-id         nil
+                     :amount-in        ""
                      :tx-type          :swap
-                     :network-name-out nil
+                     :activity-type    3
+                     :network-name-in  nil
+                     :network-name-out "Mainnet"
+                     :symbol-in        "SNT"
+                     :symbol-out       "ETH"
                      :status           nil
                      :sender           "0x1"
                      :timestamp        1588464100}
                     {:relative-date    "May 3, 2020"
                      :amount-out       "0"
-                     :network-logo-out nil
                      :recipient        "0x4"
+                     :token-id         nil
+                     :amount-in        nil
                      :tx-type          :send
-                     :network-name-out nil
+                     :activity-type    0
+                     :network-name-in  nil
+                     :network-name-out "Mainnet"
+                     :symbol-out       "ETH"
                      :status           nil
                      :sender           "0x1"
                      :timestamp        1588464050}
                     {:relative-date    "May 3, 2020"
                      :amount-out       "0"
-                     :network-logo-out nil
                      :recipient        "0x1"
+                     :token-id         nil
+                     :amount-in        nil
                      :tx-type          :bridge
-                     :network-name-out nil
+                     :activity-type    4
+                     :network-name-in  nil
+                     :network-name-out "Mainnet"
+                     :symbol-out       "ETH"
                      :status           nil
                      :sender           "0x1"
                      :timestamp        1588464000}]}
@@ -104,10 +117,14 @@
         :timestamp 1588291200
         :data      [{:relative-date    "May 1, 2020"
                      :amount-out       "0"
-                     :network-logo-out nil
                      :recipient        "0x2"
+                     :token-id         nil
+                     :amount-in        nil
                      :tx-type          :send
-                     :network-name-out nil
+                     :activity-type    0
+                     :network-name-in  nil
+                     :network-name-out "Mainnet"
+                     :symbol-out       "ETH"
                      :status           nil
                      :sender           "0x1"
                      :timestamp        1588291200}]}]
