@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "fix/swap-1001-error",
-    "commit-sha1": "c683e0c3490500c5c4999d0bd67706ddbb17dbcb",
-    "src-sha256": "0fiq14vrcbypjgkzhlix3i3imyav1nrjy1svb0zj421dm7hhkmbd"
+    "version": "v10.26.0",
+    "commit-sha1": "a65d6632a88fbd24596259a3ec94f72e6aa4163e",
+    "src-sha256": "0k686pikds7b20vdgn8hcwn6608bwprgvaqms3iwij9mkwb5z010"
 }
