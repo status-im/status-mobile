@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im.common.resources :as resources]
@@ -65,13 +64,7 @@
 (defn show-unfurl-link-options
   [theme]
   [rn/view
-   {:style {:flex-direction   :row
-            :justify-content  :space-between
-            :align-items      :center
-            :background-color (colors/theme-colors colors/white colors/neutral-80 theme)
-            :border-radius    15
-            :height           48
-            :padding          12}}
+   {:style (style/unfurl-link-options theme)}
    [quo/text
     {:size :paragraph-2}
     (i18n/label :t/show-link-previews)]
