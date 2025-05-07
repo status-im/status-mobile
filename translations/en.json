@@ -2096,7 +2096,7 @@
   "principles": "Principles",
   "priority": "Priority",
   "priority-fee": "Priority fee",
-  "priority-fee-current": "Current: {{current}}",
+  "priority-fee-current": "Current: {{low}} - {{high}}",
   "priority-fee-higher": "Higher than necessary: {{low}} - {{high}}",
   "priority-fee-higher-max-base": "Higher than max base fee: {{max-base-fee}}",
   "priority-fee-lower": "Lower than suggested: {{low}} - {{high}}",
