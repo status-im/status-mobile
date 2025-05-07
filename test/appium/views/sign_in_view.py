@@ -1,3 +1,4 @@
+from filelock import Timeout
 from selenium.common.exceptions import NoSuchElementException
 
 from tests import common_password
@@ -134,10 +135,12 @@ class SignInView(BaseView):
 
     def sign_in(self, user_name, password=common_password):
         self.driver.info("## Sign in (password: %s)" % password, device=False)
-        self.get_user_profile_by_name(user_name).click()
-        self.password_input.wait_for_visibility_of_element(10)
-        self.password_input.send_keys(password)
-        self.login_button.click()
+        if not self.password_input.is_element_displayed(10):
+            self.get_user_profile_by_name(user_name).click()
+            self.password_input.wait_for_visibility_of_element(10)
+        else:
+            self.password_input.send_keys(password)
+            self.login_button.click()
         self.driver.info("## Signed in successfully!", device=False)
         return self.get_home_view()
 

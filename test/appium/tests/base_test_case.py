@@ -32,12 +32,12 @@ def get_app_package():
     :return: The app package name.
     """
     apk = pytest_config_global['apk']
-    app_package_name = "im.status.ethereum"  # Default app package name
+    app_folder = "im.status.ethereum"  # Default app package name
 
     if re.findall(r'pr\d\d\d\d\d', apk) or re.findall(r'\d\d\d\d\d.apk', apk):
-        app_package_name += ".pr"  # Append `.pr` in specific cases
+        app_folder += ".pr"  # Append `.pr` in specific cases
 
-    return app_package_name
+    return app_folder
 
 def get_lambda_test_capabilities_real_device():
     capabilities = {

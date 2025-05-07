@@ -2,8 +2,6 @@ import time
 import pytest
 
 from base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
-from support.api.network_api import NetworkApi
-from support.api.browser_api import ChromeBrowserHandler
 from tests import marks, run_in_parallel
 from users import transaction_senders
 from views.sign_in_view import SignInView
@@ -18,82 +16,53 @@ from views.sign_in_view import SignInView
 class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
-        self.network_api = NetworkApi()
-        self.drivers, self.loop = create_shared_drivers(1)
-        # self.drivers, self.loop = create_shared_drivers(2)
-        # self.sign_in_1, self.sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
-        # self.sender, self.receiver = transaction_senders['ETH_1'], transaction_senders['ETH_3']
-        # self.sender['wallet_address'] = '0x' + self.sender['address']
-        # self.receiver['wallet_address'] = '0x' + self.receiver['address']
-        # self.loop.run_until_complete(
-        #     run_in_parallel(((self.sign_in_1.recover_access, {'passphrase': self.sender['passphrase']}),
-        #                      (self.sign_in_2.recover_access, {'passphrase': self.receiver['passphrase']}))))
-        # self.home_1, self.home_2 = self.sign_in_1.get_home_view(), self.sign_in_2.get_home_view()
-        # self.sender_username, self.receiver_username = self.home_1.get_username(), self.home_2.get_username()
-        # self.wallets = (self.wallet_1, self.wallet_2) = self.sign_in_1.get_wallet_view(), self.sign_in_2.get_wallet_view()
-        # [wallet.wallet_tab.click() for wallet in self.wallets]
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.sign_in_1, self.sign_in_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.sender, self.receiver = transaction_senders['ETH_1'], transaction_senders['ETH_3']
+        self.sender['wallet_address'] = '0x' + self.sender['address']
+        self.receiver['wallet_address'] = '0x' + self.receiver['address']
+        self.loop.run_until_complete(
+            run_in_parallel(((self.sign_in_1.recover_access, {'passphrase': self.sender['passphrase']}),
+                             (self.sign_in_2.recover_access, {'passphrase': self.receiver['passphrase']}))))
+        self.home_1, self.home_2 = self.sign_in_1.get_home_view(), self.sign_in_2.get_home_view()
+        self.sender_username, self.receiver_username = self.home_1.get_username(), self.home_2.get_username()
+        self.wallets = (self.wallet_1, self.wallet_2) = self.sign_in_1.get_wallet_view(), self.sign_in_2.get_wallet_view()
+        [wallet.wallet_tab.click() for wallet in self.wallets]
 
     @pytest.mark.parametrize(
         "network, amount",
         [
             pytest.param("Arbitrum Sepolia", 0.0001, marks=pytest.mark.testrail_id(742015)),
-            # pytest.param("Status Network Sepolia", 0.0002, marks=pytest.mark.testrail_id(727229)),
+            pytest.param("Status Network Sepolia", 0.0002, marks=pytest.mark.testrail_id(727229)),
         ],
     )
     def test_send_eth(self, network, amount):
+        asset, asset_ticker = 'Ether', 'ETH'
+        [wallet.just_fyi("Test to send and verify %s ETH on %s" % (amount, network)) for wallet in self.wallets]
+        eth_amount_receiver = self.wallet_2.get_balance()
+        expected_amount_after_tx_receiver = self.wallet_1.round_amount_float(eth_amount_receiver + amount)
 
-        driver = self.drivers[0]
-        etherscan_url = "https://sepolia.etherscan.io/tx/0xec2da91a664fde85054a6cdb6d133b78c7546464aa48d9f37a07467ac5fba7e5"
+        self.wallet_1.just_fyi("Sending funds from wallet on %s" % network)
+        device_time_before_sending = self.wallet_1.driver.device_time
+        self.wallet_1.get_account_element().click()
+        self.wallet_1.send_asset(address=self.receiver['wallet_address'],
+                                 asset_name=asset,
+                                 amount=self.wallet_1.round_amount_float(amount),
+                                 network_name=network)
 
-        # driver.set_clipboard(etherscan_url)
-        #
-        # new_url = driver.get_clipboard()
-
-
-        # Initialize Chrome handler
-        chrome_handler = ChromeBrowserHandler(driver)
-
-        # Open URL using the Chrome handler
-        chrome_handler.open_url(etherscan_url)
-        chrome_handler.wait_for_text("Success")
-        chrome_handler.switch_to_app()
-        # chrome_handler.switch_to_native()
-
-
-
-        # asset, asset_ticker = 'Ether', 'ETH'
-        # [wallet.just_fyi("Test to send and verify %s ETH on %s" % (amount, network)) for wallet in self.wallets]
-        # eth_amount_receiver = self.wallet_2.get_balance()
-        # expected_amount_after_tx_receiver = self.wallet_1.round_amount_float(eth_amount_receiver + amount)
-        #
-        # self.wallet_1.just_fyi("Sending funds from wallet on %s" % network)
-        # device_time_before_sending = self.wallet_1.driver.device_time
-        # self.wallet_1.get_account_element().click()
-        # self.wallet_1.send_asset(address=self.receiver['wallet_address'],
-        #                          asset_name=asset,
-        #                          amount=self.wallet_1.round_amount_float(amount),
-        #                          network_name=network)
-        #
-        # self.wallet_1.just_fyi("Verify send tx in the list for sender")
-        # tx_errors = self.wallet_1.check_last_transaction_in_activity(device_time_before_sending, amount,
-        #                                                              send_to_account=self.receiver['wallet_address'],
-        #                                                              asset=asset_ticker,
-        #                                                              tx_type='Send',
-        #                                                              network=network,
-        #                                                              get_back_to_main_wallet_view=False)
-        # self.errors.append(self.wallet_1, tx_errors)
-        # self.wallet_1.just_fyi("Open transaction details on exlorer")
-        # self.wallet_1.get_activity_element().options.click()
-        # self.wallet_1.element_by_text("View on Arbiscan").click()
-        # contexts = self.drivers[0].contexts
-        # self.wallet_1.just_fyi(f"Contexts available: {contexts}")
-        #
-        # self.wallet_2.just_fyi("Check that balance is updated for receiver")
-        # self.wallet_2.wait_for_wallet_balance_to_update(expected_amount_after_tx_receiver)
-        # self.errors.verify_no_errors()
-        ####
+        self.wallet_1.just_fyi("Verify send tx in the list for sender")
+        tx_errors = self.wallet_1.check_last_transaction_in_activity(device_time_before_sending, amount,
+                                                                     send_to_account=self.receiver['wallet_address'],
+                                                                     asset=asset_ticker,
+                                                                     tx_type='Send',
+                                                                     network=network,
+                                                                     get_back_to_main_wallet_view=False)
+        self.errors.append(self.wallet_1, tx_errors)
 
 
+        self.wallet_2.just_fyi("Check that balance is updated for receiver")
+        self.wallet_2.wait_for_wallet_balance_to_update(expected_amount_after_tx_receiver)
+        self.errors.verify_no_errors()
 
 
     @pytest.mark.parametrize(

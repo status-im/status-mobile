@@ -234,6 +234,9 @@ class WalletView(BaseView):
             self.driver, xpath="//*[@content-desc='expanded-collectible']//android.widget.ImageView")
         self.send_from_collectible_info_button = Button(self.driver, accessibility_id="icon, Send")
 
+        # Tx activity
+        self.copy_tx_hash_button = Button(self.driver, accessibility_id="copy-transaction-hash")
+
     def set_network_in_wallet(self, network_name: str):
         self.network_drop_down.click()
         element = Button(self.driver, accessibility_id="%s, label-component" % network_name)
@@ -342,6 +345,11 @@ class WalletView(BaseView):
 
     def get_activity_element(self, index=1):
         return ActivityElement(self.driver, index=index)
+
+    def copy_tx_hash(self):
+        self.get_activity_element().options.click_until_presence_of_element(self.copy_tx_hash_button)
+        self.copy_tx_hash_button.click()
+        return self.driver.get_clipboard_text()
 
     def generate_new_key_pair(self, account_name: str, key_pair_name: str):
         self.key_pairs_plus_button.click()
