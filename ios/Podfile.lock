@@ -4,26 +4,26 @@ PODS:
   - CryptoSwift (1.8.0)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.75.3)
-  - Firebase/CoreOnly (11.11.0):
-    - FirebaseCore (~> 11.11.0)
-  - Firebase/Messaging (11.11.0):
+  - Firebase/CoreOnly (11.12.0):
+    - FirebaseCore (~> 11.12.0)
+  - Firebase/Messaging (11.12.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (~> 11.11.0)
-  - FirebaseCore (11.11.0):
-    - FirebaseCoreInternal (~> 11.11.0)
+    - FirebaseMessaging (~> 11.12.0)
+  - FirebaseCore (11.12.0):
+    - FirebaseCoreInternal (~> 11.12.0)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/Logger (~> 8.0)
-  - FirebaseCoreExtension (11.11.0):
-    - FirebaseCore (~> 11.11.0)
-  - FirebaseCoreInternal (11.11.0):
+  - FirebaseCoreExtension (11.12.0):
+    - FirebaseCore (~> 11.12.0)
+  - FirebaseCoreInternal (11.12.0):
     - "GoogleUtilities/NSData+zlib (~> 8.0)"
-  - FirebaseInstallations (11.11.0):
-    - FirebaseCore (~> 11.11.0)
+  - FirebaseInstallations (11.12.0):
+    - FirebaseCore (~> 11.12.0)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
-  - FirebaseMessaging (11.11.0):
-    - FirebaseCore (~> 11.11.0)
+  - FirebaseMessaging (11.12.0):
+    - FirebaseCore (~> 11.12.0)
     - FirebaseInstallations (~> 11.0)
     - GoogleDataTransport (~> 10.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
@@ -1759,11 +1759,11 @@ PODS:
     - React-Core
     - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
-  - RNFBApp (21.14.0):
-    - Firebase/CoreOnly (= 11.11.0)
+  - RNFBApp (22.0.0):
+    - Firebase/CoreOnly (= 11.12.0)
     - React-Core
-  - RNFBMessaging (21.14.0):
-    - Firebase/Messaging (= 11.11.0)
+  - RNFBMessaging (22.0.0):
+    - Firebase/Messaging (= 11.12.0)
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
@@ -2322,25 +2322,25 @@ SPEC CHECKSUMS:
   CryptoSwift: 52aaf3fce7337552863b1d952e408085f0e65030
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: 7b438dceb9f904bd85ca3c31d64cce32a035472b
-  Firebase: 6a8f201c61eda24e98f1ce2b44b1b9c2caf525cc
-  FirebaseCore: 2321536f9c423b1f857e047a82b8a42abc6d9e2c
-  FirebaseCoreExtension: 3a64994969dd05f4bcb7e6896c654eded238e75b
-  FirebaseCoreInternal: 31ee350d87b30a9349e907f84bf49ef8e6791e5a
-  FirebaseInstallations: 781e0e37aa0e1c92b44d00e739aba79ad31b2dba
-  FirebaseMessaging: c7be9357fd8ba33bc45b9a6c3cdff0b466e1e2a4
+  Firebase: 735108d2d0b67827cd929bfe8254983907c4479f
+  FirebaseCore: 9d7a0caf39ec7317fbe13b3c7864c8c2acc60da8
+  FirebaseCoreExtension: 5e42645fd3f7c2c59ea5ed7641dd58f02bc565d1
+  FirebaseCoreInternal: 480d23e21f699cc7bcbc3d8eaa301f15d1e3ffaf
+  FirebaseInstallations: 41189d8b11007152d9e46ec844019f38a0a4282a
+  FirebaseMessaging: 3a5de79d8dce82b70815123c05dfb8825111f15d
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: 45fc946777a0b3d4234f66e852670dfbb94a194b
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   hermes-engine: 8d2103d6c0176779aea4e25df6bb1410f9946680
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
-  Keycard: b18902aee65e9cae8c3cbfa60f91400db93f3d0f
+  Keycard: 3bd24405b9a875b3b3cf1ab1be69b5c30c5f28bc
   libwebp: d7e0c95fe97245c97e08101eba10702ebb0f6101
   MMKV: 383ccfa10ae23ff2a9c0f6130b7136b37b55ac10
   MMKVCore: b0e4c420da85636d7adaa535a53dfade59a22f5c
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  RCT-Folly: 34124ae2e667a0e5f0ea378db071d27548124321
+  RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
   RCTDeprecation: 4191f6e64b72d9743f6fe1a8a16e89e868f5e9e7
   RCTRequired: 9bb589570f2bb3abc6518761e3fd1ad9b7f7f06c
   RCTTypeSafety: 1c1a8741c86df0a0ac1a99cf3fb0e29eedbc2c88
@@ -2424,8 +2424,8 @@ SPEC CHECKSUMS:
   RNCMaskedView: 71fc32d971f03b7f03d6ab6b86b730c4ee64f5b6
   RNCPushNotificationIOS: c145c6253ea016e5efeff604f2720736b4a596f7
   RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
-  RNFBApp: b67ded6e4b0a6c0fee5e4f8e75e3a31567949a08
-  RNFBMessaging: 7202ad4c49bdcdc7fd3634d85827a6305049c148
+  RNFBApp: eff70849a0381da4011ec26e51ab9dcac7783c2c
+  RNFBMessaging: 52c2b95d5471194aeee54e2afcf64bb1843fd058
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: 9decfddf99dcf2397b50c9adae0188fc84c74231
   RNImageCropPicker: 771e2ca319d2cf92e04ebf334ece892ee9a6728f

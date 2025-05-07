@@ -10735,12 +10735,12 @@
   },
 
   {
-    "path": "com/google/firebase/firebase-bom/33.12.0",
+    "path": "com/google/firebase/firebase-bom/33.13.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
-      "firebase-bom-33.12.0.pom": {
-        "sha1": "aad877c83398879ca40c402537983cbdf5a56366",
-        "sha256": "sha256-AVMbbWqhe9IBuJcSU5pbseIHKQqUc0uq86CiPETVuwc="
+      "firebase-bom-33.13.0.pom": {
+        "sha1": "6593685c3a5fdaa1c1b65a707f6172eb64403d5d",
+        "sha256": "sha256-twZwca4gjbKMl2S0B+6qZ8AmSL8EYRS5WjSoHj8OJPI="
       }
     }
   },
@@ -18231,12 +18231,12 @@
   },
 
   {
-    "path": "io/netty/netty-parent/4.2.0.Final",
+    "path": "io/netty/netty-parent/4.2.1.Final",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "netty-parent-4.2.0.Final.pom": {
-        "sha1": "333f032cef746902c47a598694f43c1a5ec574f7",
-        "sha256": "sha256-r7Or46M80QKlWTbO40FwE4txcozZWEY78FDKE375qxw="
+      "netty-parent-4.2.1.Final.pom": {
+        "sha1": "09ca066e1dcc921a710c434e6aa08bd493c29ffe",
+        "sha256": "sha256-w5aMzUh1X2OcSI0V9sFBOc76FWGZbEdiBcK+IdZngLQ="
       }
     }
   },
@@ -18411,36 +18411,36 @@
   },
 
   {
-    "path": "io/netty/netty-transport-native-unix-common/4.2.0.Final",
+    "path": "io/netty/netty-transport-native-unix-common/4.2.1.Final",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "netty-transport-native-unix-common-4.2.0.Final.pom": {
-        "sha1": "b0df59a41eb8808249640cf61a20cb10fa0eb9f3",
-        "sha256": "sha256-kT7odeA5R97x91lJLS+ZNgKWAfE+6EET/zlCSd4NiSk="
+      "netty-transport-native-unix-common-4.2.1.Final.pom": {
+        "sha1": "4db01c3866d4545eafc6581e419293dfae6ebbd9",
+        "sha256": "sha256-XZQGqeIfeIg7nliBQp3VOFQ0bxEEXbs4H49By/LbdYE="
       },
-      "netty-transport-native-unix-common-4.2.0.Final-linux-aarch_64.jar": {
-        "sha1": "001ada18d2a4b9a4c6f1de103f99139ff387713c",
-        "sha256": "sha256-Um1JQtEz3YGGOae/4dye9g1ixfLXs2wBZNSgFitv69U="
+      "netty-transport-native-unix-common-4.2.1.Final-linux-aarch_64.jar": {
+        "sha1": "a440557c9567fb861cbcf7a74ff2f9c3d642d0b7",
+        "sha256": "sha256-crGwLzS9DO8wEOf9FJ2gP2WLYFQh0umEuHgFgGa8piE="
       },
-      "netty-transport-native-unix-common-4.2.0.Final-linux-riscv64.jar": {
-        "sha1": "50d2971a8e3da6611361582f6967ca17d33d8c0e",
-        "sha256": "sha256-UlluLuQCYCG8PnoNBZfDbzCITiJg/j9PVXG5Vyef7CE="
+      "netty-transport-native-unix-common-4.2.1.Final-linux-riscv64.jar": {
+        "sha1": "8e1b0f79132ddd2219900d1f69ec15dcc744f25c",
+        "sha256": "sha256-MQemAdGg1pYys2Tg7wVOTI0BH/Joomn5eHKGWgx+RYw="
       },
-      "netty-transport-native-unix-common-4.2.0.Final-linux-x86_64.jar": {
-        "sha1": "13b5e04fb4b7f17be5d590a1723a01eaa5bab576",
-        "sha256": "sha256-BbqJzGgLhNPhWBkIjfVZbIFX5ni9GAWO0AWXUZI8w6I="
+      "netty-transport-native-unix-common-4.2.1.Final-linux-x86_64.jar": {
+        "sha1": "b076e9d81fd8228d79c2f2b77a997372080f90d8",
+        "sha256": "sha256-6ZU2ylkWKqsC5iY/vPzVJ79w09Hl/P3mbGMpiVln5O0="
       },
-      "netty-transport-native-unix-common-4.2.0.Final-osx-aarch_64.jar": {
-        "sha1": "ddfe0d94a37c79dfadecd9c5cc5e4636feffdbc5",
-        "sha256": "sha256-4ia+MBumzlLAAR2UAKE3uF3KAmPsGPhcdQfvTw9HNd8="
+      "netty-transport-native-unix-common-4.2.1.Final-osx-aarch_64.jar": {
+        "sha1": "751578def4620eca34e00c08214fa5e25ad4d0e6",
+        "sha256": "sha256-CG2ZkBCAdT+AG9alsZRLZQW4QJvbPTndadlFBrLczzg="
       },
-      "netty-transport-native-unix-common-4.2.0.Final-osx-x86_64.jar": {
-        "sha1": "7671e063aaa1e02dec724d7dc925017bd3491cf8",
-        "sha256": "sha256-ILxp/zY4WvYEFAT9pps7qegtWgKw3aVFOn09Q2BtiIY="
+      "netty-transport-native-unix-common-4.2.1.Final-osx-x86_64.jar": {
+        "sha1": "b0ea4e30d8fdd744a3cc652586ea239be52314db",
+        "sha256": "sha256-xN9rsVQGbnLh7rC8DJD9QIl1GRGt7w34FeUbSSLNsjI="
       },
-      "netty-transport-native-unix-common-4.2.0.Final.jar": {
-        "sha1": "28b50211d1935ce8cd5de94741802c6e83824506",
-        "sha256": "sha256-7qfwGHxAlNWTQbFQ1K0fxEyWOuZHcn1fM6hkR00g9VI="
+      "netty-transport-native-unix-common-4.2.1.Final.jar": {
+        "sha1": "9edcc29edb12cb33890e6de025fbb60cc3846d6d",
+        "sha256": "sha256-fyp3RpUMyyJ5CK/j7iG5vPaczFhDe7F8FXmo1XL7OKk="
       }
     }
   },

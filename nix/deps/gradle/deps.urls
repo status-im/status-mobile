@@ -663,7 +663,7 @@ https://dl.google.com/dl/android/maven2/com/google/android/material/material/1.2
 https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-annotations/16.0.0/firebase-annotations-16.0.0.pom
 https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-annotations/16.1.0/firebase-annotations-16.1.0.pom
 https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-annotations/16.2.0/firebase-annotations-16.2.0.pom
-https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-bom/33.12.0/firebase-bom-33.12.0.pom
+https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-bom/33.13.0/firebase-bom-33.13.0.pom
 https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-common-ktx/20.4.2/firebase-common-ktx-20.4.2.pom
 https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-common-ktx/21.0.0/firebase-common-ktx-21.0.0.pom
 https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-common/20.3.3/firebase-common-20.3.3.pom
@@ -1159,7 +1159,7 @@ https://repo.maven.apache.org/maven2/io/netty/netty-parent/4.1.34.Final/netty-pa
 https://repo.maven.apache.org/maven2/io/netty/netty-parent/4.1.52.Final/netty-parent-4.1.52.Final.pom
 https://repo.maven.apache.org/maven2/io/netty/netty-parent/4.1.72.Final/netty-parent-4.1.72.Final.pom
 https://repo.maven.apache.org/maven2/io/netty/netty-parent/4.1.93.Final/netty-parent-4.1.93.Final.pom
-https://repo.maven.apache.org/maven2/io/netty/netty-parent/4.2.0.Final/netty-parent-4.2.0.Final.pom
+https://repo.maven.apache.org/maven2/io/netty/netty-parent/4.2.1.Final/netty-parent-4.2.1.Final.pom
 https://repo.maven.apache.org/maven2/io/netty/netty-parent/5.0.0.Alpha2/netty-parent-5.0.0.Alpha2.pom
 https://repo.maven.apache.org/maven2/io/netty/netty-resolver/4.1.34.Final/netty-resolver-4.1.34.Final.pom
 https://repo.maven.apache.org/maven2/io/netty/netty-resolver/4.1.52.Final/netty-resolver-4.1.52.Final.pom
@@ -1171,7 +1171,7 @@ https://repo.maven.apache.org/maven2/io/netty/netty-tcnative-classes/2.0.71.Fina
 https://repo.maven.apache.org/maven2/io/netty/netty-tcnative-parent/2.0.46.Final/netty-tcnative-parent-2.0.46.Final.pom
 https://repo.maven.apache.org/maven2/io/netty/netty-tcnative-parent/2.0.71.Final/netty-tcnative-parent-2.0.71.Final.pom
 https://repo.maven.apache.org/maven2/io/netty/netty-transport-native-unix-common/4.1.93.Final/netty-transport-native-unix-common-4.1.93.Final.pom
-https://repo.maven.apache.org/maven2/io/netty/netty-transport-native-unix-common/4.2.0.Final/netty-transport-native-unix-common-4.2.0.Final.pom
+https://repo.maven.apache.org/maven2/io/netty/netty-transport-native-unix-common/4.2.1.Final/netty-transport-native-unix-common-4.2.1.Final.pom
 https://repo.maven.apache.org/maven2/io/netty/netty-transport/4.1.34.Final/netty-transport-4.1.34.Final.pom
 https://repo.maven.apache.org/maven2/io/netty/netty-transport/4.1.52.Final/netty-transport-4.1.52.Final.pom
 https://repo.maven.apache.org/maven2/io/netty/netty-transport/4.1.72.Final/netty-transport-4.1.72.Final.pom

@@ -46,7 +46,11 @@ extern "C" NSString* StatusgoImageServerTLSCert();
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  [FIRApp configure];
+  @try {
+    [FIRApp configure];
+  } @catch (NSException *exception) {
+    NSLog(@"Failed to configure Firebase: %@ - %@", exception.name, exception.reason);
+  }
 
   if (!self.bridge) {
     self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
@@ -192,7 +196,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
   __block NSURLCredential *credential = nil;
 
-  NSString *pemCert = [StatusBackendClient executeStatusGoRequestWithResult:@"ImageServerTLSCert" 
+  NSString *pemCert = [StatusBackendClient executeStatusGoRequestWithResult:@"ImageServerTLSCert"
                                                              body:@""
                                                  statusgoFunction:^NSString *{
         return StatusgoImageServerTLSCert();

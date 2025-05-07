@@ -4124,17 +4124,17 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-3.0.0.tgz#ffbf78689fc0572fb5c1e2ccb61b2ef074d3dcd2"
   integrity sha512-deNc3JHBHz24YN+0DTAocXfrYFIFc1DvsIriMJSsJlR/MvsLzoq2+qwaEN+0/LJ37pstv85wZWY0pNugk4e41g==
 
-"@react-native-firebase/app@^21.7.2":
-  version "21.14.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-21.14.0.tgz#5061c94f37331b89fb50d20d3c71c6120978b4f8"
-  integrity sha512-vBNfn7PoQrZfANLJnJiWZSHVu7WG6hjM5w3MDfmG8DLdr8VsAVBUgsn8lGpqobSuno1vTgwDIhR8PYZjMGsuvg==
+"@react-native-firebase/app@22.0.0":
+  version "22.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-22.0.0.tgz#bf804cd68ad0245d4e9608b5e352344fee7c9c6f"
+  integrity sha512-fbagoIrTJy8edCTiEI7OeAUqO5XoifMirEKoXJDHlsFrPJBfxqMGDhSJutUoWLNHt8KxDtLG9JWnKuW23ISq2Q==
   dependencies:
     firebase "11.3.1"
 
-"@react-native-firebase/messaging@^21.7.2":
-  version "21.14.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-21.14.0.tgz#8a6498998b27951c3c76d33b7a248050e1a8f662"
-  integrity sha512-EwJVFr2xtQFf6wQ3anXvnxCyFNRc6Hw7B6Ov4GYwgBEXNzw0MIPN2qDDA3lIN2a6nf6zESPuflYyG6Tel1ovSQ==
+"@react-native-firebase/messaging@22.0.0":
+  version "22.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-22.0.0.tgz#66f1a02e2881abbe6953cdece4766efdbfe40e38"
+  integrity sha512-l9wVECx1FdK5W5FK2PjnEnPFVg0bDvMuA5CUOzLhItnRAXKsvR8ovo/YCZxWqF16PxSlxxcBgDISHqlppH2Svw==
 
 "@react-native/assets-registry@0.75.3":
   version "0.75.3"
