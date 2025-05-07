@@ -1,0 +1,10 @@
+--- /private/tmp/tmp-status-mobile-f10ff5a24/nix-shell-3901-0/tmp.O5nBLMLshD/build.gradle	2025-01-08 14:21:51.701538000 +0530
++++ ./node_modules/react-native-keychain/android/build.gradle	2025-01-08 14:22:09.153914879 +0530
+@@ -65,7 +65,6 @@
+     implementation 'com.facebook.react:react-native:+'
+   }
+   implementation 'androidx.appcompat:appcompat:1.6.1'
+-  implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+ 
+   // https://mvnrepository.com/artifact/androidx.biometric/biometric
