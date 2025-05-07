@@ -60,7 +60,7 @@
 ;; NOTE: only disabled in releases
 (def blank-preview? (enabled? (get-config :BLANK_PREVIEW "1")))
 (def tooltip-events? (enabled? (get-config :TOOLTIP_EVENTS "0")))
-(def quo-preview-enabled? (enabled? (get-config :ENABLE_QUO_PREVIEW "0")))
+(def debug-or-pr-build? (enabled? (get-config :DEBUG_OR_PR_BUILD "0")))
 (def debug-webview? (enabled? (get-config :DEBUG_WEBVIEW "0")))
 (def two-minutes-syncing? (enabled? (get-config :TWO_MINUTES_SYNCING "0")))
 (def show-not-implemented-features? (enabled? (get-config :SHOW_NOT_IMPLEMENTED_FEATURES "0")))

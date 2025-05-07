@@ -74,7 +74,7 @@
   (universal-links/initialize)
   (interceptors/register-global-interceptors)
 
-  (when config/quo-preview-enabled?
+  (when config/debug-or-pr-build?
     (ff/load-flags))
 
   (dev/setup)

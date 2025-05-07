@@ -116,14 +116,14 @@
      :image       :icon
      :blur?       true
      :image-props :i/toggle}
-    (when config/quo-preview-enabled?
+    (when config/debug-or-pr-build?
       {:title       "Quo preview"
        :on-press    #(rf/dispatch [:open-modal :screen/quo-preview])
        :action      :arrow
        :image       :icon
        :blur?       true
        :image-props :i/light})
-    (when config/quo-preview-enabled?
+    (when config/debug-or-pr-build?
       {:title       (i18n/label :t/feature-flags)
        :on-press    #(rf/dispatch [:open-modal :screen/feature-flags])
        :action      :arrow

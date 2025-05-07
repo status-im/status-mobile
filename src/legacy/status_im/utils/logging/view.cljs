@@ -74,6 +74,6 @@
        (when-not logged-in?
          {:label    (i18n/label :t/set-pre-login-log-level)
           :on-press #(rf/dispatch [:show-bottom-sheet {:content pre-login-log-level-settings}])})
-       (when config/quo-preview-enabled?
+       (when config/debug-or-pr-build?
          {:label    (i18n/label :t/feature-flags)
           :on-press #(rf/dispatch [:open-modal :screen/feature-flags])})]]]))

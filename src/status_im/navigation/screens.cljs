@@ -1273,19 +1273,19 @@
        :options   {:sheet? true}
        :component component-preview/view}])
 
-   (when config/quo-preview-enabled?
+   (when config/debug-or-pr-build?
      quo.preview/screens)
 
-   (when config/quo-preview-enabled?
+   (when config/debug-or-pr-build?
      quo.preview/main-screens)
 
-   (when config/quo-preview-enabled?
+   (when config/debug-or-pr-build?
      status-im-preview/screens)
 
-   (when config/quo-preview-enabled?
+   (when config/debug-or-pr-build?
      status-im-preview/main-screens)
 
-   (when config/quo-preview-enabled?
+   (when config/debug-or-pr-build?
      [{:name      :screen/feature-flags
        :options   {:insets {:top? true}}
        :component feature-flags/view}])))

@@ -90,7 +90,7 @@
        :on-press   events-helper/navigate-back
        :right-side [{:icon-name :i/info
                      :on-press  getting-started-doc/show-as-bottom-sheet}
-                    (when config/quo-preview-enabled?
+                    (when config/debug-or-pr-build?
                       {:icon-name :i/reveal-whitelist
                        :on-press  navigate-to-quo-preview})]}]
      [rn/view {:style style/options-container}

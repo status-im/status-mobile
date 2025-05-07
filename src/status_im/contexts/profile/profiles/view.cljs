@@ -225,7 +225,7 @@
               :keyboard-vertical-offset (- bottom)}
        platform/android? (assoc :behavior :height))
      [rn/view {:style style/multi-profile-button-container}
-      (when config/quo-preview-enabled?
+      (when config/debug-or-pr-build?
         [quo/button
          {:size                32
           :type                :grey
