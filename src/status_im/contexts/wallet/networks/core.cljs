@@ -36,6 +36,11 @@
   [{:keys [chain-id]}]
   (contains? networks.config/bridge-supported-networks chain-id))
 
+(defn filter-bridge-supported-networks
+  "Returns only the networks that are supported in bridge (Hop)"
+  [networks]
+  (filter #(bridge-supported-network? %) networks))
+
 (defn get-block-explorer-tx-url
   "Returns the block-explorer transaction url for a chain"
   [network tx-hash]

@@ -18,6 +18,7 @@
     [status-im.contexts.wallet.db :as db]
     [status-im.contexts.wallet.db-path :as db-path]
     [status-im.contexts.wallet.item-types :as item-types]
+    [status-im.contexts.wallet.networks.core :as networks]
     [status-im.contexts.wallet.networks.db :as networks.db]
     status-im.contexts.wallet.networks.events
     [status-im.contexts.wallet.send.utils :as send-utils]
@@ -394,18 +395,33 @@
 
 (rf/reg-event-fx :wallet/get-keypairs get-keypairs)
 
+(defn- remove-unsupported-bridge-networks-from-token
+  [token]
+  (-> token
+      (update :networks
+              (fn [networks]
+                (filter networks/bridge-supported-network? networks)))
+      (update :balances-per-chain
+              (fn [balances]
+                (into {}
+                      (filter (fn [[_ balance]]
+                                (networks/bridge-supported-network? balance))
+                              balances))))))
+
 (rf/reg-event-fx :wallet/bridge-select-token
  (fn [{:keys [db]}
       [{:keys [token token-symbol stack-id network owners networks start-flow?] :as params}]]
    (let [{:keys [wallet]}             db
+         bridge-supported-networks    (networks/filter-bridge-supported-networks networks)
          unique-owner                 (when (= (count owners) 1)
                                         (first owners))
          token                        (if (and unique-owner (nil? token))
                                         (let [token (utils/get-token-from-account db
                                                                                   token-symbol
                                                                                   unique-owner)]
-                                          (utils/token-with-balance token networks))
+                                          (utils/token-with-balance token bridge-supported-networks))
                                         token)
+         token                        (remove-unsupported-bridge-networks-from-token token)
          missing-recipient?           (-> db db/send :to-address nil?)
          to-address                   (or unique-owner
                                           (-> db :wallet :current-viewing-account-address)
