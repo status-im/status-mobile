@@ -1,0 +1,105 @@
+(ns status-im.contexts.wallet.collectible.utils
+  (:require [clojure.string :as string]
+            [status-im.config :as config]
+            [status-im.constants :as constants]
+            [taoensso.timbre :as log]
+            [utils.number :as utils.number]))
+
+(defn- total-collectible-balance
+  ([ownership]
+   (reduce (fn [total {:keys [balance]}]
+             (+ total (or (utils.number/parse-int balance) 0)))
+           0
+           ownership)))
+
+(defn collectible-balance
+  ([{:keys [ownership]} address]
+   (let [balance (if address
+                   (some #(when (= address (:address %))
+                            (:balance %))
+                         ownership)
+                   (total-collectible-balance ownership))]
+     (utils.number/parse-int balance))))
+
+(def supported-collectible-types
+  #{"image/jpeg"
+    "image/bmp"
+    "image/png"
+    "image/webp"
+    "image/avif"})
+
+(defn supported-file?
+  [collectible-type]
+  (if (supported-collectible-types collectible-type)
+    true
+    (do
+      (log/debug "unsupported collectible file type:" (or collectible-type "Unknown type"))
+      false)))
+
+(defn collectible-owned-counter
+  [total]
+  (when (> total 1) (str "x" total)))
+
+(defn- get-opensea-network-name
+  [network-name test-networks-enabled?]
+  (let [mainnet?     (= :mainnet network-name)
+        network-name (name network-name)]
+    (cond (and test-networks-enabled? mainnet?)
+          (:sepolia constants/opensea-url-names)
+
+          test-networks-enabled?
+          (str network-name "-" (:sepolia constants/opensea-url-names))
+
+          mainnet?
+          (:ethereum constants/opensea-url-names)
+
+          :else
+          network-name)))
+
+(defn- get-opensea-base-url
+  [test-networks-enabled?]
+  (cond
+    test-networks-enabled? config/opensea-tesnet-link
+    :else                  config/opensea-link))
+
+(defn get-opensea-collectible-url
+  [{:keys [network-name token-id contract-address
+           test-networks-enabled?]}]
+  (let [base-link            (get-opensea-base-url test-networks-enabled?)
+        opensea-network-name (get-opensea-network-name network-name
+                                                       test-networks-enabled?)]
+    (str base-link "/assets/" opensea-network-name "/" contract-address "/" token-id)))
+
+(defn get-collectible-unique-id
+  [{:keys [id]}]
+  (let [chain-id         (-> id :contract-id :chain-id)
+        contract-address (-> id :contract-id :address)
+        token-id         (-> id :token-id)]
+    (str chain-id contract-address token-id)))
+
+(defn remove-duplicates-in-ownership
+  [ownership]
+  (->> ownership
+       (reduce (fn [acc {:keys [address timestamp] :as owner}]
+                 (let [existing-owner (get acc address)]
+                   (if (or (nil? existing-owner) (> timestamp (:timestamp existing-owner)))
+                     (assoc acc address owner)
+                     acc)))
+               {})
+       vals))
+
+(defn group-collectibles-by-ownership-address
+  [collectible]
+  (->> (:ownership collectible)
+       (map (fn [{:keys [address]}]
+              [address collectible]))
+       (into {})))
+
+(defn sort-collectibles-by-name
+  [collectibles]
+  (sort-by (fn [collectible]
+             (let [name            (-> collectible :collectible-data :name)
+                   normalized-name (some-> name
+                                           string/lower-case)]
+               [(if (seq normalized-name) 0 1) normalized-name]))
+           collectibles))
