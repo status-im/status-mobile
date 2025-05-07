@@ -56,6 +56,7 @@
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
                           (rf/dispatch [:wallet/clean-send-data])
+                          (rf/dispatch [:wallet/clean-swap])
                           (rf/dispatch [:wallet.swap/start
                                         {:asset-to-pay     (or token {:symbol token-symbol})
                                          :open-new-screen? true}]))})
