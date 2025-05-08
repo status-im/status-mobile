@@ -115,6 +115,7 @@ class TestrailReport(BaseTestReport):
         test_categories['android_versions'] = 63809
         test_categories['profile'] = 63854
         test_categories['real_tx'] = 63867
+        test_categories['wallet_connect'] = 64122
 
         case_ids = list()
         for arg in argv:

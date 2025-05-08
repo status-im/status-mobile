@@ -116,6 +116,7 @@ class BaseView(object):
         self.login_button = LogInButton(self.driver)
         self.continue_button = Button(self.driver, accessibility_id='continue-button')
         self.view_id_tracker = Text(self.driver, xpath="//*[@content-desc='view-id-tracker']/android.widget.TextView")
+        self.testnet_mode_enabled_element = BaseElement(self.driver, accessibility_id='Testnet mode enabled')
 
         # Tabs
         self.communities_tab = CommunitiesTab(self.driver)
@@ -244,6 +245,10 @@ class BaseView(object):
     def navigate_to_communities_view(self):
         self.navigate_back_to_home_view()
         self.communities_tab.click()
+
+    def navigate_to_wallet_view(self):
+        self.navigate_back_to_home_view()
+        self.wallet_tab.click()
 
     def navigate_back_to_chat_view(self):
         self.click_system_back_button_until_presence_of_element(self.get_chat_view().chat_message_input)
@@ -429,3 +434,7 @@ class BaseView(object):
             "direction": "down",
             "percent": 0.75
         })
+
+    @property
+    def testnet_mode_enabled(self) -> bool:
+        return self.testnet_mode_enabled_element.is_element_displayed()
