@@ -118,9 +118,8 @@
 (defn partially-operable-accounts?
   [accounts]
   (boolean
-   (some (fn [[_ account]]
-           (let [operable (:operable account)]
-             (= :partially operable)))
+   (some (fn [[_ {:keys [operable]}]]
+           (= :partially operable))
          accounts)))
 
 (defn get-keypair-lowest-operability
