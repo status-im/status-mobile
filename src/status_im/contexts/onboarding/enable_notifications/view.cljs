@@ -45,7 +45,8 @@
 
 (defn enable-notification-form
   [{:keys [insets params]}]
-  (let [profile-color             (rf/sub [:onboarding/customization-color])
+  (let [profile-color             (rf/sub [:onboarding/customization-color
+                                           {:onboarding? (:onboarding? params)}])
         [third-party-checked?
          set-third-party-checked] (rn/use-state true)
         on-enable-notifications   (rn/use-callback
