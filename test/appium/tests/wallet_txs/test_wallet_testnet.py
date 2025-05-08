@@ -5,7 +5,7 @@ from support.api.network_api import NetworkApi
 from tests import marks, run_in_parallel
 from users import transaction_senders
 from views.sign_in_view import SignInView
-from support.api.lightweight_browser_api import LightweightBrowserHandler
+from support.api.network_api import SepoliaNetworkApi
 
 
 @pytest.mark.xdist_group(name="four_2")
@@ -175,17 +175,16 @@ class TestWalletCustomParamOneDevice(MultipleSharedDeviceTestCase):
         wallet.slide_and_confirm_with_password()
         replacemant_tx_hash = wallet.copy_tx_hash()
         
-        browser = LightweightBrowserHandler('https://sepolia.etherscan.io')
         if replacemant_tx_hash == dropped_tx_hash:
             wallet.just_fyi("Scenario1, nonce is too low: initial tx failed, check the status")
-            tx_page = browser.load_tx_etherscan_page(replacemant_tx_hash)
-            if not browser.find_text(tx_page, text='out of gas'):
-                self.errors.append(wallet, "Initial tx %s is not failed, so custom nonce is not set" % replacemant_tx_hash)
+            if SepoliaNetworkApi().is_tx_successful(dropped_tx_hash) is not False:
+                self.errors.append(wallet,
+                                   "Initial tx %s is not failed, so custom nonce is not set" % dropped_tx_hash)
+
         else:
             wallet.just_fyi("Scenario2, Nonce is replaced: check that initial tx was dropped as custom nonce has been set")
-            dropped_tx_page =  browser.load_tx_etherscan_page(dropped_tx_hash)
-            if not browser.find_text(dropped_tx_page, 'Transaction Hash not found on Ethereum'):
-                self.errors.append(wallet, "Dropped tx %s is still on etherscan, so custom nonce is not set" % dropped_tx_page)
+            if SepoliaNetworkApi().is_tx_successful(dropped_tx_hash) is None:
+                self.errors.append(wallet, "Dropped tx %s receipt is available, so custom nonce is not set" % dropped_tx_hash)
 
         self.errors.verify_no_errors()
 

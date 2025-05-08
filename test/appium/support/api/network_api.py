@@ -4,6 +4,7 @@ from datetime import datetime
 from json import JSONDecodeError
 from os import environ
 from typing import List
+import json 
 
 import pytest
 import pytz
@@ -83,3 +84,20 @@ class NetworkApi:
             time.sleep(20)
         raise TimeoutException(
             'balance is not updated on Etherscan, it is %s but expected to be %s' % (balance, expected_balance))
+
+
+class SepoliaNetworkApi:
+    def __init__(self):
+        self.rpc_url = 'https://ethereum-sepolia.rpc.subquery.network/public'
+
+    def is_tx_successful(self, tx_hash):
+        response = requests.post(headers={"Content-Type": "application/json"},
+                                 url=self.rpc_url,
+                                 data=json.dumps(
+                                     {"jsonrpc": "2.0", "method": "eth_getTransactionReceipt", "params": [tx_hash],
+                                      "id": 1})).json()
+        result = response.get('result')
+        if result is not None:
+            return result.get('status') == '0x1'
+        return None
+            
