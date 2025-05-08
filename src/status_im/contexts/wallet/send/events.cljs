@@ -317,6 +317,8 @@
                        :collectible
                        :collectible-multiple-owners?
                        :token-display-name
+                       (when (send-utils/tx-type-collectible? transaction-type)
+                         :network)
                        :amount
                        (when (send-utils/tx-type-collectible? transaction-type)
                          :tx-type))}))))
@@ -335,6 +337,8 @@
          tx-type            (if (= contract-type constants/wallet-contract-type-erc-1155)
                               :tx/collectible-erc-1155
                               :tx/collectible-erc-721)
+         chain-id           (get-in collectible [:id :contract-id :chain-id])
+         network            (networks.db/get-network-details db chain-id)
          collectible-id     (get-in collectible [:id :token-id])
          single-owner?      (-> collectible :ownership count (= 1))
          owner-address      (-> collectible :ownership first :address)
@@ -351,12 +355,17 @@
                                 (update-in db-path/send dissoc :token)
                                 (update-in db-path/send
                                            assoc
-                                           :entry-point entry-point
-                                           :collectible collectible
+                                           :entry-point
+                                           entry-point
+                                           :collectible
+                                           collectible
                                            :collectible-multiple-owners?
                                            (not single-owner?)
-                                           :token-display-name token-display-name
-                                           :tx-type tx-type))
+                                           :token-display-name
+                                           token-display-name
+                                           :tx-type
+                                           tx-type
+                                           :network network))
          recipient-set?     (-> db db/send :recipient)]
      {:db (cond-> collectible-tx
 
