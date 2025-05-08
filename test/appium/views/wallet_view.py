@@ -2,7 +2,6 @@ import datetime
 import time
 from typing import Literal
 
-from bs4 import element
 
 import pytest
 from selenium.common import NoSuchElementException

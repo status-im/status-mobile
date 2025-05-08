@@ -17,4 +17,4 @@ bip-utils==2.9.3
 testrail==0.3.15
 webcolors==24.8.0
 CurrencyConverter==0.17.34
-bs4==0.02
+bs4==0.0.2
