@@ -1,7 +1,6 @@
 (ns status-im.contexts.profile.settings.screens.notifications.view
   (:require
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [status-im.common.events-helper :as events-helper]
@@ -115,14 +114,12 @@
       (assoc :description       :text
              :description-props {:text (i18n/label :t/allow-news-notifications-description)}))))
 
-(defn- nested-setting
+(defn- settings-group-item
   [item & _rest]
   [quo/category
    {:blur?           true
     :list-type       :settings
-    :container-style {:padding-horizontal 8
-                      :padding-top        0
-                      :paddong-bottom     0}
+    :container-style styles/settings-group-item-container
     :data            [item]}])
 
 (defn- messenger-notifications-settings
@@ -130,17 +127,9 @@
   (let [{:keys [action-props title]} (messenger-notifications-setting notifications-settings)]
     [rn/pressable
      {:on-press (:on-change action-props)
-      :style    {:margin-horizontal 20
-                 :margin-vertical   8
-                 :border-width      1
-                 :border-radius     20
-                 :border-color      colors/white-opa-5}}
+      :style    styles/settings-group-container}
      [rn/view
-      {:style {:flex-direction   :row
-               :padding-left     16
-               :padding-right    12
-               :padding-vertical 13
-               :gap              12}}
+      {:style styles/settings-group-header}
       [quo/text {:style {:flex 1}} title]
       [quo/selectors
        {:type      :toggle
@@ -150,7 +139,7 @@
       [rn/flat-list
        {:data      [(chat-non-contacts-notifications-setting notifications-settings)
                     (chat-community-mentions-notifications-setting notifications-settings)]
-        :render-fn nested-setting
+        :render-fn settings-group-item
         :separator [rn/view {:style {:height 0}}]}]]]))
 
 (defn view
@@ -180,10 +169,7 @@
       {:blur?     true
        :list-type :settings
        :data      [(notifications-enabled-setting notifications-settings)]}]
-     ;; NOTE(@seanstrom): temporarily hide the messenger notification
-     ;; toggle until we update the design system
-     (if (and (not config/fdroid?)
-              (ff/enabled? ::ff/settings.news-notifications))
+     (if (ff/enabled? ::ff/settings.news-notifications)
        [:<>
         (cond
           platform/ios?
@@ -194,11 +180,15 @@
            {:blur?     true
             :list-type :settings
             :data      [(messenger-notifications-setting notifications-settings)]}]
+
           :else nil)
-        [quo/category
-         {:blur?     true
-          :list-type :settings
-          :data      [(news-notifications-setting notifications-settings)]}]]
+
+        (when-not config/fdroid?
+          [quo/category
+           {:blur?     true
+            :list-type :settings
+            :data      [(news-notifications-setting notifications-settings)]}])]
+
        (when platform/ios?
          [quo/category
           {:blur?     true
