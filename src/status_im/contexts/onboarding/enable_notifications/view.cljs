@@ -27,12 +27,12 @@
 (defn notifications-info-view
   [{:keys [blur?]}]
   [quo/documentation-drawers
-   {:title        "Enable Notifications"
+   {:title        (i18n/label :t/enable-notifications)
     :show-button? true
     :shell?       blur?
     :button-label (i18n/label :t/read-more)
     :button-icon  :i/info}
-   [quo/text "Describe how using Firebase affects privacy."]])
+   [quo/text (i18n/label :t/enable-notifications-info-description)]])
 
 (defn on-open-info
   [{:keys [blur? theme]
