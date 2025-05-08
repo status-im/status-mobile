@@ -65,7 +65,7 @@ class TestWalletOneDeviceThree(MultipleSharedDeviceTestCase):
                                                                    network=network_name)
         self.errors.append(self.wallet, tx_errors)
 
-        self.wallet.just_fyi("Check that balance is updated for receiver")
+        self.wallet.just_fyi("Check that From and To balance is updated")
         self.wallet.wait_for_wallet_balance_to_update(fiat_expected_amount_from, asset_name_from, fiat=True)
         self.wallet.wait_for_wallet_balance_to_update(fiat_expected_amount_to, asset_name_to, fiat=True)
 

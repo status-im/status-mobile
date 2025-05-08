@@ -5,6 +5,7 @@ from support.api.network_api import NetworkApi
 from tests import marks, run_in_parallel
 from users import transaction_senders
 from views.sign_in_view import SignInView
+from support.api.lightweight_browser_api import LightweightBrowserHandler
 
 
 @pytest.mark.xdist_group(name="four_2")
@@ -96,6 +97,95 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.wallet_1.just_fyi("Check that balance is updated for sender")
         self.wallet_1.wait_for_wallet_balance_to_update(expected_amount_after_tx_sender, asset, decimals)
+
+        self.errors.verify_no_errors()
+
+@pytest.mark.xdist_group(name="two_1")
+@marks.nightly
+@marks.smoke
+class TestWalletCustomParamOneDevice(MultipleSharedDeviceTestCase):
+
+    def prepare_devices(self):
+        self.drivers, self.loop  = create_shared_drivers(1)
+        self.driver = self.drivers[0]
+        self.sign_in = SignInView(self.drivers[0])
+        self.sender, self.receiver = transaction_senders['ETH_ADI_STT_2'], transaction_senders['ETH_3']
+        self.sender['wallet_address'] = '0x' + self.sender['address']
+        self.receiver['wallet_address'] = '0x' + self.receiver['address']
+        self.home = self.sign_in.recover_access(self.sender['passphrase'])
+        self.wallet = self.sign_in.get_wallet_view()
+    
+    @marks.testrail_id(742910) 
+    def test_send_snt_custom_tx_params(self):
+        wallet = self.wallet
+        wallet.navigate_back_to_wallet_view()
+        network = 'Sepolia'
+        address, asset_name, amount, asset_ticker = self.receiver['wallet_address'], 'Status Test Token', '1', 'STT'
+        max_base_fee, max_prio, max_gas_amount = '10', '1', '60000'
+
+        wallet.just_fyi("Set amount and address")
+        wallet.set_amount_and_address(address, asset_name, amount)
+        wallet.button_one.click_until_presence_of_element(wallet.advanced_tx_button)
+
+        wallet.just_fyi("Set custom tx params to make pending tx")
+        wallet.advanced_tx_button.wait_and_click()
+        wallet.custom_tx_params_button.wait_and_click()
+        wallet.custom_max_base_fee_button.click()
+        wallet.clear_value_and_set_with_custom_keyboard(max_base_fee)
+        wallet.custom_max_prio_fee_button.wait_and_click()
+        wallet.clear_value_and_set_with_custom_keyboard(max_prio)
+        wallet.custom_max_gas_amount_button.wait_and_click()
+        wallet.clear_value_and_set_with_custom_keyboard(max_gas_amount)
+        wallet.button_one.click()
+
+        wallet.just_fyi("Check that custom tx params are preserved")
+        wallet.advanced_tx_button.wait_and_click()
+        wallet.custom_tx_params_button.wait_and_click()
+        for value in (max_base_fee, max_prio, max_gas_amount):
+            if not wallet.get_custom_tx_element(value).is_element_displayed():
+                self.errors.append(wallet, "Value %s is not preserved in custom tx settings drawer!" % value)
+        wallet.button_one.click()
+
+        wallet.just_fyi("Sign first tx (for dropping) and copy tx hash")
+        wallet.slide_and_confirm_with_password()
+
+        wallet.just_fyi("Verify send tx in the list for sender")
+        device_time_before_sending = wallet.driver.device_time
+        tx_errors = wallet.check_last_transaction_in_activity(device_time_before_sending, amount,
+                                                                   send_to_account=self.receiver['wallet_address'],
+                                                                   asset=asset_ticker,
+                                                                   tx_type='Send',
+                                                                   network=network, 
+                                                                   navigate_to_main_screen=False)
+        self.errors.append(wallet, tx_errors)
+        dropped_tx_hash = wallet.copy_tx_hash()
+
+        wallet.just_fyi("Send second tx (for replacing) with custom nonce")
+        wallet.navigate_back_to_wallet_view()
+        wallet.set_amount_and_address(address, asset_name, amount)
+        wallet.button_one.click_until_presence_of_element(wallet.advanced_tx_button)
+        wallet.advanced_tx_button.wait_and_click()
+        wallet.custom_tx_params_button.wait_and_click()
+        wallet.custom_nonce_button.wait_and_click()
+        current_nonce = int(wallet.amount_input.text)
+        wallet.clear_nonce_field()
+        wallet.set_amount(str(current_nonce - 1))
+        wallet.button_one.click()
+        wallet.button_one.click()
+        wallet.slide_and_confirm_with_password()
+        replacemant_tx_hash = wallet.copy_tx_hash()
+        
+        browser = LightweightBrowserHandler('https://sepolia.etherscan.io')
+        if replacemant_tx_hash == dropped_tx_hash:
+            wallet.just_fyi("Scenario1, nonce is too low: initial tx failed, check the status")
+            tx_page = browser.load_tx_etherscan_page(replacemant_tx_hash)
+            if not browser.find_text(tx_page, text='out of gas'):
+                self.errors.append(wallet, "Initial tx %s is not failed, so custom nonce is not set" % replacemant_tx_hash)
+        else:
+            wallet.just_fyi("Scenario2, Nonce is replaced: check that initial tx was dropped as custom nonce has been set")
+            dropped_tx_page =  browser.load_tx_etherscan_page(dropped_tx_hash)
+            if not browser.find_text(dropped_tx_page, 'Transaction Hash not found on Ethereum'):
+                self.errors.append(wallet, "Dropped tx %s is still on etherscan, so custom nonce is not set" % dropped_tx_page)
 
         self.errors.verify_no_errors()
 

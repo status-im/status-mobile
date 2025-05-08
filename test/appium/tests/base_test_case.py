@@ -26,6 +26,18 @@ executor_local = 'http://localhost:4723/wd/hub'
 
 implicit_wait = 5
 
+def get_app_package():
+    """
+    Determines the app package dynamically based on the APK configuration.
+    :return: The app package name.
+    """
+    apk = pytest_config_global['apk']
+    app_folder = "im.status.ethereum"  # Default app package name
+
+    if re.findall(r'pr\d\d\d\d\d', apk) or re.findall(r'\d\d\d\d\d.apk', apk):
+        app_folder += ".pr"  # Append `.pr` in specific cases
+
+    return app_folder
 
 def get_lambda_test_capabilities_real_device():
     capabilities = {
@@ -78,12 +90,7 @@ def get_lambda_test_capabilities_emulator(platform_version: int = 14, device_nam
 
 
 def get_app_path():
-    app_folder = 'im.status.ethereum'
-    apk = pytest_config_global['apk']
-    if re.findall(r'pr\d\d\d\d\d', apk) or re.findall(r'\d\d\d\d\d.apk', apk):
-        app_folder += '.pr'
-    app_path = '/storage/emulated/0/Android/data/%s/files/Download/' % app_folder
-    return app_path
+    return '/storage/emulated/0/Android/data/%s/files/Download/' % get_app_package()
 
 
 def pull_logs_folder(driver):
