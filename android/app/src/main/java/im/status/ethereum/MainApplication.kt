@@ -25,6 +25,10 @@ import im.status.ethereum.StatusOkHttpClientFactory
 import org.json.JSONObject
 import android.content.ComponentCallbacks2
 import android.util.Log
+import android.app.ActivityManager
+import android.content.Context
+import android.os.Build
+import android.os.Process
 
 class MainApplication : NavigationApplication() {
 
@@ -54,6 +58,8 @@ class MainApplication : NavigationApplication() {
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
             DefaultNewArchitectureEntryPoint.load()
         }
+        
+        logHistoricalProcessExitReasons()
     }
 
     override fun onLowMemory() {
@@ -92,4 +98,40 @@ class MainApplication : NavigationApplication() {
 
     private fun getCurrentReactContext(): ReactContext? =
         reactNativeHost.reactInstanceManager.currentReactContext
+
+    private fun logHistoricalProcessExitReasons() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                val exitReasons = activityManager.getHistoricalProcessExitReasons(packageName, 0, 5)
+                
+                if (exitReasons.isEmpty()) {
+                    Log.i("MainApplication", "No historical process exit reasons found")
+                    return
+                }
+                
+                Log.e("MainApplication", "Historical process exit reasons (last 5):")
+                exitReasons.forEachIndexed { index, reason ->
+                    Log.e("MainApplication", "Exit reason #${index + 1}:")
+                    Log.e("MainApplication", "  Process: ${reason.processName}")
+                    Log.e("MainApplication", "  Reason: ${reason.reason}")
+                    Log.e("MainApplication", "  Timestamp: ${reason.timestamp}")
+                    Log.e("MainApplication", "  Description: ${reason.description}")
+                    if (reason.importance > 0) {
+                        Log.e("MainApplication", "  Importance: ${reason.importance}")
+                    }
+                    if (reason.pss > 0) {
+                        Log.e("MainApplication", "  PSS: ${reason.pss} KB")
+                    }
+                    if (reason.rss > 0) {
+                        Log.e("MainApplication", "  RSS: ${reason.rss} KB")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("MainApplication", "Error getting historical process exit reasons", e)
+            }
+        } else {
+            Log.i("MainApplication", "Historical process exit reasons not available on this Android version")
+        }
+    }
 }
