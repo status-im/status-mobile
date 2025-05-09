@@ -1,0 +1,89 @@
+(ns status-chat.core
+  (:require
+    ;; NOTE: Do NOT sort i18n-resources because it MUST be loaded first.
+    [status-im.setup.i18n-resources :as i18n-resources]
+    ;; NOTE: reagent.config Must be before any component definition, so they take the config
+    ;; properly
+    #_{:clj-kondo/ignore [:unsorted-required-namespaces]}
+    reagent.config
+    ["@walletconnect/react-native-compat"]
+    legacy.status-im.events
+    legacy.status-im.subs.root
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [re-frame.interop :as interop]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.shake :as react-native-shake]
+    [reagent.core]
+    [status-im.common.log :as logging]
+    [taoensso.timbre :as log]
+    [status-im.common.universal-links :as universal-links]
+    [status-im.config :as config]
+    [status-im.contexts.profile.push-notifications.events :as notifications]
+    [status-im.feature-flags :as ff]
+    [status-im.navigation.core :as navigation]
+    status-im.contexts.wallet.signals
+    status-im.events
+    status-chat.events
+    [status-im.setup.dev :as dev]
+    [status-im.setup.global-error :as global-error]
+    [status-im.setup.interceptors :as interceptors]
+    status-im.subs.root
+    [utils.i18n :as i18n]
+    [status-im.setup.status-backend-client :as status-backend-client]))
+
+;;;; re-frame RN setup
+(set! interop/next-tick js/setTimeout)
+
+;; Note: In the past we've configured reagent to run its batch rendering
+;; faster by overriding the next-tick function. This technique could be useful
+;; if we want to adjust the batch speed for different frame-rates since by
+;; default reagent tunes its batch rendering for 60FPS.
+;;
+;; For example, this code would have batches rendering as fast as possible
+;; (set! reagent.impl.batching/next-tick js/setImmediate)
+;;
+;; While this example would approximate 120FPS
+;; (set! reagent.impl.batching/next-tick #(js/setTimeout % 8))
+;;
+;; And under the hood this is what reagent will use for approximately 60FPS:
+;; (set! reagent.impl.batching/next-tick #(js/setTimeout % 16))
+
+(def adjust-resize 16)
+
+(defn is-hermes
+  []
+  (boolean (.-HermesInternal js/global)))
+
+;; ignore warning: init used in shadow-cljs.edn
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
+(defn init
+  []
+  (status-backend-client/init)
+  (navigation/init)
+  (native-module/init #(re-frame/dispatch [:signals/signal-received %]))
+  (when platform/android?
+    (native-module/set-soft-input-mode adjust-resize))
+  (logging/setup (config/log-level))
+  (global-error/register-handler)
+  (notifications/listen-notifications)
+  (.addEventListener rn/app-state "change" #(re-frame/dispatch [:app-state-change %]))
+  (i18n/set-language "en")
+  (i18n-resources/load-language "en")
+  (react-native-shake/add-shake-listener #(re-frame/dispatch [:shake-event]))
+  (universal-links/initialize)
+  (interceptors/register-global-interceptors)
+
+  (when config/quo-preview-enabled?
+    (ff/load-flags))
+
+  (dev/setup)
+  (log/info "hermesEnabled ->" (is-hermes))
+
+  (re-frame/dispatch-sync [:app/init])
+
+  ;; Required for wallet-connect
+  ;; https://github.com/WalletConnect/walletconnect-monorepo/issues/3235#issuecomment-1645767800
+  (when-not (.-BigInt js/global)
+    (set! js/BigInt (js/require "big-integer"))))
