@@ -11,7 +11,7 @@
   It makes best effort to group them by day.
   We cannot sort them by :timestamp, as that represents the clock of the sender
   and we have no guarantees on the order.
-  We naively and arbitrarly group them assuming that out-of-order timestamps
+  We naively and arbitrarily group them assuming that out-of-order timestamps
   fall in the previous bucket.
   A sends M1 to B with timestamp 2000-01-01T00:00:00
   B replies M2 with timestamp    1999-12-31-23:59:59

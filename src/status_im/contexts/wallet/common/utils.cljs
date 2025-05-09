@@ -266,7 +266,7 @@
     :else                             (prettify-balance currency-symbol fiat-value)))
 
 (defn prettify-percentage-change
-  "Returns unsigned precentage"
+  "Returns unsigned percentage"
   [percentage]
   (-> (if (number? percentage) percentage 0)
       money/bignumber

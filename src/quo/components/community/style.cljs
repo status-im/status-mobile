@@ -130,7 +130,7 @@
 (defn loading-content-container
   [theme]
   {:position           :absolute
-   :heigth             190
+   :height             190
    :top                40
    :bottom             0
    :left               0
