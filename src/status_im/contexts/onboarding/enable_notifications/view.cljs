@@ -8,6 +8,7 @@
     [status-im.common.resources :as resources]
     [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.onboarding.enable-notifications.style :as style]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -48,7 +49,10 @@
   (let [profile-color             (rf/sub [:onboarding/customization-color
                                            {:onboarding? (:onboarding? params)}])
         [third-party-checked?
-         set-third-party-checked] (rn/use-state true)
+         set-third-party-checked] (rn/use-state
+                                   (if (ff/enabled? ::ff/settings.news-notifications)
+                                     true
+                                     false))
         on-enable-notifications   (rn/use-callback
                                    (fn []
                                      (on-notifications-setup-start
@@ -63,7 +67,8 @@
                                              :enable-notifications?      false
                                              :enable-news-notifications? false))))]
     [rn/view
-     (when platform/android?
+     (when (and platform/android?
+                (ff/enabled? ::ff/settings.news-notifications))
        [rn/view
         {:style style/news-notifications-checkbox-container}
         [quo/selectors
