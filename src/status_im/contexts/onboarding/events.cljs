@@ -66,34 +66,17 @@
 (defn notifications-setup
   [{:keys [db]}
    [{:keys [biometrics-supported? biometrics? syncing? onboarding?]}]]
-  {:db (assoc-in db [:onboarding/profile :notifications-prompted?] true)
-   :fx [(cond
-          (and biometrics-supported? onboarding? syncing?)
-          [:dispatch
+  (let [db-view-id      (get-in db [:view-id])
+        current-view-id (if (= db-view-id :screen/onboarding.syncing-biometric)
+                          :screen/onboarding.enable-biometrics
+                          db-view-id)]
+    {:db (assoc-in db [:onboarding/profile :notifications-prompted?] true)
+     :fx [[:dispatch
            [:navigate-to-within-stack
-            [:screen/onboarding.enable-notifications
-             :screen/onboarding.enable-biometrics]
-            {:syncing?    true
-             :onboarding? true
-             :biometrics? biometrics?}]]
-
-          (and biometrics-supported? onboarding?)
-          [:dispatch
-           [:navigate-to-within-stack
-            [:screen/onboarding.enable-notifications
-             :screen/onboarding.enable-biometrics]
-            {:onboarding? true
-             :syncing?    false
-             :biometrics? biometrics?}]]
-
-          :else
-          [:dispatch
-           [:navigate-to-within-stack
-            [:screen/onboarding.enable-notifications
-             :screen/profile.profiles]
-            {:onboarding? false
-             :syncing?    false
-             :biometrics? false}]])]})
+            [:screen/onboarding.enable-notifications current-view-id]
+            {:syncing?    syncing?
+             :onboarding? onboarding?
+             :biometrics? (and biometrics-supported? biometrics?)}]]]}))
 
 (rf/reg-event-fx :onboarding/notifications-setup notifications-setup)
 
