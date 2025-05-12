@@ -72,11 +72,16 @@
                           db-view-id)]
     {:db (assoc-in db [:onboarding/profile :notifications-prompted?] true)
      :fx [[:dispatch
-           [:navigate-to-within-stack
-            [:screen/onboarding.enable-notifications current-view-id]
-            {:syncing?    syncing?
-             :onboarding? onboarding?
-             :biometrics? (and biometrics-supported? biometrics?)}]]]}))
+           (if (ff/enabled? ::ff/settings.news-notifications)
+             [:navigate-to-within-stack
+              [:screen/onboarding.enable-notifications current-view-id]
+              {:syncing?    syncing?
+               :onboarding? onboarding?
+               :biometrics? (and biometrics-supported? biometrics?)}]
+             [:onboarding/notifications-setup-done
+              {:onboarding? onboarding?
+               :syncing?    syncing?
+               :biometrics? (and biometrics-supported? biometrics?)}])]]}))
 
 (rf/reg-event-fx :onboarding/notifications-setup notifications-setup)
 
