@@ -141,8 +141,4 @@
               (rf/dispatch
                [:show-bottom-sheet
                 {:content       (fn [] [token-value-drawer item watch-only? entry-point])
-                 :selected-item (fn [] [quo/token-value item])}]))
-            :on-press
-            (fn []
-              ;; TODO(alwx): that's temporary
-              (rf/dispatch [:open-modal :screen/market.token]))))])
+                 :selected-item (fn [] [quo/token-value item])}]))))])

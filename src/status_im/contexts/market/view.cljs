@@ -40,7 +40,11 @@
 
 (defn token
   [token-data]
-  [quo/market-token token-data])
+  [quo/market-token
+   (assoc token-data
+          :on-press
+          (fn []
+            (rf/dispatch [:open-modal :screen/market.token])))])
 
 (defn view
   []

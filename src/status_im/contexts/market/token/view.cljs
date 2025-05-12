@@ -57,7 +57,7 @@
                                   {:type       :no-title
                                    :icon-name  :i/close
                                    :on-press   events-helper/navigate-back
-                                   :margin-top (safe-area/get-top)
+                                   :margin-top safe-area/top
                                    :background :blur}]]}
      [rn/view {:style (style/header-top theme)}
       [rn/view {:style style/header-title-row}

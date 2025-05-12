@@ -26,7 +26,8 @@
                            (fn []
                              (set-state :active)
                              (js/setTimeout #(set-state :default) 300)
-                             on-press))
+                             (when on-press
+                               (on-press))))
         token-short-name  (if token (string/upper-case (clj->js token)) "")]
     [rn/pressable
      {:style               (style/container customization-color bg-opacity theme)
