@@ -43,7 +43,7 @@
 (rf/reg-event-fx :onboarding/notifications-setup-start notifications-setup-start)
 
 (defn notifications-setup-done
-  [{:keys [db]} [{:keys [biometrics? onboarding? syncing?]}]]
+  [{:keys [_db]} [{:keys [biometrics? onboarding? syncing?]}]]
   {:fx (cond-> []
          (and biometrics? onboarding? syncing?)
          (conj [:dispatch [:onboarding/finalize-setup]])
