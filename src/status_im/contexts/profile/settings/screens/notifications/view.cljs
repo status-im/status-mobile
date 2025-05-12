@@ -135,12 +135,11 @@
        {:type      :toggle
         :checked?  (:checked? action-props)
         :on-change (:on-change action-props)}]]
-     [rn/view {}
-      [rn/flat-list
-       {:data      [(chat-non-contacts-notifications-setting notifications-settings)
-                    (chat-community-mentions-notifications-setting notifications-settings)]
-        :render-fn settings-group-item
-        :separator [rn/view {:style {:height 0}}]}]]]))
+     [rn/flat-list
+      {:data      [(chat-non-contacts-notifications-setting notifications-settings)
+                   (chat-community-mentions-notifications-setting notifications-settings)]
+       :render-fn settings-group-item
+       :separator [rn/view {:style {:height 0}}]}]]))
 
 (defn view
   []
