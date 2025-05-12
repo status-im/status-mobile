@@ -65,7 +65,8 @@
                                      (on-notifications-setup-start
                                       (assoc params
                                              :enable-notifications?      false
-                                             :enable-news-notifications? false))))]
+                                             :enable-news-notifications? false)))
+                                   [params])]
     [rn/view
      (when (and platform/android?
                 (ff/enabled? ::ff/settings.news-notifications))
