@@ -168,7 +168,24 @@
                        :fn-invoke-direct   true
                        :optimizations      :advanced
                        :js-options         {:js-provider :closure}
-                       :reader-features    #{:mobile}}}}
+                       :reader-features    #{:mobile
+                                             ;; NOTE(@seanstrom): Here we are allowing for an
+                                             ;; environment variable to configure the intended store
+                                             ;; where a user could download the app. For example, we
+                                             ;; support the FDroid and Google Play stores, so we can
+                                             ;; configure the app to build for FDroid by setting the
+                                             ;; `ANDROID_STORE` environment variable to `fdroid`.
+                                             ;;
+                                             ;; This value is used for configuring Shadow-CLJS to
+                                             ;; only require namespaces that will be compatible with
+                                             ;; some restrictions imposed by the Android stores. For
+                                             ;; example, FDroid does not allow for Google Play
+                                             ;; services like Firebase, so we use the
+                                             ;; reader-conditional of `:fdroid` or `:google` to
+                                             ;; clearly avoid importing Firebase dependencies in the
+                                             ;; FDroid builds.
+                                             #shadow/env ["ANDROID_STORE" :as :keyword :default
+                                                          :google]}}}}
   ;; the tests are ran with node, react-native dependencies are mocked
   ;; by using node --require override.js, which uses the node-library
   ;; produced by the target :mocks below and redefines node require
