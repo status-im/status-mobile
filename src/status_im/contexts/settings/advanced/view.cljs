@@ -199,8 +199,8 @@
              :action              :arrow
              :label               :text
              :label-props         (some-> log-level
-                                    log-levels
-                                    string/capitalize)}
+                                          log-levels
+                                          string/capitalize)}
             {:title               (i18n/label :t/fleet)
              :accessibility-label :fleet-settings-button
              :on-press            open-fleet-sheet
