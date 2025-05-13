@@ -83,6 +83,7 @@
     [status-im.contexts.profile.settings.screens.syncing.view :as settings.syncing]
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.settings.about.view :as settings.about]
+    [status-im.contexts.settings.advanced.view :as settings.advanced]
     [status-im.contexts.settings.keycard.view :as settings.keycard]
     [status-im.contexts.settings.language-and-currency.currency.view :as settings.currency-selection]
     [status-im.contexts.settings.language-and-currency.view :as settings.language-and-currency]
@@ -442,7 +443,12 @@
    {:name      :screen/settings.terms-of-use
     :metrics   {:track? true}
     :options   options/transparent-modal-screen-options
-    :component terms-of-use/view}])
+    :component terms-of-use/view}
+
+   {:name      :screen/settings.advanced
+    :metrics   {:track? true}
+    :options   options/transparent-modal-screen-options
+    :component settings.advanced/view}])
 
 (def wallet-settings-screens
   [{:name      :screen/settings.wallet

@@ -38,6 +38,7 @@
     status-im.contexts.profile.events
     status-im.contexts.profile.recover.events
     status-im.contexts.profile.settings.events
+    status-im.contexts.settings.advanced.events
     status-im.contexts.settings.language-and-currency.events
     status-im.contexts.settings.wallet.saved-addresses.events
     status-im.contexts.shell.effects
