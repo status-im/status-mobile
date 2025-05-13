@@ -978,6 +978,18 @@
    (or value-set-by-user (:tx-priority-fee gas-fees))))
 
 (rf/reg-sub
+ :wallet/tx-settings-custom-priority-fee
+ :<- [:wallet/tx-settings-fee-mode]
+ :<- [:wallet/tx-settings-gas-fees]
+ :<- [:wallet/tx-settings-priority-fee-user]
+ :<- [:wallet/tx-settings-suggested-min-priority-fee]
+ (fn [[fee-mode gas-fees value-set-by-user min-priority-fee]]
+   (cond
+     value-set-by-user                value-set-by-user
+     (= :tx-fee-mode/custom fee-mode) (:tx-priority-fee gas-fees)
+     :else                            min-priority-fee)))
+
+(rf/reg-sub
  :wallet/tx-settings-gas-amount
  :<- [:wallet/tx-settings-gas-amount-route]
  :<- [:wallet/tx-settings-gas-amount-user]

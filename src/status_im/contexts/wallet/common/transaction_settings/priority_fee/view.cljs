@@ -24,14 +24,14 @@
 
 (defn view
   []
-  (let [priority-fee (rf/sub [:wallet/tx-settings-priority-fee])
+  (let [priority-fee (rf/sub [:wallet/tx-settings-custom-priority-fee])
         max-base-fee (rf/sub [:wallet/tx-settings-max-base-fee])
         spectrum     {:low  (rf/sub [:wallet/tx-settings-suggested-min-priority-fee])
                       :high (rf/sub [:wallet/tx-settings-suggested-max-priority-fee])}
         conditions   (partial hint-and-status spectrum max-base-fee)]
     [transaction-settings/custom-setting-screen
      {:screen-title  (i18n/label :t/priority-fee)
-      :token-sybmol  :gwei
+      :token-symbol  :gwei
       :conditions-fn conditions
       :current       priority-fee
       :info-title    (i18n/label :t/priority-fee)

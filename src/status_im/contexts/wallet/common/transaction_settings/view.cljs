@@ -12,7 +12,7 @@
 (defn custom-settings-sheet
   [_]
   (let [max-base-fee   (rf/sub [:wallet/tx-settings-max-base-fee])
-        priority-fee   (rf/sub [:wallet/tx-settings-priority-fee])
+        priority-fee   (rf/sub [:wallet/tx-settings-custom-priority-fee])
         max-gas-amount (rf/sub [:wallet/tx-settings-gas-amount])
         nonce          (rf/sub [:wallet/tx-settings-nonce])
         account-color  (rf/sub [:wallet/current-viewing-account-color])
