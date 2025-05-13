@@ -35,7 +35,7 @@
 
 (defn- format-timestamp
   [prefix-string last-backup-timestamp]
-  (-> (str prefix-string (datetime/timestamp->relative (* 1000 last-backup-timestamp)))
+  (-> (str prefix-string " " (datetime/timestamp->relative (* 1000 last-backup-timestamp)))
       (string/capitalize)
       (string/replace #"am|pm" {"am" "AM" "pm" "PM"})))
 
@@ -46,7 +46,7 @@
         performing-backup?    (rf/sub [:backup/performing-backup])
         customization-color   (rf/sub [:profile/customization-color])]
     [:<>
-     [quo/drawer-top {:title "Waku Backup"}]
+     [quo/drawer-top {:title (i18n/label :t/waku-backup)}]
      (comment
        [quo/text
         {:style {:padding-horizontal 20
@@ -54,7 +54,7 @@
         "Explanation and implications of the toggle"])
      [rn/view {:style style/waku-backup-toggle}
       [quo/drawer-action
-       {:title               "Backup enabled"
+       {:title               (i18n/label :t/waku-backup-enabled)
         :action              :toggle
         :state               (when backup-enabled? :selected)
         :blur?               true
@@ -68,7 +68,7 @@
        :description      :bottom
        :description-text (if performing-backup?
                            (i18n/label :t/backing-up)
-                           (format-timestamp "Last backup performed: " last-backup))
+                           (format-timestamp (i18n/label :t/last-backup-performed) last-backup))
        :button-one-label (i18n/label :t/perform-backup)
        :button-one-props {:customization-color customization-color
                           :on-press            #(rf/dispatch [:advanced-settings/perform-backup])
@@ -131,7 +131,7 @@
      [:toasts/upsert
       {:id   :string-copied
        :type :positive
-       :text (str property-copied " copied to clipboard")}])))
+       :text (str property-copied " " (i18n/label :t/copied-to-clipboard))}])))
 
 (defn- open-waku-settings
   []
@@ -172,8 +172,8 @@
 (defn- get-options
   [{:keys [log-level backup-enabled? last-backup peers-count peer-syncing-enabled?
            current-mailserver light-client-enabled? current-fleet analytics-user-id]}]
-  [{:label "Syncing"
-    :data  [{:title               "Waku Backup"
+  [{:label (i18n/label :t/syncing)
+    :data  [{:title               (i18n/label :t/waku-backup)
              :accessibility-label :backup-settings-button
              :on-press            open-waku-settings
              :description         :text
@@ -182,25 +182,25 @@
              :label-props         (if backup-enabled?
                                     (i18n/label :t/backup-enabled)
                                     (i18n/label :t/backup-disabled))
-             :description-props   {:text (format-timestamp "Latest: " last-backup)}}
-            {:title               "Peer syncing"
+             :description-props   {:text (format-timestamp (i18n/label :t/latest) last-backup)}}
+            {:title               (i18n/label :t/peer-syncing)
              :accessibility-label :peer-syncing
              :action              :selector
              :action-props        {:on-change toggle-peer-syncing
                                    :checked?  peer-syncing-enabled?}}
             {:title             (i18n/label :t/history-nodes)
-             :on-press          (copy-string-callback current-mailserver "Mailserver name")
+             :on-press          (copy-string-callback current-mailserver (i18n/label :t/history-nodes))
              :description       :text
              :description-props {:text current-mailserver}}]}
-   {:label "Debugging"
+   {:label (i18n/label :t/debugging)
     :data  [{:title               (i18n/label :t/log-level)
              :accessibility-label :log-level-settings-button
              :on-press            open-log-level-sheet
              :action              :arrow
              :label               :text
              :label-props         (some-> log-level
-                                          log-levels
-                                          string/capitalize)}
+                                    log-levels
+                                    string/capitalize)}
             {:title               (i18n/label :t/fleet)
              :accessibility-label :fleet-settings-button
              :on-press            open-fleet-sheet
@@ -211,7 +211,7 @@
              :accessibility-label :peers-stats
              :description         :text
              :description-props   {:text (str (i18n/label :t/peers-count) ": " peers-count)}
-             :on-press            (copy-string-callback peers-count "Peers count")}
+             :on-press            (copy-string-callback peers-count (i18n/label :t/peers-count))}
             (when (ff/enabled? ::ff/analytics.copy-user-id)
               {:title               "Copy analytics user ID"
                :accessibility-label :copy-analytics-user-id
@@ -224,7 +224,7 @@
                                            " (Sentry DSN is not set)"))
                :accessibility-label :intended-panic
                :on-press            force-crash})]}
-   {:label "Other"
+   {:label (i18n/label :t/other)
     :data  [{:title               (i18n/label :t/light-client-enabled)
              :accessibility-label :light-client-enabled
              :action              :selector
