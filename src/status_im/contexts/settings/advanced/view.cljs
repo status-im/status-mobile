@@ -169,85 +169,91 @@
   []
   (rf/dispatch [:advanced-settings/toggle-light-client]))
 
+(defn- get-options
+  [{:keys [log-level backup-enabled? last-backup peers-count peer-syncing-enabled?
+           current-mailserver light-client-enabled? current-fleet analytics-user-id]}]
+  [{:label "Syncing"
+    :data  [{:title               "Waku Backup"
+             :accessibility-label :backup-settings-button
+             :on-press            open-waku-settings
+             :description         :text
+             :action              :arrow
+             :label               :text
+             :label-props         (if backup-enabled?
+                                    (i18n/label :t/backup-enabled)
+                                    (i18n/label :t/backup-disabled))
+             :description-props   {:text (format-timestamp "Latest: " last-backup)}}
+            {:title               "Peer syncing"
+             :accessibility-label :peer-syncing
+             :action              :selector
+             :action-props        {:on-change toggle-peer-syncing
+                                   :checked?  peer-syncing-enabled?}}
+            {:title             (i18n/label :t/history-nodes)
+             :on-press          (copy-string-callback current-mailserver "Mailserver name")
+             :description       :text
+             :description-props {:text current-mailserver}}]}
+   {:label "Debugging"
+    :data  [{:title               (i18n/label :t/log-level)
+             :accessibility-label :log-level-settings-button
+             :on-press            open-log-level-sheet
+             :action              :arrow
+             :label               :text
+             :label-props         (some-> log-level
+                                    log-levels
+                                    string/capitalize)}
+            {:title               (i18n/label :t/fleet)
+             :accessibility-label :fleet-settings-button
+             :on-press            open-fleet-sheet
+             :action              :arrow
+             :label               :text
+             :label-props         current-fleet}
+            {:title               (i18n/label :t/peers-stats)
+             :accessibility-label :peers-stats
+             :description         :text
+             :description-props   {:text (str (i18n/label :t/peers-count) ": " peers-count)}
+             :on-press            (copy-string-callback peers-count "Peers count")}
+            (when (ff/enabled? ::ff/analytics.copy-user-id)
+              {:title               "Copy analytics user ID"
+               :accessibility-label :copy-analytics-user-id
+               :on-press            (copy-string-callback analytics-user-id
+                                                          "Analytics user ID")})
+            (when (ff/enabled? ::ff/app-monitoring.intentional-crash)
+              {:size                :small
+               :title               (str "Force crash immediately"
+                                         (when (string/blank? config/sentry-dsn-status-go)
+                                           " (Sentry DSN is not set)"))
+               :accessibility-label :intended-panic
+               :on-press            force-crash})]}
+   {:label "Other"
+    :data  [{:title               (i18n/label :t/light-client-enabled)
+             :accessibility-label :light-client-enabled
+             :action              :selector
+             :action-props        {:on-change toggle-light-client
+                                   :checked?  light-client-enabled?}}]}])
+
 (defn view
   []
-  (let [log-level (rf/sub [:log-level/current-profile-log-level])
-        analytics-user-id (rf/sub [:centralized-metrics/user-id])
-        light-client-enabled? (rf/sub [:profile/light-client-enabled?])
-        peers-count (rf/sub [:peer-stats/count])
-        current-mailserver (rf/sub [:mailserver/current-name])
-        peer-syncing-enabled? (rf/sub [:profile/peer-syncing-enabled?])
+  (let [log-level             (rf/sub [:log-level/current-profile-log-level])
         {:keys [backup-enabled?
-                default-sync-period
                 last-backup]} (rf/sub [:profile/profile])
-        current-fleet (rf/sub [:fleets/current-fleet])
-        options
-        (rn/use-memo
-         (fn []
-           [{:label "Syncing"
-             :data  [{:title               "Waku Backup"
-                      :accessibility-label :backup-settings-button
-                      :on-press            open-waku-settings
-                      :description         :text
-                      :action              :arrow
-                      :label               :text
-                      :label-props         (if backup-enabled?
-                                             (i18n/label :t/backup-enabled)
-                                             (i18n/label :t/backup-disabled))
-                      :description-props   {:text (format-timestamp "Latest: " last-backup)}}
-                     {:title               "Peer syncing"
-                      :accessibility-label :peer-syncing
-                      :action              :selector
-                      :action-props        {:on-change toggle-peer-syncing
-                                            :checked?  peer-syncing-enabled?}}
-                     {:title             (i18n/label :t/history-nodes)
-                      :on-press          (copy-string-callback current-mailserver "Mailserver name")
-                      :description       :text
-                      :description-props {:text current-mailserver}}]}
-            {:label "Debugging"
-             :data  [{:title               (i18n/label :t/log-level)
-                      :accessibility-label :log-level-settings-button
-                      :on-press            open-log-level-sheet
-                      :action              :arrow
-                      :label               :text
-                      :label-props         (some-> log-level
-                                                   log-levels
-                                                   string/capitalize)}
-                     {:title               (i18n/label :t/fleet)
-                      :accessibility-label :fleet-settings-button
-                      :on-press            open-fleet-sheet
-                      :action              :arrow
-                      :label               :text
-                      :label-props         current-fleet}
-                     {:title               (i18n/label :t/peers-stats)
-                      :accessibility-label :peers-stats
-                      :description         :text
-                      :description-props   {:text (str (i18n/label :t/peers-count) ": " peers-count)}
-                      :on-press            (copy-string-callback peers-count "Peers count")}
-                     (when (ff/enabled? ::ff/analytics.copy-user-id)
-                       {:title               "Copy analytics user ID"
-                        :accessibility-label :copy-analytics-user-id
-                        :on-press            (copy-string-callback analytics-user-id
-                                                                   "Analytics user ID")})
-                     (when (ff/enabled? ::ff/app-monitoring.intentional-crash)
-                       {:size                :small
-                        :title               (str "Force crash immediately"
-                                                  (when (string/blank? config/sentry-dsn-status-go)
-                                                    " (Sentry DSN is not set)"))
-                        :accessibility-label :intended-panic
-                        :on-press            force-crash})]}
-            {:label "Other"
-             :data  [{:title               (i18n/label :t/light-client-enabled)
-                      :accessibility-label :light-client-enabled
-                      :action              :selector
-                      :action-props        {:on-change toggle-light-client
-                                            :checked?  light-client-enabled?}}]}])
-         [backup-enabled?
-          last-backup
-          log-level
-          default-sync-period
-          peers-count
-          peer-syncing-enabled?])]
+        peers-count           (rf/sub [:peer-stats/count])
+        peer-syncing-enabled? (rf/sub [:profile/peer-syncing-enabled?])
+        current-mailserver    (rf/sub [:mailserver/current-name])
+        light-client-enabled? (rf/sub [:profile/light-client-enabled?])
+        current-fleet         (rf/sub [:fleets/current-fleet])
+        analytics-user-id     (rf/sub [:centralized-metrics/user-id])
+        options               (rn/use-memo
+                               (fn []
+                                 (get-options {:log-level             log-level
+                                               :backup-enabled?       backup-enabled?
+                                               :last-backup           last-backup
+                                               :peers-count           peers-count
+                                               :peer-syncing-enabled? peer-syncing-enabled?
+                                               :current-mailserver    current-mailserver
+                                               :light-client-enabled? light-client-enabled?
+                                               :current-fleet         current-fleet
+                                               :analytics-user-id     analytics-user-id}))
+                               [backup-enabled? last-backup log-level peers-count peer-syncing-enabled?])]
     (rn/use-mount #(rf/dispatch [:peer-stats/get-count]))
     [quo/overlay {:type :shell}
      [static-header]
