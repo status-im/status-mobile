@@ -199,8 +199,8 @@
              :action              :arrow
              :label               :text
              :label-props         (some-> log-level
-                                    log-levels
-                                    string/capitalize)}
+                                          log-levels
+                                          string/capitalize)}
             {:title               (i18n/label :t/fleet)
              :accessibility-label :fleet-settings-button
              :on-press            open-fleet-sheet
@@ -253,7 +253,8 @@
                                                :light-client-enabled? light-client-enabled?
                                                :current-fleet         current-fleet
                                                :analytics-user-id     analytics-user-id}))
-                               [backup-enabled? last-backup log-level peers-count peer-syncing-enabled?])]
+                               [backup-enabled? last-backup log-level peers-count
+                                peer-syncing-enabled?])]
     (rn/use-mount #(rf/dispatch [:peer-stats/get-count]))
     [quo/overlay {:type :shell}
      [static-header]
