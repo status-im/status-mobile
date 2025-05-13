@@ -1012,9 +1012,8 @@
 (rf/reg-sub
  :wallet/tx-settings-suggested-max-priority-fee
  :<- [:wallet/tx-settings-gas-fees]
- :<- [:wallet/tx-settings-max-base-fee]
- (fn [[gas-fees max-base-fee]]
-   (min max-base-fee (:suggested-max-priority-fee gas-fees))))
+ (fn [gas-fees]
+   (:suggested-max-priority-fee gas-fees)))
 
 (rf/reg-sub
  :wallet/tx-settings-suggested-min-priority-fee
