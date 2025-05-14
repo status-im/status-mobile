@@ -133,7 +133,8 @@
       :title       (i18n/label :t/invite-friends-to-status)
       :description (i18n/label :t/share-invite-link)}}))
 
-(defn- on-tab-change [tab]
+(defn- on-tab-change
+  [tab]
   (rf/dispatch [:messages-home/select-tab tab]))
 
 (defn view

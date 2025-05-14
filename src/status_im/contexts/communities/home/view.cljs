@@ -1,22 +1,22 @@
 (ns status-im.contexts.communities.home.view
   (:require
-   [oops.core :as oops]
-   [quo.context :as quo.context]
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.reanimated :as reanimated]
-   [status-im.common.home.banner.view :as common.banner]
-   [status-im.common.home.empty-state.view :as common.empty-state]
-   [status-im.common.home.header-spacing.view :as common.header-spacing]
-   [status-im.common.resources :as resources]
-   [status-im.config :as config]
-   [status-im.constants :as constants]
-   [status-im.contexts.communities.actions.community-options.view :as options]
-   [status-im.contexts.shell.constants :as shell.constants]
-   [utils.debounce :as debounce]
-   [utils.i18n :as i18n]
-   [utils.number]
-   [utils.re-frame :as rf]))
+    [oops.core :as oops]
+    [quo.context :as quo.context]
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [status-im.common.home.banner.view :as common.banner]
+    [status-im.common.home.empty-state.view :as common.empty-state]
+    [status-im.common.home.header-spacing.view :as common.header-spacing]
+    [status-im.common.resources :as resources]
+    [status-im.config :as config]
+    [status-im.constants :as constants]
+    [status-im.contexts.communities.actions.community-options.view :as options]
+    [status-im.contexts.shell.constants :as shell.constants]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.number]
+    [utils.re-frame :as rf]))
 
 (defn item-render
   [{:keys [id] :as item}]
@@ -43,9 +43,11 @@
    {:id :pending :label (i18n/label :t/pending) :accessibility-label :pending-tab}
    {:id :opened :label (i18n/label :t/opened) :accessibility-label :opened-tab}])
 
-(defn- community-creation-options-testing []
-  [rn/view {:padding-vertical 12
-            :row-gap          12}
+(defn- community-creation-options-testing
+  []
+  [rn/view
+   {:padding-vertical 12
+    :row-gap          12}
    [quo/divider-line]
    [rn/view
     [quo/action-drawer
@@ -63,7 +65,8 @@
         :on-press            #(rf/dispatch
                                [:fast-create-community/create-token-gated-community])}]]]]])
 
-(defn- create-community-sheet []
+(defn- create-community-sheet
+  []
   (let [customization-color  (rf/sub [:profile/customization-color])
         open-learn-more-link (fn []
                                (rf/dispatch [:hide-bottom-sheet])

@@ -22,14 +22,15 @@
 
 (defn- stack-view
   [stack-id shared-values]
-  [reanimated/view {:style               (style/stack-view shared-values stack-id)
-                    :accessibility-label stack-id}
+  [reanimated/view
+   {:style               (style/stack-view shared-values stack-id)
+    :accessibility-label stack-id}
    (case stack-id
      :screen/communities-stack [communities/view]
-     :screen/chats-stack [chat/view]
-     :screen/wallet-stack [wallet/view]
-     :screen/market-stack [market/view]
-     :screen/browser-stack [browser.stack/browser-stack]
+     :screen/chats-stack       [chat/view]
+     :screen/wallet-stack      [wallet/view]
+     :screen/market-stack      [market/view]
+     :screen/browser-stack     [browser.stack/browser-stack]
      [:<>])])
 
 (defn lazy-screen

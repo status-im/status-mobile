@@ -493,4 +493,5 @@
 (def ^:const report-email "error-reports@status.im")
 
 ;; Community help links
-(def ^:const create-community-help-url "https://status.app/help/communities/create-a-status-community#create-a-status-community")
+(def ^:const create-community-help-url
+  "https://status.app/help/communities/create-a-status-community#create-a-status-community")
