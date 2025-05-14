@@ -107,8 +107,7 @@
   (let [new-account?            (get db :onboarding/new-account?)
         app-in-background-since (get db :app-in-background-since)
         signed-up?              (get-in db [:profile/profile :signed-up?])
-        notifications-settings? (= (get-in db [:view-id])
-                                   :screen/settings.notifications)
+        notifications-settings? (= (:view-id db) :screen/settings.notifications)
         requires-bio-auth       (and
                                  signed-up?
                                  (= (:auth-method db) "biometric")
