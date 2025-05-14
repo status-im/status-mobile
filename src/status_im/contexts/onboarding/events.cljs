@@ -124,14 +124,12 @@
  (fn [_ [error]]
    {:dispatch [:biometric/show-message (ex-cause error)]}))
 
-(defn enable-biometrics
-  [_ [{:keys [on-done]}]]
-  {:fx [[:dispatch
-         [:biometric/authenticate
-          {:on-success #(rf/dispatch on-done)
-           :on-fail    #(rf/dispatch (conj on-done %))}]]]})
-
-(rf/reg-event-fx :onboarding/enable-biometrics enable-biometrics)
+(rf/reg-event-fx :onboarding/enable-biometrics
+ (fn [_ [{:keys [on-done]}]]
+   {:fx [[:dispatch
+          [:biometric/authenticate
+           {:on-success #(rf/dispatch on-done)
+            :on-fail    #(rf/dispatch (conj on-done %))}]]]}))
 
 (rf/reg-event-fx :shell/show-root-view
  [onboarding.interceptors/local-profile-storage-interceptor]

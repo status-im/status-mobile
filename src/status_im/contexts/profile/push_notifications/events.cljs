@@ -224,8 +224,6 @@
 
 (rf/reg-event-fx :notifications/determine-notifications-blocked determine-notifications-blocked)
 
-(defn open-notifications-settings
-  [_ _]
-  {:fx [[:effects/open-notifications-settings]]})
-
-(rf/reg-event-fx :notifications/open-notifications-settings open-notifications-settings)
+(rf/reg-event-fx :notifications/open-notifications-settings
+ (fn [_ _]
+   {:fx [[:effects/open-notifications-settings]]}))
