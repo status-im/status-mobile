@@ -1,22 +1,22 @@
 (ns status-im.contexts.communities.home.view
   (:require
-    [oops.core :as oops]
-    [quo.context :as quo.context]
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [react-native.reanimated :as reanimated]
-    [status-im.common.home.banner.view :as common.banner]
-    [status-im.common.home.empty-state.view :as common.empty-state]
-    [status-im.common.home.header-spacing.view :as common.header-spacing]
-    [status-im.common.resources :as resources]
-    [status-im.config :as config]
-    [status-im.contexts.communities.actions.community-options.view :as options]
-    [status-im.contexts.communities.actions.home-plus.view :as actions.home-plus]
-    [status-im.contexts.shell.constants :as shell.constants]
-    [utils.debounce :as debounce]
-    [utils.i18n :as i18n]
-    [utils.number]
-    [utils.re-frame :as rf]))
+   [oops.core :as oops]
+   [quo.context :as quo.context]
+   [quo.core :as quo]
+   [react-native.core :as rn]
+   [react-native.reanimated :as reanimated]
+   [status-im.common.home.banner.view :as common.banner]
+   [status-im.common.home.empty-state.view :as common.empty-state]
+   [status-im.common.home.header-spacing.view :as common.header-spacing]
+   [status-im.common.resources :as resources]
+   [status-im.config :as config]
+   [status-im.constants :as constants]
+   [status-im.contexts.communities.actions.community-options.view :as options]
+   [status-im.contexts.shell.constants :as shell.constants]
+   [utils.debounce :as debounce]
+   [utils.i18n :as i18n]
+   [utils.number]
+   [utils.re-frame :as rf]))
 
 (defn item-render
   [{:keys [id] :as item}]
@@ -43,6 +43,49 @@
    {:id :pending :label (i18n/label :t/pending) :accessibility-label :pending-tab}
    {:id :opened :label (i18n/label :t/opened) :accessibility-label :opened-tab}])
 
+(defn- community-creation-options-testing []
+  [rn/view {:padding-vertical 12
+            :row-gap          12}
+   [quo/divider-line]
+   [rn/view
+    [quo/action-drawer
+     [[{:icon                :i/communities
+        :accessibility-label :create-closed-community
+        :label               "Create closed community (only for testing)"
+        :on-press            #(rf/dispatch [:fast-create-community/create-closed-community])}
+       {:icon                :i/communities
+        :accessibility-label :create-open-community
+        :label               "Create open community (only for testing)"
+        :on-press            #(rf/dispatch [:fast-create-community/create-open-community])}
+       {:icon                :i/communities
+        :accessibility-label :create-token-gated-community
+        :label               "Create token-gated community (only for testing)"
+        :on-press            #(rf/dispatch
+                               [:fast-create-community/create-token-gated-community])}]]]]])
+
+(defn- create-community-sheet []
+  (let [customization-color  (rf/sub [:profile/customization-color])
+        open-learn-more-link (fn []
+                               (rf/dispatch [:hide-bottom-sheet])
+                               (rf/dispatch
+                                [:browser.ui/open-url constants/create-community-help-url]))]
+    [:<>
+     [quo/drawer-top {:title (i18n/label :t/want-to-create-community)}]
+     [quo/text {:style {:padding-horizontal 20 :padding-bottom 12}}
+      (i18n/label :t/communities-only-available-in-desktop)]
+     [quo/bottom-actions
+      {:actions          :two-actions
+       :button-one-label (i18n/label :t/learn-more)
+       :button-one-props {:disabled?           false
+                          :customization-color customization-color
+                          :on-press            open-learn-more-link
+                          :icon-right          :i/external}
+       :button-two-label (i18n/label :t/maybe-later)
+       :button-two-props {:type     :grey
+                          :on-press #(rf/dispatch [:hide-bottom-sheet])}}]
+     (when config/fast-create-community-enabled?
+       [community-creation-options-testing])]))
+
 (defn empty-state-content
   [theme]
   {:joined
@@ -66,8 +109,7 @@
   {:title-props
    {:beta?               true
     :label               (i18n/label :t/communities)
-    :handler             (when config/fast-create-community-enabled?
-                           #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}]))
+    :handler             #(rf/dispatch [:show-bottom-sheet {:content create-community-sheet}])
     :accessibility-label :new-communities-button}
    :card-props
    {:on-press            #(rf/dispatch [:navigate-to :screen/discover-communities])

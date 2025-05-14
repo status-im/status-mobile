@@ -491,3 +491,6 @@
 
 (def ^:const pre-login-log-level-key "pre-login-log-level")
 (def ^:const report-email "error-reports@status.im")
+
+;; Community help links
+(def ^:const create-community-help-url "https://status.app/help/communities/create-a-status-community#create-a-status-community")

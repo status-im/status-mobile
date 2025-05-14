@@ -570,6 +570,8 @@
   "create-channel": "Create a channel",
   "create-channel-title": "New channel",
   "create-community": "Create a community",
+  "want-to-create-community": "Want to create your own community?",
+  "communities-only-available-in-desktop": "For now, you can only create communities on the Status desktop app.",
   "create-group-chat": "Create group chat",
   "create-keycard-pin": "Create Keycard PIN",
   "create-multiaccount": "Generate keys",
