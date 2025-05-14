@@ -317,10 +317,11 @@
               messenger-notifications-enabled?
               push-notifications-block-mentions?
               push-notifications-from-contacts-only?]}]
-   {:notifications-blocked?                    (boolean notifications-blocked?)
-    :notifications-enabled?                    (and (boolean notifications-enabled?)
-                                                    (not (boolean notifications-blocked?)))
-    :news-notifications-enabled?               (boolean news-notifications-enabled?)
-    :messenger-notifications-enabled?          (boolean messenger-notifications-enabled?)
-    :non-contact-notifications-enabled?        (not (boolean push-notifications-from-contacts-only?))
-    :community-mentions-notifications-enabled? (not (boolean push-notifications-block-mentions?))}))
+   (let [blocked? (boolean notifications-blocked?)]
+     {:notifications-blocked?                    blocked?
+      :notifications-enabled?                    (and (boolean notifications-enabled?)
+                                                      (not blocked?))
+      :news-notifications-enabled?               (boolean news-notifications-enabled?)
+      :messenger-notifications-enabled?          (boolean messenger-notifications-enabled?)
+      :non-contact-notifications-enabled?        (not (boolean push-notifications-from-contacts-only?))
+      :community-mentions-notifications-enabled? (not (boolean push-notifications-block-mentions?))})))
