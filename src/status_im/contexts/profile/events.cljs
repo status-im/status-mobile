@@ -129,3 +129,13 @@
  (fn []
    {:fx [[:effects.profile/accept-terms
           {:on-success [:navigate-to :screen/profile.profiles]}]]}))
+
+(rf/reg-event-fx :profile/save-notifications-prompted
+ (fn [{:keys [key-uid]}]
+   {:fx [[:effects.kv/merge-object
+          {:key   key-uid
+           :value {:notifications-prompted? true}}]]}))
+
+(rf/reg-event-fx :profile/remove-local-profile-storage
+ (fn [{:keys [key-uid]}]
+   {:fx [[:effects.kv/delete-key key-uid]]}))

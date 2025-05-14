@@ -1,10 +1,9 @@
 (ns status-im.contexts.onboarding.events
   (:require
     [quo.foundations.colors :as colors]
-    [re-frame.interceptor :as interceptor]
-    [react-native.mmkv :as mmkv]
     status-im.common.biometric.events
     [status-im.constants :as constants]
+    [status-im.contexts.onboarding.interceptors :as onboarding.interceptors]
     [status-im.contexts.shell.constants :as shell.constants]
     [status-im.feature-flags :as ff]
     [taoensso.timbre :as log]
@@ -134,34 +133,8 @@
 
 (rf/reg-event-fx :onboarding/enable-biometrics enable-biometrics)
 
-;;; -------
-
-(defn inject-local-profile-storage
-  [context]
-  (let [db            (interceptor/get-coeffect context :db)
-        key-uid       (get-in db [:profile/profile :key-uid])
-        local-profile (mmkv/get-object key-uid)]
-    (assoc-in context
-     [:coeffects :local-profile-storage]
-     local-profile)))
-
-(def local-profile-storage-interceptor
-  (interceptor/->interceptor
-   :id     :local-profile-storage-interceptor
-   :before inject-local-profile-storage))
-
-(rf/reg-fx :effects.profile/save-notifications-prompted
- (fn [{:keys [key-uid]}]
-   (let [profile-storage (mmkv/get-object key-uid {})]
-     (mmkv/set-object key-uid
-                      (assoc profile-storage :notifications-prompted? true)))))
-
-(rf/reg-fx :effects.profile/remove-local-profile-storage
- (fn [{:keys [key-uid]}]
-   (mmkv/delete-key key-uid)))
-
 (rf/reg-event-fx :shell/show-root-view
- [local-profile-storage-interceptor]
+ [onboarding.interceptors/local-profile-storage-interceptor]
  (fn [{:keys [db local-profile-storage]} [{:keys [notifications-prompt-skip?]}]]
    (let [{:keys [key-uid]}  (get-in db [:profile/profile])
          onboarding-profile (get-in db [:onboarding/profile])]
@@ -171,12 +144,15 @@
                notifications-prompt-skip?)
          {:fx (cond-> []
                 (not (:notifications-prompted? local-profile-storage))
-                (conj [:effects.profile/save-notifications-prompted
-                       {:key-uid key-uid}])
+                (conj [:dispatch
+                       [:profile/save-notifications-prompted
+                        {:key-uid key-uid}]])
                 :else
                 (conj [:dispatch [:update-theme-and-init-root :screen/shell-stack]]
                       [:dispatch [:profile/toggle-testnet-mode-banner]]))}
-         {:fx [[:effects.profile/save-notifications-prompted {:key-uid key-uid}]
+         {:fx [[:dispatch
+                [:profile/save-notifications-prompted
+                 {:key-uid key-uid}]]
                [:dispatch
                 [:onboarding/notifications-setup
                  {:key-uid     key-uid
@@ -244,8 +220,9 @@
     {:db (assoc db :profile/profiles-overview multiaccounts)
      :fx (cond-> []
            (ff/enabled? ::ff/settings.news-notifications)
-           (conj [:effects.profile/remove-local-profile-storage
-                  {:key-uid key-uid}])
+           (conj [:dispatch
+                  [:profile/remove-local-profile-storage
+                   {:key-uid key-uid}]])
            (not (seq multiaccounts))
            (conj [:dispatch
                   [:update-theme-and-init-root :screen/onboarding.intro]]))}))
