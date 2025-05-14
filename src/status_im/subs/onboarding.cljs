@@ -8,6 +8,6 @@
  :<- [:profile/customization-color]
  (fn [[{:keys [color]} customization-color]
       [_sub-id {:keys [onboarding?]}]]
-   (cond
-     (and onboarding? (some? color)) color
-     :else                           customization-color)))
+   (if (and onboarding? (some? color))
+     color
+     customization-color)))
