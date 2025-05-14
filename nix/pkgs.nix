@@ -20,6 +20,13 @@ let
     sha256 = "sha256:0zynbk52khdfhg4qfv26h3r5156xff5p0cga2cin7b07i7lqminh";
   };
 
+  # FIXME: remove this additional source when nixpkgs includes NDK 27 in stable channel
+  # We use a commit from nixpkgs that includes NDK 27.0.12077973 for Android SDK 35 compatibility
+  ndkNixpkgsSrc = builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/0338ca8d155cfee05e50018e6c431cbe184d133f.tar.gz";
+    sha256 = "1hw4ysnkp26a8kqcmq4qz9ggqsilky560xkim7xcibzzj34byhsv";
+  };
+
   # Status specific configuration defaults
   defaultConfig = {
     android_sdk.accept_license = true;
@@ -37,6 +44,15 @@ let
     }).gradle_8.override { java = prev.openjdk17_headless; };
   };
 
+  # FIXME: remove this additional source when nixpkgs includes NDK 27 in stable channel
+  # Overlay to provide NDK 27 from newer nixpkgs for Android SDK 35 compatibility
+  ndkOverlay = final: prev: {
+    androidenv = (import ndkNixpkgsSrc {
+      inherit (prev) system;
+      config = defaultConfig // config;
+    }).androidenv;
+  };
+
   # Fix for lack of Android SDK for M1 Macs.
   systemOverride = let
     inherit (builtins) currentSystem getEnv;
@@ -51,5 +67,5 @@ in
   (import nixpkgsSrc) {
     config = defaultConfig // config;
     system = systemOverride;
-    overlays = [ pkgsOverlay gradleOverlay ];
+    overlays = [ pkgsOverlay gradleOverlay ndkOverlay ];
   }
