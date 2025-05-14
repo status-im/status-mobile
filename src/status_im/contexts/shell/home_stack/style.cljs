@@ -1,19 +1,17 @@
 (ns status-im.contexts.shell.home-stack.style
-  (:require
-    [quo.foundations.colors :as colors]
-    [react-native.reanimated :as reanimated]))
+  (:require [quo.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [status-im.contexts.shell.constants :as shell.constants]))
 
 (defn stack-view
-  [stack-id {:keys [opacity z-index]}]
-  (reanimated/apply-animations-to-style
-   {:opacity opacity
-    :z-index z-index}
-   {:top                 0
-    :left                0
-    :right               0
-    :bottom              0
-    :position            :absolute
-    :accessibility-label stack-id}))
+  [shared-values stack-id]
+  [{:opacity (->> stack-id
+                  (get shell.constants/stacks-opacity-keywords)
+                  (get shared-values))
+    :z-index (->> stack-id
+                  (get shell.constants/stacks-z-index-keywords)
+                  (get shared-values))}
+   rn/stylesheet-absolute-fill])
 
 (defn home-stack
   [theme]

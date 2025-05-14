@@ -133,6 +133,9 @@
       :title       (i18n/label :t/invite-friends-to-status)
       :description (i18n/label :t/share-invite-link)}}))
 
+(defn- on-tab-change [tab]
+  (rf/dispatch [:messages-home/select-tab tab]))
+
 (defn view
   []
   (let [theme                           (quo.context/use-theme)
@@ -170,5 +173,5 @@
                               :accessibility-label :tab-contacts
                               :notification-dot?   (pos? (count pending-contact-requests))}]
        :selected-tab        selected-tab
-       :on-tab-change       (fn [tab] (rf/dispatch [:messages-home/select-tab tab]))
+       :on-tab-change       on-tab-change
        :scroll-shared-value scroll-shared-value}]]))
