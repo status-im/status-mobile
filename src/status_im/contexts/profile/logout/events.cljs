@@ -53,7 +53,8 @@
  (fn [{db :db}]
    {:db (assoc db :profile/logging-out? true)
     ;; We need to disable notifications before starting the logout process
-    :fx [[:dispatch [:profile.logout/disable-notifications]]
+    :fx [[:dispatch [:hide-bottom-sheet]] ;; otherwise the login screen isn't interactable
+         [:dispatch [:profile.logout/disable-notifications]]
          [:dispatch [:wallet-connect/unregister-event-listeners]]
          [:dispatch-later
           {:ms       100

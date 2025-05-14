@@ -52,13 +52,17 @@
 
 (rf/reg-event-fx
  :advanced-settings/change-fleet
- (fn [_ fleet]
-   {:ui/show-confirmation
-    {:title               (i18n/label :t/close-app-title)
-     :content             (i18n/label :t/change-fleet {:fleet fleet})
-     :confirm-button-text (i18n/label :t/close-app-button)
-     :on-accept           #(rf/dispatch [:fleet.ui/save-fleet-confirmed (keyword fleet)])
-     :on-cancel           nil}}))
+ (fn [{db :db} [new-fleet]]
+   (let [current-fleet (-> db :profile/profile :fleet keyword)]
+     (when (not= current-fleet new-fleet)
+       {:ui/show-confirmation
+        {:title               (i18n/label :t/close-app-title)
+         :content             (i18n/label :t/change-fleet {:fleet new-fleet})
+         :confirm-button-text (i18n/label :t/close-app-button)
+         :on-accept           #(rf/dispatch [:fleet.ui/save-fleet-confirmed
+                                             (some-> new-fleet
+                                                     name)])
+         :on-cancel           nil}}))))
 
 (rf/reg-event-fx
  :advanced-settings/toggle-light-client

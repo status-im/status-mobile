@@ -5,7 +5,7 @@
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [status-im.constants :as constants]
-    [utils.i18n :as i18n]
+    [taoensso.timbre :as log]
     [utils.re-frame :as rf]
     [utils.transforms :as transforms]))
 
@@ -43,18 +43,6 @@
           {}
           (node/fleets db)))
 
-(rf/defn show-save-confirmation
-  {:events [:fleet.ui/fleet-selected]}
-  [_ fleet]
-  {:ui/show-confirmation
-   {:title (i18n/label :t/close-app-title)
-    :content (i18n/label :t/change-fleet
-                         {:fleet fleet})
-    :confirm-button-text (i18n/label :t/close-app-button)
-    :on-accept
-    #(re-frame/dispatch [:fleet.ui/save-fleet-confirmed (keyword fleet)])
-    :on-cancel nil}})
-
 (defn nodes->fleet
   [nodes]
   (letfn [(format-nodes [nodes]
@@ -91,4 +79,6 @@
        cofx
        :fleet
        fleet
-       {:on-success #(re-frame/dispatch [:profile/logout])}))))
+       {:on-success (fn []
+                      (log/info "Fleet changed successfully to" fleet)
+                      (re-frame/dispatch [:profile/logout]))}))))
