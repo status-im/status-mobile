@@ -106,7 +106,7 @@
 
 (defn background-image
   []
-  [rn/view {:style style/background-image}
+  [rn/view {:style rn/stylesheet-absolute-fill}
    [background/view true]])
 
 (defn view

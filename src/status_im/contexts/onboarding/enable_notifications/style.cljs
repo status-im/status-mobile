@@ -25,13 +25,6 @@
   {:margin        default-margin
    :margin-bottom (+ 14 (:bottom insets))})
 
-(def background-image
-  {:position :absolute
-   :top      0
-   :bottom   0
-   :left     0
-   :right    0})
-
 (def news-notifications-checkbox-container
   {:flex-direction     :row
    :gap                8
