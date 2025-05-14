@@ -1,11 +1,11 @@
 (ns status-im.contexts.profile.settings.screens.messages.link-previews.view
   (:require
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [status-im.common.events-helper :as events-helper]
-    [status-im.contexts.chat.messenger.composer.constants :as constants]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo.core :as quo]
+   [react-native.core :as rn]
+   [status-im.common.events-helper :as events-helper]
+   [status-im.contexts.chat.messenger.composer.constants :as constants]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn view
   []
@@ -25,19 +25,19 @@
                     :blur?        true
                     :action       :selector
                     :action-props {:type      :radio
-                                   :on-change (on-press constants/preview-always-share)
+                                   :on-change #(on-press constants/preview-always-share)
                                    :checked?  (= mode constants/preview-always-share)}}
                    {:title        (i18n/label :t/preview-never-share)
                     :blur?        true
                     :action       :selector
                     :action-props {:type      :radio
-                                   :on-change (on-press constants/preview-never-ask)
+                                   :on-change #(on-press constants/preview-never-ask)
                                    :checked?  (= mode constants/preview-never-ask)}}
                    {:title        (i18n/label :t/preview-always-ask)
                     :blur?        true
                     :action       :selector
                     :action-props {:type      :radio
-                                   :on-change (on-press constants/preview-always-ask)
+                                   :on-change #(on-press constants/preview-always-ask)
                                    :checked?  (= mode constants/preview-always-ask)}}]
        :blur?     true
        :list-type :settings}]]))

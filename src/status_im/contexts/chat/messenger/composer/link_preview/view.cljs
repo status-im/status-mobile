@@ -1,16 +1,16 @@
 (ns status-im.contexts.chat.messenger.composer.link-preview.view
   (:require
-    [clojure.string :as string]
-    [quo.core :as quo]
-    [react-native.core :as rn]
-    [react-native.reanimated :as reanimated]
-    [status-im.common.resources :as resources]
-    [status-im.constants]
-    [status-im.contexts.chat.messenger.composer.constants :as constants]
-    [status-im.contexts.chat.messenger.composer.link-preview.events]
-    [status-im.contexts.chat.messenger.composer.link-preview.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [clojure.string :as string]
+   [quo.core :as quo]
+   [react-native.core :as rn]
+   [react-native.reanimated :as reanimated]
+   [status-im.common.resources :as resources]
+   [status-im.constants]
+   [status-im.contexts.chat.messenger.composer.constants :as constants]
+   [status-im.contexts.chat.messenger.composer.link-preview.events]
+   [status-im.contexts.chat.messenger.composer.link-preview.style :as style]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn- use-animated-height
   [previews?]
@@ -45,21 +45,37 @@
                               :url       url})
                            previews)}])
 
+(defn hide-sheet-and-dispatch
+  [event]
+  (rf/dispatch [:hide-bottom-sheet])
+  (rf/dispatch event))
+
 (defn link-preview-options
   []
-  [quo/action-drawer
-   [[{:icon     :i/friend
-      :label    "Show for this message"
-      :on-press #(rf/dispatch [:profile.settings/set-unfurl-links-mode
-                               constants/preview-always-ask])}
-     {:icon     :i/communities
-      :label    "Always show previews"
-      :on-press #(rf/dispatch [:profile.settings/set-unfurl-links-mode
-                               constants/preview-always-share])}
-     {:icon     :i/muted
-      :label    "Never show previews"
-      :on-press #(rf/dispatch [:profile.settings/set-unfurl-links-mode
-                               constants/preview-never-ask])}]]])
+  [rn/view
+   [rn/view {:flex-direction  :row
+             :justify-content :space-between
+             :padding-bottom     12
+             :padding-horizontal 20}
+    [quo/text
+     {:accessibility-label :communities-join-community
+      :weight              :semi-bold
+      :size                :heading-2}
+     (i18n/label :t/preview-link)]
+    [quo/icon :info {:size 20}]]
+   [quo/action-drawer
+    [[{:icon     :i/reveal
+       :label    "Show for this message"
+       :on-press #(hide-sheet-and-dispatch [:profile.settings/set-unfurl-links-mode
+                                            constants/preview-always-ask])}
+      {:icon     :i/reveal-whitelist
+       :label    "Always show previews"
+       :on-press #(hide-sheet-and-dispatch [:profile.settings/set-unfurl-links-mode
+                                            constants/preview-always-share])}
+      {:icon     :i/hide
+       :label    "Never show previews"
+       :on-press #(hide-sheet-and-dispatch [:profile.settings/set-unfurl-links-mode
+                                            constants/preview-never-ask])}]]]])
 
 (defn show-unfurl-link-options
   [theme]
@@ -91,4 +107,4 @@
        [unfurl-links previews]]
 
       (and (= mode constants/preview-always-ask) (boolean (seq previews)))
-      [show-unfurl-link-options mode theme])))
+      [show-unfurl-link-options theme])))

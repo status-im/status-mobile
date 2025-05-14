@@ -18,7 +18,14 @@
   {:flex-direction   :row
    :justify-content  :space-between
    :align-items      :center
-   :background-color (colors/theme-colors colors/white colors/neutral-80 theme)
+   :background-color (colors/theme-colors colors/neutral-5 colors/neutral-90 theme)
+   :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+   :border-width     1
    :border-radius    15
    :height           48
    :padding          12})
+
+(def options-container 
+  {:flex               1
+   :padding-bottom     12
+   :padding-horizontal 20})
