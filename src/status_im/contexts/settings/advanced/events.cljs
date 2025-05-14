@@ -17,7 +17,7 @@
             (assoc-in [:profile/profile :last-backup] last-backup))}))
 
 (rf/reg-event-fx
- ::backup-failed
+ :advanced-settings/backup-failed
  (fn [{:keys [db]}]
    {:db (dissoc db :backup/performing-backup)}))
 
@@ -34,7 +34,7 @@
                                    {:type  :negative
                                     :theme :dark
                                     :text  "Failed to perform backup, please try again later"}])
-                                 (rf/dispatch [::backup-failed error]))}]}))
+                                 (rf/dispatch [:advanced-settings/backup-failed error]))}]}))
 
 (rf/reg-event-fx
  :advanced-settings/change-log-level
@@ -70,12 +70,12 @@
        :content             (if previously-enabled?
                               (i18n/label :t/disable-light-client)
                               (i18n/label :t/enable-light-client))
-       :on-accept           #(rf/dispatch [::change-light-client new-setting])
+       :on-accept           #(rf/dispatch [:advanced-settings/change-light-client new-setting])
        :confirm-button-text (i18n/label :t/close-app-button)
        :on-cancel           nil}})))
 
 (rf/reg-event-fx
- ::change-light-client
+ :advanced-settings/change-light-client
  (fn [{:keys [db]} [new-setting]]
    {:db            (assoc-in db [:profile/profile :wakuv2-config :LightClient] new-setting)
     :json-rpc/call [{:method     "wakuext_setLightClient"
@@ -100,12 +100,13 @@
        :content             (if previously-enabled?
                               (i18n/label :t/disable-store-confirmations)
                               (i18n/label :t/enable-store-confirmations))
-       :on-accept           #(rf/dispatch [::change-store-confirmations new-setting])
+       :on-accept           #(rf/dispatch [:advanced-settings/change-store-confirmations
+                                           new-setting])
        :confirm-button-text (i18n/label :t/close-app-button)
        :on-cancel           nil}})))
 
 (rf/reg-event-fx
- ::change-store-confirmations
+ :advanced-settings/change-store-confirmations
  (fn [{:keys [db]} [new-setting]]
    {:db            (assoc-in db
                     [:profile/profile :wakuv2-config :EnableStoreConfirmationForMessagesSent]
