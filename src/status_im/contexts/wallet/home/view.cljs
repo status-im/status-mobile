@@ -121,6 +121,7 @@
         on-swap-press         (rn/use-callback
                                (fn []
                                  (rf/dispatch [:wallet/clean-send-data])
+                                 (rf/dispatch [:wallet/clean-swap])
                                  (when-not multiple-accounts?
                                    (rf/dispatch [:wallet/switch-current-viewing-account
                                                  first-account-address]))

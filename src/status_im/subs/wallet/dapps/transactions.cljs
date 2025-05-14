@@ -32,13 +32,13 @@
        (money/bignumber (* max-gas-fee gas-limit))))))
 
 (rf/reg-sub
- :wallet-connect/account-eth-token
+ :wallet-connect/account-native-token
  :<- [:wallet-connect/current-request-address]
  :<- [:wallet/accounts]
- (fn [[address accounts]]
-   (let [fee-token    "ETH"
-         find-account #(when (= (:address %) address) %)
-         find-token   #(when (= (:symbol %) fee-token) %)]
+ :<- [:wallet-connect/current-request-network-native-token-symbol]
+ (fn [[address accounts native-token-symbol]]
+   (let [find-account #(when (= (:address %) address) %)
+         find-token   #(when (= (:symbol %) native-token-symbol) %)]
      (->> accounts
           (some find-account)
           :tokens
@@ -49,21 +49,21 @@
  :<- [:wallet-connect/chain-id]
  :<- [:wallet-connect/transaction-max-fees-wei]
  :<- [:wallet-connect/transaction-args]
- :<- [:wallet-connect/account-eth-token]
+ :<- [:wallet-connect/account-native-token]
  :<- [:profile/currency]
  :<- [:profile/currency-symbol]
  :<- [:wallet/prices-per-token]
- (fn [[chain-id max-fees-wei transaction eth-token currency currency-symbol prices-per-token]]
+ (fn [[chain-id max-fees-wei transaction native-token currency currency-symbol prices-per-token]]
    (when transaction
      (let [max-fees-ether           (money/wei->ether max-fees-wei)
            max-fees-fiat            (wallet-utils/calculate-token-fiat-value {:currency currency
                                                                               :balance max-fees-ether
-                                                                              :token eth-token
+                                                                              :token native-token
                                                                               :prices-per-token
                                                                               prices-per-token})
            max-fees-fiat-formatted  (wallet-utils/fiat-formatted-for-ui currency-symbol
                                                                         max-fees-fiat)
-           balance                  (-> eth-token
+           balance                  (-> native-token
                                         (get-in [:balances-per-chain chain-id :raw-balance])
                                         money/bignumber)
            tx-value                 (money/bignumber (:value transaction))

@@ -64,6 +64,11 @@
    (get networks chain-id)))
 
 (rf/reg-sub
+ :wallet-connect/current-request-network-native-token-symbol
+ :<- [:wallet-connect/current-request-network]
+ :-> :native-currency-symbol)
+
+(rf/reg-sub
  :wallet-connect/typed-data-request?
  :<- [:wallet-connect/current-request-method]
  typed-data/typed-data-request?)

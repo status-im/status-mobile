@@ -8,7 +8,7 @@
 (defn view
   [{:keys [image name id]}]
   (let [chain-id                      (get-in id [:contract-id :chain-id])
-        {:keys [block-explorer-name]} (rf/sub [:wallet/network-details-by-chain-id chain-id])
+        {:keys [block-explorer-name]} (rf/sub [:wallet/network-by-id chain-id])
         token-id                      (:token-id id)
         contract-address              (get-in id [:contract-id :address])
         uri                           (url/replace-port image (rf/sub [:mediaserver/port]))]
@@ -41,10 +41,3 @@
                                              :contract-address contract-address
                                              :chain-id         chain-id
                                              :title            name}])}]]]))
-
-"222"
-"https://nft-cdn.alchemy.com/eth-mainnet/219530f9b3a7901f02169334d593823e"
-"Tengria #913"
-{:contract-id {:chain-id 1 :address "0x1a4ceef5d575c2228d142ef862a9b60be8161e7f"} :token-id "913"}
-
-{:contract-id {:chain-id 1 :address "0x1a4ceef5d575c2228d142ef862a9b60be8161e7f"} :token-id "913"}

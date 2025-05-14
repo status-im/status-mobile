@@ -15,34 +15,33 @@
 
 (rf/reg-event-fx :wallet.swap/start
  (fn [{:keys [db]} [{:keys [network asset-to-receive open-new-screen? from-account] :as data}]]
-   (let [{:keys [wallet]}       db
-         view-id                (:view-id db)
-         root-screen?           (or (= view-id :screen/wallet-stack) (nil? view-id))
-         available-accounts     (utils/get-accounts-with-token-balance (:accounts wallet)
-                                                                       (:asset-to-pay data))
-         account                (or from-account
-                                    (swap-utils/current-viewing-account wallet)
-                                    (first available-accounts))
-         asset-to-pay           (if (and (not from-account) (get-in data [:asset-to-pay :networks]))
-                                  (:asset-to-pay data)
-                                  (swap-utils/select-asset-to-pay-by-symbol
-                                   {:networks     (networks.db/get-active-networks db)
-                                    :account      account
-                                    :token-symbol (get-in data [:asset-to-pay :symbol])}))
-         received-asset         (if-not (nil? asset-to-receive)
-                                  asset-to-receive
-                                  (swap-utils/select-asset-to-pay-by-symbol
-                                   {:networks     (networks.db/get-active-networks db)
-                                    :account      account
-                                    :token-symbol (if (= (:symbol asset-to-pay) "SNT")
-                                                    "ETH"
-                                                    "SNT")}))
-         multi-account-balance? (-> available-accounts
-                                    (count)
-                                    (> 1))
-         network'               (or network
-                                    (swap-utils/select-network asset-to-pay))
-         start-point            (if open-new-screen? :action-menu :swap-button)]
+   (let [{:keys [wallet]}         db
+         view-id                  (:view-id db)
+         root-screen?             (or (= view-id :screen/wallet-stack) (nil? view-id))
+         tokens-list              (get-in db [:wallet :tokens :by-symbol])
+         available-accounts       (utils/get-accounts-with-token-balance (:accounts wallet)
+                                                                         (:asset-to-pay data))
+         account                  (or from-account
+                                      (swap-utils/current-viewing-account wallet)
+                                      (first available-accounts))
+         asset-to-pay             (if (and (not from-account) (get-in data [:asset-to-pay :networks]))
+                                    (:asset-to-pay data)
+                                    (swap-utils/select-asset-to-pay-by-symbol
+                                     {:networks     (networks.db/get-active-networks db)
+                                      :account      account
+                                      :token-symbol (get-in data [:asset-to-pay :symbol])}))
+         network'                 (or network
+                                      (swap-utils/select-network asset-to-pay))
+         default-asset-to-receive (swap-utils/get-default-asset-to-receive tokens-list
+                                                                           (:symbol asset-to-pay)
+                                                                           (:chain-id network'))
+         received-asset           (if-not (nil? asset-to-receive)
+                                    asset-to-receive
+                                    default-asset-to-receive)
+         multi-account-balance?   (-> available-accounts
+                                      (count)
+                                      (> 1))
+         start-point              (if open-new-screen? :action-menu :swap-button)]
      {:db
       (update-in db
                  db-path/swap
@@ -230,7 +229,7 @@
          view-id                     (:view-id db)
          request-uuid                (:uuid swap-proposal)
          best-routes                 (:best swap-proposal)
-         updated-token-prices        (:updated-prices swap-proposal)
+         updated-token-prices        (:updated-token-prices swap-proposal)
          error-response              (:error-response swap-proposal)]
      (when (and (= request-uuid last-request-uuid)
                 (or (and (empty? best-routes) error-response)

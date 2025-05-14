@@ -45,22 +45,31 @@
 
 (def networks
   {:mainnet-network
-   {:full-name        "Ethereum"
-    :network-name     :mainnet
-    :chain-id         1
-    :related-chain-id 5
-    :layer            1}
+   {:full-name                "Ethereum"
+    :network-name             :mainnet
+    :chain-id                 1
+    :related-chain-id         5
+    :layer                    1
+    :native-currency-symbol   "ETH"
+    :native-currency-name     "Ether"
+    :native-currency-decimals 18}
    :layer-2-networks
-   [{:full-name        "Optimism"
-     :network-name     :optimism
-     :chain-id         10
-     :related-chain-id 420
-     :layer            2}
-    {:full-name        "Arbitrum"
-     :network-name     :arbitrum
-     :chain-id         42161
-     :related-chain-id 421613
-     :layer            2}]})
+   [{:full-name                "Optimism"
+     :network-name             :optimism
+     :chain-id                 10
+     :related-chain-id         420
+     :layer                    2
+     :native-currency-symbol   "ETH"
+     :native-currency-name     "Ether"
+     :native-currency-decimals 18}
+    {:full-name                "Arbitrum"
+     :network-name             :arbitrum
+     :chain-id                 42161
+     :related-chain-id         421613
+     :layer                    2
+     :native-currency-symbol   "ETH"
+     :native-currency-name     "Ether"
+     :native-currency-decimals 18}]})
 
 (def swap-data
   {:asset-to-pay
@@ -160,14 +169,6 @@
       swap-data)
     (is (match? "SNT" (rf/sub [sub-name])))))
 
-(h/deftest-sub :wallet/swap-asset-to-pay-networks
-  [sub-name]
-  (testing "Return the available networks for the swap asset-to-pay"
-    (swap! rf-db/app-db assoc-in
-      db-path/swap
-      swap-data)
-    (is (match? networks (rf/sub [sub-name])))))
-
 (h/deftest-sub :wallet/swap-asset-to-pay-network-balance
   [sub-name]
   (testing "Return swap asset-to-pay"
@@ -254,6 +255,5 @@
            (assoc-in [:profile/profile :currency] :usd)
            (assoc-in [:profile/profile :currency-symbol] "$")
            (assoc-in [:wallet :tokens :prices-per-token] prices-per-token-high)))
-    (let [token-symbol-for-fees "ETH"
-          result                (rf/sub [sub-name token-symbol-for-fees])]
+    (let [result (rf/sub [sub-name])]
       (is (match? result 1)))))

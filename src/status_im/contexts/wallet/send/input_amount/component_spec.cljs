@@ -98,7 +98,12 @@
    :wallet/bridge-to-network-details             nil
    :wallet/send-amount-fixed                     ""
    :wallet/send-display-token-decimals           5
-   :wallet/send-network                          {:chain-id 1}})
+   :wallet/send-network                          {:chain-id 1}
+   :wallet/send-native-token                     {:symbol        "ETH"
+                                                  :decimals      18
+                                                  :name          "Ethereum"
+                                                  :total-balance 100
+                                                  :address       "0x"}})
 
 (h/describe "Send > input amount screen"
   (h/setup-restorable-re-frame)

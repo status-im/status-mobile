@@ -7,7 +7,7 @@
 
 (def detail-item
   {:flex             1
-   :height           36
+   :min-height       36
    :background-color :transparent})
 
 (def floating-button-page-content-container
@@ -32,7 +32,7 @@
 (def details-container
   {:flex-direction     :row
    :justify-content    :space-between
-   :height             52
+   :min-height         52
    :padding-top        7
    :padding-horizontal 1
    :margin-bottom      8})

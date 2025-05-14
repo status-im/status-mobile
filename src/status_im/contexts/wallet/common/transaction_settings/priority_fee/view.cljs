@@ -6,7 +6,7 @@
     [utils.re-frame :as rf]))
 
 (defn hint-and-status
-  [priority-fee spectrum max-base-fee entered-value]
+  [spectrum max-base-fee entered-value]
   (let [upper-limit-exceeded? (> entered-value (:high spectrum))
         lower-limit-exceeded? (< entered-value (:low spectrum))]
     (cond
@@ -19,20 +19,19 @@
                                       :status    :warning}
       lower-limit-exceeded?          {:hint-text (i18n/label :t/priority-fee-lower spectrum)
                                       :status    :warning}
-      :else                          {:hint-text (i18n/label :t/priority-fee-current
-                                                             {:current priority-fee})
+      :else                          {:hint-text (i18n/label :t/priority-fee-current spectrum)
                                       :status    :default})))
 
 (defn view
   []
-  (let [priority-fee (rf/sub [:wallet/tx-settings-priority-fee])
+  (let [priority-fee (rf/sub [:wallet/tx-settings-custom-priority-fee])
         max-base-fee (rf/sub [:wallet/tx-settings-max-base-fee])
         spectrum     {:low  (rf/sub [:wallet/tx-settings-suggested-min-priority-fee])
                       :high (rf/sub [:wallet/tx-settings-suggested-max-priority-fee])}
-        conditions   (partial hint-and-status priority-fee spectrum max-base-fee)]
+        conditions   (partial hint-and-status spectrum max-base-fee)]
     [transaction-settings/custom-setting-screen
      {:screen-title  (i18n/label :t/priority-fee)
-      :token-sybmol  :gwei
+      :token-symbol  :gwei
       :conditions-fn conditions
       :current       priority-fee
       :info-title    (i18n/label :t/priority-fee)

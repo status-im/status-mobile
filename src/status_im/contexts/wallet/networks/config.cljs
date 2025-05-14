@@ -13,6 +13,9 @@
 (def ^:const ethereum-chain-id 1)
 (def ^:const sepolia-chain-id 11155111)
 
+;; NOTE: Used for placing the ethereum chains (including testnet) in the top of the list during sorting
+(def ^:const ethereum-chain-ids #{ethereum-chain-id sepolia-chain-id})
+
 (def ^:const arbitrum-chain-id 42161)
 (def ^:const arbitrum-sepolia-chain-id 421614)
 
@@ -24,16 +27,29 @@
 
 (def ^:const status-sepolia-chain-id 1660990954)
 
+(def ^:const bsc-chain-id 56)
+(def ^:const bsc-testnet-chain-id 97)
+
 ;; NOTE: Add a chain to `new-networks` to:
 ;;         1. highlight it as "new" in the UI
 ;;         2. add a "new feature" dot to places where we show networks
 
 (def ^:const new-networks
   #{status-sepolia-chain-id
-    base-chain-id
-    base-sepolia-chain-id})
+    bsc-chain-id
+    bsc-testnet-chain-id})
 
-(def ^:const chain-id-for-new-network-banner base-chain-id)
+(def ^:const chain-id-for-new-network-banner bsc-chain-id)
+
+;; NOTE: if the network should be supported in Bridge (Hop), add
+;; the chain id to the following set. Otherwise, remove if no longer
+;; supported.
+
+(def ^:const bridge-supported-networks
+  #{ethereum-chain-id
+    arbitrum-chain-id
+    optimism-chain-id
+    base-chain-id})
 
 ;; NOTE: add client-side chain details below for `mainnet` and `testnet`
 ;; respectively.
@@ -61,7 +77,13 @@
    {:network-name        :base
     :source              (resources/get-network :base)
     :abbreviated-name    "Base"
-    :block-explorer-name "Basescan"}})
+    :block-explorer-name "Basescan"}
+
+   bsc-chain-id
+   {:network-name        :bsc
+    :source              (resources/get-network :bsc)
+    :abbreviated-name    "BSC"
+    :block-explorer-name "Bscscan"}})
 
 (def ^:const testnets
   {sepolia-chain-id
@@ -75,6 +97,9 @@
 
    base-sepolia-chain-id
    (get mainnets base-chain-id)
+
+   bsc-testnet-chain-id
+   (get mainnets bsc-chain-id)
 
    status-sepolia-chain-id
    {:network-name        :status

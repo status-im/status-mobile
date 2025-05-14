@@ -177,8 +177,9 @@
 
 (defn- error-banner
   []
-  (let [enough-assets?   (rf/sub [:wallet/send-enough-assets?])
-        no-routes-found? (rf/sub [:wallet/no-routes-found?])]
+  (let [enough-assets?                (rf/sub [:wallet/send-enough-assets?])
+        no-routes-found?              (rf/sub [:wallet/no-routes-found?])
+        {native-token-symbol :symbol} (rf/sub [:wallet/send-native-token])]
     (cond
       no-routes-found?
       [quo/alert-banner
@@ -189,7 +190,7 @@
       [quo/alert-banner
        {:action?         true
         :text            (i18n/label :t/not-enough-assets-to-pay-gas-fees)
-        :button-text     (i18n/label :t/add-eth)
+        :button-text     (i18n/label :t/add-token {:token native-token-symbol})
         :on-button-press #(rf/dispatch [:show-bottom-sheet
                                         {:content buy-token/view}])}]
 

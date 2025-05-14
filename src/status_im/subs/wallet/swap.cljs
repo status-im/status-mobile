@@ -39,6 +39,11 @@
  :-> :network)
 
 (rf/reg-sub
+ :wallet/swap-network-native-token-symbol
+ :<- [:wallet/swap-network]
+ :-> :native-currency-symbol)
+
+(rf/reg-sub
  :wallet/swap-start-point
  :<- [:wallet/swap]
  :-> :start-point)
@@ -67,18 +72,6 @@
  :wallet/swap-updated-token-prices-usd
  :<- [:wallet/swap]
  :-> :updated-token-prices)
-
-(rf/reg-sub
- :wallet/swap-asset-to-pay-networks
- :<- [:wallet/swap-asset-to-pay]
- (fn [token]
-   (let [{token-networks :networks} token
-         grouped-networks           (group-by :layer
-                                              token-networks)
-         mainnet-network            (first (get grouped-networks constants/layer-1-network))
-         layer-2-networks           (get grouped-networks constants/layer-2-network)]
-     {:mainnet-network  mainnet-network
-      :layer-2-networks layer-2-networks})))
 
 (rf/reg-sub
  :wallet/swap-asset-to-pay-network-balance
@@ -255,11 +248,12 @@
  :<- [:wallet/swap-proposal]
  :<- [:profile/currency]
  :<- [:wallet/prices-per-token]
- (fn [[account swap-proposal currency prices-per-token] [_ token-symbol-for-fees]]
-   (when token-symbol-for-fees
+ :<- [:wallet/swap-network-native-token-symbol]
+ (fn [[account swap-proposal currency prices-per-token native-token-symbol]]
+   (when native-token-symbol
      (let [tokens              (:tokens account)
            token-for-fees      (first (filter #(= (string/lower-case (:symbol %))
-                                                  (string/lower-case token-symbol-for-fees))
+                                                  (string/lower-case native-token-symbol))
                                               tokens))
            fee-in-native-token (send-utils/full-route-gas-fee [swap-proposal])
            fee-in-fiat         (utils/calculate-token-fiat-value
@@ -272,8 +266,9 @@
 (rf/reg-sub
  :wallet/swap-asset-to-pay-balance-for-chain-data
  :<- [:wallet/swap-asset-to-pay]
- (fn [asset-to-pay]
-   (let [token-symbol (or (:symbol asset-to-pay) constants/token-for-fees-symbol)]
+ :<- [:wallet/swap-network-native-token-symbol]
+ (fn [[asset-to-pay native-token-symbol]]
+   (when-let [token-symbol (or (:symbol asset-to-pay) native-token-symbol)]
      @(rf/subscribe [:wallet/token-by-symbol token-symbol]))))
 
 (rf/reg-sub
@@ -314,17 +309,19 @@
  :<- [:wallet/swap-approval-fee]
  :<- [:profile/currency]
  :<- [:wallet/prices-per-token]
- (fn [[account approval-fee currency prices-per-token]]
-   (let [tokens         (:tokens account)
-         token-for-fees (first (filter #(= (string/lower-case (:symbol %))
-                                           (string/lower-case constants/token-for-fees-symbol))
-                                       tokens))
-         fee-in-fiat    (utils/calculate-token-fiat-value
-                         {:currency         currency
-                          :balance          approval-fee
-                          :token            token-for-fees
-                          :prices-per-token prices-per-token})]
-     fee-in-fiat)))
+ :<- [:wallet/swap-network-native-token-symbol]
+ (fn [[account approval-fee currency prices-per-token native-token-symbol]]
+   (when native-token-symbol
+     (let [tokens         (:tokens account)
+           token-for-fees (first (filter #(= (string/lower-case (:symbol %))
+                                             (string/lower-case native-token-symbol))
+                                         tokens))
+           fee-in-fiat    (utils/calculate-token-fiat-value
+                           {:currency         currency
+                            :balance          approval-fee
+                            :token            token-for-fees
+                            :prices-per-token prices-per-token})]
+       fee-in-fiat))))
 
 ;; NOTE: updated route prices come only in USD (for now). When the router will
 ;; allow to define the currency, we should use only the updated prices, but till
@@ -385,11 +382,13 @@
  :<- [:wallet/swap-asset-to-pay-balance-for-chain-data]
  :<- [:wallet/max-swap-fee]
  :<- [:wallet/swap-asset-to-pay-symbol]
- (fn [[network asset-to-pay-with-current-account-balance max-swap-fee pay-token-symbol]]
+ :<- [:wallet/swap-network-native-token-symbol]
+ (fn [[network asset-to-pay-with-current-account-balance max-swap-fee pay-token-symbol
+       native-token-symbol]]
    (let [pay-token-balance (utils/token-balance-for-network
                             asset-to-pay-with-current-account-balance
                             (:chain-id network))]
-     (if (= pay-token-symbol constants/token-for-fees-symbol)
+     (if (= pay-token-symbol native-token-symbol)
        (let [buffered-fee (money/mul max-swap-fee
                                      (inc (/ constants/eth-max-fee-buffer-percent 100)))]
          (money/sub pay-token-balance buffered-fee))

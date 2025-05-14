@@ -73,8 +73,7 @@
 (defn- transaction-details
   []
   (let [theme                  (quo.context/use-theme)
-        swap-proposal-fee      (rf/sub [:wallet/wallet-swap-proposal-fee-fiat
-                                        constants/token-for-fees-symbol])
+        swap-proposal-fee      (rf/sub [:wallet/wallet-swap-proposal-fee-fiat])
         approval-gas-fee       (rf/sub [:wallet/approval-gas-fees])
         max-slippage           (rf/sub [:wallet/swap-max-slippage])
         loading-swap-proposal? (rf/sub [:wallet/swap-loading-swap-proposal?])
@@ -123,7 +122,8 @@
         approval-transaction-id          (rf/sub [:wallet/swap-approval-transaction-id])
         approved-amount                  (rf/sub [:wallet/swap-approved-amount])
         error-response                   (rf/sub [:wallet/swap-error-response])
-        eth-proposal?                    (= pay-token-symbol "ETH")
+        native-token-symbol              (rf/sub [:wallet/swap-network-native-token-symbol])
+        native-token-proposal?           (= pay-token-symbol native-token-symbol)
         overlay-shown?                   (boolean (:sheets (rf/sub [:bottom-sheet])))
         input-ref                        (rn/use-ref-atom nil)
         set-input-ref                    (rn/use-callback (fn [ref] (reset! input-ref ref)))
@@ -135,7 +135,7 @@
                                                   pay-input-num-value])
         available-crypto-limit           (rf/sub [:wallet/swap-available-crypto-limit])
         display-decimals                 (min pay-token-decimals
-                                              (if eth-proposal?
+                                              (if native-token-proposal?
                                                 constants/eth-send-amount-decimal
                                                 constants/min-token-decimals-to-display))
         total-crypto-limit               (money/bignumber
@@ -179,20 +179,20 @@
                                           [pay-input-amount])
         on-max-balance-press             (rn/use-callback
                                           (fn []
-                                            (let [max-value (if eth-proposal?
+                                            (let [max-value (if native-token-proposal?
                                                               (number/format-decimal-fixed
                                                                available-crypto-limit
                                                                constants/eth-send-amount-decimal)
                                                               (money/to-string available-crypto-limit))]
                                               (when (money/greater-than max-value 0)
                                                 (on-max-press max-value))))
-                                          [available-crypto-limit eth-proposal?])]
+                                          [available-crypto-limit native-token-proposal?])]
     (rn/use-unmount #(rf/dispatch [:wallet/clean-swap]))
     (rn/use-effect
      (fn []
-       (when eth-proposal?
+       (when native-token-proposal?
          (request-swap-proposal-fee)))
-     [eth-proposal?])
+     [native-token-proposal?])
     (rn/use-effect
      (fn []
        (request-fetch-swap-proposal))
@@ -304,6 +304,7 @@
                                  (i18n/label :t/insufficient-funds-for-swaps)
                                  (swap-utils/error-message-from-code error-response-code
                                                                      error-response-details))
+        native-token-symbol    (rf/sub [:wallet/swap-network-native-token-symbol])
         props                  (cond-> {:container-style      style/alert-banner
                                         :text-number-of-lines 0
                                         :text                 error-text}
@@ -325,7 +326,8 @@
                                                              [:show-bottom-sheet
                                                               {:content (fn []
                                                                           [buy-token/view])}]))
-                                         :button-text     (i18n/label :t/add-eth)}))]
+                                         :button-text     (i18n/label :t/add-token
+                                                                      {:token native-token-symbol})}))]
     (when (or pay-input-error? error-response)
       [quo/alert-banner props])))
 

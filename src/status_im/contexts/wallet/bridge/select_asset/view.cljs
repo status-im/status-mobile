@@ -6,6 +6,7 @@
     [status-im.contexts.wallet.bridge.select-asset.style :as style]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.asset-list.view :as asset-list]
+    [status-im.contexts.wallet.networks.core :as networks]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -28,6 +29,7 @@
          :placeholder     (i18n/label :t/search-assets)}]
        [asset-list/view
         {:search-text    @search-text
+         :chain-ids      (networks/get-bridge-supported-networks)
          :on-token-press (fn [token]
                            (rf/dispatch [:wallet/bridge-select-token
                                          {:token    token

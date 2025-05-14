@@ -7,7 +7,6 @@
     [status-im.contexts.wallet.bridge.bridge-to.style :as style]
     [status-im.contexts.wallet.common.account-switcher.view :as account-switcher]
     [status-im.contexts.wallet.common.utils :as utils]
-    [status-im.contexts.wallet.networks.core :as networks]
     [status-im.setup.hot-reload :as hot-reload]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -42,21 +41,19 @@
 
 (defn view
   []
-  (let [account          (rf/sub [:wallet/current-viewing-account])
-        token            (rf/sub [:wallet/wallet-send-token])
-        network          (rf/sub [:wallet/send-network])
-        network-name     (:full-name network)
-        token-symbol     (:symbol token)
-        tokens           (:tokens account)
-        to-networks      (rf/sub [:wallet/bridge-to-networks])
-        mainnet          (-> to-networks :layer-1 first)
-        layer-2-networks (:layer-2 to-networks)
-        account-token    (some #(when (= token-symbol (:symbol %)) %) tokens)
-        account-token    (when account-token
-                           (assoc account-token
-                                  :networks           (:networks token)
-                                  :supported-networks (:supported-networks token)))
-        bridge-to-title  (i18n/label :t/select-network-to-receive)]
+  (let [account         (rf/sub [:wallet/current-viewing-account])
+        token           (rf/sub [:wallet/wallet-send-token])
+        network         (rf/sub [:wallet/send-network])
+        network-name    (:full-name network)
+        token-symbol    (:symbol token)
+        tokens          (:tokens account)
+        to-networks     (rf/sub [:wallet/bridge-to-networks])
+        account-token   (some #(when (= token-symbol (:symbol %)) %) tokens)
+        account-token   (when account-token
+                          (assoc account-token
+                                 :networks           (:networks token)
+                                 :supported-networks (:supported-networks token)))
+        bridge-to-title (i18n/label :t/select-network-to-receive)]
     (hot-reload/use-safe-unmount #(rf/dispatch [:wallet/clean-bridge-to-selection]))
     [rn/view
      [account-switcher/view
@@ -84,12 +81,8 @@
         :type         :network
         :network-logo (:source network)
         :size         24}]]
-     (when-not (networks/eth-mainnet? network)
-       [rn/view style/content-container
-        [bridge-token-component (assoc mainnet :network-name :t/mainnet) account-token]])
-     [quo/divider-label (i18n/label :t/layer-2)]
      [rn/flat-list
-      {:data                    layer-2-networks
+      {:data                    to-networks
        :render-fn               (fn [network]
                                   [bridge-token-component network account-token])
        :content-container-style style/content-container}]]))

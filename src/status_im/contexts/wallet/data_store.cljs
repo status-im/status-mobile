@@ -107,12 +107,32 @@
    #(or (string/blank? (:symbol %)) (string/blank? (:name %)))
    tokens))
 
+(defn- merge-token
+  [existing-token token]
+  (update existing-token
+          :balances-per-chain
+          #(merge-with merge % (:balances-per-chain token))))
+
+(defn- merge-tokens-with-same-symbol
+  [tokens]
+  (->> tokens
+       (reduce
+        (fn [acc token]
+          (update acc
+                  (:symbol token)
+                  #(if % (merge-token % token) token)))
+        {})
+       vals))
+
 (defn rpc->tokens
   [tokens supported-chains-by-token-symbol]
   (-> tokens
       (update-keys name)
       (update-vals #(cske/transform-keys transforms/->kebab-case-keyword %))
       (update-vals remove-tokens-with-empty-values)
+      ;; merge tokens with the same symbol as if the same token has balance in different chains,
+      ;; it's returned separately
+      (update-vals merge-tokens-with-same-symbol)
       (update-vals #(update-balances-per-chain % supported-chains-by-token-symbol))))
 
 (defn partially-operable-accounts?
@@ -311,8 +331,9 @@
   (comp ->old-route-paths remove-invalid-bonder-fees-routes))
 
 (defn fix-routes
-  [data]
+  [{:keys [UpdatedPrices] :as data}]
   (-> data
       (rpc->suggested-routes)
       (update :best best-routes-fix)
-      (update :candidates candidates-fix)))
+      (update :candidates candidates-fix)
+      (assoc :updated-token-prices UpdatedPrices)))

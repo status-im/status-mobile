@@ -2,7 +2,6 @@
   (:require [quo.core :as quo]
             [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.buy-token.view :as buy-token]
-            [status-im.contexts.wallet.swap.utils :as swap-utils]
             [status-im.feature-flags :as ff]
             [utils.i18n :as i18n]
             [utils.money :as money]
@@ -49,7 +48,7 @@
                           (rf/dispatch [:wallet/bridge-select-token params]))})
 
 (defn- action-swap
-  [{:keys [token asset-to-receive token-symbol testnet-mode?]}]
+  [{:keys [token token-symbol testnet-mode?]}]
   {:icon                :i/transaction
    :accessibility-label :swap
    :label               (i18n/label :t/swap)
@@ -57,9 +56,9 @@
    :on-press            (fn []
                           (rf/dispatch [:hide-bottom-sheet])
                           (rf/dispatch [:wallet/clean-send-data])
+                          (rf/dispatch [:wallet/clean-swap])
                           (rf/dispatch [:wallet.swap/start
                                         {:asset-to-pay     (or token {:symbol token-symbol})
-                                         :asset-to-receive asset-to-receive
                                          :open-new-screen? true}]))})
 
 (defn- action-manage-tokens
@@ -88,8 +87,6 @@
         account-owns-token? (rf/sub [:wallet/current-account-owns-token token-symbol])
         networks            (rf/sub [:wallet/active-networks])
         token-owned?        (if selected-account account-owns-token? (seq token-owners))
-        asset-to-receive    (rf/sub [:wallet/token-by-symbol-from-first-available-account-with-balance
-                                     (swap-utils/default-asset-to-receive token-symbol)])
         unique-owner?       (= (count token-owners) 1)
         params              (cond-> {:start-flow?   true
                                      :owners        token-owners
@@ -118,9 +115,7 @@
                    (action-send params entry-point))
                  (action-receive selected-account)
                  (when token-owned?
-                   (action-swap (assoc params
-                                       :asset-to-receive
-                                       asset-to-receive)))
+                   (action-swap params))
                  (when token-owned?
                    (action-bridge (assoc params
                                          :networks

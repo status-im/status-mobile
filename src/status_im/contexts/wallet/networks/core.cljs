@@ -15,12 +15,31 @@
   [chain-id]
   (contains? networks.config/new-networks chain-id))
 
+(defn ethereum-network?
+  [network]
+  (contains? networks.config/ethereum-chain-ids (:chain-id network)))
+
 (defn eth-mainnet?
   "Checks if the passed network is the Ethereum Mainnet chain"
   [network]
   (-> network
       :chain-id
       (= 1)))
+
+(defn get-bridge-supported-networks
+  "Returns the bridge (Hop) supported networks"
+  []
+  networks.config/bridge-supported-networks)
+
+(defn bridge-supported-network?
+  "Checks if the network is supported in bridge (Hop)"
+  [{:keys [chain-id]}]
+  (contains? networks.config/bridge-supported-networks chain-id))
+
+(defn filter-bridge-supported-networks
+  "Returns only the networks that are supported in bridge (Hop)"
+  [networks]
+  (filter #(bridge-supported-network? %) networks))
 
 (defn get-block-explorer-tx-url
   "Returns the block-explorer transaction url for a chain"

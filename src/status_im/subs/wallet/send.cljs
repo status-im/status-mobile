@@ -1,5 +1,6 @@
 (ns status-im.subs.wallet.send
   (:require
+    [clojure.string :as string]
     [re-frame.core :as rf]
     [status-im.constants :as constants]
     [status-im.contexts.wallet.common.activity-tab.constants :as activity-tab-constants]
@@ -55,6 +56,17 @@
  :wallet/send-network
  :<- [:wallet/wallet-send]
  :-> :network)
+
+(rf/reg-sub
+ :wallet/send-native-token
+ :<- [:wallet/current-viewing-account-or-default]
+ :<- [:wallet/active-networks]
+ :<- [:wallet/send-network]
+ (fn [[{:keys [tokens]} networks send-network]]
+   (->> (common-utils/tokens-with-balance tokens networks [(:chain-id send-network)])
+        (filter #(= (string/lower-case (:symbol %))
+                    (string/lower-case (:native-currency-symbol send-network))))
+        first)))
 
 (rf/reg-sub
  :wallet/sending-collectible?
@@ -124,8 +136,8 @@
 (rf/reg-sub
  :wallet/send-native-token?
  :<- [:wallet/wallet-send]
- (fn [{:keys [token token-display-name]}]
-   (and token (= token-display-name "ETH"))))
+ (fn [{:keys [token token-symbol network]}]
+   (and token (= token-symbol (:native-currency-symbol network)))))
 
 (rf/reg-sub
  :wallet/total-amount
@@ -165,18 +177,6 @@
  :<- [:wallet/networks-by-id]
  (fn [[{:keys [bridge-to-chain-id]} networks-by-id]]
    (get networks-by-id bridge-to-chain-id)))
-
-(rf/reg-sub
- :wallet/send-token-grouped-networks
- :<- [:wallet/wallet-send-token]
- (fn [token]
-   (let [{token-networks :networks} token
-         grouped-networks           (group-by :layer
-                                              token-networks)
-         mainnet-network            (first (get grouped-networks constants/layer-1-network))
-         layer-2-networks           (get grouped-networks constants/layer-2-network)]
-     {:mainnet-network  mainnet-network
-      :layer-2-networks layer-2-networks})))
 
 (rf/reg-sub
  :wallet/send-token-network-balance
@@ -255,8 +255,6 @@
  :<- [:wallet/active-networks]
  :<- [:wallet/send-network]
  (fn [[networks send-network]]
-   (let [available-networks-for-bridge (remove #(= (:chain-id send-network)
-                                                   (:chain-id %))
-                                               networks)]
-     {:layer-1 (networks/get-networks-for-layer available-networks-for-bridge 1)
-      :layer-2 (networks/get-networks-for-layer available-networks-for-bridge 2)})))
+   (filter #(and (networks/bridge-supported-network? %)
+                 (not= (:chain-id %) (:chain-id send-network)))
+           networks)))

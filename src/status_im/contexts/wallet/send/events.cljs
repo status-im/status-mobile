@@ -47,11 +47,10 @@
  :wallet/suggested-routes-success
  (fn [{:keys [db]} [suggested-routes-data enough-assets?]]
    (let [chosen-route                            (:best suggested-routes-data)
-         {:keys [token collectible token-display-name
+         {:keys [token collectible native-token?
                  receiver-network-values
                  sender-network-values tx-type]} (get-in db db-path/send)
          token-decimals                          (if collectible 0 (:decimals token))
-         native-token?                           (and token (= token-display-name "ETH"))
          to-network-amounts-by-chain             (send-utils/network-amounts-by-chain
                                                   {:route          chosen-route
                                                    :token-decimals token-decimals
@@ -221,7 +220,10 @@
               network      (update-in db-path/send
                                       #(-> %
                                            (dissoc :collectible)
-                                           (assoc :network network)))
+                                           (assoc :network       network
+                                                  :native-token? (= (or token-symbol
+                                                                        (:symbol token-data))
+                                                                    (:native-currency-symbol network)))))
               token-symbol (update-in db-path/send assoc :token-symbol token-symbol)
               token-data   (update-in db-path/send
                                       #(assoc %
@@ -315,6 +317,8 @@
                        :collectible
                        :collectible-multiple-owners?
                        :token-display-name
+                       (when (send-utils/tx-type-collectible? transaction-type)
+                         :network)
                        :amount
                        (when (send-utils/tx-type-collectible? transaction-type)
                          :tx-type))}))))
@@ -333,6 +337,8 @@
          tx-type            (if (= contract-type constants/wallet-contract-type-erc-1155)
                               :tx/collectible-erc-1155
                               :tx/collectible-erc-721)
+         chain-id           (get-in collectible [:id :contract-id :chain-id])
+         network            (networks.db/get-network-details db chain-id)
          collectible-id     (get-in collectible [:id :token-id])
          single-owner?      (-> collectible :ownership count (= 1))
          owner-address      (-> collectible :ownership first :address)
@@ -349,12 +355,17 @@
                                 (update-in db-path/send dissoc :token)
                                 (update-in db-path/send
                                            assoc
-                                           :entry-point entry-point
-                                           :collectible collectible
+                                           :entry-point
+                                           entry-point
+                                           :collectible
+                                           collectible
                                            :collectible-multiple-owners?
                                            (not single-owner?)
-                                           :token-display-name token-display-name
-                                           :tx-type tx-type))
+                                           :token-display-name
+                                           token-display-name
+                                           :tx-type
+                                           tx-type
+                                           :network network))
          recipient-set?     (-> db db/send :recipient)]
      {:db (cond-> collectible-tx
 

@@ -5,6 +5,7 @@
             [status-im.constants :as constants]
             [status-im.contexts.wallet.common.utils :as utils]
             [status-im.contexts.wallet.common.utils.networks :as network-utils]
+            [status-im.contexts.wallet.networks.core :as networks]
             [status-im.contexts.wallet.send.utils :as send-utils]
             [status-im.contexts.wallet.sheets.missing-keypair.view :as missing-keypair]
             [status-im.subs.wallet.add-account.address-to-watch]
@@ -160,6 +161,12 @@
                     :total-balance      (utils/calculate-total-token-balance
                                          token
                                          enabled-from-chain-ids))))))
+
+(rf/reg-sub
+ :wallet/bridge-token
+ :<- [:wallet/wallet-send-token]
+ (fn [token]
+   (update token :networks #(filter networks/bridge-supported-network? %))))
 
 (rf/reg-sub
  :wallet/wallet-send-token-symbol
@@ -971,6 +978,18 @@
    (or value-set-by-user (:tx-priority-fee gas-fees))))
 
 (rf/reg-sub
+ :wallet/tx-settings-custom-priority-fee
+ :<- [:wallet/tx-settings-fee-mode]
+ :<- [:wallet/tx-settings-gas-fees]
+ :<- [:wallet/tx-settings-priority-fee-user]
+ :<- [:wallet/tx-settings-suggested-min-priority-fee]
+ (fn [[fee-mode gas-fees value-set-by-user min-priority-fee]]
+   (cond
+     value-set-by-user                value-set-by-user
+     (= :tx-fee-mode/custom fee-mode) (:tx-priority-fee gas-fees)
+     :else                            min-priority-fee)))
+
+(rf/reg-sub
  :wallet/tx-settings-gas-amount
  :<- [:wallet/tx-settings-gas-amount-route]
  :<- [:wallet/tx-settings-gas-amount-user]
@@ -993,9 +1012,8 @@
 (rf/reg-sub
  :wallet/tx-settings-suggested-max-priority-fee
  :<- [:wallet/tx-settings-gas-fees]
- :<- [:wallet/tx-settings-max-base-fee]
- (fn [[gas-fees max-base-fee]]
-   (min max-base-fee (:suggested-max-priority-fee gas-fees))))
+ (fn [gas-fees]
+   (:suggested-max-priority-fee gas-fees)))
 
 (rf/reg-sub
  :wallet/tx-settings-suggested-min-priority-fee

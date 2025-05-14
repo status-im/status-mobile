@@ -1,9 +1,7 @@
 (ns status-im.contexts.wallet.sheets.network-selection.style)
 
-(defn network-list-container
-  [mainnet?]
-  {:margin-horizontal 8
-   :padding-vertical  (when mainnet? 8)})
+(def network-list-container
+  {:margin-horizontal 8})
 
 (def header-container
   {:height             62

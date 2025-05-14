@@ -172,15 +172,16 @@
 (defn- data-item
   [{:keys [network-image title subtitle size loading?]}]
   [quo/data-item
-   {:container-style style/detail-item
-    :blur?           false
-    :card?           false
-    :network-image   network-image
-    :subtitle-type   (if network-image :network :default)
-    :status          (if loading? :loading :default)
-    :title           title
-    :subtitle        subtitle
-    :size            size}])
+   {:container-style     style/detail-item
+    :blur?               false
+    :card?               false
+    :network-image       network-image
+    :subtitle-type       (if network-image :network :default)
+    :status              (if loading? :loading :default)
+    :title               title
+    :subtitle            subtitle
+    :subtitle-text-props {:style {:flex 1}}
+    :size                size}])
 
 (defn- transaction-details
   []
