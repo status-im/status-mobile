@@ -50,9 +50,7 @@
                                            {:onboarding? (:onboarding? params)}])
         [third-party-checked?
          set-third-party-checked] (rn/use-state
-                                   (if (ff/enabled? ::ff/settings.news-notifications)
-                                     true
-                                     false))
+                                   (boolean? (ff/enabled? ::ff/settings.news-notifications)))
         on-enable-notifications   (rn/use-callback
                                    (fn []
                                      (on-notifications-setup-start
