@@ -71,10 +71,11 @@
        [rn/view
         {:style style/news-notifications-checkbox-container}
         [quo/selectors
-         {:type      :checkbox
-          :blur?     true
-          :checked?  third-party-checked?
-          :on-change set-third-party-checked}]
+         {:type                :checkbox
+          :blur?               true
+          :customization-color profile-color
+          :checked?            third-party-checked?
+          :on-change           set-third-party-checked}]
         [quo/text
          {:size  :paragraph-2
           :style style/news-notifications-checkbox-text}
