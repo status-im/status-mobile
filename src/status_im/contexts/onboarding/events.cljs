@@ -111,11 +111,9 @@
 (defn biometrics-setup-done
   [{:keys [db]} [{:keys [on-success on-fail]} {:keys [error]}]]
   {:db (assoc-in db [:onboarding/profile :auth-method] constants/auth-method-biometric)
-   :fx (cond-> []
-         (some? error)
-         (conj [:dispatch (conj on-fail error)])
-         :else
-         (conj [:dispatch on-success]))})
+   :fx [(if (some? error)
+          [:dispatch (conj on-fail error)]
+          [:dispatch on-success])]})
 
 (rf/reg-event-fx :onboarding/biometrics-setup-done biometrics-setup-done)
 
