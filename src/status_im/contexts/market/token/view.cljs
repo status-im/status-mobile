@@ -36,7 +36,7 @@
 
 (defn token-parameter
   [{:keys [theme title value first?]}]
-  [rn/view {:style (style/token-parameter theme first?)}
+  [rn/view {:style (style/token-parameter first?)}
    [quo/text
     {:size  :paragraph-2
      :style (style/token-parameter-title theme)}
@@ -46,6 +46,12 @@
      :weight :medium
      :style  (style/token-parameter-value theme)}
     value]])
+
+(defn dashed-line
+  [{:keys [type]}]
+  (let [theme (quo.context/use-theme)]
+    [rn/view {:style (style/dashed-line-outer-container theme type)}
+     [rn/view {:style (style/dashed-line-inner-container theme type)}]]))
 
 (defn view
   []
@@ -87,17 +93,19 @@
           :type      :outline}
          (i18n/label :t/buy)]]]]
      [rn/view {:style (style/content-container theme)}
-      [rn/view {:style (style/content-row theme true)}
+      [rn/view {:style style/content-row}
        [token-overview
         {:theme  theme
          :value  "€575.56"
          :change -0.101}]]
-      [rn/view {:style (style/content-row theme false)}
+      [dashed-line {:type :horizontal}]
+      [rn/view {:style style/content-row}
        [token-parameter
         {:theme  theme
          :title  "Market cap"
          :value  "€84,817,829,837"
          :first? true}]
+       [dashed-line {:type :vertical}]
        [token-parameter
         {:theme  theme
          :title  "24h Volume"
