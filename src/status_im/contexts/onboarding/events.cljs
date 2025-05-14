@@ -44,19 +44,16 @@
 (defn notifications-setup-done
   [{:keys [_db]} [{:keys [biometrics? onboarding? syncing?]}]]
   {:fx (cond-> []
-         (and biometrics? onboarding? syncing?)
+         (and onboarding? syncing?)
          (conj [:dispatch [:onboarding/finalize-setup]])
 
-         (and biometrics? onboarding? (not syncing?))
-         (conj [:dispatch [:onboarding/create-account-and-login]])
-
-         (and (not biometrics?) onboarding? syncing?)
+         (and onboarding? syncing? (not biometrics?))
          (conj [:dispatch [:onboarding/finish-onboarding]])
 
-         (and (not biometrics?) onboarding? (not syncing?))
+         (and onboarding? (not syncing?))
          (conj [:dispatch [:onboarding/create-account-and-login]])
 
-         (and (not biometrics?) (not onboarding?) (not syncing?))
+         (and (not onboarding?) (not syncing?))
          (conj [:dispatch [:shell/show-root-view]]))})
 
 
@@ -300,23 +297,24 @@
          {:keys [key-uid] :as profile}   (:profile/profile db)
          biometric-enabled?              (= auth-method constants/auth-method-biometric)]
      {:db (assoc db :onboarding/generated-keys? true)
-      :fx (cond->
-            [(when temporary-display-name?
-               [:dispatch [:profile/set-default-profile-name profile]])
-             (when biometric-enabled?
-               [:keychain/save-password-and-auth-method
-                {:key-uid         key-uid
-                 :masked-password (if syncing?
-                                    password
-                                    (security/hash-masked-password password))
-                 :on-success      (fn []
-                                    (rf/dispatch [:onboarding/set-auth-method auth-method])
-                                    (when syncing?
-                                      (rf/dispatch
-                                       [:onboarding/finish-onboarding])))
-                 :on-error        #(log/error "failed to save biometrics"
-                                              {:key-uid key-uid
-                                               :error   %})}])]
+      :fx (cond-> []
+            temporary-display-name?
+            (conj [:dispatch [:profile/set-default-profile-name profile]])
+
+            biometric-enabled?
+            (conj [:keychain/save-password-and-auth-method
+                   {:key-uid         key-uid
+                    :masked-password (if syncing?
+                                       password
+                                       (security/hash-masked-password password))
+                    :on-success      (fn []
+                                       (rf/dispatch [:onboarding/set-auth-method auth-method])
+                                       (when syncing?
+                                         (rf/dispatch
+                                          [:onboarding/finish-onboarding])))
+                    :on-error        #(log/error "failed to save biometrics"
+                                                 {:key-uid key-uid
+                                                  :error   %})}])
 
             (and enable-notifications?
                  enable-news-notifications?)
