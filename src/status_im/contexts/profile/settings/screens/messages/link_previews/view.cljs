@@ -1,11 +1,11 @@
 (ns status-im.contexts.profile.settings.screens.messages.link-previews.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [status-im.common.events-helper :as events-helper]
-   [status-im.contexts.chat.messenger.composer.constants :as constants]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [status-im.common.events-helper :as events-helper]
+    [status-im.contexts.chat.messenger.composer.constants :as constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   []

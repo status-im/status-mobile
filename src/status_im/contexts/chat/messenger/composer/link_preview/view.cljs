@@ -53,10 +53,11 @@
 (defn link-preview-options
   []
   [rn/view
-   [rn/view {:flex-direction  :row
-             :justify-content :space-between
-             :padding-bottom     12
-             :padding-horizontal 20}
+   [rn/view
+    {:flex-direction     :row
+     :justify-content    :space-between
+     :padding-bottom     12
+     :padding-horizontal 20}
     [quo/text
      {:accessibility-label :communities-join-community
       :weight              :semi-bold
@@ -66,8 +67,7 @@
    [quo/action-drawer
     [[{:icon     :i/reveal
        :label    "Show for this message"
-       :on-press #(hide-sheet-and-dispatch [:profile.settings/set-unfurl-links-mode
-                                            constants/preview-always-ask])}
+       :on-press #(hide-sheet-and-dispatch [:link-preview/show-unfurled-url])}
       {:icon     :i/reveal-whitelist
        :label    "Always show previews"
        :on-press #(hide-sheet-and-dispatch [:profile.settings/set-unfurl-links-mode
@@ -95,16 +95,13 @@
 
 (defn view
   [theme]
-  (let [previews      (rf/sub [:chats/link-previews-unfurled])
-        height        (use-animated-height (boolean (seq previews)))
-        mode          (rf/sub [:profile/url-unfurling-mode])
-        show-previews (atom (or false
-                                (= mode constants/preview-always-share)))]
-    (cond
-      @show-previews
-      [reanimated/view
-       {:style (reanimated/apply-animations-to-style {:height height} {:z-index 1})}
-       [unfurl-links previews]]
-
-      (and (= mode constants/preview-always-ask) (boolean (seq previews)))
-      [show-unfurl-link-options theme])))
+  (let [previews     (rf/sub [:chats/link-previews-unfurled])
+        height       (use-animated-height (boolean (seq previews)))
+        mode         (rf/sub [:profile/url-unfurling-mode])
+        show-preview (rf/sub [:chat/show-link-preview])]
+    [reanimated/view
+     {:style (reanimated/apply-animations-to-style {:height height} {:z-index 1})}
+     (when (or (= mode constants/preview-always-share) show-preview)
+       [unfurl-links previews])
+     (when (and (= mode constants/preview-always-ask) (boolean (seq previews)))
+       [show-unfurl-link-options theme])]))

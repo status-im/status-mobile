@@ -21,6 +21,11 @@
                                 {:error error
                                  :event :link-preview/unfurl-urls}))}]}))
 
+(rf/defn show-unfurled-url
+  {:events [:link-preview/show-unfurled-url]}
+  [{:keys [db]}]
+  {:db (assoc-in db [:chat/show-link-preview] true)})
+
 (defn- urls->previews
   [preview-cache urls]
   (->> urls

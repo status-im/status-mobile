@@ -25,7 +25,7 @@
    :height           48
    :padding          12})
 
-(def options-container 
+(def options-container
   {:flex               1
    :padding-bottom     12
    :padding-horizontal 20})
