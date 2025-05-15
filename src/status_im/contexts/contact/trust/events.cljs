@@ -73,13 +73,6 @@
                            (cond
                              contact?
                              {:extra-action (fn []
-                                              (rf/dispatch [:toasts/upsert
-                                                            {:id   :remove-contact
-                                                             :type :positive
-                                                             :text (->> (i18n/label
-                                                                         :t/removed-from-contacts)
-                                                                        (string/lower-case)
-                                                                        (str name " "))}])
                                               (rf/dispatch [:contact.ui/remove-contact-pressed contact]))
                               :extra-text   (i18n/label :t/remove-contact)}
                              request?
