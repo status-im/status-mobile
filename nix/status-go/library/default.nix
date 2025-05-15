@@ -34,14 +34,19 @@ buildGoPackage {
   # Build the Go library
   # ld flags and netgo tag are necessary for integration tests to work on MacOS
   # https://github.com/status-im/status-mobile/issues/20135
+  # Enable GO111MODULE and build in the go/src/$goPackagePath directory 
+  # to make the githu.com/status-im/status-go/v10/mobile module available.
   buildPhase = ''
     runHook preBuild
-    go build \
+    pushd go/src/$goPackagePath
+    GO111MODULE=on \
+      go build \
       -buildmode='c-archive' \
       ${lib.optionalString stdenv.isDarwin "-ldflags=-extldflags=-lresolv"} \
       -tags='gowaku_skip_migrations gowaku_no_rln ${lib.optionalString stdenv.isDarwin "netgo"}' \
       -o "$out/libstatus.a" \
       $NIX_BUILD_TOP/main.go
+    popd
     runHook postBuild
   '';
 }
