@@ -1,6 +1,5 @@
 (ns status-im.contexts.contact.trust.events
   (:require
-    [clojure.string :as string]
     [re-frame.core :as re-frame]
     [status-im.common.confirmation-drawer.view :as confirmation-drawer]
     [status-im.constants :as constants]
