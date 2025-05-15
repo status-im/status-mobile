@@ -47,11 +47,14 @@
 
 (rf/reg-event-fx :contact/mark-as-untrusted-sheet
  (fn [_ [{:keys [public-key contact-request-state] :as contact}]]
-   (let [name     (profile.utils/displayed-name contact)
-         contact? (= contact-request-state
-                     constants/contact-request-state-mutual)
-         request? (= contact-request-state
-                     constants/contact-request-state-received)]
+   (let [name            (profile.utils/displayed-name contact)
+         contact?        (= contact-request-state
+                            constants/contact-request-state-mutual)
+         request?        (= contact-request-state
+                            constants/contact-request-state-received)
+         contact-request (when request?
+                           (rf/sub [:activity-center/pending-contact-request-from-contact-id
+                                    public-key]))]
      {:dispatch
       [:show-bottom-sheet
        {:content (fn []
@@ -82,5 +85,5 @@
                              request?
                              {:extra-action (fn []
                                               (rf/dispatch [:activity-center.contact-requests/decline
-                                                            public-key]))
+                                                            (:id contact-request)]))
                               :extra-text   (i18n/label :t/decline-contact-request)}))])}]})))
