@@ -58,8 +58,10 @@
      :action            :selector
      :action-props      {:on-change (when-not disabled? on-change)
                          :disabled? disabled?
-                         :checked?  (and (not disabled?)
-                                         non-contact-notifications-enabled?)}}))
+                         :checked?  (if (ff/enabled? ::ff/settings.news-notifications)
+                                      non-contact-notifications-enabled?
+                                      (and (not disabled?)
+                                           non-contact-notifications-enabled?))}}))
 
 (defn chat-community-mentions-notifications-setting
   [{:keys [notifications-enabled?
@@ -77,8 +79,10 @@
      :action            :selector
      :action-props      {:on-change (when-not disabled? on-change)
                          :disabled? disabled?
-                         :checked?  (and (not disabled?)
-                                         community-mentions-notifications-enabled?)}}))
+                         :checked?  (if (ff/enabled? ::ff/settings.news-notifications)
+                                      community-mentions-notifications-enabled?
+                                      (and (not disabled?)
+                                           community-mentions-notifications-enabled?))}}))
 
 (defn messenger-notifications-setting
   [{:keys [notifications-enabled? messenger-notifications-enabled?]}]
