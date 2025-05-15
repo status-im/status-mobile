@@ -760,6 +760,7 @@
   "dec": "Dec",
   "decimals": "Decimals",
   "decline": "Decline",
+  "decline-contact-request": "Decline contact request",
   "declined": "Declined",
   "decryption-failed-content": "An error occured decrypting your data. You might need to erase your old data and generate a new account. Tap “Apply” to erase or “Cancel” to try again",
   "default": "Default",

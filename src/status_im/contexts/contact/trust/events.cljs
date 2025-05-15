@@ -46,30 +46,41 @@
       :on-error   #(log/error "failed remove contact trust status" % contact-id)}]}))
 
 (rf/reg-event-fx :contact/mark-as-untrusted-sheet
- (fn [_ [{:keys [public-key] :as contact}]]
-   (let [name (profile.utils/displayed-name contact)]
+ (fn [_ [{:keys [public-key contact-request-state] :as contact}]]
+   (let [name     (profile.utils/displayed-name contact)
+         contact? (= contact-request-state
+                     constants/contact-request-state-mutual)
+         request? (= contact-request-state
+                     constants/contact-request-state-received)]
      {:dispatch
       [:show-bottom-sheet
        {:content (fn []
                    [confirmation-drawer/confirmation-drawer
-                    {:title               (i18n/label :t/mark-as-untrusted)
-                     :description         (i18n/label :t/mark-as-untrusted-description
-                                                      {:username (:primary-name contact)})
-                     :extra-action        (fn []
-                                            (rf/dispatch [:toasts/upsert
-                                                          {:id   :remove-contact
-                                                           :type :positive
-                                                           :text (->> (i18n/label
-                                                                       :t/removed-from-contacts)
-                                                                      (string/lower-case)
-                                                                      (str name " "))}])
-                                            (rf/dispatch [:contact.ui/remove-contact-pressed contact]))
-                     :extra-text          (i18n/label :t/remove-contact)
-                     :context             contact
-                     :accessibility-label :mark-as-untrustworthy
-                     :button-text         (i18n/label :t/mark-as-untrusted-button)
-                     :on-press            (fn []
-                                            (rf/dispatch [:hide-bottom-sheet])
-                                            (rf/dispatch
-                                             [:contact/mark-as-untrusted
-                                              public-key name]))}])}]})))
+                    (merge {:title               (i18n/label :t/mark-as-untrusted)
+                            :description         (i18n/label :t/mark-as-untrusted-description
+                                                             {:username (:primary-name contact)})
+                            :context             contact
+                            :accessibility-label :mark-as-untrustworthy
+                            :button-text         (i18n/label :t/mark-as-untrusted-button)
+                            :on-press            (fn []
+                                                   (rf/dispatch [:hide-bottom-sheet])
+                                                   (rf/dispatch
+                                                    [:contact/mark-as-untrusted
+                                                     public-key name]))}
+                           (cond
+                             contact?
+                             {:extra-action (fn []
+                                              (rf/dispatch [:toasts/upsert
+                                                            {:id   :remove-contact
+                                                             :type :positive
+                                                             :text (->> (i18n/label
+                                                                         :t/removed-from-contacts)
+                                                                        (string/lower-case)
+                                                                        (str name " "))}])
+                                              (rf/dispatch [:contact.ui/remove-contact-pressed contact]))
+                              :extra-text   (i18n/label :t/remove-contact)}
+                             request?
+                             {:extra-action (fn []
+                                              (rf/dispatch [:activity-center.contact-requests/decline
+                                                            public-key]))
+                              :extra-text   (i18n/label :t/decline-contact-request)}))])}]})))
