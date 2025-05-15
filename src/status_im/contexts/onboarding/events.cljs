@@ -148,8 +148,7 @@
                  {:key-uid key-uid}]]
                [:dispatch
                 [:onboarding/notifications-setup
-                 {:key-uid     key-uid
-                  :biometrics? false
+                 {:biometrics? false
                   :syncing?    false
                   :onboarding? false}]]]})
        {:fx [[:dispatch [:update-theme-and-init-root :screen/shell-stack]]
