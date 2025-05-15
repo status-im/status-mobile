@@ -45,9 +45,7 @@
 
 (defn- community-creation-options-testing
   []
-  [rn/view
-   {:padding-vertical 12
-    :row-gap          12}
+  [rn/view {:style {:padding-vertical 12 :row-gap 12}}
    [quo/divider-line]
    [rn/view
     [quo/action-drawer
@@ -65,13 +63,19 @@
         :on-press            #(rf/dispatch
                                [:fast-create-community/create-token-gated-community])}]]]]])
 
+(defn- open-learn-more-link
+  []
+  (rf/dispatch [:hide-bottom-sheet])
+  (rf/dispatch
+   [:browser.ui/open-url constants/create-community-help-url]))
+
+(defn- hide-bottom-sheet
+  []
+  (rf/dispatch [:hide-bottom-sheet]))
+
 (defn- create-community-sheet
   []
-  (let [customization-color  (rf/sub [:profile/customization-color])
-        open-learn-more-link (fn []
-                               (rf/dispatch [:hide-bottom-sheet])
-                               (rf/dispatch
-                                [:browser.ui/open-url constants/create-community-help-url]))]
+  (let [customization-color (rf/sub [:profile/customization-color])]
     [:<>
      [quo/drawer-top {:title (i18n/label :t/want-to-create-community)}]
      [quo/text {:style {:padding-horizontal 20 :padding-bottom 12}}
@@ -85,7 +89,7 @@
                           :icon-right          :i/external}
        :button-two-label (i18n/label :t/maybe-later)
        :button-two-props {:type     :grey
-                          :on-press #(rf/dispatch [:hide-bottom-sheet])}}]
+                          :on-press hide-bottom-sheet}}]
      (when config/fast-create-community-enabled?
        [community-creation-options-testing])]))
 
