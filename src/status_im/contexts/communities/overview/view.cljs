@@ -47,6 +47,10 @@
   start the flat-list scrolling."
   (+ sheet-displacement-threshold 56))
 
+(def nav-bar-content-threshold
+  "When the community name and logo start to appear"
+  (+ sheet-displacement-threshold 32))
+
 (defn- collapse-category
   [community-id category-id collapsed?]
   (rf/dispatch
@@ -316,10 +320,10 @@
         opposite-header-opacity (worklets/use-opposite-header-opacity header-opacity)
         nav-content-opacity     (worklets/use-nav-content-opacity
                                  {:scroll-amount                scroll-amount
-                                  :sheet-displacement-threshold sheet-displacement-threshold
+                                  :sheet-displacement-threshold nav-bar-content-threshold
                                   :expand-header-limit          expand-header-limit})
         {:keys [community-name color logo
-                cover-image]}   (rf/sub [:communities/community-overview community-id])]
+                cover-image]} (rf/sub [:communities/community-overview community-id])]
     [:<>
      [header-cover-image
       {:cover-image      cover-image
