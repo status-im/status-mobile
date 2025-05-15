@@ -6,7 +6,8 @@
     [status-im.constants :as constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im.contexts.profile.utils :as profile.utils]))
 
 (rf/reg-event-fx :contact/mark-as-untrusted-success
  (fn [{:keys [db]} [contact-id name]]
@@ -45,28 +46,30 @@
       :on-error   #(log/error "failed remove contact trust status" % contact-id)}]}))
 
 (rf/reg-event-fx :contact/mark-as-untrusted-sheet
- (fn [_ [{:keys [public-key primary-name] :as item}]]
-   {:dispatch
-    [:show-bottom-sheet
-     {:content (fn []
-                 [confirmation-drawer/confirmation-drawer
-                  {:title               (i18n/label :t/mark-as-untrusted)
-                   :description         (i18n/label :t/mark-as-untrusted-description
-                                                    {:username (:primary-name item)})
-                   :extra-action        (fn []
-                                          (rf/dispatch [:toasts/upsert
-                                                        {:id   :remove-contact
-                                                         :type :positive
-                                                         :text (->> (i18n/label :t/removed-from-contacts)
-                                                                    (string/lower-case)
-                                                                    (str primary-name " "))}])
-                                          (rf/dispatch [:contact.ui/remove-contact-pressed item]))
-                   :extra-text          (i18n/label :t/remove-contact)
-                   :context             item
-                   :accessibility-label :mark-as-untrustworthy
-                   :button-text         (i18n/label :t/mark-as-untrusted-button)
-                   :on-press            (fn []
-                                          (rf/dispatch [:hide-bottom-sheet])
-                                          (rf/dispatch
-                                           [:contact/mark-as-untrusted
-                                            public-key primary-name]))}])}]}))
+ (fn [_ [{:keys [public-key] :as contact}]]
+   (let [name (profile.utils/displayed-name contact)]
+     {:dispatch
+      [:show-bottom-sheet
+       {:content (fn []
+                   [confirmation-drawer/confirmation-drawer
+                    {:title               (i18n/label :t/mark-as-untrusted)
+                     :description         (i18n/label :t/mark-as-untrusted-description
+                                                      {:username (:primary-name contact)})
+                     :extra-action        (fn []
+                                            (rf/dispatch [:toasts/upsert
+                                                          {:id   :remove-contact
+                                                           :type :positive
+                                                           :text (->> (i18n/label
+                                                                       :t/removed-from-contacts)
+                                                                      (string/lower-case)
+                                                                      (str name " "))}])
+                                            (rf/dispatch [:contact.ui/remove-contact-pressed contact]))
+                     :extra-text          (i18n/label :t/remove-contact)
+                     :context             contact
+                     :accessibility-label :mark-as-untrustworthy
+                     :button-text         (i18n/label :t/mark-as-untrusted-button)
+                     :on-press            (fn []
+                                            (rf/dispatch [:hide-bottom-sheet])
+                                            (rf/dispatch
+                                             [:contact/mark-as-untrusted
+                                              public-key name]))}])}]})))

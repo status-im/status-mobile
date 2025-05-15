@@ -11,7 +11,8 @@
     [status-im.contexts.chat.contacts.drawers.nickname-drawer.view :as nickname-drawer]
     [status-im.contexts.communities.actions.chat.view :as communities-chat-actions]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im.contexts.profile.utils :as profile.utils]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -131,11 +132,11 @@
                                                                   public-key])}])}]))
 
 (defn handle-trust-mark-action
-  [{:keys [public-key primary-name trust-status] :as item}]
+  [{:keys [public-key trust-status] :as item}]
   (hide-sheet-and-dispatch
    (if (= trust-status
           constants/contact-trust-status-untrustworthy)
-     [:contact/remove-trust-status public-key primary-name]
+     [:contact/remove-trust-status public-key (profile.utils/displayed-name item)]
      [:contact/mark-as-untrusted-sheet item])))
 
 (defn mute-chat-entry
@@ -447,7 +448,6 @@
 
 (defn contact-actions
   [{:keys [public-key added?] :as contact} {:keys [chat-id admin?] :as extra-data}]
-  (tap> contact)
   (let [current-pub-key (rf/sub [:multiaccount/public-key])]
     [quo/action-drawer
      [[(view-profile-entry public-key)
