@@ -24,7 +24,7 @@
 
 (defn view
   []
-  (let [{:keys [nickname public-key contact-request-state blocked?]
+  (let [{:keys [nickname public-key contact-request-state blocked? trust-status]
          :as   contact}    (rf/sub [:contacts/current-contact])
         full-name          (profile.utils/displayed-name contact)
         on-remove-nickname (rn/use-callback
@@ -87,7 +87,10 @@
              :accessibility-label :remove-nickname
              :danger?             true})
           {:icon                :i/untrustworthy
-           :label               (i18n/label :t/mark-as-untrusted)
+           :label               (i18n/label (if (= trust-status
+                                                   constants/contact-trust-status-untrustworthy)
+                                              :t/remove-untrusted-mark
+                                              :t/mark-as-untrusted))
            :on-press            not-implemented/alert
            :accessibility-label :mark-as-untrusted
            :add-divider?        (when-not has-nickname? true)

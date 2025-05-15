@@ -26,7 +26,7 @@
 (defn view
   [{:keys [scroll-y]}]
   (let [{:keys [public-key customization-color ens-name nickname secondary-name
-                emoji-hash bio blocked? contact-request-state]
+                emoji-hash bio blocked? contact-request-state trust-status]
          :as   contact}     (rf/sub [:contacts/current-contact])
         customization-color (or customization-color constants/profile-default-color)
         full-name           (profile.utils/displayed-name contact)
@@ -35,12 +35,18 @@
         theme               (quo.context/use-theme)
         contact-status      (rn/use-memo
                              (fn []
-                               (cond
-                                 (= contact-request-state
-                                    constants/contact-request-state-mutual) :contact
-                                 blocked?                                   :blocked
-                                 :else                                      nil))
-                             [blocked? contact-request-state])
+                               (let [is-contact?       (= contact-request-state
+                                                          constants/contact-request-state-mutual)
+                                     is-untrustworthy? (= trust-status
+                                                          constants/contact-trust-status-untrustworthy)]
+                                 (cond
+                                   (and is-contact?
+                                        is-untrustworthy?) :untrustworthy-contact
+                                   blocked?                :blocked
+                                   is-contact?             :contact
+                                   is-untrustworthy?       :untrustworthy
+                                   :else                   nil)))
+                             [blocked? contact-request-state trust-status])
         on-start-chat       (rn/use-callback
                              #(rf/dispatch [:chat.ui/start-chat public-key ens-name])
                              [ens-name public-key])
