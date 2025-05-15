@@ -20,37 +20,6 @@
     [utils.re-frame :as rf]
     [utils.worklets.communities :as worklets]))
 
-;; NOTE: values compared against `scroll-amount` to trigger animations.
-(def expand-header-threshold
-  "Dragging distance to collapse/extend the community."
-  150)
-
-(def sheet-displacement-threshold
-  "Dragging distance to round sheet borders and move the sheet 8 units."
-  (+ expand-header-threshold 8))
-
-(def text-movement-threshold
-  "Dragging distance to start the text movement from/to the bottom to/from the right."
-  (* expand-header-threshold 0.7))
-
-(def info-opacity-threshold
-  "Dragging distance to appear/disappear the community info (description, tags & stats)."
-  (* expand-header-threshold 0.5))
-
-(def snap-header-threshold
-  "Threshold to automatically move the header to a collapsed/expanded state and avoid an
-  intermediate state."
-  (* expand-header-threshold 0.75))
-
-(def expand-header-limit
-  "Max dragging distance where the header animation ends. It works to identify when to
-  start the flat-list scrolling."
-  (+ sheet-displacement-threshold 56))
-
-(def nav-bar-content-threshold
-  "When the community name and logo start to appear"
-  (+ sheet-displacement-threshold 32))
-
 (defn- collapse-category
   [community-id category-id collapsed?]
   (rf/dispatch
@@ -243,12 +212,13 @@
      safe-area/bottom))
 
 (defn- channel-listing
-  [{:keys [community-id scroll-amount header-height set-max-scroll]}]
+  [{:keys [community-id scroll-amount header-height set-max-scroll collapse-threshold
+           sheet-displacement-threshold expand-header-limit]}]
   (let [theme                (quo.context/use-theme)
         channels-styles      (worklets/use-channels-styles
                               {:scroll-amount                scroll-amount
                                :header-height                header-height
-                               :expand-header-threshold      expand-header-threshold
+                               :collapse-threshold           collapse-threshold
                                :sheet-displacement-threshold sheet-displacement-threshold
                                :expand-header-limit          expand-header-limit})
         flat-list-ref        (reanimated/use-animated-ref)
@@ -330,16 +300,17 @@
               :background :photo)])))
 
 (defn- header
-  [community-id scroll-amount]
+  [community-id scroll-amount collapse-threshold sheet-displacement-threshold
+   expand-header-limit navbar-content-threshold]
   (let [header-opacity          (worklets/use-header-opacity
                                  {:scroll-amount                scroll-amount
-                                  :expand-header-threshold      expand-header-threshold
+                                  :collapse-threshold           collapse-threshold
                                   :sheet-displacement-threshold sheet-displacement-threshold})
         opposite-header-opacity (worklets/use-opposite-header-opacity header-opacity)
         nav-content-opacity     (worklets/use-nav-content-opacity
-                                 {:scroll-amount                scroll-amount
-                                  :sheet-displacement-threshold nav-bar-content-threshold
-                                  :expand-header-limit          expand-header-limit})
+                                 {:scroll-amount            scroll-amount
+                                  :navbar-content-threshold navbar-content-threshold
+                                  :expand-header-limit      expand-header-limit})
         {:keys [community-name color logo
                 cover-image]}   (rf/sub [:communities/community-overview community-id])]
     [:<>
@@ -360,11 +331,12 @@
         :community-logo      logo}]]]))
 
 (defn- community-logo
-  [{:keys [scroll-amount community-id]}]
+  [{:keys [scroll-amount community-id collapse-threshold sheet-displacement-threshold
+           text-movement-threshold]}]
   (let [theme          (quo.context/use-theme)
         logo-styles    (worklets/use-logo-styles
                         {:scroll-amount                scroll-amount
-                         :expand-header-threshold      expand-header-threshold
+                         :collapse-threshold           collapse-threshold
                          :sheet-displacement-threshold sheet-displacement-threshold
                          :text-movement-threshold      text-movement-threshold})
         {:keys [logo]} (rf/sub [:communities/community-overview community-id])]
@@ -375,10 +347,11 @@
      [rn/image {:style style/community-logo-image :source logo}]]))
 
 (defn- name-and-description
-  [{:keys [scroll-amount community-name community-description info-styles]}]
+  [{:keys [scroll-amount community-name community-description info-styles
+           collapse-threshold text-movement-threshold]}]
   (let [name-styles (worklets/use-name-styles
                      {:scroll-amount           scroll-amount
-                      :expand-header-threshold expand-header-threshold
+                      :collapse-threshold      collapse-threshold
                       :text-movement-threshold text-movement-threshold})]
     [rn/view {:style style/community-name-and-description}
      [reanimated/view {:style name-styles}
@@ -418,11 +391,12 @@
       :value               active-members-count}]]])
 
 (defn- community-info
-  [{:keys [scroll-amount header-height community-id]}]
+  [{:keys [scroll-amount header-height community-id set-collapse-threshold collapse-threshold
+           sheet-displacement-threshold text-movement-threshold info-opacity-threshold]}]
   (let [theme             (quo.context/use-theme)
         sheet-styles      (worklets/use-sheet-styles
                            {:scroll-amount                scroll-amount
-                            :expand-header-threshold      expand-header-threshold
+                            :collapse-threshold           collapse-threshold
                             :sheet-displacement-threshold sheet-displacement-threshold})
         info-styles       (worklets/use-info-styles
                            {:scroll-amount          scroll-amount
@@ -430,7 +404,9 @@
         set-header-height (rn/use-callback
                            (fn [e]
                              (let [height (oops/oget e "nativeEvent.layout.height")]
-                               (reanimated/set-shared-value header-height (or height 0)))))
+                               (def --h height)
+                               (reanimated/set-shared-value header-height (or height 0))
+                               (set-collapse-threshold (or height 0)))))
         {:keys [community-name description active-members-count tags role-permissions?
                 permissions color owner?
                 joined?]} (rf/sub [:communities/community-overview community-id])
@@ -443,10 +419,12 @@
        :joined?      joined?
        :info-styles  info-styles}]
      [name-and-description
-      {:scroll-amount         scroll-amount
-       :community-name        community-name
-       :community-description description
-       :info-styles           info-styles}]
+      {:scroll-amount           scroll-amount
+       :community-name          community-name
+       :community-description   description
+       :info-styles             info-styles
+       :collapse-threshold      collapse-threshold
+       :text-movement-threshold text-movement-threshold}]
      [community-info-stats
       {:members-count        members-count
        :active-members-count active-members-count
@@ -463,55 +441,102 @@
        :color             color}]]))
 
 (defn- community-sheet
-  [{:keys [community-id scroll-amount set-max-scroll]}]
+  [{:keys [community-id scroll-amount set-max-scroll set-collapse-threshold
+           collapse-threshold sheet-displacement-threshold expand-header-limit
+           text-movement-threshold info-opacity-threshold]}]
   (let [header-height (reanimated/use-shared-value 0)]
     [rn/view {:style style/community-sheet-position}
      [community-logo
-      {:community-id  community-id
-       :scroll-amount scroll-amount}]
+      {:community-id                 community-id
+       :scroll-amount                scroll-amount
+       :collapse-threshold           collapse-threshold
+       :sheet-displacement-threshold sheet-displacement-threshold
+       :text-movement-threshold      text-movement-threshold}]
      [community-info
-      {:scroll-amount scroll-amount
-       :header-height header-height
-       :community-id  community-id}]
+      {:scroll-amount                scroll-amount
+       :header-height                header-height
+       :community-id                 community-id
+       :set-collapse-threshold       set-collapse-threshold
+       :collapse-threshold           collapse-threshold
+       :sheet-displacement-threshold sheet-displacement-threshold
+       :text-movement-threshold      text-movement-threshold
+       :info-opacity-threshold       info-opacity-threshold}]
      [channel-listing
-      {:community-id   community-id
-       :scroll-amount  scroll-amount
-       :header-height  header-height
-       :set-max-scroll set-max-scroll}]]))
+      {:community-id                 community-id
+       :scroll-amount                scroll-amount
+       :header-height                header-height
+       :set-max-scroll               set-max-scroll
+       :collapse-threshold           collapse-threshold
+       :sheet-displacement-threshold sheet-displacement-threshold
+       :expand-header-limit          expand-header-limit}]]))
 
 (defn- community-overview
   [community-id collapsed?]
-  (let [max-scroll     (reanimated/use-shared-value 0)
-        set-max-scroll (rn/use-callback
-                        (fn [max-scroll-amount]
-                          (reanimated/set-shared-value max-scroll max-scroll-amount)))
-        scroll-start   (reanimated/use-shared-value (if collapsed? (- expand-header-threshold) 0))
-        scroll-amount  (reanimated/use-shared-value (if collapsed? expand-header-threshold 0))
-        on-pan-start   (worklets/on-pan-start scroll-start scroll-amount)
-        on-pan-update  (worklets/on-pan-update
-                        {:scroll-start        scroll-start
-                         :scroll-amount       scroll-amount
-                         :max-scroll          max-scroll
-                         :expand-header-limit expand-header-limit})
-        on-pan-end     (worklets/on-pan-end
-                        {:scroll-start            scroll-start
-                         :scroll-amount           scroll-amount
-                         :max-scroll              max-scroll
-                         :expand-header-limit     expand-header-limit
-                         :expand-header-threshold expand-header-threshold
-                         :snap-header-threshold   snap-header-threshold
-                         :animation-duration      300})
-        pan-gesture    (-> (gesture/gesture-pan)
-                           (gesture/on-start on-pan-start)
-                           (gesture/on-update on-pan-update)
-                           (gesture/on-end on-pan-end))]
+  (let [collapse-threshold           (reanimated/use-shared-value 0) ;; Must be set after rendering
+        set-collapse-threshold       (rn/use-callback
+                                      ;; TODO: move near its usage
+                                      (fn [new-threshold]
+                                        (reanimated/set-shared-value collapse-threshold new-threshold)))
+        ;; NOTE: values compared against `scroll-amount` to trigger animations.
+
+        ;"Dragging distance to round sheet borders and move the sheet 8 units."
+        sheet-displacement-threshold (worklets/use-derived-value-add collapse-threshold 8)
+        ;"Max dragging distance where the header animation ends. It works to identify when to
+        ;start the flat-list scrolling."
+        expand-header-limit          (worklets/use-derived-value-add sheet-displacement-threshold 56)
+
+        ;"When the community name and logo start to appear"
+        navbar-content-threshold    (worklets/use-derived-value-add sheet-displacement-threshold 32)
+
+        ;"Dragging distance to start the text movement from/to the bottom to/from the right."
+        text-movement-threshold      (worklets/use-derived-value-mul collapse-threshold 0.7)
+
+        ;"Dragging distance to appear/disappear the community info (description, tags & stats)."
+        info-opacity-threshold       (worklets/use-derived-value-mul collapse-threshold 0.5)
+
+        ;"Threshold to automatically move the header to a collapsed/expanded state and avoid an
+        ;  intermediate state."
+        snap-header-threshold        (worklets/use-derived-value-mul collapse-threshold 0.75)
+        ;; 😫
+        max-scroll                   (reanimated/use-shared-value 0)
+        set-max-scroll               (rn/use-callback
+                                      (fn [max-scroll-amount]
+                                        (reanimated/set-shared-value max-scroll max-scroll-amount)))
+        scroll-start                 (worklets/use-start-scroll-value collapsed? collapse-threshold)
+        scroll-amount                (worklets/use-scroll-value collapsed? collapse-threshold)
+        on-pan-start                 (worklets/on-pan-start scroll-start scroll-amount)
+        on-pan-update                (worklets/on-pan-update
+                                      {:scroll-start        scroll-start
+                                       :scroll-amount       scroll-amount
+                                       :max-scroll          max-scroll
+                                       :expand-header-limit expand-header-limit})
+        on-pan-end                   (worklets/on-pan-end
+                                      {:scroll-start          scroll-start
+                                       :scroll-amount         scroll-amount
+                                       :max-scroll            max-scroll
+                                       :expand-header-limit   expand-header-limit
+                                       :collapse-threshold    collapse-threshold
+                                       :snap-header-threshold snap-header-threshold
+                                       :animation-duration    300})
+        pan-gesture                  (-> (gesture/gesture-pan)
+                                         (gesture/on-start on-pan-start)
+                                         (gesture/on-update on-pan-update)
+                                         (gesture/on-end on-pan-end))]
     [gesture/gesture-detector {:gesture pan-gesture}
      [rn/view {:style {:flex 1}}
-      [header community-id scroll-amount]
+      [header
+       community-id scroll-amount collapse-threshold sheet-displacement-threshold
+       expand-header-limit navbar-content-threshold]
       [community-sheet
-       {:community-id   community-id
-        :scroll-amount  scroll-amount
-        :set-max-scroll set-max-scroll}]]]))
+       {:community-id                 community-id
+        :scroll-amount                scroll-amount
+        :set-max-scroll               set-max-scroll
+        :set-collapse-threshold       set-collapse-threshold
+        :collapse-threshold           collapse-threshold
+        :sheet-displacement-threshold sheet-displacement-threshold
+        :expand-header-limit          expand-header-limit
+        :text-movement-threshold      text-movement-threshold
+        :info-opacity-threshold       info-opacity-threshold}]]]))
 
 (defn- community-fetching-placeholder
   [id]

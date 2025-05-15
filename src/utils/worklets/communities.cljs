@@ -18,6 +18,10 @@
                      {:name worklet-name
                       :file "../src/js/worklets/communities.js"})))))
 
+(def use-start-scroll-value (worklet-wrapper "useStartScrollValue"))
+(def use-scroll-value (worklet-wrapper "useScrollValue"))
+(def use-derived-value-add (worklet-wrapper "useDerivedValueAdd"))
+(def use-derived-value-mul (worklet-wrapper "useDerivedValueMul"))
 (def use-logo-styles (worklet-wrapper "useLogoStyles"))
 (def use-sheet-styles (worklet-wrapper "useSheetStyles"))
 (def use-name-styles (worklet-wrapper "useNameStyles"))
