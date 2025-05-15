@@ -27,7 +27,7 @@
     (i18n/label :t/password-creation-subtitle)]])
 
 (defn password-inputs
-  [{:keys [set-password set-repeat-password same-password-length? same-passwords?
+  [{:keys [set-password set-repeat-password same-passwords? password repeat-password
            password-long-enough? password-short-enough?]}]
   (let [hint-1-status      (if password-long-enough? :success :default)
         hint-2-status      (if same-passwords? :success :error)
@@ -37,9 +37,10 @@
         [error? set-error] (rn/use-state false)]
     (rn/use-effect
      (fn []
-       (when (and (not error?) same-password-length? (not same-passwords?))
-         (set-error true)))
-     [error? same-password-length? same-passwords?])
+       (set-error (and (>= (count repeat-password) (count password))
+                       password-long-enough?
+                       (not same-passwords?)))
+       [password repeat-password same-passwords?]))
     [:<>
      [password-with-hint/view
       {:hint           (if (not password-short-enough?)
@@ -57,7 +58,7 @@
       {:hint           {:text   hint-2-text
                         :status hint-2-status
                         :shown? (or same-passwords? error?)}
-       :error?         (and error? (not same-passwords?))
+       :error?         error?
        :placeholder    (i18n/label :t/password-creation-placeholder-2)
        :on-change-text set-repeat-password}]]))
 
@@ -174,6 +175,8 @@
        {:password-long-enough?  long-enough?
         :password-short-enough? short-enough?
         :non-empty-password?    non-empty?
+        :password               password
+        :repeat-password        repeat-password
         :same-passwords?        same-passwords?
         :same-password-length?  same-password-length?
         :set-password           set-password
