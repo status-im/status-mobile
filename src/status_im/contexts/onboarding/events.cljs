@@ -223,6 +223,7 @@
  :onboarding/password-set
  (fn [{:keys [db]} [masked-password]]
    (let [biometric-supported-type (get-in db [:biometrics :supported-type])
+         syncing?                 (get-in db [:onboarding/profile :syncing?])
          from-screen              (get db
                                        :onboarding/navigated-to-enter-seed-phrase-from-screen
                                        :screen/onboarding.create-profile)]
@@ -230,8 +231,17 @@
               (assoc-in [:onboarding/profile :password] masked-password)
               (assoc-in [:onboarding/profile :auth-method] constants/auth-method-password))
       :fx [[:dispatch
-            (if biometric-supported-type
+            (cond
+              biometric-supported-type
               [:navigate-to-within-stack [:screen/onboarding.enable-biometrics from-screen]]
+
+              (ff/enabled? ::ff/settings.news-notifications)
+              [:onboarding/notifications-setup
+               {:onboarding? true
+                :biometrics? false
+                :syncing?    syncing?}]
+
+              :else
               [:onboarding/create-account-and-login])]]})))
 
 (rf/reg-event-fx

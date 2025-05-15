@@ -134,6 +134,7 @@
       [quo/selectors
        {:type      :toggle
         :checked?  (:checked? action-props)
+        :disabled? (:disabled? action-props)
         :on-change (:on-change action-props)}]]
      [rn/flat-list
       {:data      [(chat-non-contacts-notifications-setting notifications-settings)
