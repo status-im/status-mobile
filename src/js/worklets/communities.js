@@ -205,9 +205,10 @@ export function useOppositeHeaderOpacity(headerOpacity) {
   });
 }
 
-export function useNavContentOpacity({ scrollAmount, navbarContentThreshold, expandHeaderLimit }) {
+export function useNavContentOpacity({ scrollAmount, navbarContentThresholdFactor, sheetDisplacementThreshold, expandHeaderLimit }) {
   return useDerivedValue(() => {
-    return interpolate(scrollAmount.value, [navbarContentThreshold.value, expandHeaderLimit.value], [0, 1], 'clamp');
+    const  navbarContentThreshold = sheetDisplacementThreshold.value + navbarContentThresholdFactor;
+    return interpolate(scrollAmount.value, [navbarContentThreshold, expandHeaderLimit.value], [0, 1], 'clamp');
   });
 }
 
