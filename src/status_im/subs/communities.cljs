@@ -74,6 +74,13 @@
    (js-keys (:members community))))
 
 (re-frame/reg-sub
+ :communities/community-members-count
+ (fn [[_ community-id]]
+   (re-frame/subscribe [:communities/community-members community-id]))
+ (fn [members _]
+   (count members)))
+
+(re-frame/reg-sub
  :communities/community-chat-members
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])])

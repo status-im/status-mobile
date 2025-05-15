@@ -183,7 +183,7 @@ export function useChannelsStyles({
         ],
       };
     }
-  }, [headerHeight.value]);
+  });
 }
 
 export function useScrollTo({ animatedRef, scrollAmount, expandHeaderLimit }) {

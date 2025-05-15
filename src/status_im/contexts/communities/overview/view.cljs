@@ -424,7 +424,7 @@
         {:keys [community-name description active-members-count tags role-permissions?
                 permissions color owner?
                 joined?]} (rf/sub [:communities/community-overview community-id])
-        members-count     (count (rf/sub [:communities/community-members community-id]))]
+        members-count     (rf/sub [:communities/community-members-count community-id])]
     [reanimated/view
      {:style     [(style/community-info theme) sheet-styles]
       :on-layout set-header-height}
@@ -460,7 +460,6 @@
   (let [header-height           (reanimated/use-shared-value 0)
         ;"Dragging distance to start the text movement from/to the bottom to/from the right."
         text-movement-threshold (worklets/use-derived-value-mul collapse-threshold 0.7)]
-    (prn "rerender 1.2")
     [rn/view {:style style/community-sheet-position}
      [community-logo
       {:community-id                 community-id
