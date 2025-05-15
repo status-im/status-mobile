@@ -10,9 +10,9 @@
     [status-im.contexts.chat.actions.view :as chat-actions]
     [status-im.contexts.chat.contacts.drawers.nickname-drawer.view :as nickname-drawer]
     [status-im.contexts.communities.actions.chat.view :as communities-chat-actions]
+    [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im.contexts.profile.utils :as profile.utils]))
+    [utils.re-frame :as rf]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]

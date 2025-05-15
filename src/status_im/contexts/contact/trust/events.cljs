@@ -4,10 +4,10 @@
     [re-frame.core :as re-frame]
     [status-im.common.confirmation-drawer.view :as confirmation-drawer]
     [status-im.constants :as constants]
+    [status-im.contexts.profile.utils :as profile.utils]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im.contexts.profile.utils :as profile.utils]))
+    [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :contact/mark-as-untrusted-success
  (fn [{:keys [db]} [contact-id name]]
