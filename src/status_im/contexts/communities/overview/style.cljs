@@ -135,3 +135,8 @@
 
 (def community-sheet-position
   {:top (+ -20 -40)})
+
+(def promote-community
+  {:padding-top        4
+   :padding-bottom     20
+   :padding-horizontal 20})

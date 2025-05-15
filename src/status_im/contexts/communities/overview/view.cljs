@@ -70,6 +70,22 @@
     (rf/dispatch [:open-modal :screen/community-account-selection-sheet
                   {:community-id community-id}])))
 
+(defn- promote-community-for-owners
+  [{:keys [theme]}]
+  (let [[dismissed? set-dismissed] (rn/use-state false)]
+    (when-not dismissed?
+      [rn/view {:style style/promote-community}
+       [quo/information-box
+        {:type              :informative
+         :closed?           false
+         :on-close          #(set-dismissed true)
+         :theme             theme
+         :button-label      (i18n/label :t/initiate-the-vote)
+         :button-icon-right :i/external
+         :on-button-press   (fn []
+                              (rf/dispatch [:browser.ui/open-url constants/community-vote-help-url]))}
+        (i18n/label :t/help-discover-your-community)]])))
+
 (defn token-gated-communities-info
   []
   [quo/documentation-drawers {:title (i18n/label :t/token-gated-communities)}
@@ -323,7 +339,7 @@
                                   :sheet-displacement-threshold nav-bar-content-threshold
                                   :expand-header-limit          expand-header-limit})
         {:keys [community-name color logo
-                cover-image]} (rf/sub [:communities/community-overview community-id])]
+                cover-image]}   (rf/sub [:communities/community-overview community-id])]
     [:<>
      [header-cover-image
       {:cover-image      cover-image
@@ -414,7 +430,7 @@
                              (let [height (oops/oget e "nativeEvent.layout.height")]
                                (reanimated/set-shared-value header-height (or height 0)))))
         {:keys [community-name description active-members-count tags role-permissions?
-                permissions color
+                permissions color owner?
                 joined?]} (rf/sub [:communities/community-overview community-id])
         members-count     (count (rf/sub [:communities/community-members community-id]))]
     [reanimated/view
@@ -434,6 +450,8 @@
        :active-members-count active-members-count
        :info-styles          info-styles}]
      [community-info-tags tags info-styles]
+     (when owner?
+       [promote-community-for-owners {:theme theme}])
      [join-community
       {:community-id      community-id
        :joined?           joined?
@@ -520,7 +538,7 @@
   [id]
   (let [community-id (or id (quo.context/use-screen-params))
         community    (rf/sub [:communities/community-overview community-id])
-        collapsed?   (:joined? community)]
+        collapsed?   (and (:joined? community) (not (:owner? community)))]
     [rn/view {:style style/community-overview-container}
      (if community
        [community-overview community-id collapsed?]

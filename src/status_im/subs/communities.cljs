@@ -393,7 +393,7 @@
  (fn [[_ community-id]]
    (re-frame/subscribe [:communities/community community-id]))
  (fn [{:keys [joined spectated images description color activeMembersCount tags
-              permissions role-permissions?]
+              permissions role-permissions? memberRole]
        :as   community}]
    (when community
      {:joined?              joined
@@ -406,7 +406,8 @@
       :active-members-count activeMembersCount
       :tags                 tags
       :permissions          permissions
-      :role-permissions?    role-permissions?})))
+      :role-permissions?    role-permissions?
+      :owner?               (= memberRole constants/community-member-role-owner)})))
 
 (re-frame/reg-sub
  :communities/collapsed-categories-for-community

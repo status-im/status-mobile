@@ -274,6 +274,7 @@
 (def ^:const sticker-pack-status-owned 3)
 
 (def ^:const community-member-role-moderator 3)
+(def ^:const community-member-role-owner 1)
 
 (def ^:const delete-message-undo-time-limit-ms 4000)
 (def ^:const delete-message-for-me-undo-time-limit-ms 4000)
@@ -495,3 +496,6 @@
 ;; Community help links
 (def ^:const create-community-help-url
   "https://status.app/help/communities/create-a-status-community#create-a-status-community")
+
+(def ^:const community-vote-help-url
+  "https://status.app/help/communities/about-voting-to-change-the-community-visibility#about-voting-to-change-the-community-visibility")
