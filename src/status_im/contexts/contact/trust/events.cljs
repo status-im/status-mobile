@@ -45,7 +45,7 @@
       :on-error   #(log/error "failed remove contact trust status" % contact-id)}]}))
 
 (rf/reg-event-fx :contact/mark-as-untrusted-sheet
- (fn [_ [public-key primary-name] :as item]
+ (fn [_ {:keys [public-key primary-name] :as item}]
    {:dispatch
     [:show-bottom-sheet
      {:content (fn []
