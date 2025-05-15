@@ -9,6 +9,7 @@
     status-im.common.font.events
     status-im.common.image-crop-picker.events
     [status-im.common.json-rpc.events]
+    status-im.common.kv-storage.effects
     status-im.common.log
     status-im.common.peer-stats.events
     status-im.common.shared-urls.events
