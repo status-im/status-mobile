@@ -49,7 +49,7 @@
            :full-name           display-name
            :group-name          display-name
            :customization-color color
-           :container-style     {:margin-bottom 12 :margin-top 4}
+           :container-style     style/context-tag
            :size                24}]
          [quo/text description]
          [extra-action-view extra-action extra-text extra-action-selected?]

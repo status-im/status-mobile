@@ -1,6 +1,7 @@
 (ns status-im.common.contact-list-item.view
   (:require
     [quo.core :as quo]
+    [react-native.core :as rn]
     [status-im.constants :as constants]
     [utils.address :as address]
     [utils.re-frame :as rf]))
@@ -12,7 +13,10 @@
    theme]
   (let [photo-path          (rf/sub [:chats/photo-path public-key])
         online?             (rf/sub [:visibility-status-updates/online? public-key])
-        untrustworthy?      (= constants/contact-trust-status-untrustworthy trust-status)
+        untrustworthy?      (rn/use-memo
+                             (fn []
+                               (= constants/contact-trust-status-untrustworthy trust-status))
+                             [trust-status])
         customization-color (rf/sub [:profile/customization-color])]
     [quo/user
      {:customization-color     customization-color

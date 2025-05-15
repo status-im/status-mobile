@@ -49,7 +49,6 @@
    {:dispatch
     [:show-bottom-sheet
      {:content (fn []
-                 (tap> item)
                  [confirmation-drawer/confirmation-drawer
                   {:title               (i18n/label :t/mark-as-untrusted)
                    :description         (i18n/label :t/mark-as-untrusted-description
@@ -64,7 +63,7 @@
                                           (rf/dispatch [:contact.ui/remove-contact-pressed item]))
                    :extra-text          (i18n/label :t/remove-contact)
                    :context             item
-                   :accessibility-label :block-user
+                   :accessibility-label :mark-as-untrustworthy
                    :button-text         (i18n/label :t/mark-as-untrusted-button)
                    :on-press            (fn []
                                           (rf/dispatch [:hide-bottom-sheet])

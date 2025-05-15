@@ -35,17 +35,17 @@
         theme               (quo.context/use-theme)
         contact-status      (rn/use-memo
                              (fn []
-                               (let [is-contact?       (= contact-request-state
-                                                          constants/contact-request-state-mutual)
-                                     is-untrustworthy? (= trust-status
-                                                          constants/contact-trust-status-untrustworthy)]
+                               (let [contact?       (= contact-request-state
+                                                       constants/contact-request-state-mutual)
+                                     untrustworthy? (= trust-status
+                                                       constants/contact-trust-status-untrustworthy)]
                                  (cond
-                                   (and is-contact?
-                                        is-untrustworthy?) :untrustworthy-contact
-                                   blocked?                :blocked
-                                   is-contact?             :contact
-                                   is-untrustworthy?       :untrustworthy
-                                   :else                   nil)))
+                                   (and contact?
+                                        untrustworthy?) :untrustworthy-contact
+                                   blocked?             :blocked
+                                   contact?             :contact
+                                   untrustworthy?       :untrustworthy
+                                   :else                nil)))
                              [blocked? contact-request-state trust-status])
         on-start-chat       (rn/use-callback
                              #(rf/dispatch [:chat.ui/start-chat public-key ens-name])

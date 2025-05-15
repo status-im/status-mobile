@@ -65,7 +65,7 @@
                                 (if untrustworthy?
                                   [:contact/remove-trust-status public-key full-name]
                                   [:contact/mark-as-untrusted-sheet contact])))
-                             [untrustworthy? contact])
+                             [untrustworthy? contact full-name public-key])
         on-remove-contact   (rn/use-callback
                              (fn []
                                (rf/dispatch [:hide-bottom-sheet])

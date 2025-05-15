@@ -130,14 +130,13 @@
                   :on-press            #(hide-sheet-and-dispatch [:contact/block-contact
                                                                   public-key])}])}]))
 
-(defn mark-as-untrusted-action
-  [item]
+(defn handle-trust-mark-action
+  [{:keys [public-key primary-name trust-status] :as item}]
   (hide-sheet-and-dispatch
-   [:contact/mark-as-untrusted-sheet item]))
-
-(defn remove-untrusted-mark-action
-  [{:keys [public-key primary-name]}]
-  (hide-sheet-and-dispatch [:contact/remove-trust-status public-key primary-name]))
+   (if (= trust-status
+          constants/contact-trust-status-untrustworthy)
+     [:contact/remove-trust-status public-key primary-name]
+     [:contact/mark-as-untrusted-sheet item])))
 
 (defn mute-chat-entry
   [chat-id chat-type muted-till]
@@ -311,21 +310,17 @@
 
 (defn change-trust-status-entry
   [{:keys [trust-status] :as item}]
-  (let [handle-press (if (= trust-status
-                            constants/contact-trust-status-untrustworthy)
-                       remove-untrusted-mark-action
-                       mark-as-untrusted-action)]
-    (entry {:icon                :i/untrustworthy
-            :label               (i18n/label (if (= trust-status
-                                                    constants/contact-trust-status-untrustworthy)
-                                               :t/remove-untrusted-mark
-                                               :t/mark-as-untrusted))
-            :on-press            #(handle-press item)
-            :danger?             true
-            :add-divider?        true
-            :accessibility-label :mark-as-untrusted
-            :sub-label           nil
-            :chevron?            false})))
+  (entry {:icon                :i/untrustworthy
+          :label               (i18n/label (if (= trust-status
+                                                  constants/contact-trust-status-untrustworthy)
+                                             :t/remove-untrusted-mark
+                                             :t/mark-as-untrusted))
+          :on-press            #(handle-trust-mark-action item)
+          :danger?             true
+          :add-divider?        true
+          :accessibility-label :mark-as-untrusted
+          :sub-label           nil
+          :chevron?            false}))
 
 (defn block-user-entry
   [item]
