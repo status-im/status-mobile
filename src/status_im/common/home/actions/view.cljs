@@ -131,30 +131,9 @@
                                                                   public-key])}])}]))
 
 (defn mark-as-untrusted-action
-  [{:keys [public-key primary-name] :as item}]
-  (tap> item)
+  [item]
   (hide-sheet-and-dispatch
-   [:show-bottom-sheet
-    {:content (fn []
-                [confirmation-drawer/confirmation-drawer
-                 {:title               (i18n/label :t/mark-as-untrusted)
-                  :description         (i18n/label :t/mark-as-untrusted-description
-                                                   {:username (:primary-name item)})
-                  :extra-action        (fn []
-                                         (rf/dispatch [:toasts/upsert
-                                                       {:id   :remove-contact
-                                                        :type :positive
-                                                        :text (->> (i18n/label :t/removed-from-contacts)
-                                                                   (string/lower-case)
-                                                                   (str primary-name " "))}])
-                                         (rf/dispatch [:contact.ui/remove-contact-pressed item]))
-                  :extra-text          (i18n/label :t/remove-contact)
-                  :context             item
-                  :accessibility-label :block-user
-                  :button-text         (i18n/label :t/mark-as-untrusted-button)
-                  :on-press            #(hide-sheet-and-dispatch
-                                         [:contact/mark-as-untrusted
-                                          public-key primary-name])}])}]))
+   [:contact/mark-as-untrusted-sheet item]))
 
 (defn remove-untrusted-mark-action
   [{:keys [public-key primary-name]}]

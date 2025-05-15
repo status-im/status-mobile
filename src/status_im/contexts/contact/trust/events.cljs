@@ -1,6 +1,8 @@
 (ns status-im.contexts.contact.trust.events
   (:require
+    [clojure.string :as string]
     [re-frame.core :as re-frame]
+    [status-im.common.confirmation-drawer.view :as confirmation-drawer]
     [status-im.constants :as constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -41,3 +43,30 @@
       :params     [contact-id]
       :on-success #(re-frame/dispatch [:contact/remove-trust-status-success contact-id name])
       :on-error   #(log/error "failed remove contact trust status" % contact-id)}]}))
+
+(rf/reg-event-fx :contact/mark-as-untrusted-sheet
+ (fn [_ [public-key primary-name] :as item]
+   {:dispatch
+    [:show-bottom-sheet
+     {:content (fn []
+                 [confirmation-drawer/confirmation-drawer
+                  {:title               (i18n/label :t/mark-as-untrusted)
+                   :description         (i18n/label :t/mark-as-untrusted-description
+                                                    {:username (:primary-name item)})
+                   :extra-action        (fn []
+                                          (rf/dispatch [:toasts/upsert
+                                                        {:id   :remove-contact
+                                                         :type :positive
+                                                         :text (->> (i18n/label :t/removed-from-contacts)
+                                                                    (string/lower-case)
+                                                                    (str primary-name " "))}])
+                                          (rf/dispatch [:contact.ui/remove-contact-pressed item]))
+                   :extra-text          (i18n/label :t/remove-contact)
+                   :context             item
+                   :accessibility-label :block-user
+                   :button-text         (i18n/label :t/mark-as-untrusted-button)
+                   :on-press            (fn []
+                                          (rf/dispatch [:hide-bottom-sheet])
+                                          (rf/dispatch
+                                           [:contact/mark-as-untrusted
+                                            public-key primary-name]))}])}]}))
