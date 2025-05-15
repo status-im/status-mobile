@@ -27,7 +27,7 @@
 
 (def sheet-displacement-threshold
   "Dragging distance to round sheet borders and move the sheet 8 units."
-  (+ expand-header-threshold 20))
+  (+ expand-header-threshold 8))
 
 (def text-movement-threshold
   "Dragging distance to start the text movement from/to the bottom to/from the right."
@@ -228,7 +228,9 @@
    :separator 8})
 
 (def unusable-area-height
-  (+ 32 11 safe-area/bottom))  ;;top page buttons, button's padding & safe area
+  ;;top page buttons, button's padding & safe area, on Android we count page-nav top
+  ;; because it isn't overlapped with the safe-area.
+  (+ 32 11 safe-area/bottom (when platform/android? 12)))
 
 (defn- calc-scrollable-content
   [scrollable-height]
@@ -242,40 +244,40 @@
 
 (defn- channel-listing
   [{:keys [community-id scroll-amount header-height set-max-scroll]}]
-  (let [theme                  (quo.context/use-theme)
-        channels-styles        (worklets/use-channels-styles
-                                {:scroll-amount                scroll-amount
-                                 :header-height                header-height
-                                 :expand-header-threshold      expand-header-threshold
-                                 :sheet-displacement-threshold sheet-displacement-threshold
-                                 :expand-header-limit          expand-header-limit})
-        flat-list-ref          (reanimated/use-animated-ref)
-        _scroll-to-animation   (worklets/use-scroll-to
-                                {:animated-ref        flat-list-ref
-                                 :scroll-amount       scroll-amount
-                                 :expand-header-limit expand-header-limit})
+  (let [theme                (quo.context/use-theme)
+        channels-styles      (worklets/use-channels-styles
+                              {:scroll-amount                scroll-amount
+                               :header-height                header-height
+                               :expand-header-threshold      expand-header-threshold
+                               :sheet-displacement-threshold sheet-displacement-threshold
+                               :expand-header-limit          expand-header-limit})
+        flat-list-ref        (reanimated/use-animated-ref)
+        _scroll-to-animation (worklets/use-scroll-to
+                              {:animated-ref        flat-list-ref
+                               :scroll-amount       scroll-amount
+                               :expand-header-limit expand-header-limit})
         {:keys [joined?
-                spectated?]}   (rf/sub [:communities/community-overview community-id])
-        joined-or-spectated?   (or joined? spectated?)
-        render-fn              (rn/use-callback
-                                (channel-listing-item {:community-id         community-id
-                                                       :joined-or-spectated? joined-or-spectated?})
-                                [joined-or-spectated?])
-        flatten-channels       (rf/sub [:communities/flatten-channels-and-categories community-id])
-        categories-indexes     (keep-indexed (fn [idx {:keys [render-as]}]
-                                               (when (= render-as :category) idx))
-                                             flatten-channels)
-        scrollable-area-height (->> flatten-channels
-                                    (map (comp channel-component-heights :render-as))
-                                    (reduce +))
-        listing-height         (calc-listing-height)]
+                spectated?]} (rf/sub [:communities/community-overview community-id])
+        joined-or-spectated? (or joined? spectated?)
+        render-fn            (rn/use-callback
+                              (channel-listing-item {:community-id         community-id
+                                                     :joined-or-spectated? joined-or-spectated?})
+                              [joined-or-spectated?])
+        flatten-channels     (rf/sub [:communities/flatten-channels-and-categories community-id])
+        categories-indexes   (keep-indexed (fn [idx {:keys [render-as]}]
+                                             (when (= render-as :category) idx))
+                                           flatten-channels)
+        channels-height      (->> flatten-channels
+                                  (map (comp channel-component-heights :render-as))
+                                  (reduce +))
+        listing-height       (calc-listing-height)]
     (rn/use-effect
      (fn []
-       (let [max-scroll-offset (calc-scrollable-content scrollable-area-height)]
+       (let [max-scroll-offset (calc-scrollable-content channels-height)]
          (if (neg? max-scroll-offset)
            (set-max-scroll 0)
            (set-max-scroll max-scroll-offset))))
-     [scrollable-area-height])
+     [channels-height])
     [reanimated/flat-list
      {:ref                     flat-list-ref
       :style                   [(style/channel-listing theme listing-height) channels-styles]
