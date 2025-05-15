@@ -2623,7 +2623,7 @@
   "sun": "Sun",
   "swap": "Swap",
   "swap-details": "Swap details",
-  "swap-exchange-rate-in-crypto": "1 {{receive-token-symbol}} ≈ {{exchange-rate}} {{pay-token-symbol}}",
+  "swap-exchange-rate-in-crypto": "1 {{pay-token-symbol}} ≈ {{exchange-rate}} {{receive-token-symbol}}",
   "swap-failed": "Swap failed",
   "swapped-to": "Swapped {{pay-amount}} {{pay-token-symbol}} to {{receive-amount}} {{receive-token-symbol}}",
   "swapping-to": "Swapping {{pay-amount}} {{pay-token-symbol}} to {{receive-amount}} {{receive-token-symbol}}",

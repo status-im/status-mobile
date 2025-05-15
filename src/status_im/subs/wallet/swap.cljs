@@ -356,7 +356,7 @@
    (when (and token-prices asset-to-pay)
      (let [exchange-rate (some->> asset-to-pay
                                   :decimals
-                                  (utils/token-exchange-rate receive-token-price pay-token-price))]
+                                  (utils/token-exchange-rate pay-token-price receive-token-price))]
        (or exchange-rate 0)))))
 
 (rf/reg-sub
