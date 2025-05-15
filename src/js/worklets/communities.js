@@ -128,10 +128,11 @@ export function useNameStyles({scrollAmount, collapseThreshold, textMovementThre
   });
 }
 
-export function useInfoStyles({ scrollAmount, infoOpacityThreshold }) {
+export function useInfoStyles({ scrollAmount, collapseThreshold ,infoOpacityThresholdFactor }) {
   return useAnimatedStyle(() => {
+    const infoOpacityThreshold = collapseThreshold.value * infoOpacityThresholdFactor;
     return {
-      opacity: interpolate(scrollAmount.value, [0, infoOpacityThreshold.value], [1, 0.2], 'extend'),
+      opacity: interpolate(scrollAmount.value, [0, infoOpacityThreshold], [1, 0.2], 'extend'),
     };
   });
 }
@@ -276,18 +277,19 @@ export function onPanEnd({
   maxScroll,
   expandHeaderLimit,
   collapseThreshold,
-  snapHeaderThreshold,
+  snapHeaderThresholdFactor,
   animationDuration,
 }) {
   const isIOS = Platform.OS === 'ios';
   return function (event) {
     'worklet';
     scrollStart.value = -scrollAmount.value;
+    const snapHeaderThreshold = collapseThreshold.value *  snapHeaderThresholdFactor;
     const endAnimation = onScrollAnimationEnd(
       scrollAmount,
       scrollStart,
       collapseThreshold.value,
-      snapHeaderThreshold.value,
+      snapHeaderThreshold,
       expandHeaderLimit.value,
       animationDuration,
     );
