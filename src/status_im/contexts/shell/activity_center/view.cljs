@@ -68,7 +68,7 @@
 
 (defn view
   []
-  (let [notifications    (rf/sub [:activity-center/notifications])
+  (let [notifications    (rf/sub [:activity-center/supported-notifications])
 
         ;; We globally control the active swipeable for all notifications
         ;; because when a swipe left/right gesture initiates, the previously
