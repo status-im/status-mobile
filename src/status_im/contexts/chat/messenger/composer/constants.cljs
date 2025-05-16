@@ -14,11 +14,7 @@
 
 (def ^:const preview-always-ask 1)
 (def ^:const preview-always-share 2)
-(def ^:const preview-never-ask 3)
-
-(def ^:const preview-show-for-this 1)
-(def ^:const preview-always-show 2)
-(def ^:const preview-never-show 3)
+(def ^:const preview-never-share 3)
 
 (def ^:const reply-container-height 32)
 

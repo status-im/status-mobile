@@ -107,7 +107,7 @@
 (reg-root-key-sub :chat/memberships :chat/memberships)
 (reg-root-key-sub :group-chat/invitations :group-chat/invitations)
 (reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
-(reg-root-key-sub :chat/show-link-preview :chat/show-link-preview)
+(reg-root-key-sub :chat/show-current-preview :chat/show-current-preview)
 
 (reg-root-key-sub :chats-home-list :chats-home-list)
 (reg-root-key-sub :chats/recording? :chats/recording?)

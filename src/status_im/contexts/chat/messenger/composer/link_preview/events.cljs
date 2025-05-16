@@ -11,7 +11,9 @@
   {:events [:link-preview/unfurl-urls]}
   [{:keys [db]} text]
   (if (string/blank? text)
-    {:db (update db :chat/link-previews dissoc :unfurled :request-id)}
+    {:db (-> db
+             (update :chat/link-previews dissoc :unfurled :request-id)
+             (assoc-in [:chat/show-current-preview] false))}
     {:json-rpc/call
      [{:method     "wakuext_getTextURLs"
        :params     [text]
@@ -23,8 +25,8 @@
 
 (rf/defn show-unfurled-url
   {:events [:link-preview/show-unfurled-url]}
-  [{:keys [db]}]
-  {:db (assoc-in db [:chat/show-link-preview] true)})
+  [{:keys [db]} previews?]
+  {:db (assoc-in db [:chat/show-current-preview] previews?)})
 
 (defn- urls->previews
   [preview-cache urls]

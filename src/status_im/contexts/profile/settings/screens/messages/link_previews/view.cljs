@@ -31,8 +31,8 @@
                     :blur?        true
                     :action       :selector
                     :action-props {:type      :radio
-                                   :on-change #(on-press constants/preview-never-ask)
-                                   :checked?  (= mode constants/preview-never-ask)}}
+                                   :on-change #(on-press constants/preview-never-share)
+                                   :checked?  (= mode constants/preview-never-share)}}
                    {:title        (i18n/label :t/preview-always-ask)
                     :blur?        true
                     :action       :selector
