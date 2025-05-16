@@ -11,7 +11,8 @@
  (fn [{key-id :key
        :keys  [value]}]
    (let [kv-object (mmkv/get-object key-id {})]
-     (merge kv-object value))))
+     (mmkv/set-object key-id
+                      (merge kv-object value)))))
 
 (rf/reg-fx :effects.kv/delete-key
  (fn [key-id]
