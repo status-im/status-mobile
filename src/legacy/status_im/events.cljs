@@ -1,7 +1,6 @@
 (ns legacy.status-im.events
   (:require
     clojure.set
-    legacy.status-im.backup.core
     legacy.status-im.browser.core
     legacy.status-im.browser.permissions
     legacy.status-im.chat.models.loading

@@ -108,6 +108,9 @@
       {:fx [[:dispatch [:profile.login/login-node-signal (transforms/js->clj event-js)]]]}
 
       "backup.performed"
-      {:db (assoc-in db [:profile/profile :last-backup] (oops/oget event-js :lastBackup))}
+      ;; Delay to improve the UX, if no delay is added, messages appear/disappear too fast.
+      {:fx [[:dispatch-later
+             {:ms       1000
+              :dispatch [:advanced-settings/backup-performed (oops/oget event-js :lastBackup)]}]]}
 
       (log/debug "Event " type " not handled"))))

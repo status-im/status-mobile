@@ -67,6 +67,7 @@
           :label-prefix        "toggle"
           :customization-color customization-color
           :type                :toggle
+          :on-change           on-press
           :checked?            (= state :selected)}]
 
         (= action :arrow)

@@ -47,6 +47,12 @@
                        (colors/theme-colors colors/success-50 colors/success-60 theme)
                        (colors/theme-colors colors/danger-50 colors/danger-60 theme))})
 
+(defn icon-color
+  [blur? theme]
+  {:color (if blur?
+            colors/white-opa-70
+            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
+
 (defn color
   [blur? theme]
   {:color (if blur?

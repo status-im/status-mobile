@@ -104,19 +104,12 @@
        :blur?       true
        :action      :arrow})
     {:title       (i18n/label :t/advanced)
-     :on-press    #(rf/dispatch [:open-modal :screen/legacy-advanced-settings])
+     :on-press    #(rf/dispatch [:open-modal :screen/settings.advanced])
      :image-props :i/settings
      :image       :icon
      :blur?       true
      :action      :arrow}]
-   ;; temporary link to legacy settings
-   [{:title       "Legacy settings"
-     :on-press    #(rf/dispatch [:open-modal :screen/legacy-settings])
-     :action      :arrow
-     :image       :icon
-     :blur?       true
-     :image-props :i/toggle}
-    (when config/debug-or-pr-build?
+   [(when config/debug-or-pr-build?
       {:title       "Quo preview"
        :on-press    #(rf/dispatch [:open-modal :screen/quo-preview])
        :action      :arrow
