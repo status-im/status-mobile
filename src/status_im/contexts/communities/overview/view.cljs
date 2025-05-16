@@ -1,30 +1,30 @@
 (ns status-im.contexts.communities.overview.view
   (:require
-   [oops.core :as oops]
-   [quo.context]
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [react-native.gesture :as gesture]
-   [react-native.platform :as platform]
-   [react-native.reanimated :as reanimated]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [status-im.common.events-helper :as events.helper]
-   [status-im.common.home.actions.view :as actions]
-   [status-im.common.resources :as resources]
-   [status-im.constants :as constants]
-   [status-im.contexts.communities.actions.community-options.view :as options]
-   [status-im.contexts.communities.overview.style :as style]
-   [status-im.contexts.communities.utils :as communities.utils]
-   [utils.debounce :as debounce]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]
-   [utils.worklets.communities :as worklets]))
+    [oops.core :as oops]
+    [quo.context]
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im.common.events-helper :as events.helper]
+    [status-im.common.home.actions.view :as actions]
+    [status-im.common.resources :as resources]
+    [status-im.constants :as constants]
+    [status-im.contexts.communities.actions.community-options.view :as options]
+    [status-im.contexts.communities.overview.style :as style]
+    [status-im.contexts.communities.utils :as communities.utils]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.worklets.communities :as worklets]))
 
 (def snap-header-threshold-factor
   "Threshold to automatically move the header to a collapsed/expanded state and avoid an
   intermediate state. Applied to `collapse-threshold`."
-  0.75)
+  0.65)
 
 (def navbar-content-threshold-factor
   "When the community name and logo start to appear. Applied to sheet-displacement-threshold."
@@ -42,9 +42,9 @@
 (defn- get-access-type
   [access]
   (condp = access
-    constants/community-no-membership-access :open
+    constants/community-no-membership-access   :open
     constants/community-invitation-only-access :invite-only
-    constants/community-on-request-access :request-access
+    constants/community-on-request-access      :request-access
     :unknown-access))
 
 (defn- show-join-modal
@@ -83,7 +83,7 @@
   [community-id role-permissions? color tags?]
   (let [{:keys [can-request-access? no-member-permission? networks-not-supported?
                 highest-permission-role
-                tokens]} (rf/sub [:community/token-gated-overview community-id])
+                tokens]}        (rf/sub [:community/token-gated-overview community-id])
         on-request-access-press (show-join-modal community-id)]
     (cond
       networks-not-supported?
@@ -150,9 +150,9 @@
 (defn- notification-type
   [{:keys [muted? mentions-count unread-messages?] :as _chat}]
   (cond
-    muted? :mute
+    muted?               :mute
     (> mentions-count 0) :mention
-    unread-messages? :notification))
+    unread-messages?     :notification))
 
 (defn- navigate-to-chat
   [chat-id]
@@ -176,11 +176,11 @@
   [rn/view {:style {:padding-horizontal 8}}
    (let [chat-id       (str community-id channel-id)
          chat-data     (assoc chat
-                         :community-id community-id
-                         :chat-type constants/community-chat-type
-                         :chat-id chat-id
-                         :customization-color color
-                         :notification (notification-type chat))
+                              :community-id        community-id
+                              :chat-type           constants/community-chat-type
+                              :chat-id             chat-id
+                              :customization-color color
+                              :notification        (notification-type chat))
          on-press      (rn/use-callback
                         (fn []
                           (when (and (not locked?) channel-id joined-or-spectated?)
@@ -193,16 +193,16 @@
                         [locked? channel-id])]
      [quo/channel
       (assoc chat-data
-        :on-press on-press
-        :on-long-press on-long-press)])])
+             :on-press      on-press
+             :on-long-press on-long-press)])])
 
 (defn channel-listing-item
   [{:keys [community-id] :as community-data}]
   (fn [{:keys [render-as] :as item-data} _ _ _]
     (case render-as
       :separator [rn/view {:style {:height 8}}]
-      :category [category-divider community-id item-data]
-      :channel [channel-item item-data community-data]
+      :category  [category-divider community-id item-data]
+      :channel   [channel-item item-data community-data]
       nil)))
 
 (def channel-component-heights
@@ -306,15 +306,15 @@
     (if blur-version?
       [quo/page-nav
        (assoc base-props
-         :type :community
-         :background :blur
-         :center-opacity nav-content-opacity
-         :community-name community-name
-         :community-logo community-logo)]
+              :type           :community
+              :background     :blur
+              :center-opacity nav-content-opacity
+              :community-name community-name
+              :community-logo community-logo)]
       [quo/page-nav
        (assoc base-props
-         :type :no-title
-         :background :photo)])))
+              :type       :no-title
+              :background :photo)])))
 
 (defn- header
   [{:keys [community-id scroll-amount collapse-threshold sheet-displacement-threshold
@@ -330,7 +330,7 @@
                                   :navbar-content-threshold-factor navbar-content-threshold-factor
                                   :expand-header-limit             expand-header-limit})
         {:keys [community-name color logo
-                cover-image]} (rf/sub [:communities/community-overview community-id])]
+                cover-image]}   (rf/sub [:communities/community-overview community-id])]
     [:<>
      [header-cover-image
       {:cover-image      cover-image
@@ -353,14 +353,14 @@
 (defn- community-logo
   [{:keys [initial-state scroll-amount community-id collapse-threshold
            sheet-displacement-threshold text-movement-threshold]}]
-  (let [theme       (quo.context/use-theme)
+  (let [theme          (quo.context/use-theme)
         {:keys [logo]} (rf/sub [:communities/community-overview community-id])
-        logo-styles (worklets/use-logo-styles
-                     {:initial-state                initial-state
-                      :scroll-amount                scroll-amount
-                      :collapse-threshold           collapse-threshold
-                      :sheet-displacement-threshold sheet-displacement-threshold
-                      :text-movement-threshold      text-movement-threshold})]
+        logo-styles    (worklets/use-logo-styles
+                        {:initial-state                initial-state
+                         :scroll-amount                scroll-amount
+                         :collapse-threshold           collapse-threshold
+                         :sheet-displacement-threshold sheet-displacement-threshold
+                         :text-movement-threshold      text-movement-threshold})]
     [reanimated/view {:style [style/community-logo (style/community-logo-bg-color theme) logo-styles]}
      [rn/image {:style style/community-logo-image :source logo}]]))
 
@@ -415,25 +415,26 @@
   (let [{:keys [community-name description active-members-count tags role-permissions?
                 permissions color owner?
                 joined?]} (rf/sub [:communities/community-overview community-id])
-        theme          (quo.context/use-theme)
-        sheet-styles   (worklets/use-sheet-styles
-                        {:initial-state                initial-state
-                         :scroll-amount                scroll-amount
-                         :collapse-threshold           collapse-threshold
-                         :sheet-displacement-threshold sheet-displacement-threshold})
-        info-styles    (worklets/use-info-styles
-                        {:initial-state                 initial-state
-                         :scroll-amount                 scroll-amount
-                         :collapse-threshold            collapse-threshold
-                         :info-opacity-threshold-factor info-opacity-threshold-factor})
-        get-dimensions (rn/use-callback
-                        (fn [e]
-                          (let [height (oops/oget e "nativeEvent.layout.height")]
-                            (reanimated/set-shared-value header-height (or height 0))
-                            (reanimated/set-shared-value collapse-threshold (or (- height 16.5) 0))
-                            (reagent/next-tick #(reanimated/set-shared-value initial-state "finalized")))))
+        theme             (quo.context/use-theme)
+        sheet-styles      (worklets/use-sheet-styles
+                           {:initial-state                initial-state
+                            :scroll-amount                scroll-amount
+                            :collapse-threshold           collapse-threshold
+                            :sheet-displacement-threshold sheet-displacement-threshold})
+        info-styles       (worklets/use-info-styles
+                           {:initial-state                 initial-state
+                            :scroll-amount                 scroll-amount
+                            :collapse-threshold            collapse-threshold
+                            :info-opacity-threshold-factor info-opacity-threshold-factor})
+        get-dimensions    (rn/use-callback
+                           (fn [e]
+                             (let [height (oops/oget e "nativeEvent.layout.height")]
+                               (reanimated/set-shared-value header-height (or height 0))
+                               (reanimated/set-shared-value collapse-threshold (or (- height 16.5) 0))
+                               (reagent/next-tick #(reanimated/set-shared-value initial-state
+                                                                                "finalized")))))
 
-        members-count  (rf/sub [:communities/community-members-count community-id])]
+        members-count     (rf/sub [:communities/community-members-count community-id])]
     [reanimated/view
      {:style     [(style/community-info theme) sheet-styles]
       :on-layout get-dimensions}
@@ -568,7 +569,7 @@
 
 (defn view
   [id]
-  (let [community-id (or id (quo.context/use-screen-params))
+  (let [community-id      (or id (quo.context/use-screen-params))
         {:keys [collapsed?]
          :as   community} (rf/sub [:communities/community-overview community-id])]
     [rn/view {:style style/community-overview-container}

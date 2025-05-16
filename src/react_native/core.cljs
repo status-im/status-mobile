@@ -196,7 +196,7 @@
       content)))
 
 (defn render-after
-  [{:keys [ms] :as opts} & children]
+  [{:keys [_ms] :as opts} & children]
   (delay-render (into [:<>] children) opts))
 
 (def layout-animation (.-LayoutAnimation ^js react-native))

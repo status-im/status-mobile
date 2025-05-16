@@ -403,19 +403,20 @@
               permissions role-permissions? memberRole]
        :as   community}]
    (when community
-     {:joined?              joined
-      :spectated?           spectated
-      :cover-image          (-> images :banner :uri)
-      :logo                 (-> images :large :uri)
-      :community-name       (:name community)
-      :description          description
-      :color                color
-      :active-members-count activeMembersCount
-      :tags                 tags
-      :permissions          permissions
-      :role-permissions?    role-permissions?
-      :owner?               true ;(= memberRole constants/community-member-role-owner)
-      })))
+     (let [owner? (= memberRole constants/community-member-role-owner)]
+       {:joined?              joined
+        :spectated?           spectated
+        :cover-image          (-> images :banner :uri)
+        :logo                 (-> images :large :uri)
+        :community-name       (:name community)
+        :description          description
+        :color                color
+        :active-members-count activeMembersCount
+        :tags                 tags
+        :permissions          permissions
+        :role-permissions?    role-permissions?
+        :owner?               owner?
+        :collapsed?           (and joined (not owner?))}))))
 
 (re-frame/reg-sub
  :communities/collapsed-categories-for-community

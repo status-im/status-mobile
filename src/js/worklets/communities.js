@@ -42,7 +42,7 @@ export function useLogoStyles({
   textMovementThreshold,
 }) {
   return useAnimatedStyle(() => {
-    const isFirstDisplacement = initialState.value === "expanded" || scrollAmount.value < collapseThreshold.value;
+    const isFirstDisplacement = initialState.value === 'expanded' || scrollAmount.value < collapseThreshold.value;
     if (isFirstDisplacement) {
       return {
         transform: [
@@ -70,9 +70,9 @@ export function useLogoStyles({
   });
 }
 
-export function useSheetStyles({initialState, scrollAmount, collapseThreshold, sheetDisplacementThreshold }) {
+export function useSheetStyles({ initialState, scrollAmount, collapseThreshold, sheetDisplacementThreshold }) {
   return useAnimatedStyle(() => {
-    const isFirstDisplacement = initialState.value === "expanded" || scrollAmount.value < collapseThreshold.value;
+    const isFirstDisplacement = initialState.value === 'expanded' || scrollAmount.value < collapseThreshold.value;
     if (isFirstDisplacement) {
       return {
         transform: [{ translateY: interpolate(scrollAmount.value, [0, collapseThreshold.value], [40, 0], 'clamp') }],
@@ -104,59 +104,56 @@ export function useSheetStyles({initialState, scrollAmount, collapseThreshold, s
   });
 }
 
-export function useNameStyles({initialState, scrollAmount, collapseThreshold, textMovementThreshold}) {
+export function useNameStyles({ initialState, scrollAmount, collapseThreshold, textMovementThreshold }) {
   return useAnimatedStyle(() => {
     let horizontalPosition;
-    if (initialState.value === "collapsed") {
+    if (initialState.value === 'collapsed') {
       horizontalPosition = 40;
-    }else if (initialState.value === "expanded") {
+    } else if (initialState.value === 'expanded') {
       horizontalPosition = 0;
-    }else {
+    } else {
       horizontalPosition = interpolate(
-          scrollAmount.value,
-          [textMovementThreshold.value, collapseThreshold.value],
-          [0, 40],
-          'clamp',
+        scrollAmount.value,
+        [textMovementThreshold.value, collapseThreshold.value],
+        [0, 40],
+        'clamp',
       );
     }
 
     let verticalPosition;
-    if (initialState.value === "collapsed") {
+    if (initialState.value === 'collapsed') {
       verticalPosition = -44.5;
-    }else if (initialState.value === "expanded") {
+    } else if (initialState.value === 'expanded') {
       verticalPosition = 0;
-    }else {
+    } else {
       verticalPosition = interpolate(
-          scrollAmount.value,
-          [textMovementThreshold.value, collapseThreshold.value],
-          [0, -44.5],
-          'clamp',
+        scrollAmount.value,
+        [textMovementThreshold.value, collapseThreshold.value],
+        [0, -44.5],
+        'clamp',
       );
     }
 
     return {
       marginRight: horizontalPosition,
-      transform: [
-        {translateX: horizontalPosition},
-        {translateY: verticalPosition},
-      ],
+      transform: [{ translateX: horizontalPosition }, { translateY: verticalPosition }],
     };
   });
 }
 
-export function useInfoStyles({initialState, scrollAmount, collapseThreshold ,infoOpacityThresholdFactor }) {
+export function useInfoStyles({ initialState, scrollAmount, collapseThreshold, infoOpacityThresholdFactor }) {
   return useAnimatedStyle(() => {
     let opacity;
-    if (initialState.value === "collapsed") {
+    if (initialState.value === 'collapsed') {
       opacity = 0;
-    } else if (initialState.value === "expanded") {
+    } else if (initialState.value === 'expanded') {
       opacity = 1;
     } else {
       const infoOpacityThreshold = collapseThreshold.value * infoOpacityThresholdFactor;
       opacity = interpolate(scrollAmount.value, [0, infoOpacityThreshold], [1, 0.2], 'extend');
     }
     return {
-      opacity: opacity
+      opacity: opacity,
     };
   });
 }
@@ -176,7 +173,12 @@ export function useChannelsStyles({
       return {
         transform: [
           {
-            translateY: interpolate(scrollAmount.value, [0, collapseThreshold.value], [39, headerDisplacement], 'clamp'),
+            translateY: interpolate(
+              scrollAmount.value,
+              [0, collapseThreshold.value],
+              [39, headerDisplacement],
+              'clamp',
+            ),
           },
         ],
       };
@@ -217,9 +219,14 @@ export function useScrollTo({ animatedRef, scrollAmount, expandHeaderLimit }) {
   });
 }
 
-export function useHeaderOpacity({ scrollAmount,collapseThreshold, sheetDisplacementThreshold }) {
+export function useHeaderOpacity({ scrollAmount, collapseThreshold, sheetDisplacementThreshold }) {
   return useDerivedValue(() => {
-    return interpolate(scrollAmount.value, [collapseThreshold.value, sheetDisplacementThreshold.value], [0, 1], 'clamp');
+    return interpolate(
+      scrollAmount.value,
+      [collapseThreshold.value, sheetDisplacementThreshold.value],
+      [0, 1],
+      'clamp',
+    );
   });
 }
 
@@ -229,9 +236,14 @@ export function useOppositeHeaderOpacity(headerOpacity) {
   });
 }
 
-export function useNavContentOpacity({ scrollAmount, navbarContentThresholdFactor, sheetDisplacementThreshold, expandHeaderLimit }) {
+export function useNavContentOpacity({
+  scrollAmount,
+  navbarContentThresholdFactor,
+  sheetDisplacementThreshold,
+  expandHeaderLimit,
+}) {
   return useDerivedValue(() => {
-    const  navbarContentThreshold = sheetDisplacementThreshold.value + navbarContentThresholdFactor;
+    const navbarContentThreshold = sheetDisplacementThreshold.value + navbarContentThresholdFactor;
     return interpolate(scrollAmount.value, [navbarContentThreshold, expandHeaderLimit.value], [0, 1], 'clamp');
   });
 }
@@ -309,7 +321,7 @@ export function onPanEnd({
   return function (event) {
     'worklet';
     scrollStart.value = -scrollAmount.value;
-    const snapHeaderThreshold = collapseThreshold.value *  snapHeaderThresholdFactor;
+    const snapHeaderThreshold = collapseThreshold.value * snapHeaderThresholdFactor;
     const endAnimation = onScrollAnimationEnd(
       scrollAmount,
       scrollStart,
