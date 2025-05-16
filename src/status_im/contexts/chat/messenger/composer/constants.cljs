@@ -11,6 +11,11 @@
 (def ^:const links-padding-bottom 8)
 (def ^:const links-container-height
   (+ actions-container-height links-padding-top links-padding-bottom))
+(def ^:const prompt-height 44)
+(def ^:const prompt-padding-top 8)
+(def ^:const prompt-padding-bottom 8)
+(def ^:const prompt-container-height
+  (+ prompt-height prompt-padding-top prompt-padding-bottom))
 
 (def ^:const preview-always-ask 1)
 (def ^:const preview-always-share 2)

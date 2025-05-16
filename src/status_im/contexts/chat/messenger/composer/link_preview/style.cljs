@@ -21,11 +21,10 @@
    :background-color (colors/theme-colors colors/neutral-5 colors/neutral-90 theme)
    :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
    :border-width     1
-   :border-radius    15
-   :height           48
+   :border-radius    12
+   :height           44
    :padding          12})
 
-(def options-container
-  {:flex               1
-   :padding-bottom     12
-   :padding-horizontal 20})
+(def prompt-container
+  {:padding-bottom 8
+   :padding-top    8})

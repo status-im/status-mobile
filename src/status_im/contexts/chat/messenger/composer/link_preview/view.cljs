@@ -15,12 +15,12 @@
 
 
 (defn- use-animated-height
-  [previews?]
-  (let [height (reanimated/use-shared-value (if previews? constants/links-container-height 0))]
+  [previews? view-height]
+  (let [height (reanimated/use-shared-value (if previews? view-height 0))]
     (rn/use-effect
      (fn []
-       (reanimated/animate height (if previews? constants/links-container-height 0)))
-     [previews?])
+       (reanimated/animate height (if previews? view-height 0)))
+     [previews? view-height])
     height))
 
 (defn unfurl-links
@@ -49,34 +49,41 @@
 
 (defn show-unfurl-link-options
   [theme]
-  [rn/view
-   {:style (style/unfurl-link-options theme)}
-   [quo/text
-    {:size :paragraph-2}
-    (i18n/label :t/show-link-previews)]
-   [quo/button
-    {:type     :outline
-     :size     24
-     :on-press (fn []
-                 (rf/dispatch [:show-bottom-sheet
-                               {:content (fn []
-                                           [preview-actions/link-preview-options])}]))}
-    (i18n/label :t/options)]])
+  [rn/view style/prompt-container
+   [rn/view
+    {:style (style/unfurl-link-options theme)}
+    [quo/text
+     {:size :paragraph-2}
+     (i18n/label :t/show-link-previews)]
+    [quo/button
+     {:type     :outline
+      :size     24
+      :on-press (fn []
+                  (rf/dispatch [:show-bottom-sheet
+                                {:content (fn []
+                                            [preview-actions/link-preview-options])}]))}
+     (i18n/label :t/options)]]])
 
 
 (defn view
   [theme]
   (let [previews      (rf/sub [:chats/link-previews-unfurled])
         mode          (rf/sub [:profile/url-unfurling-mode])
-        height        (use-animated-height (and (boolean (seq previews))
-                                                (not= mode constants/preview-never-share)))
         show-current? (rf/sub [:chat/show-current-preview])
+        show-previews (or (= mode constants/preview-always-share) show-current?)
         show-options  (and (= mode constants/preview-always-ask)
                            (boolean (seq previews))
-                           (not show-current?))]
+                           (not show-current?))
+        view-height   (if show-options
+                        constants/prompt-container-height
+                        constants/links-container-height)
+        height        (use-animated-height
+                       (and (boolean (seq previews))
+                            (not= mode constants/preview-never-share))
+                       view-height)]
     [reanimated/view
      {:style (reanimated/apply-animations-to-style {:height height} {:z-index 1})}
-     (when (or (= mode constants/preview-always-share) show-current?)
+     (when show-previews
        [unfurl-links previews])
      (when show-options
        [show-unfurl-link-options theme])]))
