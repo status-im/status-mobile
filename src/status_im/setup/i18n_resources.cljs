@@ -1,12 +1,13 @@
 (ns status-im.setup.i18n-resources
   (:require
     [clojure.string :as string]
+    [react-native.mmkv :as mmkv]
     [utils.i18n :as i18n]))
 
 ;; FIXME: that should be replaced with `(react-native-languages/get-lang-keyword)`
 ;; in order for languages/translations to work
 ;; see https://github.com/status-im/status-mobile/issues/16058 for details
-(def default-device-language :en)
+(def default-device-language (keyword (mmkv/get-string "language" "en")))
 
 (def languages
   #{:ar :bn :de :el :en :es :es_419 :es_AR :fil :fr :hi :id :in :it :ja :ko :ms :nl :pl :pt :pt_BR :ru

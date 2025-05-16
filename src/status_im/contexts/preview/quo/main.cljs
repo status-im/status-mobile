@@ -5,6 +5,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
+    [status-im.common.languages :as languages]
     [status-im.contexts.preview.quo.animated-header-list.animated-header-list
      :as animated-header-list]
     [status-im.contexts.preview.quo.avatars.account-avatar :as account-avatar]
@@ -227,6 +228,8 @@
                         :component gradients/view}
                        {:name      :screen/shadows
                         :component shadows/view}]
+   :a-language        [{:name      :screen/languages
+                        :component languages/view}]
    :animated-list     [{:name      :screen/animated-header-list
                         :component animated-header-list/mock-screen}]
    :avatar            [{:name      :screen/community-avatar
