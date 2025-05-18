@@ -1,5 +1,6 @@
 (ns status-im.contexts.market.token.view
   (:require
+    [quo.context]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -11,7 +12,7 @@
 
 (defn token-overview
   [{:keys [theme value change]}]
-  [rn/view {:style (style/token-overview theme)}
+  [rn/view {:style style/token-overview}
    [quo/text
     {:size   :heading-2
      :weight :semi-bold}

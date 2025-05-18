@@ -48,8 +48,7 @@
 (def content-row
   {:flex-direction :row})
 
-(defn token-overview
-  [theme]
+(def token-overview
   {:flex           1
    :padding-top    12
    :padding-bottom 16})
