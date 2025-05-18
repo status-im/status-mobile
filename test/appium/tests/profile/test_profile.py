@@ -124,8 +124,8 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
         self.message_1_1_from_2 = "message 1-1 chat from user 2"
         self.chat_2.navigate_to_chats_view()
         self.home_2.get_chat(self.username_1).click()
-        self.chat_2.send_message(self.message_1_1_from_2)
         self.chat_1.send_message(self.message_1_1_from_1)
+        self.chat_2.send_message(self.message_1_1_from_2)
         self.new_username_1 = 'user 1'
 
     @marks.smoke
@@ -139,6 +139,34 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
         if self.profile_1.default_username_text.text != self.new_username_1:
             pytest.fail("Device 1: Username is not updated")
 
+        self.home_1.just_fyi("User 1 sends a new message in 1-1 chat")
+        self.home_1.navigate_to_chats_view()
+        self.home_1.get_chat(self.username_2).click()
+        new_message = 'new message'
+        self.chat_1.send_message(new_message)
+        self.chat_1.chat_element_by_text(new_message).wait_for_sent_state()
+
+        self.home_2.just_fyi("User 2 checks updated username in the contacts list")
+        self.chat_2.navigate_to_chats_view()
+        self.home_2.contacts_tab.click()
+        if not self.home_2.get_chat_from_home_view(self.new_username_1).is_element_displayed(30):
+            self.errors.append(self.home_2, "Updated username is absent in the contacts list")
+
+        self.home_2.just_fyi("User 2 checks updated username in the 1-1 chat and user's profile")
+        self.home_2.recent_tab.click()
+        if self.home_2.get_chat_from_home_view(self.new_username_1).is_element_displayed():
+            self.home_2.get_chat(self.new_username_1).click()
+            message_element = self.chat_2.chat_element_by_text(new_message)
+            message_element.wait_for_element(30)
+            if message_element.username.text != self.new_username_1:
+                self.errors.append(self.chat_2,
+                                   "Updated username '%s' is not shown in the 1-1 chat" % self.new_username_1)
+            message_element.member_photo.click()
+            if self.chat_2.get_profile_view().contact_name_text.text != self.new_username_1:
+                self.errors.append(self.chat_2, "Updated username is not shown in the user's profile")
+        else:
+            self.errors.append(self.home_2, "Can't find chat with updated username")
+
         self.home_2.just_fyi("User 2 checks updated username in the community channel and mentions list")
         self.home_2.navigate_to_communities_view()
         self.home_2.get_to_community_channel_from_home(self.community_name)
@@ -150,26 +178,6 @@ class TestProfileMultipleDevices(MultipleSharedDeviceTestCase):
         self.chat_2.mentions_list.wait_for_element()
         if not self.chat_2.user_list_element_by_name(self.new_username_1).is_element_displayed():
             self.errors.append(self.chat_2, "Updated username is not shown in the mentions list")
-        self.chat_2.navigate_to_chats_view()
-
-        self.home_2.just_fyi("User 2 checks updated username in the contacts list")
-        self.home_2.contacts_tab.click()
-        if not self.home_2.get_chat(self.new_username_1).is_element_displayed():
-            self.errors.append(self.home_2, "Updated username is absent in the contacts list")
-
-        self.home_2.just_fyi("User 2 checks updated username in the 1-1 chat and user's profile")
-        self.home_2.recent_tab.click()
-        if self.home_2.get_chat(self.new_username_1).is_element_displayed():
-            self.home_2.get_chat(self.new_username_1).click()
-            self.chat_2.chat_element_by_text(self.message_1_1_from_1).wait_for_element(30)
-            if self.chat_2.chat_element_by_text(self.message_1_1_from_1).username.text != self.new_username_1:
-                self.errors.append(self.chat_2,
-                                   "Updated username '%s' is not shown in the 1-1 chat" % self.new_username_1)
-            self.chat_2.chat_element_by_text(self.message_1_1_from_1).member_photo.click()
-            if self.chat_2.get_profile_view().contact_name_text.text != self.new_username_1:
-                self.errors.append(self.chat_2, "Updated username is not shown in the user's profile")
-        else:
-            self.errors.append(self.home_2, "Can't find chat with updated username")
 
         self.home_1.just_fyi("User 1 checks that updated username is shown in the login screen")
         try:
