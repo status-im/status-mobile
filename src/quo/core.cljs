@@ -460,6 +460,9 @@
   quo.components.text-combinations.view/view)
 (def username quo.components.text-combinations.username.view/view)
 
+;;;; Utilities
+(def token quo.components.utilities.token.view)
+
 ;;;; Wallet
 (def account-card quo.components.wallet.account-card.view/view)
 (def account-origin quo.components.wallet.account-origin.view/view)

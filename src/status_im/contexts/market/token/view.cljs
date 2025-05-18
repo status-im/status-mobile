@@ -1,7 +1,5 @@
 (ns status-im.contexts.market.token.view
   (:require
-    [quo.components.icon :as icon]
-    [quo.components.utilities.token.view :as token]
     [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -19,7 +17,7 @@
      :weight :semi-bold}
     value]
    [rn/view {:style style/token-overview-info-row}
-    [icon/icon
+    [quo/icon
      (if (pos? change)
        :i/positive
        :i/negative)
@@ -67,7 +65,7 @@
                                    :background :blur}]]}
      [rn/view {:style (style/header-top theme)}
       [rn/view {:style style/header-title-row}
-       [token/view {:token :eth :size :size-32}]
+       [quo/token {:token :eth :size :size-32}]
        [quo/text
         {:size                :heading-1
          :weight              :semi-bold
