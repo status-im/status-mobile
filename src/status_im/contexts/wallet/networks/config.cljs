@@ -30,14 +30,17 @@
 (def ^:const bsc-chain-id 56)
 (def ^:const bsc-testnet-chain-id 97)
 
+(def ^:const polygon-chain-id 137)
+(def ^:const polygon-amoy-testnet-chain-id 80002)
+
 ;; NOTE: Add a chain to `new-networks` to:
-;;         1. highlight it as "new" in the UI
-;;         2. add a "new feature" dot to places where we show networks
+;;  1. highlight it as "new" in the UI
+;;  2. add a "new feature" dot to places where we show networks
 
 (def ^:const new-networks
   #{status-sepolia-chain-id
-    bsc-chain-id
-    bsc-testnet-chain-id})
+    polygon-chain-id
+    polygon-amoy-testnet-chain-id})
 
 (def ^:const chain-id-for-new-network-banner bsc-chain-id)
 
@@ -49,7 +52,8 @@
   #{ethereum-chain-id
     arbitrum-chain-id
     optimism-chain-id
-    base-chain-id})
+    base-chain-id
+    polygon-chain-id})
 
 ;; NOTE: add client-side chain details below for `mainnet` and `testnet`
 ;; respectively.
@@ -83,7 +87,13 @@
    {:network-name        :bsc
     :source              (resources/get-network :bsc)
     :abbreviated-name    "BSC"
-    :block-explorer-name "Bscscan"}})
+    :block-explorer-name "Bscscan"}
+
+   polygon-chain-id
+   {:network-name        :polygon
+    :source              (resources/get-network :polygon)
+    :abbreviated-name    "Polygon"
+    :block-explorer-name "PolygonScan"}})
 
 (def ^:const testnets
   {sepolia-chain-id
@@ -100,6 +110,9 @@
 
    bsc-testnet-chain-id
    (get mainnets bsc-chain-id)
+
+   polygon-amoy-testnet-chain-id
+   (get mainnets polygon-chain-id)
 
    status-sepolia-chain-id
    {:network-name        :status
