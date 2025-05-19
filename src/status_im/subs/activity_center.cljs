@@ -9,12 +9,15 @@
  (fn [activity-center]
    (:notifications activity-center)))
 
+(defn supported-notification?
+  [notification]
+  (types/all-supported (:type notification)))
+
 (re-frame/reg-sub
  :activity-center/supported-notifications
  :<- [:activity-center/notifications]
  (fn [notifications]
-   (->> notifications
-        (filter #(types/all-supported (:type %))))))
+   (filter supported-notification? notifications)))
 
 (re-frame/reg-sub
  :activity-center/unread-counts-by-type
