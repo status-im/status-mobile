@@ -64,6 +64,7 @@
                              (rf/dispatch [:wallet/start-bridge]))
          :swap-action      (fn []
                              (rf/dispatch [:wallet/clean-send-data])
+                             (rf/dispatch [:wallet/clean-swap])
                              (rf/dispatch [:open-modal :screen/wallet.swap-select-asset-to-pay]))
          :bridge-disabled? testnet-mode?
          :swap-disabled?   testnet-mode?}])
