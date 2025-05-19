@@ -19,8 +19,9 @@
       {:style style/step-content}
       [quo/text {:size :paragraph-2 :weight :semi-bold}
        (i18n/label :t/forgot-your-password-info-remove-profile)]
-      [quo/text {:size :paragraph-2}
-       (i18n/label :t/forgot-your-password-info-remove-profile-description)]]]
+      [rn/view {:style style/step-description}
+       [quo/text {:size :paragraph-2}
+        (i18n/label :t/forgot-your-password-info-remove-profile-description)]]]]
 
     [rn/view {:style style/step-container}
      [quo/step {:in-blur-view? shell?} 2]
@@ -28,13 +29,15 @@
       [rn/view {:style style/step-title}
        [quo/text {:size :paragraph-2 :weight :semi-bold}
         (i18n/label :t/forgot-your-password-info-recover-profile)]]
-      [quo/text {:size :paragraph-2}
-       (i18n/label :t/forgot-your-password-info-recover-profile-description)]]]
+      [rn/view {:style style/step-description}
+       [quo/text {:size :paragraph-2}
+        (i18n/label :t/forgot-your-password-info-recover-profile-description)]]]]
 
     [rn/view {:style style/step-container}
      [quo/step {:in-blur-view? shell?} 3]
      [rn/view {:style style/step-content}
       [quo/text {:size :paragraph-2 :weight :semi-bold}
        (i18n/label :t/forgot-your-password-info-create-new-password)]
-      [quo/text {:size :paragraph-2}
-       (i18n/label :t/forgot-your-password-info-create-new-password-description)]]]]])
+      [rn/view {:style style/step-description}
+       [quo/text {:size :paragraph-2}
+        (i18n/label :t/forgot-your-password-info-create-new-password-description)]]]]]])

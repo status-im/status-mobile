@@ -4,3 +4,4 @@
 (def step-container {:flex-direction :row :margin-top 14})
 (def step-content {:margin-left 10})
 (def step-title {:flex-direction :row})
+(def step-description {:padding-right 16})
