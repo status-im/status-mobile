@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "feat/polygon",
+    "commit-sha1": "830d5f97bff86b18038411ee76451e78b6dc15c1",
+    "src-sha256": "0ypv71532vh9sszkp19lm0khpg1wwa2whz701yxa0i1dd57cv5lf"
+}
