@@ -65,7 +65,7 @@ class MainApplication : NavigationApplication() {
     override fun onLowMemory() {
         super.onLowMemory()
         Log.i("MainApplication", "onLowMemory called")
-        StatusPackage.switchToLowMemoryMode()
+        StatusPackage.releaseOSMemory()
         emitEvent(ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
     }
 
@@ -79,7 +79,7 @@ class MainApplication : NavigationApplication() {
         )) {
             return
         }
-        StatusPackage.switchToLowMemoryMode()
+        StatusPackage.releaseOSMemory()
         emitEvent(level)
     }
 
