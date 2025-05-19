@@ -9,14 +9,14 @@
     [utils.re-frame :as rf]))
 
 (rf/reg-event-fx :contact/mark-as-untrusted-success
- (fn [{:keys [db]} [contact-id name]]
+ (fn [{:keys [db]} [contact-id]]
    {:db (update-in db
                    [:contacts/contacts contact-id]
                    #(assoc % :trust-status constants/contact-trust-status-untrustworthy))
     :dispatch
     [:toasts/upsert
      {:type :positive
-      :text (i18n/label :t/marked-as-untrusted {:username name})}]}))
+      :text (i18n/label :t/marked-as-untrusted)}]}))
 
 (rf/reg-event-fx :contact/mark-as-untrusted
  (fn [_ [contact-id name]]
@@ -27,14 +27,14 @@
       :on-error   #(log/error "failed mark contact as untrusted" % contact-id)}]}))
 
 (rf/reg-event-fx :contact/remove-trust-status-success
- (fn [{:keys [db]} [contact-id name]]
+ (fn [{:keys [db]} [contact-id]]
    {:db (update-in db
                    [:contacts/contacts contact-id]
                    #(assoc % :trust-status constants/contact-trust-status-unknown))
     :dispatch
     [:toasts/upsert
      {:type :positive
-      :text (i18n/label :t/trust-mark-removed {:username name})}]}))
+      :text (i18n/label :t/untrusted-mark-removed)}]}))
 
 (rf/reg-event-fx :contact/remove-trust-status
  (fn [_ [contact-id name]]
