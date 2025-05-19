@@ -453,10 +453,10 @@
     "../src/js/worklets/core.js"                       worklet-factory
     "../src/js/worklets/communities.js"                #js {"useLogoStyles"            #js {}
                                                             "useSheetStyles"           #js {}
-                                                            "useStartScrollValue"      #js{}
-                                                            "useScrollValue"           #js{}
-                                                            "useDerivedValueAdd"       #js{}
-                                                            "useDerivedValueMul"       #js{}
+                                                            "useStartScrollValue"      #js {}
+                                                            "useScrollValue"           #js {}
+                                                            "useDerivedValueAdd"       #js {}
+                                                            "useDerivedValueMul"       #js {}
                                                             "useNameStyles"            #js {}
                                                             "useInfoStyles"            #js {}
                                                             "useChannelsStyles"        #js {}
@@ -467,14 +467,14 @@
                                                             "onPanStart"               #js {}
                                                             "onPanUpdate"              #js {}
                                                             "onPanEnd"                 #js {}}
-    "../src/js/worklets/shell/bottom_tabs.js" #js {}
-    "../src/js/worklets/shell/home_stack.js" #js {}
-    "../src/js/worklets/bottom_sheet.js" #js {}
-    "../src/js/worklets/record_audio.js" #js {}
-    "../src/js/worklets/scroll_view.js" #js {}
-    "../src/js/worklets/onboarding_carousel.js" #js {}
-    "../src/js/worklets/chat/messenger/lightbox.js" #js {}
-    "../src/js/worklets/chat/messenger/messages.js" #js {}
+    "../src/js/worklets/shell/bottom_tabs.js"          #js {}
+    "../src/js/worklets/shell/home_stack.js"           #js {}
+    "../src/js/worklets/bottom_sheet.js"               #js {}
+    "../src/js/worklets/record_audio.js"               #js {}
+    "../src/js/worklets/scroll_view.js"                #js {}
+    "../src/js/worklets/onboarding_carousel.js"        #js {}
+    "../src/js/worklets/chat/messenger/lightbox.js"    #js {}
+    "../src/js/worklets/chat/messenger/messages.js"    #js {}
     "../src/js/worklets/chat/messenger/navigation.js"  #js {}
     "../src/js/worklets/chat/messenger/composer.js"    #js {}
     "../src/js/worklets/chat/messenger/placeholder.js" #js {}
