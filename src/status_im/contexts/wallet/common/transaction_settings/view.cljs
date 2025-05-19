@@ -11,57 +11,72 @@
 
 (defn custom-settings-sheet
   [_]
-  (let [max-base-fee   (rf/sub [:wallet/tx-settings-max-base-fee])
-        priority-fee   (rf/sub [:wallet/tx-settings-custom-priority-fee])
-        max-gas-amount (rf/sub [:wallet/tx-settings-gas-amount])
-        nonce          (rf/sub [:wallet/tx-settings-nonce])
-        account-color  (rf/sub [:wallet/current-viewing-account-color])
-        current-screen (rf/sub [:view-id])]
+  (let [eip-1559-enabled? (rf/sub [:wallet/tx-eip-1559-enabled?])
+        max-base-fee      (rf/sub [:wallet/tx-settings-max-base-fee])
+        priority-fee      (rf/sub [:wallet/tx-settings-custom-priority-fee])
+        max-gas-amount    (rf/sub [:wallet/tx-settings-gas-amount])
+        gas-price         (rf/sub [:wallet/tx-settings-gas-price])
+        nonce             (rf/sub [:wallet/tx-settings-nonce])
+        account-color     (rf/sub [:wallet/current-viewing-account-color])
+        current-screen    (rf/sub [:view-id])
+        fee-data-fields   (if eip-1559-enabled?
+                            [{:title             (i18n/label :t/max-base-fee)
+                              :description-props {:text (str max-base-fee " GWEI")}
+
+                              :image             :none
+                              :description       :text
+                              :action            :arrow
+                              :on-press          #(rf/dispatch [:navigate-to-within-stack
+                                                                [:screen/wallet.tx-settings-max-fee
+                                                                 current-screen]])
+                              :label             :text
+                              :preview-size      :size-32}
+                             {:title             (i18n/label :t/priority-fee)
+                              :description-props {:text (str priority-fee " GWEI")}
+                              :image             :none
+                              :description       :text
+                              :action            :arrow
+                              :on-press          #(rf/dispatch [:navigate-to-within-stack
+                                                                [:screen/wallet.tx-settings-priority-fee
+                                                                 current-screen]])
+                              :label             :text
+                              :preview-size      :size-32}]
+                            [{:title             (i18n/label :t/gas-price)
+                              :description-props {:text (str gas-price " GWEI")}
+                              :image             :none
+                              :description       :text
+                              :action            :arrow
+                              :on-press          #(rf/dispatch [:navigate-to-within-stack
+                                                                [:screen/wallet.tx-settings-gas-price
+                                                                 current-screen]])
+                              :label             :text
+                              :preview-size      :size-32}])
+        extra-fields      [{:title             (i18n/label :t/max-gas-amount)
+                            :description-props {:text (str max-gas-amount " UNITS")}
+                            :image             :none
+                            :description       :text
+                            :action            :arrow
+                            :on-press          #(rf/dispatch [:navigate-to-within-stack
+                                                              [:screen/wallet.tx-settings-gas-amount
+                                                               current-screen]])
+                            :label             :text
+                            :preview-size      :size-32}
+                           {:title             (i18n/label :t/nonce)
+                            :description-props {:text nonce}
+                            :image             :none
+                            :description       :text
+                            :action            :arrow
+                            :on-press          #(rf/dispatch [:navigate-to-within-stack
+                                                              [:screen/wallet.tx-settings-nonce
+                                                               current-screen]])
+                            :label             :text
+                            :preview-size      :size-32}]]
     [rn/view
      [quo/drawer-top
       {:title (i18n/label :t/custom)}]
      [quo/category
       {:list-type :settings
-       :data      [{:title             (i18n/label :t/max-base-fee)
-                    :description-props {:text (str max-base-fee " GWEI")}
-                    :image             :none
-                    :description       :text
-                    :action            :arrow
-                    :on-press          #(rf/dispatch [:navigate-to-within-stack
-                                                      [:screen/wallet.tx-settings-max-fee
-                                                       current-screen]])
-                    :label             :text
-                    :preview-size      :size-32}
-                   {:title             (i18n/label :t/priority-fee)
-                    :description-props {:text (str priority-fee " GWEI")}
-                    :image             :none
-                    :description       :text
-                    :action            :arrow
-                    :on-press          #(rf/dispatch [:navigate-to-within-stack
-                                                      [:screen/wallet.tx-settings-priority-fee
-                                                       current-screen]])
-                    :label             :text
-                    :preview-size      :size-32}
-                   {:title             (i18n/label :t/max-gas-amount)
-                    :description-props {:text (str max-gas-amount " UNITS")}
-                    :image             :none
-                    :description       :text
-                    :action            :arrow
-                    :on-press          #(rf/dispatch [:navigate-to-within-stack
-                                                      [:screen/wallet.tx-settings-gas-amount
-                                                       current-screen]])
-                    :label             :text
-                    :preview-size      :size-32}
-                   {:title             (i18n/label :t/nonce)
-                    :description-props {:text nonce}
-                    :image             :none
-                    :description       :text
-                    :action            :arrow
-                    :on-press          #(rf/dispatch [:navigate-to-within-stack
-                                                      [:screen/wallet.tx-settings-nonce
-                                                       current-screen]])
-                    :label             :text
-                    :preview-size      :size-32}]}]
+       :data      (concat fee-data-fields extra-fields)}]
      [quo/bottom-actions
       {:actions          :one-action
        :button-one-props {:on-press            (fn []
@@ -116,57 +131,60 @@
      [quo/category
       {:list-type :settings
        :data
-       [{:title             (title :tx-fee-mode/normal)
-         :image-props       "🍿"
-         :description-props {:text (rf/sub [:wallet/wallet-transaction-setting-fiat-formatted
-                                            :tx-fee-mode/normal])}
-         :image             :emoji
-         :description       :text
-         :action            :selector
-         :action-props      {:type                :radio
-                             :checked?            (= :tx-fee-mode/normal transaction-setting)
-                             :customization-color account-color
-                             ;; there is an UI isssue in quo/category, it has :on-press event
-                             ;; and child radio button has own :on-change. If they are not set
-                             ;; to the same action then we are getting inconsistent behaviour
-                             ;; when user can click on settings item but cant on radio itself.
-                             ;; So duplication is to prevent that until general fix is applied
-                             ;; to quo/category
-                             :on-change           set-normal}
-         :on-press          set-normal
-         :label             :text
-         :preview-size      :size-32}
-        {:title             (title :tx-fee-mode/fast)
-         :image-props       "🚗"
-         :description-props {:text (rf/sub [:wallet/wallet-transaction-setting-fiat-formatted
-                                            :tx-fee-mode/fast])}
-         :image             :emoji
-         :description       :text
-         :action            :selector
-         :action-props      {:type                :radio
-                             :checked?            (= :tx-fee-mode/fast transaction-setting)
-                             :on-change           set-fast
-                             :customization-color account-color}
-         :on-press          set-fast
-         :label             :text
-         :preview-size      :size-32}
-        {:title             (title :tx-fee-mode/urgent)
-         :image-props       "🚀"
-         :description-props {:text (rf/sub [:wallet/wallet-transaction-setting-fiat-formatted
-                                            :tx-fee-mode/urgent])}
-         :image             :emoji
-         :description       :text
-         :action            :selector
-         :action-props      {:type                :radio
-                             :checked?            (= :tx-fee-mode/urgent transaction-setting)
-                             :customization-color account-color
-                             :on-change           set-urgent}
-         :on-press          set-urgent
-         :label             :text
-         :preview-size      :size-32}
+       [(when (contains? fees-by-mode :tx-fee-mode/normal)
+          {:title             (title :tx-fee-mode/normal)
+           :image-props       "🍿"
+           :description-props {:text (rf/sub [:wallet/wallet-transaction-setting-fiat-formatted
+                                              :tx-fee-mode/normal])}
+           :image             :emoji
+           :description       :text
+           :action            :selector
+           :action-props      {:type                :radio
+                               :checked?            (= :tx-fee-mode/normal transaction-setting)
+                               :customization-color account-color
+                               ;; there is an UI issue in quo/category, it has :on-press event
+                               ;; and child radio button has own :on-change. If they are not set
+                               ;; to the same action then we are getting inconsistent behaviour
+                               ;; when user can click on settings item but cant on radio itself.
+                               ;; So duplication is to prevent that until general fix is applied
+                               ;; to quo/category
+                               :on-change           set-normal}
+           :on-press          set-normal
+           :label             :text
+           :preview-size      :size-32})
+        (when (contains? fees-by-mode :tx-fee-mode/fast)
+          {:title             (title :tx-fee-mode/fast)
+           :image-props       "🚗"
+           :description-props {:text (rf/sub [:wallet/wallet-transaction-setting-fiat-formatted
+                                              :tx-fee-mode/fast])}
+           :image             :emoji
+           :description       :text
+           :action            :selector
+           :action-props      {:type                :radio
+                               :checked?            (= :tx-fee-mode/fast transaction-setting)
+                               :on-change           set-fast
+                               :customization-color account-color}
+           :on-press          set-fast
+           :label             :text
+           :preview-size      :size-32})
+        (when (contains? fees-by-mode :tx-fee-mode/urgent)
+          {:title             (title :tx-fee-mode/urgent)
+           :image-props       "🚀"
+           :description-props {:text (rf/sub [:wallet/wallet-transaction-setting-fiat-formatted
+                                              :tx-fee-mode/urgent])}
+           :image             :emoji
+           :description       :text
+           :action            :selector
+           :action-props      {:type                :radio
+                               :checked?            (= :tx-fee-mode/urgent transaction-setting)
+                               :customization-color account-color
+                               :on-change           set-urgent}
+           :on-press          set-urgent
+           :label             :text
+           :preview-size      :size-32})
         {:title             (i18n/label :t/custom)
          :image-props       :i/edit
-         :description-props {:text "Set your own fees and nonce"}
+         :description-props {:text (i18n/label :t/set-your-own-fees-and-nonce)}
          :image             :icon
          :description       :text
          :action            :selector

@@ -238,9 +238,11 @@
   (let [nonce        (or (:nonce user-tx-settings) (:nonce route))
         gas-amount   (or (:gas-amount user-tx-settings) (:gas-amount route))
         priority-fee (or (:priority-fee user-tx-settings) (get-in route [:gas-fees :tx-priority-fee]))
-        max-base-fee (or (:max-base-fee user-tx-settings) (get-in route [:gas-fees :base-fee]))]
+        max-base-fee (or (:max-base-fee user-tx-settings) (get-in route [:gas-fees :base-fee]))
+        gas-price    (or (:gas-price user-tx-settings) (get-in route [:gas-fees :gas-price]))]
     {:gasFeeMode    constants/gas-rate-custom
      :nonce         nonce
      :gasAmount     gas-amount
      :maxFeesPerGas (money/to-hex (money/->wei :gwei (money/add max-base-fee priority-fee)))
-     :priorityFee   (money/to-hex (money/->wei :gwei priority-fee))}))
+     :priorityFee   (money/to-hex (money/->wei :gwei priority-fee))
+     :gasPrice      (money/to-hex (money/->wei :gwei gas-price))}))

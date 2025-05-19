@@ -810,6 +810,11 @@
    {:db (assoc-in db [:wallet :ui :user-tx-settings :gas-amount] value)}))
 
 (rf/reg-event-fx
+ :wallet/set-gas-price
+ (fn [{db :db} [value]]
+   {:db (assoc-in db [:wallet :ui :user-tx-settings :gas-price] value)}))
+
+(rf/reg-event-fx
  :wallet/set-nonce
  (fn [{db :db} [value]]
    {:db (assoc-in db [:wallet :ui :user-tx-settings :nonce] value)}))

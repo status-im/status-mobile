@@ -19,13 +19,19 @@
    [:medium-priority :schema.common/hex]
    [:high-priority :schema.common/hex]])
 
+(def ^:private ?suggested-non-eip-1559-fees
+  [:map
+   [:gas-price :schema.common/hex]
+   [:estimated-time nat-int?]])
+
 (def ^:private ?chain
   [:map
    [:short-name :string]
    [:chain-id nat-int?]
    [:related-chain-id nat-int?]
    [:chain-name :string]
-   [:native-currency-name :string]])
+   [:native-currency-name :string]
+   [:eip-1559-enabled :boolean]])
 
 (def ?route
   [:map
@@ -49,19 +55,21 @@
    [:tx-gas-amount nat-int?]
    [:tx-token-fees :schema.common/hex]
    [:tx-total-fee :schema.common/hex]
-   [:tx-priority-fee :schema.common/hex]
-   [:tx-base-fee :schema.common/hex]
-   [:tx-fee :schema.common/hex]
-   [:tx-l-1-fee :schema.common/hex]
+   [:tx-priority-fee [:maybe :schema.common/hex]]
+   [:tx-base-fee [:maybe :schema.common/hex]]
+   [:tx-gas-price [:maybe :schema.common/hex]]
+   [:tx-fee [:maybe :schema.common/hex]]
+   [:tx-l-1-fee [:maybe :schema.common/hex]]
    [:tx-bonder-fees [:maybe :schema.common/hex]]
    [:tx-gas-fee-mode nat-int?]
    [:tx-estimated-time nat-int?]
-   [:tx-max-fees-per-gas :schema.common/hex]
-   [:suggested-min-priority-fee :schema.common/hex]
-   [:suggested-max-priority-fee :schema.common/hex]
-   [:suggested-tx-gas-amount nat-int?]
-   [:suggested-levels-for-max-fees-per-gas ?suggested-levels-for-max-fees-per-gas]
-   [:current-base-fee :schema.common/hex]
+   [:tx-max-fees-per-gas [:maybe :schema.common/hex]]
+   [:suggested-min-priority-fee [:maybe :schema.common/hex]]
+   [:suggested-max-priority-fee [:maybe :schema.common/hex]]
+   [:suggested-tx-gas-amount [:maybe nat-int?]]
+   [:suggested-levels-for-max-fees-per-gas [:maybe ?suggested-levels-for-max-fees-per-gas]]
+   [:suggested-non-eip-1559-fees [:maybe ?suggested-non-eip-1559-fees]]
+   [:current-base-fee [:maybe :schema.common/hex]]
    [:subtract-fees :boolean]
 
    ;; Approval
@@ -77,6 +85,7 @@
    [:approval-gas-amount [:maybe nat-int?]]
    [:approval-priority-fee [:maybe :schema.common/hex]]
    [:approval-base-fee [:maybe :schema.common/hex]]
+   [:approval-gas-price [:maybe :schema.common/hex]]
    [:approval-max-fees-per-gas [:maybe :schema.common/hex]]
    [:approval-estimated-time [:maybe nat-int?]]
    [:approval-gas-fee-mode [:maybe nat-int?]]])

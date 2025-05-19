@@ -140,6 +140,8 @@
     [status-im.contexts.wallet.common.scan-account.view :as wallet-scan-address]
     [status-im.contexts.wallet.common.transaction-settings.gas-amount.view :as
      wallet-tx-settings-gas-amount]
+    [status-im.contexts.wallet.common.transaction-settings.gas-price.view :as
+     wallet-tx-settings-gas-price]
     [status-im.contexts.wallet.common.transaction-settings.max-fee.view :as wallet-tx-settings-max-fee]
     [status-im.contexts.wallet.common.transaction-settings.nonce.view :as wallet-tx-settings-nonce]
     [status-im.contexts.wallet.common.transaction-settings.priority-fee.view :as
@@ -663,6 +665,12 @@
                 :alias-id :wallet.tx-settings-gas-amount}
     :options   {:insets {:top? true}}
     :component wallet-tx-settings-gas-amount/view}
+
+   {:name      :screen/wallet.tx-settings-gas-price
+    :metrics   {:track?   true
+                :alias-id :wallet.tx-settings-gas-price}
+    :options   {:insets {:top? true}}
+    :component wallet-tx-settings-gas-price/view}
 
    {:name      :screen/wallet.tx-settings-nonce
     :metrics   {:track?   true

@@ -927,10 +927,20 @@
  :-> :gas-amount)
 
 (rf/reg-sub
+ :wallet/tx-settings-gas-price-user
+ :<- [:wallet/user-tx-settings]
+ :-> :gas-price)
+
+(rf/reg-sub
  :wallet/tx-settings-gas-fees
  :<- [:wallet/route]
  (fn [route]
    (:gas-fees route)))
+
+(rf/reg-sub
+ :wallet/tx-eip-1559-enabled?
+ :<- [:wallet/tx-settings-gas-fees]
+ :-> :eip-1559-enabled)
 
 (rf/reg-sub
  :wallet/tx-settings-max-base-fee-route
@@ -955,6 +965,11 @@
  :<- [:wallet/route]
  (fn [route]
    (:suggested-tx-gas-amount route)))
+
+(rf/reg-sub
+ :wallet/tx-settings-gas-price-route
+ :<- [:wallet/tx-settings-gas-fees]
+ :-> :gas-price)
 
 (rf/reg-sub
  :wallet/tx-settings-fee-mode
@@ -997,6 +1012,13 @@
    (or value-set-by-user value-from-routes)))
 
 (rf/reg-sub
+ :wallet/tx-settings-gas-price
+ :<- [:wallet/tx-settings-gas-price-route]
+ :<- [:wallet/tx-settings-gas-price-user]
+ (fn [[value-from-routes value-set-by-user]]
+   (or value-set-by-user value-from-routes)))
+
+(rf/reg-sub
  :wallet/tx-settings-nonce
  :<- [:wallet/route]
  :<- [:wallet/tx-settings-nonce-user]
@@ -1020,3 +1042,8 @@
  :<- [:wallet/tx-settings-gas-fees]
  (fn [gas-fees]
    (:suggested-min-priority-fee gas-fees)))
+
+(rf/reg-sub
+ :wallet/tx-settings-suggested-gas-price
+ :<- [:wallet/route]
+ :-> :suggested-tx-gas-price)

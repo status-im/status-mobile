@@ -260,7 +260,8 @@
      :tx-fee-mode               (router/transaction-fee-mode new-path)
      :nonce                     (router/nonce-field new-path :tx-nonce)
      :suggested-tx-nonce        (router/nonce-field new-path :suggested-tx-nonce)
-     :suggested-tx-gas-amount   (:suggested-tx-gas-amount new-path)}))
+     :suggested-tx-gas-amount   (:suggested-tx-gas-amount new-path)
+     :suggested-tx-gas-price    (router/suggested-gas-price new-path)}))
 
 (schema/=> new->old-route-path
   [:=>
