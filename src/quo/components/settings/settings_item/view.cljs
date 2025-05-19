@@ -33,8 +33,7 @@
   [{:keys [description-props blur?]}]
   (let [theme               (quo.context/use-theme)
         {:keys [text icon]} description-props]
-    [rn/view
-     {:style (style/sub-container :center)}
+    [rn/view {:style (style/sub-container :center)}
      [text/text
       {:size  :paragraph-2
        :style (style/color blur? theme)}
@@ -61,10 +60,9 @@
 (defn image-component
   [{:keys [image image-props description tag blur?]}]
   (let [theme (quo.context/use-theme)]
-    [rn/view
-     {:style (style/image-container description tag image)}
+    [rn/view {:style (style/image-container description tag image)}
      (case image
-       :icon        [icon/icon image-props (style/color blur? theme)]
+       :icon        [icon/icon image-props (style/icon-color blur? theme)]
        :avatar      [user-avatar/user-avatar image-props]
        :icon-avatar [icon-avatar/icon-avatar image-props]
        :token       [token/view image-props]
@@ -92,8 +90,7 @@
   [{:keys [label label-props label-icon-props blur? theme preview-size]}]
   [rn/view {:accessibility-label :label-component}
    (case label
-     :text    [text/text
-               {:style (style/color blur? theme)}
+     :text    [text/text {:style (style/color blur? theme)}
                label-props]
      :color   [rn/view
                {:style (style/label-dot label-props)}]
@@ -103,7 +100,7 @@
      nil)])
 
 (defn action-component
-  [{:keys [action action-props blur? theme]}]
+  [{:keys [action action-props blur? theme customization-color]}]
   [rn/view {:style {:margin-left 12}}
    (case action
      :arrow    [icon/icon (or (:icon action-props) :i/chevron-right) (style/color blur? theme)]
@@ -112,12 +109,12 @@
                        {:type :outline
                         :size 24})
                 (:button-text action-props)]
-     :selector [selectors/view action-props]
+     :selector [selectors/view (assoc action-props :customization-color customization-color)]
      nil)])
 
 (defn view
-  [{:keys [title show-new-feature-tag? on-press action-props accessibility-label blur? container-style
-           content]
+  [{:keys [title show-new-feature-tag? on-press action-props accessibility-label blur?
+           container-style content]
     :as   props}]
   [rn/pressable
    {:style               (merge style/container container-style)

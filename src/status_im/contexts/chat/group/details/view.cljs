@@ -6,7 +6,6 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
     [status-im.common.contact-list-item.view :as contact-list-item]
     [status-im.common.contact-list.view :as contact-list]
     [status-im.common.home.actions.view :as actions]
@@ -26,27 +25,35 @@
       (rf/dispatch [:deselect-member public-key true]))))
 
 (defn add-member-contact-item-render
-  [{:keys [public-key] :as item} _ _ {:keys [group admin? current-pk]}]
-  (let [{:keys [contacts]} group
-        member?            (contains? contacts public-key)
-        checked?           (reagent/atom member?)]
-    (if (or (= current-pk public-key) (and (not admin?) member?))
-      (fn []
-        [contact-list-item/contact-list-item
-         {:disabled? true
-          :accessory {:disabled? true
-                      :type      :checkbox
-                      :checked?  @checked?}}
-         item])
-      (fn []
-        (let [on-toggle #(group-chat-member-toggle member? (swap! checked? not) public-key)]
-          [contact-list-item/contact-list-item
-           {:on-press                on-toggle
-            :allow-multiple-presses? true
-            :accessory               {:type     :checkbox
-                                      :checked? @checked?
-                                      :on-check on-toggle}}
-           item])))))
+  [{:keys [public-key] :as item} _ _ {:keys [group admin? current-pk chat-id]}]
+  (let [{:keys [contacts]}      group
+        member?                 (contains? contacts public-key)
+        [checked? set-checked]  (rn/use-state member?)
+        selected-contacts-count (rf/sub [:group-chat/manage-members-count chat-id])
+        disabled?               (or (= current-pk public-key) (and (not admin?) member?))
+        on-toggle               (rn/use-callback
+                                 (fn [value]
+                                   (let [error? (and value
+                                                     (= constants/max-group-chat-participants
+                                                        selected-contacts-count))]
+                                     (rf/dispatch [:group-chat/set-manage-members-error
+                                                   {:chat-id chat-id
+                                                    :error?  error?}])
+                                     (when-not error?
+                                       (group-chat-member-toggle member?
+                                                                 value
+                                                                 public-key)
+                                       (set-checked value))))
+                                 [selected-contacts-count member? public-key])]
+    [contact-list-item/contact-list-item
+     {:on-press                on-toggle
+      :allow-multiple-presses? true
+      :disabled?               disabled?
+      :accessory               {:type      :checkbox
+                                :disabled? disabled?
+                                :checked?  checked?
+                                :on-check  on-toggle}}
+     item]))
 
 (defn add-manage-members
   [{:keys [on-scroll]}]
@@ -56,7 +63,9 @@
         chat-id                    (quo.context/use-screen-params)
         {:keys [admins] :as group} (rf/sub [:chats/chat-by-id chat-id])
         current-pk                 (rf/sub [:multiaccount/public-key])
-        admin?                     (get admins current-pk)]
+        admin?                     (get admins current-pk)
+        selected-contacts-count    (rf/sub [:group-chat/manage-members-count chat-id])
+        error?                     (rf/sub [:group-chat/manage-members-error-by-chat-id chat-id])]
     (rn/use-mount (fn []
                     (rf/dispatch [:group/clear-added-participants])
                     (rf/dispatch [:group/clear-removed-members])))
@@ -66,13 +75,21 @@
        :accessibility-label :close-manage-members
        :style               (style/close-icon theme)}
       [quo/icon :i/close {:color (colors/theme-colors colors/neutral-100 colors/white theme)}]]
-     [quo/text
-      {:size   :heading-1
-       :weight :semi-bold
-       :style  {:margin-left 20}}
-      (i18n/label (if admin? :t/manage-members :t/add-members))]
+     [rn/view
+      {:style style/manage-members-header}
+      [quo/text
+       {:size   :heading-1
+        :weight :semi-bold}
+       (i18n/label (if admin? :t/manage-members :t/add-members))]
+      [quo/text
+       {:size   :paragraph-2
+        :weight :regular
+        :style  (style/counter theme error?)}
+       (i18n/label :t/selected-count-from-max
+                   {:selected selected-contacts-count
+                    :max      constants/max-group-chat-participants})]]
      [gesture/section-list
-      {:key-fn                         :title
+      {:key-fn                         :public-key
        :on-scroll                      on-scroll
        :sticky-section-headers-enabled false
        :sections                       (rf/sub [:contacts/grouped-by-first-letter])
@@ -81,7 +98,8 @@
        :content-container-style        {:padding-bottom 20}
        :render-data                    {:group      group
                                         :admin?     admin?
-                                        :current-pk current-pk}
+                                        :current-pk current-pk
+                                        :chat-id    chat-id}
        :render-fn                      add-member-contact-item-render}]
      [rn/view {:style (style/bottom-container 30 theme)}
       [quo/button

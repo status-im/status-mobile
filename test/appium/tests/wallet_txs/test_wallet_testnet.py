@@ -2,10 +2,10 @@ import pytest
 
 from base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from support.api.network_api import NetworkApi
+from support.api.network_api import SepoliaNetworkApi
 from tests import marks, run_in_parallel
 from users import transaction_senders
 from views.sign_in_view import SignInView
-from support.api.network_api import SepoliaNetworkApi
 
 
 @pytest.mark.xdist_group(name="four_2")
@@ -25,7 +25,8 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
                              (self.sign_in_2.recover_access, {'passphrase': self.receiver['passphrase']}))))
         self.home_1, self.home_2 = self.sign_in_1.get_home_view(), self.sign_in_2.get_home_view()
         self.sender_username, self.receiver_username = self.home_1.get_username(), self.home_2.get_username()
-        self.wallets = (self.wallet_1, self.wallet_2) = self.sign_in_1.get_wallet_view(), self.sign_in_2.get_wallet_view()
+        self.wallets = (self.wallet_1,
+                        self.wallet_2) = self.sign_in_1.get_wallet_view(), self.sign_in_2.get_wallet_view()
         [wallet.wallet_tab.click() for wallet in self.wallets]
 
     @pytest.mark.parametrize(
@@ -65,15 +66,17 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
     @pytest.mark.parametrize(
         "network, asset, asset_ticker, decimals, amount",
         [
-            pytest.param("Sepolia", 'USD Coin', 'USDC', 2, 0.01,  marks=pytest.mark.testrail_id(742016)),
-            pytest.param("Optimism Sepolia", 'USD Coin', 'USDC', 2, 0.01,  marks=pytest.mark.testrail_id(727230)),
+            pytest.param("Sepolia", 'USD Coin', 'USDC (EVM)', 2, 0.01, marks=pytest.mark.testrail_id(742016)),
+            pytest.param("Optimism Sepolia", 'USD Coin', 'USDC (EVM)', 2, 0.01, marks=pytest.mark.testrail_id(727230)),
         ],
     )
     def test_wallet_send_erc20_from_drawer(self, network, asset, asset_ticker, decimals, amount):
-        [wallet.just_fyi("Test to send and verify %s %s on %s from drawer" % (amount, asset, network)) for wallet in self.wallets]
+        [wallet.just_fyi("Test to send and verify %s %s on %s from drawer" % (amount, asset, network)) for wallet in
+         self.wallets]
 
         self.wallet_1.navigate_back_to_wallet_view()
-        initial_amount_sender, initial_amount_receiver  = self.wallet_1.get_balance(asset), self.wallet_2.get_balance(asset)
+        initial_amount_sender, initial_amount_receiver = self.wallet_1.get_balance(asset), self.wallet_2.get_balance(
+            asset)
         expected_amount_after_tx_receiver = self.wallet_1.round_amount_float(initial_amount_receiver + amount, decimals)
         expected_amount_after_tx_sender = self.wallet_1.round_amount_float(initial_amount_sender - amount, decimals)
 
@@ -100,13 +103,14 @@ class TestWalletMultipleDevice(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+
 @pytest.mark.xdist_group(name="two_1")
 @marks.nightly
 @marks.smoke
 class TestWalletCustomParamOneDevice(MultipleSharedDeviceTestCase):
 
     def prepare_devices(self):
-        self.drivers, self.loop  = create_shared_drivers(1)
+        self.drivers, self.loop = create_shared_drivers(1)
         self.driver = self.drivers[0]
         self.sign_in = SignInView(self.drivers[0])
         self.sender, self.receiver = transaction_senders['ETH_ADI_STT_2'], transaction_senders['ETH_3']
@@ -114,8 +118,8 @@ class TestWalletCustomParamOneDevice(MultipleSharedDeviceTestCase):
         self.receiver['wallet_address'] = '0x' + self.receiver['address']
         self.home = self.sign_in.recover_access(self.sender['passphrase'])
         self.wallet = self.sign_in.get_wallet_view()
-    
-    @marks.testrail_id(742910) 
+
+    @marks.testrail_id(742910)
     def test_send_snt_custom_tx_params(self):
         wallet = self.wallet
         wallet.navigate_back_to_wallet_view()
@@ -152,11 +156,11 @@ class TestWalletCustomParamOneDevice(MultipleSharedDeviceTestCase):
         wallet.just_fyi("Verify send tx in the list for sender")
         device_time_before_sending = wallet.driver.device_time
         tx_errors = wallet.check_last_transaction_in_activity(device_time_before_sending, amount,
-                                                                   send_to_account=self.receiver['wallet_address'],
-                                                                   asset=asset_ticker,
-                                                                   tx_type='Send',
-                                                                   network=network, 
-                                                                   navigate_to_main_screen=False)
+                                                              send_to_account=self.receiver['wallet_address'],
+                                                              asset=asset_ticker,
+                                                              tx_type='Send',
+                                                              network=network,
+                                                              navigate_to_main_screen=False)
         self.errors.append(wallet, tx_errors)
         dropped_tx_hash = wallet.copy_tx_hash()
 
@@ -174,7 +178,7 @@ class TestWalletCustomParamOneDevice(MultipleSharedDeviceTestCase):
         wallet.button_one.click()
         wallet.slide_and_confirm_with_password()
         replacemant_tx_hash = wallet.copy_tx_hash()
-        
+
         if replacemant_tx_hash == dropped_tx_hash:
             wallet.just_fyi("Scenario1, nonce is too low: initial tx failed, check the status")
             if SepoliaNetworkApi().is_tx_successful(dropped_tx_hash) is not False:
@@ -182,10 +186,10 @@ class TestWalletCustomParamOneDevice(MultipleSharedDeviceTestCase):
                                    "Initial tx %s is not failed, so custom nonce is not set" % dropped_tx_hash)
 
         else:
-            wallet.just_fyi("Scenario2, Nonce is replaced: check that initial tx was dropped as custom nonce has been set")
+            wallet.just_fyi(
+                "Scenario2, Nonce is replaced: check that initial tx was dropped as custom nonce has been set")
             if SepoliaNetworkApi().is_tx_successful(dropped_tx_hash) is None:
-                self.errors.append(wallet, "Dropped tx %s receipt is available, so custom nonce is not set" % dropped_tx_hash)
+                self.errors.append(wallet,
+                                   "Dropped tx %s receipt is available, so custom nonce is not set" % dropped_tx_hash)
 
         self.errors.verify_no_errors()
-
-

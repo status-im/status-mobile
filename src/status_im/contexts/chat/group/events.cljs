@@ -3,7 +3,9 @@
             [oops.core :as oops]
             [re-frame.core :as rf]
             [status-im.common.avatar-picture-picker.view :as avatar-picture-picker]
-            [taoensso.timbre :as log]))
+            [status-im.constants :as constants]
+            [taoensso.timbre :as log]
+            [utils.i18n :as i18n]))
 
 (rf/reg-event-fx :group-chat/create
  (fn [{:keys [db]} [{:keys [group-name group-color group-image]}]]
@@ -37,3 +39,16 @@
                      :on-success  (fn [response]
                                     (rf/dispatch [:chat-updated response true])
                                     (when on-success (on-success)))}]}))
+
+(rf/reg-event-fx :group-chat/set-manage-members-error
+ (fn [{:keys [db]} [{:keys [chat-id error?]}]]
+   {:db (assoc-in db
+         [:group-chat/manage-members-error chat-id]
+         error?)
+    :fx [(when error?
+           [:dispatch
+            [:toasts/upsert
+             {:type :negative
+              :text (i18n/label :t/new-group-limit
+                                {:max-contacts
+                                 constants/max-group-chat-participants})}]])]}))

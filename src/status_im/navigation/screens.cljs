@@ -49,6 +49,7 @@
     [status-im.contexts.keycard.pin.create.view :as keycard.pin.create]
     [status-im.contexts.keycard.pin.enter.view :as keycard.pin.enter]
     [status-im.contexts.keycard.unblock.view :as keycard.unblock]
+    [status-im.contexts.market.token.view :as market.token]
     [status-im.contexts.onboarding.create-password.view :as create-password]
     [status-im.contexts.onboarding.create-profile.view :as create-profile]
     [status-im.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
@@ -83,6 +84,7 @@
     [status-im.contexts.profile.settings.screens.syncing.view :as settings.syncing]
     [status-im.contexts.profile.settings.view :as settings]
     [status-im.contexts.settings.about.view :as settings.about]
+    [status-im.contexts.settings.advanced.view :as settings.advanced]
     [status-im.contexts.settings.keycard.view :as settings.keycard]
     [status-im.contexts.settings.language-and-currency.currency.view :as settings.currency-selection]
     [status-im.contexts.settings.language-and-currency.view :as settings.language-and-currency]
@@ -442,7 +444,12 @@
    {:name      :screen/settings.terms-of-use
     :metrics   {:track? true}
     :options   options/transparent-modal-screen-options
-    :component terms-of-use/view}])
+    :component terms-of-use/view}
+
+   {:name      :screen/settings.advanced
+    :metrics   {:track? true}
+    :options   options/transparent-modal-screen-options
+    :component settings.advanced/view}])
 
 (def wallet-settings-screens
   [{:name      :screen/settings.wallet
@@ -750,6 +757,14 @@
                 :alias-id :wallet-connect.scan-dapp}
     :options   options/dark-screen
     :component wallet-scan-dapp/view}])
+
+(def market-screens
+  [{:name      :screen/market.token
+    :metrics   {:track?   true
+                :alias-id :wallet-market.select-token}
+    :options   {:modalPresentationStyle :overCurrentContext
+                :insets                 {:top? true}}
+    :component market.token/view}])
 
 (def onboarding-intro
   {:name      :screen/onboarding.intro
@@ -1169,6 +1184,7 @@
    wallet-bridge-screens
    wallet-swap-screens
    wallet-connect-screens
+   market-screens
    onboarding-screens
    keycard-screens
 

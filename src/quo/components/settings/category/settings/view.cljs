@@ -7,7 +7,7 @@
     [react-native.core :as rn]))
 
 (defn settings-category
-  [{:keys [label data blur? container-style]}]
+  [{:keys [label data blur? container-style customization-color]}]
   (let [theme          (quo.context/use-theme)
         settings-items (remove nil? data)
         last-index     (dec (count settings-items))]
@@ -23,7 +23,10 @@
        (fn [index item]
          ^{:key (str label (:title item))}
          [:<>
-          [settings-item/view item]
+          [settings-item/view
+           (assoc item
+                  :customization-color customization-color
+                  :blur?               blur?)]
           (when-not (= last-index index)
             [rn/view {:style (style/settings-separator blur? theme)}])])
        settings-items)]]))

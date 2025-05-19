@@ -14,7 +14,7 @@
 (defn footer-container
   [bottom]
   {:padding-horizontal footer-padding
-   :padding-top        footer-padding
+   :padding-top        16
    :padding-bottom     (+ shell.constants/floating-shell-button-height
                           footer-padding
                           (if platform/ios? ios-bottom-offset bottom))})

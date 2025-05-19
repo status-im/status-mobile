@@ -25,3 +25,17 @@
    :margin-bottom      bottom
    :background-color   (colors/theme-colors colors/white colors/neutral-95-opa-70 theme)
    :flex-direction     :row})
+
+(def manage-members-header
+  {:flex-direction    :row
+   :justify-content   :space-between
+   :align-items       :flex-end
+   :margin-horizontal 20
+   :margin-bottom     16})
+
+(defn counter
+  [theme error?]
+  {:margin-bottom 2
+   :color         (if error?
+                    (colors/theme-colors colors/danger-50 colors/danger-60 theme)
+                    (colors/theme-colors colors/neutral-40 colors/neutral-50 theme))})
