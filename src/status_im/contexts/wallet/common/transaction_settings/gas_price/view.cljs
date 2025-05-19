@@ -30,6 +30,8 @@
   (let [gas-price           (rf/sub [:wallet/tx-settings-gas-price])
         current-gas-price   (rf/sub [:wallet/tx-settings-gas-price-route])
         suggested-gas-price (rf/sub [:wallet/tx-settings-suggested-gas-price])
+        ;; We allow the user to go low (-10%) or high (+20%) of the suggested gas price. This logic
+        ;; is aligned with the Desktop.
         spectrum            {:low  (* 0.9 suggested-gas-price)
                              :high (* 1.2 suggested-gas-price)}
         conditions          (partial hint-and-status suggested-gas-price current-gas-price spectrum)]
