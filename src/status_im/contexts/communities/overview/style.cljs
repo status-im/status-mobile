@@ -17,7 +17,7 @@
   [background-color]
   {:width            "100%"
    :background-color background-color
-   :height           (+ 20 ;; Area hidden by sheet on top but visible with rounded borders
+   :height           (+ 20 ; Area hidden by sheet on top but visible with rounded borders
                         92
                         ;; On Android we count the navigation bar page-nav padding top
                         ;; because it isn't overlapped with the safe-area top.
@@ -40,9 +40,9 @@
                                            theme)}])
 
 (def ^:private page-nav-container-base-style
-  {:height (+ 12 ;; padding-top
-              12 ;; padding-bottom
-              32) ;; button size
+  {:height (+ 12 ; padding-top
+              12 ; padding-bottom
+              32) ; button size
    :width  "100%"})
 
 (defn page-nav-container
@@ -51,7 +51,7 @@
    page-nav-container-base-style
    {:top     (if platform/android?
                safe-area/top
-               (- safe-area/top 12)) ;; -12 to place the button next to the safe-area
+               (- safe-area/top 12)) ; -12 to place the button next to the safe-area
     :opacity 1}
    {:opacity opposite-header-opacity}])
 
@@ -61,7 +61,7 @@
    page-nav-container-base-style
    {:top     (if platform/android?
                safe-area/top
-               (- safe-area/top 12)) ;; -12 to place the button next to the safe-area
+               (- safe-area/top 12)) ; -12 to place the button next to the safe-area
     :opacity 0}
    {:opacity header-opacity}])
 
