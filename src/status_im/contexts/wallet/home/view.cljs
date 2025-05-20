@@ -118,19 +118,7 @@
                                    (rf/dispatch [:wallet/set-send-tx-type :tx/bridge])
                                    (rf/dispatch [:open-modal :screen/wallet.select-from])))
                                [multiple-accounts? first-account-address])
-        on-swap-press         (rn/use-callback
-                               (fn []
-                                 (rf/dispatch [:wallet/clean-send-data])
-                                 (rf/dispatch [:wallet/clean-swap])
-                                 (when-not multiple-accounts?
-                                   (rf/dispatch [:wallet/switch-current-viewing-account
-                                                 first-account-address]))
-                                 (if multiple-accounts?
-                                   (rf/dispatch [:open-modal
-                                                 :screen/wallet.swap-select-account])
-                                   (rf/dispatch [:open-modal
-                                                 :screen/wallet.swap-select-asset-to-pay])))
-                               [multiple-accounts? first-account-address])]
+        on-swap-press         #(rf/dispatch [:app.wallet/start-swap operable-accounts])]
     [quo/wallet-ctas
      {:container-style  style/cta-buttons
       :send-action      on-send-press

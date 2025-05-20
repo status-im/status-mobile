@@ -1,4 +1,4 @@
-(ns status-im.contexts.market.style
+(ns status-im.ui.market.style
   (:require
     [quo.foundations.colors :as colors]
     [react-native.safe-area :as safe-area]

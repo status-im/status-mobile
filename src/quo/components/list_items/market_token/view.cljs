@@ -1,6 +1,5 @@
 (ns quo.components.list-items.market-token.view
   (:require
-    [clojure.string :as string]
     [quo.components.counter.counter.view :as counter]
     [quo.components.icon :as icon]
     [quo.components.list-items.market-token.schema :as component-schema]
@@ -12,7 +11,8 @@
     [schema.core :as schema]))
 
 (defn- internal-view
-  [{:keys [token token-name token-rank market-cap price percentage-change customization-color
+  [{:keys [token-short-name token-image token-name token-rank market-cap price percentage-change
+           customization-color
            on-press on-long-press]}]
   (let [theme             (quo.context/use-theme)
         [state set-state] (rn/use-state :default)
@@ -27,8 +27,7 @@
                              (set-state :active)
                              (js/setTimeout #(set-state :default) 300)
                              (when on-press
-                               (on-press))))
-        token-short-name  (if token (string/upper-case (clj->js token)) "")]
+                               (on-press))))]
     [rn/pressable
      {:style               (style/container customization-color bg-opacity theme)
       :on-press-in         on-press-in
@@ -43,7 +42,7 @@
         :max-value       99999
         :container-style {:margin-right 8}}
        token-rank]
-      [token/view {:token token :size :size-32}]
+      [token/view {:image-source {:uri token-image} :size :size-32}]
       [rn/view style/left-text-block
        [rn/text
         ;; If we place 2 texts of different styles within parent _view_ component they won't be

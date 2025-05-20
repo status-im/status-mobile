@@ -1,6 +1,6 @@
 (ns utils.string-test
   (:require
-    [cljs.test :refer [are deftest]]
+    [cljs.test :refer [are deftest is]]
     utils.string))
 
 (deftest get-initials-test
@@ -40,3 +40,13 @@
    "example.com/path" "example.com/path"
    ""                 ""
    nil                nil))
+
+(deftest truncate-str-test
+  ; threshold is less then string length
+  (is (= (utils.string/truncate "Long string" 7) "Long..."))
+  ; string length (truncate middle)
+  (is (= (utils.string/truncate "Long string" 7 true) "Lo...ng")) ; threshold is less then
+
+  ; threshold is the same as string length
+  (is (= (utils.string/truncate "Long string" 11) "Long string"))
+  (is (= (utils.string/truncate "Long string" 20) "Long string")))

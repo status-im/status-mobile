@@ -6,10 +6,10 @@
     [react-native.reanimated :as reanimated]
     [status-im.contexts.chat.home.view :as chat]
     [status-im.contexts.communities.home.view :as communities]
-    [status-im.contexts.market.view :as market]
     [status-im.contexts.shell.home-stack.style :as style]
     [status-im.contexts.shell.state :as state]
-    [status-im.contexts.wallet.home.view :as wallet]))
+    [status-im.contexts.wallet.home.view :as wallet]
+    [status-im.ui.market.view :as market]))
 
 (defn load-stack?
   [stack-id]

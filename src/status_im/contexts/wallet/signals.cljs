@@ -113,4 +113,13 @@
               [:wallet/activities-session-updated
                (transforms/js->clj event-js)]]]}
 
+       "wallet-fetch-leaderboard-page-done"
+       {:dispatch [:gate.market/leaderboard-page-fetched event-js]}
+
+       "wallet-leaderboard-page-data-updated"
+       {:dispatch [:gate.market/leaderboard-page-data-updated event-js]}
+
+       "wallet-leaderboard-page-prices-updated"
+       {:dispatch [:gate.market/leaderboard-page-prices-updated event-js]}
+
        (log/debug ::unknown-wallet-event :type event-type)))))

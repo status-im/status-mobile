@@ -91,6 +91,10 @@
 
 (def reg-event-fx re-frame/reg-event-fx)
 
+(defn reg-root-key-sub
+  [sub-name db-key]
+  (re-frame/reg-sub sub-name (fn [db] (get db db-key))))
+
 (defn call-continuation
   "Choose how to call a continuation for a Re-Frame event or effect.
    

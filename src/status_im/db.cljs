@@ -43,4 +43,8 @@
    :settings/change-password           {}
    :keycard                            {}
    :theme                              :dark
-   :log-level/pre-login-log-level      (config/log-level)})
+   :log-level/pre-login-log-level      (config/log-level)
+   :gate.market/last-fetched-page      0
+   :domain.market/leaderboard          {}
+   :domain.market/prices               {}
+   :domain.market/tokens               {}})

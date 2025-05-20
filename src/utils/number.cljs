@@ -119,3 +119,24 @@
   (-> change
       (* 100)
       (naive-round 2)))
+
+(defn format-number-with-si-suffix
+  "Formats a large number using SI suffixes for readability.
+  Given a number n, this function converts it to a string representation
+  with appropriate SI suffixes:
+    - 'K' for thousands (10^3)
+    - 'M' for millions (10^6)
+    - 'B' for billions (10^9)
+    - 'T' for trillions (10^12)
+  If the number is less than one million, it is returned as-is without
+  any suffix."
+  [n]
+  (let [letters '("K" "M" "B" "T")]
+    (loop [l     letters
+           value n]
+      (if (< value 1000)
+        (str value)
+        (let [divided (naive-round (/ value 1000) 1)]
+          (if (or (< divided 1000) (empty? l))
+            (str divided (first l))
+            (recur (rest l) divided)))))))

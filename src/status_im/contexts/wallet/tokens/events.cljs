@@ -91,7 +91,9 @@
                         :details       true
                         :prices        true}))}))
 
-(rf/reg-event-fx :wallet.tokens/store-token-list store-token-list)
+(rf/reg-event-fx
+ :wallet.tokens/store-token-list
+ store-token-list)
 
 (rf/reg-event-fx
  :wallet.tokens/get-token-list-failed

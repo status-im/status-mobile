@@ -1,6 +1,6 @@
 (ns utils.number-test
   (:require
-    [cljs.test :refer [deftest is testing]]
+    [cljs.test :refer [are deftest is testing]]
     [utils.money :as money]
     [utils.number]))
 
@@ -104,3 +104,21 @@
 
     (is (= "0.0006" (utils.number/format-decimal-fixed "0.000650462672354754" 4)))
     (is (= "999999999.999" (utils.number/format-decimal-fixed "999999999.999999" 3)))))
+
+(deftest format-number-with-si-suffix-test
+  (testing "formats larger numbers with SI suffixes correctly"
+    (are [n expected] (= expected (utils.number/format-number-with-si-suffix n))
+     1e6           "1M"
+     12345678      "12.3M"
+     1200000000    "1.2B"
+     3500000000000 "3.5T"
+     999999        "1M"
+     1e12          "1T"
+     999900000000  "999.9B"
+     1.0e12        "1T"
+     0             "0"
+     10            "10"
+     14199         "14.2K"
+     500000        "500K"
+     999990000     "1B"
+     0.000999      "0.000999")))

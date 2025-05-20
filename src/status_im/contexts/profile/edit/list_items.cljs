@@ -1,13 +1,13 @@
 (ns status-im.contexts.profile.edit.list-items
-  (:require [legacy.status-im.utils.core :as utils]
-            [quo.foundations.colors :as colors]
+  (:require [quo.foundations.colors :as colors]
             [status-im.common.not-implemented :as not-implemented]
             [status-im.config :as config]
             [status-im.constants :as constants]
             [status-im.contexts.profile.edit.style :as style]
             [status-im.contexts.profile.utils :as profile.utils]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.string :as utils.string]))
 
 (defn items
   [theme]
@@ -18,7 +18,8 @@
       :items [(cond-> {:title           (i18n/label :t/name)
                        :blur?           true
                        :label           :text
-                       :label-props     (utils/truncate-str full-name constants/profile-name-max-length)
+                       :label-props     (utils.string/truncate full-name
+                                                               constants/profile-name-max-length)
                        :container-style style/item-container}
                 (not ens-name?)
                 (assoc :on-press #(rf/dispatch [:open-modal :screen/edit-name])
@@ -27,7 +28,7 @@
                :on-press        #(rf/dispatch [:open-modal :screen/edit-bio])
                :blur?           true
                :label           :text
-               :label-props     (utils/truncate-str bio 15)
+               :label-props     (utils.string/truncate bio 15)
                :action          :arrow
                :container-style style/item-container}
               {:title           (i18n/label :t/accent-colour)

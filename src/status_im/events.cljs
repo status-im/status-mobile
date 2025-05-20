@@ -1,5 +1,7 @@
 (ns status-im.events
   (:require
+    status-im.app.market.events
+    status-im.app.wallet.events
     status-im.common.alert-banner.events
     status-im.common.alert.effects
     status-im.common.app-monitoring.events
@@ -59,6 +61,9 @@
     status-im.contexts.wallet.swap.events
     status-im.contexts.wallet.wallet-connect.events.core
     [status-im.db :as db]
+    status-im.domain.market.events
+    status-im.gateway.events
+    status-im.gateway.market.events
     status-im.navigation.effects
     status-im.navigation.events
     [utils.re-frame :as rf]))

@@ -5,6 +5,8 @@
    [:cat
     [:map
      [:token-name :string]
+     [:token-short-name :string]
+     [:token-image {:optional true} :string]
      [:token-rank :int]
      [:market-cap :string]
      [:price :string]

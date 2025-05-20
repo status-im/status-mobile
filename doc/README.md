@@ -6,6 +6,7 @@
 ## Development Process
 
 - [Coding guidelines](new-guidelines.md)
+- [Layered architecture](architecture-layers.md)
 - [UI components coding guidelines](ui-guidelines.md)
 - [Release Checklist](release-checklist.md)
 - [Release Guide](release-guide.md)

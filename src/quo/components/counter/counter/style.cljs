@@ -17,7 +17,6 @@
   [{:keys [type container-style customization-color theme blur?]}]
   (cond-> [{:align-items        :center
             :justify-content    :center
-            :align-self         :flex-start
             :border-radius      6
             :height             16
             :padding-horizontal 5

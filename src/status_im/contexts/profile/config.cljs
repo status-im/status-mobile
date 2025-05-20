@@ -20,6 +20,9 @@
    :statusProxyMarketPassword     config/STATUS_BUILD_PROXY_PASSWORD
    :statusProxyBlockchainUser     config/STATUS_BUILD_PROXY_USER
    :statusProxyBlockchainPassword config/STATUS_BUILD_PROXY_PASSWORD
+   :marketDataProxyUrl            config/STATUS_RUNTIME_MARKET_DATA_PROXY_URL
+   :marketDataProxyUser           config/STATUS_RUNTIME_MARKET_DATA_PROXY_USER
+   :marketDataProxyPassword       config/STATUS_RUNTIME_MARKET_DATA_PROXY_PASSWORD
    :openseaAPIKey                 config/opensea-api-key
    :poktToken                     config/POKT_TOKEN
    :infuraToken                   config/INFURA_TOKEN

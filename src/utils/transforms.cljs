@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [js->clj])
   (:require
     [camel-snake-kebab.core :as csk]
+    [camel-snake-kebab.extras :as cske]
     [cljs-bean.core :as clj-bean]
     [oops.core :as oops]))
 
@@ -51,15 +52,21 @@
   [data]
   (.parse js/JSON data))
 
-(defn json->clj
-  [json]
-  (when-not (= json "undefined")
-    (try (js->clj (.parse js/JSON json))
-         (catch js/Error _ (when (string? json) json)))))
-
 (def ->kebab-case-keyword (memoize csk/->kebab-case-keyword))
 (def ->PascalCaseKeyword (memoize csk/->PascalCaseKeyword))
 (def ->camelCaseString (memoize csk/->camelCaseString))
+
+(defn json->clj
+  ([json]
+   (json->clj json nil))
+  ([json {:keys [keywords-to-kebab-case?]}]
+   (when-not (= json "undefined")
+     (try
+       (let [parsed (js->clj (.parse js/JSON json))]
+         (if keywords-to-kebab-case?
+           (cske/transform-keys ->kebab-case-keyword parsed)
+           parsed))
+       (catch js/Error _ (when (string? json) json))))))
 
 (defn json->js
   [json]

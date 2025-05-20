@@ -40,7 +40,8 @@
   #{;; Tabs
     :screen/communities-stack
     :screen/chats-stack
-    :screen/wallet-stack})
+    :screen/wallet-stack
+    :screen/market-stack})
 
 (defn track-view-id-event
   [view-id]
