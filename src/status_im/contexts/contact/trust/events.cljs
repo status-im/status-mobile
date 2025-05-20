@@ -53,16 +53,21 @@
                                :contact-id contact-id
                                :error      %})}]}))
 
+(defn pending-contact-request-from-contact-id
+  [db contact-id]
+  (->> (get-in db [:activity-center :contact-requests])
+       (filter #(= contact-id (:author %)))
+       first))
+
 (rf/reg-event-fx :contact/mark-as-untrusted-sheet
- (fn [_ [{:keys [public-key contact-request-state] :as contact}]]
+ (fn [{:keys [db]} [{:keys [public-key contact-request-state] :as contact}]]
    (let [name            (profile.utils/displayed-name contact)
          contact?        (= contact-request-state
                             constants/contact-request-state-mutual)
          request?        (= contact-request-state
                             constants/contact-request-state-received)
          contact-request (when request?
-                           (rf/sub [:activity-center/pending-contact-request-from-contact-id
-                                    public-key]))]
+                           (pending-contact-request-from-contact-id db public-key))]
      {:fx [[:dispatch
             [:show-bottom-sheet
              {:content (fn []
