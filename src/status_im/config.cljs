@@ -1,0 +1,152 @@
+(ns status-im.config
+  (:require
+    [clojure.string :as string]
+    [react-native.config :as react-native-config]
+    [react-native.mmkv :as mmkv]
+    [status-im.constants :as constants]
+    [utils.ens.core :as utils.ens]
+    [utils.ethereum.chain :as chain]))
+
+(def get-config react-native-config/get-config)
+
+(defn enabled? [v] (= "1" v))
+
+(goog-define INFURA_TOKEN "")
+(goog-define POKT_TOKEN "3ef2018191814b7e1009b8d9")
+(goog-define STATUS_BUILD_PROXY_USER "")
+(goog-define STATUS_BUILD_PROXY_PASSWORD "")
+(goog-define STATUS_RUNTIME_MARKET_DATA_PROXY_URL "")
+(goog-define STATUS_RUNTIME_MARKET_DATA_PROXY_USER "")
+(goog-define STATUS_RUNTIME_MARKET_DATA_PROXY_PASSWORD "")
+(goog-define OPENSEA_API_KEY "")
+(goog-define RARIBLE_MAINNET_API_KEY "")
+(goog-define RARIBLE_TESTNET_API_KEY "")
+(goog-define ALCHEMY_ETHEREUM_MAINNET_TOKEN "")
+(goog-define ALCHEMY_ETHEREUM_SEPOLIA_TOKEN "")
+(goog-define ALCHEMY_ARBITRUM_MAINNET_TOKEN "")
+(goog-define ALCHEMY_ARBITRUM_SEPOLIA_TOKEN "")
+(goog-define ALCHEMY_OPTIMISM_MAINNET_TOKEN "")
+(goog-define ALCHEMY_OPTIMISM_SEPOLIA_TOKEN "")
+(goog-define ALCHEMY_BASE_MAINNET_TOKEN "")
+(goog-define ALCHEMY_BASE_SEPOLIA_TOKEN "")
+(goog-define WALLET_CONNECT_PROJECT_ID "87815d72a81d739d2a7ce15c2cfdefb3")
+(goog-define STATUS_BUILD_ETH_RPC_PROXY_USER "")
+(goog-define STATUS_BUILD_ETH_RPC_PROXY_PASSWORD "")
+(goog-define STATUS_BUILD_ETH_RPC_PROXY_URL "")
+(goog-define MIXPANEL_APP_ID "")
+(goog-define MIXPANEL_APP_TOKEN "")
+
+(def mainnet-rpc-url (str "https://eth-archival.rpc.grove.city/v1/" POKT_TOKEN))
+(def sepolia-rpc-url (str "https://sepolia-archival.rpc.grove.city/v1/" POKT_TOKEN))
+(def opensea-link "https://opensea.io")
+(def opensea-tesnet-link "https://testnets.opensea.io")
+
+;; These MixPanel values should be injected via the CI since they vary depending
+;; on the environment, as we want to keep production and test/development
+;; metrics separate.
+;;
+;; We primarily use two MixPanel projects: the production project is named
+;; `status-im`, and the test project is `test.status-im`.
+;;
+;; During development, do not use the production app ID and token.
+(def mixpanel-app-id MIXPANEL_APP_ID)
+(def mixpanel-token MIXPANEL_APP_TOKEN)
+
+(def opensea-api-key OPENSEA_API_KEY)
+(def status-proxy-enabled? true)
+(def status-proxy-stage-name (get-config :STATUS_PROXY_STAGE_NAME "test"))
+(def pairing-popup-disabled? (enabled? (get-config :PAIRING_POPUP_DISABLED "0")))
+(def cached-webviews-enabled? (enabled? (get-config :CACHED_WEBVIEWS_ENABLED 0)))
+
+(def fdroid? (enabled? (get-config :GOOGLE_FREE "0")))
+
+;; NOTE: only disabled in releases
+(def blank-preview? (enabled? (get-config :BLANK_PREVIEW "1")))
+(def tooltip-events? (enabled? (get-config :TOOLTIP_EVENTS "0")))
+(def debug-or-pr-build? (enabled? (get-config :DEBUG_OR_PR_BUILD "0")))
+(def debug-webview? (enabled? (get-config :DEBUG_WEBVIEW "0")))
+(def two-minutes-syncing? (enabled? (get-config :TWO_MINUTES_SYNCING "0")))
+(def show-not-implemented-features? (enabled? (get-config :SHOW_NOT_IMPLEMENTED_FEATURES "0")))
+
+;; CONFIG VALUES
+(defn log-level
+  []
+  (string/upper-case
+   (mmkv/get-string constants/pre-login-log-level-key (get-config :LOG_LEVEL ""))))
+(def api-logging-enabled? (enabled? (get-config :API_LOGGING_ENABLED "0")))
+(def fleet (get-config :FLEET ""))
+(def apn-topic (get-config :APN_TOPIC "im.status.ethereum"))
+(def max-installations 2)
+
+(defn env-variable->int
+  [env-var-name default-value]
+  (js/parseInt (get-config env-var-name default-value)))
+
+(def delete-message-for-me-undo-time-limit-ms
+  (env-variable->int :DELETE_MESSAGE_FOR_ME_UNDO_TIME_LIMIT
+                     constants/delete-message-for-me-undo-time-limit-ms))
+
+(def delete-message-undo-time-limit-ms
+  (env-variable->int :DELETE_MESSAGE_UNDO_TIME_LIMIT
+                     constants/delete-message-undo-time-limit-ms))
+
+(def verify-transaction-chain-id (js/parseInt (get-config :VERIFY_TRANSACTION_CHAIN_ID "1")))
+(def verify-transaction-url
+  (if (= :mainnet (chain/chain-id->chain-keyword verify-transaction-chain-id))
+    mainnet-rpc-url
+    sepolia-rpc-url))
+
+(def verify-ens-chain-id (js/parseInt (get-config :VERIFY_ENS_CHAIN_ID "1")))
+(def verify-ens-url
+  (if (= :mainnet (chain/chain-id->chain-keyword verify-ens-chain-id))
+    mainnet-rpc-url
+    sepolia-rpc-url))
+(def verify-ens-contract-address
+  (get-config :VERIFY_ENS_CONTRACT_ADDRESS
+              ((chain/chain-id->chain-keyword verify-ens-chain-id) utils.ens/ens-registries)))
+
+(def fast-create-community-enabled?
+  (enabled? (get-config :FAST_CREATE_COMMUNITY_ENABLED "0")))
+
+(def fetch-messages-enabled? (enabled? (get-config :FETCH_MESSAGES_ENABLED "1")))
+(def test-networks-enabled? (enabled? (get-config :TEST_NETWORKS_ENABLED "0")))
+
+(def mobile-data-syncing-toggle-enabled?
+  (enabled? (get-config :MOBILE_DATA_SYNCING_TOGGLE_ENABLE "1")))
+
+;; Alert banners are disabled for debug builds because alert banners overlay
+;; interfere with react-native debug tools, such as inspector and Perf monitor
+(def enable-alert-banner? (enabled? (get-config :ENABLE_ALERT_BANNER "0")))
+
+;; enable using status backend server or not, otherwise it will use built-in status-go library
+;; see doc/use-status-backend-server.md for more details
+(goog-define STATUS_BACKEND_SERVER_ENABLED "0")
+;; The host should contain an IP address and a port separated by a colon.
+;; The port comes from your running status backend server.
+;; If you run it by PORT=60000 make run-status-backend , then host will likely be 127.0.0.1:60000
+(goog-define STATUS_BACKEND_SERVER_HOST "")
+;; enable media server over https or http
+;; if you're using android simulator, set it to "0"
+(goog-define STATUS_BACKEND_SERVER_MEDIA_SERVER_ENABLE_TLS "1")
+;; /path/to/root/data/dir
+;; make sure it exists, it should be in absolute path
+(goog-define STATUS_BACKEND_SERVER_ROOT_DATA_DIR "")
+;; if you're using android simulator, I suggest set the env variable to "http://10.0.2.2:"
+(goog-define STATUS_BACKEND_SERVER_IMAGE_SERVER_URI_PREFIX "https://localhost:")
+
+(def re-frisk-host (get-config :RE_FRISK_HOST "localhost"))
+(def re-frisk-port (get-config :RE_FRISK_PORT "4567"))
+;;;; Sentry
+;; Documentation: status-go/internal/sentry/README.md
+(goog-define SENTRY_DSN_STATUS_GO "")
+(def sentry-enabled? (enabled? (get-config :SENTRY_ENABLED "0")))
+(def sentry-dsn-status-go SENTRY_DSN_STATUS_GO)
+
+;; this flag should only be used for e2e builds, because
+;; relying on UI to pull logs, share them somewhere, and
+;; download via Appium doesn't seem like a solid long-term
+;; approach for QA team
+(def use-public-log-dir? (enabled? (get-config :USE_PUBLIC_LOG_DIR "0")))
+
+;; A flag for enabling hidden view-id-tracker view, required for e2e testing
+(def enable-view-id-tracker? (enabled? (get-config :VIEW_ID_TRACKER "0")))
