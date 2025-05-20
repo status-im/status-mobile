@@ -55,17 +55,13 @@
                                               :on-success #(rf/dispatch [:open-share
                                                                          {:options {:message %}}])}]))
                              [public-key])
-        untrustworthy?      (rn/use-memo (fn []
-                                           (= trust-status
-                                              constants/contact-trust-status-untrustworthy))
-                                         [trust-status])
-        on-trust-mark-press (rn/use-callback
-                             (fn []
-                               (hide-sheet-and-dispatch
-                                (if untrustworthy?
-                                  [:contact/remove-trust-status public-key full-name]
-                                  [:contact/mark-as-untrusted-sheet contact])))
-                             [untrustworthy? contact full-name public-key])
+        untrustworthy?      (= trust-status
+                               constants/contact-trust-status-untrustworthy)
+        on-trust-mark-press (fn []
+                              (hide-sheet-and-dispatch
+                               (if untrustworthy?
+                                 [:contact/remove-trust-status public-key full-name]
+                                 [:contact/mark-as-untrusted-sheet contact])))
         on-remove-contact   (rn/use-callback
                              (fn []
                                (rf/dispatch [:hide-bottom-sheet])

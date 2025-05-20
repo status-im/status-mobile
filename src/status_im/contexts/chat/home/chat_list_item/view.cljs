@@ -251,10 +251,7 @@
                                                     (rf/sub [:contacts/contact-by-address chat-id]))
         unread-messages? (pos? unviewed-messages-count)
         trust-status (rf/sub [:contacts/contact-trust-status chat-id])
-        untrustworthy? (rn/use-memo
-                        (fn []
-                          (= constants/contact-trust-status-untrustworthy trust-status))
-                        [trust-status])]
+        untrustworthy? (= constants/contact-trust-status-untrustworthy trust-status)]
     [rn/view {:style {:flex-direction :row}}
      [avatar-view
       {:contact   contact
