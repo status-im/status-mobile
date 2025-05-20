@@ -361,11 +361,11 @@
 
 (rf/reg-sub
  :wallet/swap-exchange-rate-fiat
- :<- [:wallet/swap-receive-token-price]
+ :<- [:wallet/swap-pay-token-price]
  :<- [:profile/currency-symbol]
- (fn [[receive-token-price currency-symbol]]
-   (when receive-token-price
-     (utils/fiat-formatted-for-ui currency-symbol receive-token-price))))
+ (fn [[pay-token-price currency-symbol]]
+   (when pay-token-price
+     (utils/fiat-formatted-for-ui currency-symbol pay-token-price))))
 
 (rf/reg-sub :wallet/max-swap-fee
  :<- [:wallet/swap-proposal-approval-required]
