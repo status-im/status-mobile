@@ -262,7 +262,7 @@
            (set-max-scroll 0)
            (set-max-scroll max-scroll-offset))))
      [channels-height])
-    [rn/render-after {:ms 120}
+    [rn/delay-render {:ms 120}
      [reanimated/flat-list
       {:ref                     flat-list-ref
        :style                   [(style/channel-listing theme listing-height)
