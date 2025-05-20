@@ -53,7 +53,7 @@
     (rf/dispatch [:open-modal :screen/community-account-selection-sheet
                   {:community-id community-id}])))
 
-(defn- promote-community-for-owners
+(defn- promotional-info-box-for-owners
   [{:keys [theme info-styles]}]
   (let [[dismissed? set-dismissed] (rn/use-state false)]
     (when-not dismissed?
@@ -457,7 +457,7 @@
        :info-styles          info-styles}]
      [community-info-tags tags info-styles]
      (when owner?
-       [promote-community-for-owners {:theme theme :info-styles info-styles}])
+       [promotional-info-box-for-owners {:theme theme :info-styles info-styles}])
      [join-community
       {:community-id      community-id
        :joined?           joined?
