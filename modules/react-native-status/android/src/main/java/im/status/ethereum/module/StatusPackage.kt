@@ -15,6 +15,17 @@ class StatusPackage(private val rootedDevice: Boolean) : ReactPackage {
                 requestBody = "",
                 statusgoFunction = { Statusgo.imageServerTLSCert() }
             )
+            
+        fun releaseOSMemory() {
+            // use pool to execute the request to avoid android.os.NetworkOnMainThreadException
+            StatusThreadPoolExecutor.getInstance().execute {
+                StatusBackendClient.executeStatusGoRequest(
+                    endpoint = "ReleaseOSMemory",
+                    requestBody = "",
+                    statusgoFunction = { Statusgo.releaseOSMemory() }
+                )
+            }
+        }
     }
 
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
