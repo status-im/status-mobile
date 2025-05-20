@@ -55,13 +55,17 @@
   (let [customization-color (rf/sub [:profile/customization-color])
         {:keys [news-title
                 news-description
-                timestamp]} notification
+                timestamp
+                read
+                id]}        notification
         timestamp           (datetime/timestamp->relative timestamp)
         on-press            (rn/use-callback
-                             #(rf/dispatch [:show-bottom-sheet
-                                            {:theme   :dark
-                                             :content (fn []
-                                                        [sheet notification timestamp])}]))]
+                             (fn []
+                               (rf/dispatch [:activity-center.notifications/mark-as-read id])
+                               (rf/dispatch [:show-bottom-sheet
+                                             {:theme   :dark
+                                              :content (fn []
+                                                         [sheet notification timestamp])}])))]
     [common/swipeable
      {:left-button    common/swipe-button-read-or-unread
       :left-on-press  common/swipe-on-press-toggle-read
@@ -75,6 +79,7 @@
         :customization-color customization-color
         :icon                :i/status-logo-bw
         :timestamp           timestamp
+        :unread?             (not read)
         :context             [[quo/text {} news-description]]
         :items               [{:type                :button
                                :subtype             :primary
