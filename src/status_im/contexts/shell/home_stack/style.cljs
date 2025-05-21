@@ -16,6 +16,7 @@
 (defn home-stack
   [theme]
   {:border-bottom-left-radius  20
+   :z-index                    2
    :border-bottom-right-radius 20
    :background-color           (colors/theme-colors colors/white colors/neutral-95 theme)
    :flex                       1})

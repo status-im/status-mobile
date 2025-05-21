@@ -35,7 +35,8 @@
    ::wallet.wallet-connect              (enabled-in-env? :FLAG_WALLET_CONNECT_ENABLED)
    ::wallet.custom-network-amounts      (enabled-in-env? :FLAG_WALLET_CUSTOM_NETWORK_AMOUNTS_ENABLED)
    ::wallet.transaction-params          (enabled-in-env? :FLAG_WALLET_TRANSACTION_PARAMS_ENABLED)
-   ::market                             (enabled-in-env? :FLAG_MARKET_ENABLED)})
+   ::market                             (enabled-in-env? :FLAG_MARKET_ENABLED)
+   ::privacy-mode-ui                    (enabled-in-env? :SHOW_PRIVACY_MODE_UI)})
 
 (defonce ^:private feature-flags-config
   (reagent/atom initial-flags))

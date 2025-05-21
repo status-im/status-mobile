@@ -75,6 +75,7 @@
 (rf/reg-root-key-sub :alert-banners/hide? :alert-banners/hide?)
 (rf/reg-root-key-sub :currencies :currencies)
 (rf/reg-root-key-sub :enter-seed-phrase/error :enter-seed-phrase/error)
+(rf/reg-root-key-sub :privacy-mode/privacy-mode-enabled? :privacy-mode/privacy-mode-enabled?)
 
 ;;onboarding
 (rf/reg-root-key-sub :onboarding/generated-keys? :onboarding/generated-keys?)

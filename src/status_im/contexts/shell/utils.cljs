@@ -7,9 +7,10 @@
 
 (defn bottom-tabs-container-height
   []
-  (if platform/android?
-    shell.constants/bottom-tabs-container-height-android
-    shell.constants/bottom-tabs-container-height-ios))
+  (+ (if platform/android?
+       shell.constants/bottom-tabs-container-height-android
+       shell.constants/bottom-tabs-container-height-ios)
+     shell.constants/home-stack-radius))
 
 (defn load-stack
   [stack-id]

@@ -14,6 +14,7 @@
     status-im.common.kv-storage.effects
     status-im.common.log
     status-im.common.peer-stats.events
+    status-im.common.privacy-mode.events
     status-im.common.shared-urls.events
     status-im.common.signals.events
     status-im.common.theme.effects

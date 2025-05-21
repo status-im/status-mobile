@@ -12,7 +12,7 @@
     [utils.re-frame :as rf]))
 
 (defn bottom-tab
-  [icon stack-id shared-values]
+  [icon stack-id shared-values privacy-mode-enabled?]
   (let [notifications-data  (rf/sub [:shell/bottom-tabs-notifications-data])
         customization-color (rf/sub [:profile/customization-color])
         on-press            (rn/use-callback #(rf/dispatch [:shell/change-tab stack-id]))
@@ -26,11 +26,12 @@
                 :icon                icon
                 :icon-color-anim     icon-color
                 :on-press            on-press
+                :pass-through?       privacy-mode-enabled?
                 :accessibility-label (str (name stack-id) "-tab")
                 :customization-color customization-color))]))
 
 (defn view
-  [shared-values]
+  [shared-values privacy-mode-enabled?]
   (let [communities-double-tab-gesture (-> (gesture/gesture-tap)
                                            (gesture/number-of-taps 2)
                                            (gesture/on-start
@@ -43,14 +44,14 @@
                                               (rf/dispatch [:messages-home/select-tab :tab/recent]))))]
     [quo.context/provider {:theme :dark}
      [reanimated/view
-      {:style (style/bottom-tabs-container (:bottom-tabs-height shared-values))}
+      {:style (style/bottom-tabs-container privacy-mode-enabled?)}
       [rn/view {:style (style/bottom-tabs)}
-       [bottom-tab :i/wallet :screen/wallet-stack shared-values]
+       [bottom-tab :i/wallet :screen/wallet-stack shared-values privacy-mode-enabled?]
        (when (ff/enabled? ::ff/market)
-         [bottom-tab :i/swap :screen/market-stack shared-values])
+         [bottom-tab :i/swap :screen/market-stack shared-values privacy-mode-enabled?])
        [gesture/gesture-detector {:gesture messages-double-tap-gesture}
-        [bottom-tab :i/messages :screen/chats-stack shared-values]]
+        [bottom-tab :i/messages :screen/chats-stack shared-values privacy-mode-enabled?]]
        [gesture/gesture-detector {:gesture communities-double-tab-gesture}
-        [bottom-tab :i/communities :screen/communities-stack shared-values]]
+        [bottom-tab :i/communities :screen/communities-stack shared-values privacy-mode-enabled?]]
        (when config/show-not-implemented-features?
-         [bottom-tab :i/browser :screen/browser-stack shared-values])]]]))
+         [bottom-tab :i/browser :screen/browser-stack shared-values privacy-mode-enabled?])]]]))

@@ -28,13 +28,18 @@
 
 (defn shell-stack
   []
-  (let [shared-values (shared-values/calculate-and-set-shared-values)]
+  (let [privacy-mode-enabled? (rf/sub [:privacy-mode/privacy-mode-enabled?])
+        unselected-tab-color  (if privacy-mode-enabled? colors/white-opa-40 colors/neutral-50)
+        shared-values         (shared-values/calculate-and-set-shared-values unselected-tab-color)
+        background-color      (if privacy-mode-enabled?
+                                (colors/resolve-color :purple :dark)
+                                colors/neutral-100)]
     (rn/use-mount
      (fn []
        (rn/hw-back-add-listener navigate-back-handler)
        #(rn/hw-back-remove-listener navigate-back-handler)))
-    [rn/view {:style {:background-color colors/neutral-100 :flex 1}}
+    [rn/view {:style {:background-color background-color :flex 1}}
      [home-stack/view shared-values]
      (when config/enable-view-id-tracker?
        [view-id-tracker])
-     [bottom-tabs/view shared-values]]))
+     [bottom-tabs/view shared-values privacy-mode-enabled?]]))

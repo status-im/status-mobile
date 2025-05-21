@@ -8,7 +8,7 @@
     [utils.worklets.shell :as worklets.shell]))
 
 (defn stacks-and-bottom-tabs-derived-values
-  [selected-stack-id]
+  [selected-stack-id unselected-tab-color]
   (reduce
    (fn [acc id]
      (let [tabs-icon-color-keyword (get shell.constants/tabs-icon-color-keywords id)
@@ -25,13 +25,13 @@
          (name id)
          selected-stack-id
          colors/white
-         colors/neutral-50))))
+         unselected-tab-color))))
    {}
    shell.constants/stacks-ids))
 
 (defn calculate-and-set-shared-values
-  []
+  [unselected-tab-color]
   (let [selected-stack-id (reanimated/use-shared-value (name @state/selected-stack-id-value))]
     (utils/reset-bottom-tabs) ;; Reset the state of loaded tabs for faster re-login and hot reloads
     (reset! state/selected-stack-id-shared-value selected-stack-id)
-    (stacks-and-bottom-tabs-derived-values selected-stack-id)))
+    (stacks-and-bottom-tabs-derived-values selected-stack-id unselected-tab-color)))

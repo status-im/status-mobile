@@ -8,6 +8,7 @@
     [status-im.contexts.onboarding.common.background.view :as background]
     [status-im.contexts.onboarding.common.overlay.view :as overlay]
     [status-im.contexts.onboarding.intro.style :as style]
+    [status-im.feature-flags :as ff]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -19,9 +20,31 @@
   []
   (rf/dispatch [:show-bottom-sheet {:content privacy/privacy-statement :shell? true}]))
 
-(defn- terms
+(defn- show-privacy-mode-sheet
   []
+  (rf/dispatch [:privacy-mode/show-bottom-sheet {:theme :dark :shell? true}]))
+
+(defn- third-party-services-text
+  [privacy-mode-enabled?]
+  [rn/view {:style {:flex-direction :row :margin-bottom 8}}
+   [quo/text
+    {:on-press (when privacy-mode-enabled? show-privacy-mode-sheet)
+     :style    (if privacy-mode-enabled? style/danger-text style/plain-text)
+     :size     :paragraph-2
+     :weight   :medium}
+    (i18n/label :t/third-party-services)]
+   [quo/text
+    {:on-press show-privacy-mode-sheet
+     :style    (if privacy-mode-enabled? style/danger-text style/highlighted-text)
+     :size     :paragraph-2
+     :weight   :medium}
+    (i18n/label (if privacy-mode-enabled? :t/disabled-2 :t/enabled))]])
+
+(defn- terms
+  [privacy-mode-enabled?]
   [rn/view {:style style/terms-privacy-container}
+   (when (ff/enabled? ::ff/privacy-mode-ui)
+     [third-party-services-text privacy-mode-enabled?])
    [quo/text
     {:style style/plain-text
      :size  :paragraph-2}
@@ -48,33 +71,36 @@
   []
   (rf/dispatch [:profile/explore-new-status]))
 
-(defn- sync-or-recover-profile
-  []
+(defn- open-next-screen
+  [privacy-mode-enabled? use-temporary-display-name? next-screen]
   (when-let [blur-show-fn @overlay/blur-show-fn-atom]
     (blur-show-fn))
-  (rf/dispatch [:onboarding/use-temporary-display-name false])
-  (rf/dispatch [:open-modal
-                :screen/onboarding.share-usage
-                {:next-screen :screen/onboarding.log-in}]))
-
-(defn- create-profile
-  []
-  (when-let [blur-show-fn @overlay/blur-show-fn-atom]
-    (blur-show-fn))
-  (rf/dispatch [:onboarding/use-temporary-display-name true])
-  (rf/dispatch [:open-modal :screen/onboarding.share-usage
-                {:next-screen :screen/onboarding.create-profile}]))
+  (rf/dispatch [:onboarding/use-temporary-display-name use-temporary-display-name?])
+  (if privacy-mode-enabled?
+    (rf/dispatch [:open-modal next-screen])
+    (rf/dispatch [:open-modal :screen/onboarding.share-usage {:next-screen next-screen}])))
 
 (defn view
   []
-  (let [has-profiles-and-unaccepted-terms? (rf/sub [:profile/has-profiles-and-unaccepted-terms?])]
+  (let [has-profiles-and-unaccepted-terms? (rf/sub [:profile/has-profiles-and-unaccepted-terms?])
+        privacy-mode-enabled?              (rf/sub [:privacy-mode/privacy-mode-enabled?])
+        sync-or-recover-profile            (rn/use-callback
+                                            #(open-next-screen privacy-mode-enabled?
+                                                               false
+                                                               :screen/onboarding.log-in)
+                                            [privacy-mode-enabled?])
+        create-profile                     (rn/use-callback
+                                            #(open-next-screen privacy-mode-enabled?
+                                                               true
+                                                               :screen/onboarding.create-profile)
+                                            [privacy-mode-enabled?])]
     [rn/view {:style style/page-container}
      [background/view false]
      [quo/bottom-actions
       (cond->
         {:container-style  (style/bottom-actions-container safe-area/bottom)
          :description      :bottom
-         :description-text [terms]}
+         :description-text [terms privacy-mode-enabled?]}
 
         has-profiles-and-unaccepted-terms?
         (assoc

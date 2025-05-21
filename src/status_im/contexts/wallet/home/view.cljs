@@ -132,6 +132,7 @@
 (defn view
   []
   (let [selected-tab                   (rf/sub [:wallet/home-tab])
+        privacy-mode-enabled?          (rf/sub [:privacy-mode/privacy-mode-enabled?])
         account-list-ref               (rn/use-ref-atom nil)
         tokens-loading?                (rf/sub [:wallet/home-tokens-loading?])
         networks                       (rf/sub [:wallet/filtered-networks])
@@ -142,6 +143,10 @@
         {:keys [formatted-balance]}    (rf/sub [:wallet/aggregated-token-values-and-balance])
         theme                          (quo.context/use-theme)
         show-new-chain-indicator?      (rf/sub [:wallet/show-new-chain-indicator?])
+        show-privacy-mode-sheet        (rn/use-callback
+                                        (fn []
+                                          (rf/dispatch [:privacy-mode/show-bottom-sheet {:theme theme}]))
+                                        [theme])
         on-press-network-selector      (rn/use-callback
                                         (fn []
                                           (if networks-filtered?
@@ -163,6 +168,15 @@
      [tokens-loading?])
     [rn/view {:style (style/home-container)}
      [common.top-nav/view]
+     (when privacy-mode-enabled?
+       [quo/information-box
+        {:type                :informative
+         :customization-color :purple
+         :icon                :i/info
+         :on-button-press     show-privacy-mode-sheet
+         :button-label        (i18n/label :t/disable-privacy-mode)
+         :style               {:margin-vertical 8 :margin-horizontal 20}}
+        (i18n/label :t/features-and-balances-disabled)])
      [refreshable-flat-list/view
       {:refresh-control         [rn/refresh-control
                                  {:refreshing (and tokens-loading? init-loaded?)

@@ -17,6 +17,9 @@
 (def highlighted-text
   {:color colors/white})
 
+(def danger-text
+  {:color colors/danger-50})
+
 (defn bottom-actions-container
   [bottom-insets]
   {:background-color colors/onboarding-header-black

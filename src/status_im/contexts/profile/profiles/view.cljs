@@ -286,8 +286,10 @@
   (let [{:keys [default-screen-profiles?]} (quo.context/use-screen-params)
         [show-profiles? set-show-profiles] (rn/use-state default-screen-profiles?)
         show-profiles                      (rn/use-callback #(set-show-profiles true))
+        privacy-mode-enabled?              (rf/sub [:privacy-mode/privacy-mode-enabled?])
         hide-profiles                      (rn/use-callback #(set-show-profiles false))]
-    (rn/use-mount #(rf/dispatch [:centralized-metrics/check-user-confirmation]))
+    (when-not privacy-mode-enabled?
+      (rn/use-mount #(rf/dispatch [:centralized-metrics/check-user-confirmation])))
     [:<>
      [background/view true]
      (if show-profiles?

@@ -32,6 +32,7 @@
    :chat/cooldown-enabled?             false
    :chat/last-outgoing-message-sent-at 0
    :chat/spam-messages-frequency       0
+   :privacy-mode/privacy-mode-enabled? false
    :chats-home-list                    #{}
    :home-items-show-number             20
    :toasts                             {:ordered '() :toasts {}}

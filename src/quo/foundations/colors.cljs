@@ -211,6 +211,7 @@
 (def danger-50-opa-40 (alpha danger-50 0.4))
 
 ;;60 with transparency
+(def danger-60-opa-5 (alpha danger-60 0.05))
 (def danger-60-opa-10 (alpha danger-60 0.1))
 
 ;;;;Warning

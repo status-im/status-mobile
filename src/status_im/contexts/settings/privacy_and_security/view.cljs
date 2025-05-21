@@ -24,10 +24,23 @@
                   :id                  :preview-privacy
                   :customization-color customization-color}})
 
+(defn- show-privacy-mode-sheet
+  []
+  (rf/dispatch [:privacy-mode/show-bottom-sheet {:theme :dark :shell? true}]))
+
+(defn- setting-privacy-mode
+  [privacy-mode-enabled? customization-color]
+  {:title        (i18n/label :t/privacy-mode)
+   :blur?        true
+   :action       :selector
+   :action-props {:on-change           show-privacy-mode-sheet
+                  :checked?            privacy-mode-enabled?
+                  :customization-color customization-color}})
+
 (defn view
   []
   (let [customization-color (rf/sub [:profile/customization-color])
-
+        privacy-mode-enabled? (rf/sub [:privacy-mode/privacy-mode-enabled?])
         preview-privacy? (rf/sub [:profile/preview-privacy?])
         see-profile-pictures-from (rf/sub [:profile/pictures-visibility])
         show-profile-pictures-to (rf/sub [:multiaccount/profile-pictures-show-to])
@@ -82,7 +95,9 @@
                      (profile-picture.view/setting-profile-pictures-show-to
                       show-profile-pictures-to
                       open-show-profile-pictures-to-options))
-                   (setting-preview-privacy preview-privacy? customization-color toggle-preview-privacy)
+                   (when (ff/enabled? ::ff/privacy-mode-ui)
+                     (setting-privacy-mode privacy-mode-enabled? customization-color))
+                   (setting-preview-privacy preview-privacy? toggle-preview-privacy customization-color)
                    {:title             (i18n/label :t/share-usage-data)
                     :description       :text
                     :description-props {:text (i18n/label :t/from-all-profiles-on-device)}

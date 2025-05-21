@@ -1,6 +1,7 @@
 (ns status-im.contexts.shell.constants)
 
 (def ^:const floating-shell-button-height 44)
+(def ^:const home-stack-radius 20)
 
 (def ^:const default-selected-stack :screen/wallet-stack)
 
