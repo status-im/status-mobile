@@ -17,30 +17,35 @@
         max-gas-amount    (rf/sub [:wallet/tx-settings-gas-amount])
         gas-price         (rf/sub [:wallet/tx-settings-gas-price])
         nonce             (rf/sub [:wallet/tx-settings-nonce])
+        no-base-fee?      (rf/sub [:wallet/tx-settings-no-base-fee?])
+        no-priority-fee?  (rf/sub [:wallet/tx-settings-no-priority-fee?])
         account-color     (rf/sub [:wallet/current-viewing-account-color])
         current-screen    (rf/sub [:view-id])
         fee-data-fields   (if eip-1559-enabled?
-                            [{:title             (i18n/label :t/max-base-fee)
-                              :description-props {:text (str max-base-fee " GWEI")}
+                            [(when-not no-base-fee?
+                               {:title             (i18n/label :t/max-base-fee)
+                                :description-props {:text (str max-base-fee " GWEI")}
 
-                              :image             :none
-                              :description       :text
-                              :action            :arrow
-                              :on-press          #(rf/dispatch [:navigate-to-within-stack
-                                                                [:screen/wallet.tx-settings-max-fee
-                                                                 current-screen]])
-                              :label             :text
-                              :preview-size      :size-32}
-                             {:title             (i18n/label :t/priority-fee)
-                              :description-props {:text (str priority-fee " GWEI")}
-                              :image             :none
-                              :description       :text
-                              :action            :arrow
-                              :on-press          #(rf/dispatch [:navigate-to-within-stack
-                                                                [:screen/wallet.tx-settings-priority-fee
-                                                                 current-screen]])
-                              :label             :text
-                              :preview-size      :size-32}]
+                                :image             :none
+                                :description       :text
+                                :action            :arrow
+                                :on-press          #(rf/dispatch [:navigate-to-within-stack
+                                                                  [:screen/wallet.tx-settings-max-fee
+                                                                   current-screen]])
+                                :label             :text
+                                :preview-size      :size-32})
+                             (when-not no-priority-fee?
+                               {:title             (i18n/label :t/priority-fee)
+                                :description-props {:text (str priority-fee " GWEI")}
+                                :image             :none
+                                :description       :text
+                                :action            :arrow
+                                :on-press          #(rf/dispatch
+                                                     [:navigate-to-within-stack
+                                                      [:screen/wallet.tx-settings-priority-fee
+                                                       current-screen]])
+                                :label             :text
+                                :preview-size      :size-32})]
                             [{:title             (i18n/label :t/gas-price)
                               :description-props {:text (str gas-price " GWEI")}
                               :image             :none

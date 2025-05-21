@@ -979,6 +979,18 @@
    (or (:tx-fee-mode route) value-set-by-user)))
 
 (rf/reg-sub
+ :wallet/tx-settings-no-base-fee?
+ :<- [:wallet/route]
+ (fn [route]
+   (-> route :from :no-base-fee)))
+
+(rf/reg-sub
+ :wallet/tx-settings-no-priority-fee?
+ :<- [:wallet/route]
+ (fn [route]
+   (-> route :from :no-priority-fee)))
+
+(rf/reg-sub
  :wallet/tx-settings-max-base-fee
  :<- [:wallet/tx-settings-max-base-fee-route]
  :<- [:wallet/tx-settings-max-base-fee-user]
