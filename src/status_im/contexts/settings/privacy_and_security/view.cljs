@@ -97,7 +97,7 @@
                       open-show-profile-pictures-to-options))
                    (when (ff/enabled? ::ff/privacy-mode-ui)
                      (setting-privacy-mode privacy-mode-enabled? customization-color))
-                   (setting-preview-privacy preview-privacy? toggle-preview-privacy customization-color)
+                   (setting-preview-privacy preview-privacy? customization-color toggle-preview-privacy)
                    {:title             (i18n/label :t/share-usage-data)
                     :description       :text
                     :description-props {:text (i18n/label :t/from-all-profiles-on-device)}
