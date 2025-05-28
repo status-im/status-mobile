@@ -1,0 +1,25 @@
+/**
+ * Exclude google library so we can publish to external android stores
+ */
+
+def googleFree = project.env.get("GOOGLE_FREE", "0") == '1'
+
+if (!googleFree) {
+    apply plugin: 'com.google.gms.google-services'
+}
+
+dependencies {
+    if (googleFree) {
+        implementation(project(':react-native-firebase_app')) {
+            exclude group: 'com.google.firebase'
+            exclude group: 'com.google.gms'
+        }
+        
+        implementation(project(':react-native-firebase_messaging')) {
+            exclude group: 'com.google.firebase'
+            exclude group: 'com.google.gms'
+        } 
+    } else {
+        implementation 'com.google.firebase:firebase-messaging:24.1.0'
+    }
+}
