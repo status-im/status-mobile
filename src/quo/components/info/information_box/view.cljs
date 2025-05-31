@@ -72,8 +72,8 @@
        {:accessibility-label :information-box
         :style               [(style/container {:theme               theme
                                                 :colors-map          colors-map
-                                                      :customization-color customization-color
-                                                      :type                type
+                                                :customization-color customization-color
+                                                :type                type
                                                 :include-button?     include-button?})
                               style]}
        [icons/icon (or icon :i/info)
@@ -82,13 +82,13 @@
          :size            (or icon-size 16)
          :container-style style/icon}]
        [content
-        {:theme             theme
-         :type              type
-         :button-label      button-label
-         :on-button-press   on-button-press
+        {:theme               theme
+         :type                type
+         :button-label        button-label
+         :on-button-press     on-button-press
          :colors-map          colors-map
          :customization-color customization-color
-         :message           message
-         :button-icon-right button-icon-right}]
+         :message             message
+         :button-icon-right   button-icon-right}]
        (when on-close
          [close-button {:theme theme :colors-map colors-map :on-close on-close}])])))
