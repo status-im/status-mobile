@@ -1,0 +1,109 @@
+(ns status-im.contexts.settings.privacy-and-security.view
+  (:require
+    [quo.context]
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
+    [status-im.common.events-helper :as events-helper]
+    [status-im.contexts.settings.privacy-and-security.profile-picture.view :as profile-picture.view]
+    [status-im.contexts.settings.privacy-and-security.style :as style]
+    [status-im.feature-flags :as ff]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
+
+(defn- setting-preview-privacy
+  [preview-privacy? customization-color on-change]
+  {:title        (i18n/label (if platform/android?
+                               :t/hide-content-when-switching-apps
+                               :t/hide-content-when-switching-apps-ios))
+   :blur?        true
+   :action       :selector
+   :action-props {:on-change           on-change
+                  :checked?            preview-privacy?
+                  :id                  :preview-privacy
+                  :customization-color customization-color}})
+
+(defn- show-privacy-mode-sheet
+  []
+  (rf/dispatch [:privacy-mode/show-bottom-sheet {:theme :dark :shell? true}]))
+
+(defn- setting-privacy-mode
+  [privacy-mode-enabled? customization-color]
+  {:title        (i18n/label :t/privacy-mode)
+   :blur?        true
+   :action       :selector
+   :action-props {:on-change           show-privacy-mode-sheet
+                  :checked?            privacy-mode-enabled?
+                  :customization-color customization-color}})
+
+(defn view
+  []
+  (let [customization-color (rf/sub [:profile/customization-color])
+        privacy-mode-enabled? (rf/sub [:privacy-mode/privacy-mode-enabled?])
+        preview-privacy? (rf/sub [:profile/preview-privacy?])
+        see-profile-pictures-from (rf/sub [:profile/pictures-visibility])
+        show-profile-pictures-to (rf/sub [:multiaccount/profile-pictures-show-to])
+
+        toggle-preview-privacy
+        (rn/use-callback (fn []
+                           (rf/dispatch [:profile.settings/change-preview-privacy
+                                         (not preview-privacy?)]))
+                         [preview-privacy?])
+
+        open-see-profile-pictures-from-options
+        (rn/use-callback (fn []
+                           (rf/dispatch
+                            [:show-bottom-sheet
+                             {:theme   :dark
+                              :blur?   true
+                              :content (fn []
+                                         [profile-picture.view/options-for-profile-pictures-visibility
+                                          see-profile-pictures-from])}]))
+                         [see-profile-pictures-from])
+
+        open-show-profile-pictures-to-options
+        (rn/use-callback (fn []
+                           (rf/dispatch
+                            [:show-bottom-sheet
+                             {:theme   :dark
+                              :blur?   true
+                              :content (fn []
+                                         [profile-picture.view/options-for-profile-pictures-show-to
+                                          show-profile-pictures-to])}]))
+                         [show-profile-pictures-to])]
+    [quo/overlay
+     {:type            :shell
+      :container-style (style/page-wrapper safe-area/top)}
+     [quo/page-nav
+      {:key        :header
+       :background :blur
+       :icon-name  :i/arrow-left
+       :on-press   events-helper/navigate-back}]
+     [quo/standard-title
+      {:title               (i18n/label :t/privacy-and-security)
+       :container-style     style/title-container
+       :accessibility-label :privacy-and-security-header
+       :customization-color customization-color}]
+     [quo/category
+      {:key       :category
+       :data      [(when (ff/enabled? ::ff/profile-pictures-visibility)
+                     (profile-picture.view/setting-profile-pictures-visibility
+                      see-profile-pictures-from
+                      open-see-profile-pictures-from-options))
+                   (when (ff/enabled? ::ff/profile-pictures-visibility)
+                     (profile-picture.view/setting-profile-pictures-show-to
+                      show-profile-pictures-to
+                      open-show-profile-pictures-to-options))
+                   (when (ff/enabled? ::ff/privacy-mode-ui)
+                     (setting-privacy-mode privacy-mode-enabled? customization-color))
+                   (setting-preview-privacy preview-privacy? toggle-preview-privacy customization-color)
+                   {:title             (i18n/label :t/share-usage-data)
+                    :description       :text
+                    :description-props {:text (i18n/label :t/from-all-profiles-on-device)}
+                    :blur?             true
+                    :action            :arrow
+                    :action-props      {:on-change #(rf/dispatch [:open-modal
+                                                                  :screen/settings.share-usage-data])}}]
+       :blur?     true
+       :list-type :settings}]]))
