@@ -69,12 +69,9 @@
      status-im.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"
      status-im.config/STATUS_BUILD_PROXY_USER #shadow/env "STATUS_BUILD_PROXY_USER"
      status-im.config/STATUS_BUILD_PROXY_PASSWORD #shadow/env "STATUS_BUILD_PROXY_PASSWORD"
-     status-im.config/STATUS_RUNTIME_MARKET_DATA_PROXY_URL #shadow/env
-                                                            "STATUS_RUNTIME_MARKET_DATA_PROXY_URL"
-     status-im.config/STATUS_RUNTIME_MARKET_DATA_PROXY_USER #shadow/env
-                                                             "STATUS_RUNTIME_MARKET_DATA_PROXY_USER"
-     status-im.config/STATUS_RUNTIME_MARKET_DATA_PROXY_PASSWORD
-     #shadow/env "STATUS_RUNTIME_MARKET_DATA_PROXY_PASSWORD"
+     status-im.config/STATUS_MARKET_DATA_PROXY_URL #shadow/env "STATUS_MARKET_DATA_PROXY_URL"
+     status-im.config/STATUS_MARKET_DATA_PROXY_USER #shadow/env "STATUS_MARKET_DATA_PROXY_USER"
+     status-im.config/STATUS_MARKET_DATA_PROXY_PASSWORD #shadow/env "STATUS_MARKET_DATA_PROXY_PASSWORD"
      status-im.config/STATUS_BACKEND_SERVER_ENABLED #shadow/env "STATUS_BACKEND_SERVER_ENABLED"
      status-im.config/STATUS_BACKEND_SERVER_HOST #shadow/env "STATUS_BACKEND_SERVER_HOST"
      status-im.config/STATUS_BACKEND_SERVER_MEDIA_SERVER_ENABLE_TLS
@@ -143,35 +140,32 @@
    :chunks {:fleets legacy.status-im.fleet.default-fleet/default-fleets}
    :release
    {:closure-defines
-    {status-im.config/POKT_TOKEN #shadow/env "POKT_TOKEN"
-     status-im.config/INFURA_TOKEN #shadow/env "INFURA_TOKEN"
-     status-im.config/STATUS_BUILD_PROXY_USER #shadow/env "STATUS_BUILD_PROXY_USER"
-     status-im.config/STATUS_BUILD_PROXY_PASSWORD #shadow/env "STATUS_BUILD_PROXY_PASSWORD"
+    {status-im.config/POKT_TOKEN                          #shadow/env "POKT_TOKEN"
+     status-im.config/INFURA_TOKEN                        #shadow/env "INFURA_TOKEN"
+     status-im.config/STATUS_BUILD_PROXY_USER             #shadow/env "STATUS_BUILD_PROXY_USER"
+     status-im.config/STATUS_BUILD_PROXY_PASSWORD         #shadow/env "STATUS_BUILD_PROXY_PASSWORD"
      ;; market proxy config values (https://github.com/status-im/market-proxy):
-     status-im.config/STATUS_RUNTIME_MARKET_DATA_PROXY_URL #shadow/env
-                                                            "STATUS_RUNTIME_MARKET_DATA_PROXY_URL"
-     status-im.config/STATUS_RUNTIME_MARKET_DATA_PROXY_USER #shadow/env
-                                                             "STATUS_RUNTIME_MARKET_DATA_PROXY_USER"
-     status-im.config/STATUS_RUNTIME_MARKET_DATA_PROXY_PASSWORD
-     #shadow/env "STATUS_RUNTIME_MARKET_DATA_PROXY_PASSWORD"
-     status-im.config/SENTRY_DSN_STATUS_GO #shadow/env "SENTRY_DSN_STATUS_GO"
-     status-im.config/OPENSEA_API_KEY #shadow/env "OPENSEA_API_KEY"
-     status-im.config/MIXPANEL_APP_ID #shadow/env "MIXPANEL_APP_ID"
-     status-im.config/MIXPANEL_APP_TOKEN #shadow/env "MIXPANEL_APP_TOKEN"
-     status-im.config/RARIBLE_MAINNET_API_KEY #shadow/env "RARIBLE_MAINNET_API_KEY"
-     status-im.config/RARIBLE_TESTNET_API_KEY #shadow/env "RARIBLE_TESTNET_API_KEY"
-     status-im.config/ALCHEMY_ETHEREUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ETHEREUM_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ETHEREUM_SEPOLIA_TOKEN"
-     status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
-     status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
-     status-im.config/ALCHEMY_BASE_MAINNET_TOKEN #shadow/env "ALCHEMY_BASE_MAINNET_TOKEN"
-     status-im.config/ALCHEMY_BASE_SEPOLIA_TOKEN #shadow/env "ALCHEMY_BASE_SEPOLIA_TOKEN"
-     status-im.config/STATUS_BUILD_ETH_RPC_PROXY_USER #shadow/env "STATUS_BUILD_ETH_RPC_PROXY_USER"
+     status-im.config/STATUS_MARKET_DATA_PROXY_URL        #shadow/env "STATUS_MARKET_DATA_PROXY_URL"
+     status-im.config/STATUS_MARKET_DATA_PROXY_USER       #shadow/env "STATUS_MARKET_DATA_PROXY_USER"
+     status-im.config/STATUS_MARKET_DATA_PROXY_PASSWORD   #shadow/env "STATUS_MARKET_DATA_PROXY_PASSWORD"
+     status-im.config/SENTRY_DSN_STATUS_GO                #shadow/env "SENTRY_DSN_STATUS_GO"
+     status-im.config/OPENSEA_API_KEY                     #shadow/env "OPENSEA_API_KEY"
+     status-im.config/MIXPANEL_APP_ID                     #shadow/env "MIXPANEL_APP_ID"
+     status-im.config/MIXPANEL_APP_TOKEN                  #shadow/env "MIXPANEL_APP_TOKEN"
+     status-im.config/RARIBLE_MAINNET_API_KEY             #shadow/env "RARIBLE_MAINNET_API_KEY"
+     status-im.config/RARIBLE_TESTNET_API_KEY             #shadow/env "RARIBLE_TESTNET_API_KEY"
+     status-im.config/ALCHEMY_ETHEREUM_MAINNET_TOKEN      #shadow/env "ALCHEMY_ETHEREUM_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_ETHEREUM_SEPOLIA_TOKEN      #shadow/env "ALCHEMY_ETHEREUM_SEPOLIA_TOKEN"
+     status-im.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN      #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_ARBITRUM_SEPOLIA_TOKEN      #shadow/env "ALCHEMY_ARBITRUM_SEPOLIA_TOKEN"
+     status-im.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN      #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_OPTIMISM_SEPOLIA_TOKEN      #shadow/env "ALCHEMY_OPTIMISM_SEPOLIA_TOKEN"
+     status-im.config/ALCHEMY_BASE_MAINNET_TOKEN          #shadow/env "ALCHEMY_BASE_MAINNET_TOKEN"
+     status-im.config/ALCHEMY_BASE_SEPOLIA_TOKEN          #shadow/env "ALCHEMY_BASE_SEPOLIA_TOKEN"
+     status-im.config/STATUS_BUILD_ETH_RPC_PROXY_USER     #shadow/env "STATUS_BUILD_ETH_RPC_PROXY_USER"
      status-im.config/STATUS_BUILD_ETH_RPC_PROXY_PASSWORD #shadow/env
                                                            "STATUS_BUILD_ETH_RPC_PROXY_PASSWORD"
-     status-im.config/STATUS_BUILD_ETH_RPC_PROXY_URL #shadow/env "STATUS_BUILD_ETH_RPC_PROXY_URL"}
+     status-im.config/STATUS_BUILD_ETH_RPC_PROXY_URL      #shadow/env "STATUS_BUILD_ETH_RPC_PROXY_URL"}
     :compiler-options {:output-feature-set :es6
                        ;;disable for android build as there
                        ;;is an intermittent warning with deftype
