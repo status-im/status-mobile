@@ -20,12 +20,14 @@
 
 (deftest <-rpc-test
   (testing "renames keys"
-    (is (= {:name                        chat-name
-            :chat-id                     chat-id
-            :contact-verification-status constants/contact-verification-status-pending}
-           (-> raw-notification
-               store/<-rpc
-               (dissoc :last-message :message :reply-message)))))
+    (is
+     (= {:name                        chat-name
+         :chat-id                     chat-id
+         :contact-verification-status constants/contact-verification-status-pending}
+        (->
+          raw-notification
+          store/<-rpc
+          (dissoc :last-message :message :reply-message :news-title :news-content :news-description)))))
 
   (testing "transforms messages from RPC response"
     (is
