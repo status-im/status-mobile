@@ -29,7 +29,7 @@
       [rn/view {:style {:height 200 :align-items :center :justify-content :center}}
        [rn/activity-indicator]])))
 
-(defn sheet
+(defn news-sheet
   [{:keys [news-image-url news-title news-content news-link news-link-label]} timestamp]
   (let [customization-color (rf/sub [:profile/customization-color])]
     [:<>
@@ -59,13 +59,13 @@
                 read
                 id]}        notification
         timestamp           (datetime/timestamp->relative timestamp)
-        on-press            (rn/use-callback
+        show-bottom-preview (rn/use-callback
                              (fn []
                                (rf/dispatch [:activity-center.notifications/mark-as-read id])
                                (rf/dispatch [:show-bottom-sheet
                                              {:theme   :dark
                                               :content (fn []
-                                                         [sheet notification timestamp])}])))]
+                                                         [news-sheet notification timestamp])}])))]
     [common/swipeable
      {:left-button    common/swipe-button-read-or-unread
       :left-on-press  common/swipe-on-press-toggle-read
@@ -73,7 +73,7 @@
       :right-on-press common/swipe-on-press-delete
       :extra-fn       extra-fn}
      [gesture/touchable-without-feedback
-      {:on-press on-press}
+      {:on-press show-bottom-preview}
       [quo/activity-log
        {:title               news-title
         :customization-color customization-color
@@ -87,4 +87,4 @@
                                :customization-color customization-color
                                :label               (i18n/label :t/read-more)
                                :accessibility-label :read-more
-                               :on-press            on-press}]}]]]))
+                               :on-press            show-bottom-preview}]}]]]))
