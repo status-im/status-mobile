@@ -3,6 +3,7 @@
             [promesa.core :as promesa]
             [quo.core :as quo]
             [react-native.core :as rn]
+            [react-native.fast-image :as fast-image]
             [react-native.gesture :as gesture]
             [status-im.contexts.shell.activity-center.notification.common.view :as common]
             [utils.datetime :as datetime]
@@ -19,13 +20,12 @@
                                               new-height (* h scale)]
                                           (set-height new-height))))))
     (if height
-      [rn/image
-       {:resize-mode :contain
-        :style       {:width         window-width
-                      :height        height
-                      :align-self    :center
-                      :border-radius 12}
-        :source      url}]
+      [fast-image/fast-image
+       {:source url
+        :style  {:width         window-width
+                 :height        height
+                 :align-self    :center
+                 :border-radius 12}}]
       [rn/view {:style {:height 200 :align-items :center :justify-content :center}}
        [rn/activity-indicator]])))
 
