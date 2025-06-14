@@ -61,7 +61,7 @@
         timestamp           (datetime/timestamp->relative timestamp)
         show-bottom-preview (rn/use-callback
                              (fn []
-                               #_(rf/dispatch [:activity-center.notifications/mark-as-read id])
+                               (rf/dispatch [:activity-center.notifications/mark-as-read id])
                                (rf/dispatch [:show-bottom-sheet
                                              {:theme   :dark
                                               :content (fn []
