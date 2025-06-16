@@ -1,6 +1,7 @@
 (ns legacy.status-im.data-store.activities
   (:require
     [clojure.set :as set]
+    [clojure.string :as string]
     [legacy.status-im.data-store.messages :as messages]
     [status-im.constants :as constants]
     [status-im.contexts.shell.activity-center.notification-types :as notification-types]))
@@ -53,6 +54,23 @@
 
     chat))
 
+(defn strip-html
+  [html]
+  (-> html
+      ;; Replace block-level tags with newlines
+      (clojure.string/replace #"</?(h[1-6]|p|div|br|li|ul|ol|section|article|blockquote)[^>]*>" "\n")
+      ;; Remove all remaining tags
+      (clojure.string/replace #"<[^>]+>" "")
+      ;; Decode common HTML entities
+      (clojure.string/replace #"&nbsp;" " ")
+      (clojure.string/replace #"&amp;" "&")
+      ;; Collapse multiple newlines into one
+      (clojure.string/replace #"\n+" "\n")
+      ;; Trim spaces at start/end of lines
+      (clojure.string/replace #"[ \t]+\n" "\n")
+      (clojure.string/replace #"\n[ \t]+" "\n")
+      clojure.string/trim))
+
 (defn <-rpc
   [item]
   (-> item
@@ -64,10 +82,19 @@
                         :communityId               :community-id
                         :installationId            :installation-id
                         :membershipStatus          :membership-status
-                        :albumMessages             :album-messages})
+                        :albumMessages             :album-messages
+                        :newsImageUrl              :news-image-url
+                        :newsTitle                 :news-title
+                        :newsDescription           :news-description
+                        :newsContent               :news-content
+                        :newsLink                  :news-link
+                        :newsLinkLabel             :news-link-label})
       (update :last-message #(when % (messages/<-rpc %)))
       (update :message #(when % (messages/<-rpc %)))
       (update :reply-message #(when % (messages/<-rpc %)))
+      (update :news-description #(when % (strip-html %)))
+      (update :news-title #(when % (strip-html %)))
+      (update :news-content #(when % (strip-html %)))
       (dissoc :chatId)))
 
 (defn <-rpc-seen-state

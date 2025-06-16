@@ -18,6 +18,7 @@
      contact-verification]
     [status-im.contexts.shell.activity-center.notification.membership.view :as membership]
     [status-im.contexts.shell.activity-center.notification.mentions.view :as mentions]
+    [status-im.contexts.shell.activity-center.notification.news.view :as news]
     [status-im.contexts.shell.activity-center.notification.reply.view :as reply]
     [status-im.contexts.shell.activity-center.notification.syncing.view :as syncing]
     [status-im.contexts.shell.activity-center.style :as style]
@@ -55,6 +56,9 @@
        (= notification-type types/new-installation-created)
        [syncing/installation-created-view props]
 
+       (= notification-type types/news-feed)
+       [news/view props]
+
        (types/membership notification-type)
        (condp = notification-type
          types/private-group-chat [membership/view props]
@@ -69,7 +73,6 @@
 (defn view
   []
   (let [notifications    (rf/sub [:activity-center/notifications])
-
         ;; We globally control the active swipeable for all notifications
         ;; because when a swipe left/right gesture initiates, the previously
         ;; active swiped notification (if any) must be removed & closed with
