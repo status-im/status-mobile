@@ -115,7 +115,9 @@ PKG_URL_NO_EXT="${POM_URL%.pom}"
 # Name of package without extension.
 PKG_NAME="$(basename "${PKG_URL_NO_EXT}")"
 
-echo -en "${CLR} - Nix entry for: ${1##*/}\r" >&2
+# Append spaces to avoid overlapping package names.
+printf -v spaces '%*s' 60 ''
+echo -en "${CLR} - Nix entry for: ${1##*/}$spaces\r" >&2
 
 REPO_URL=$(match_repo_url "${PKG_URL_NO_EXT}")
 
