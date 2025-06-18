@@ -215,6 +215,13 @@ platform :ios do
   lane :release do
     kc = Keychain.new('fastlane')
 
+    # recreate keychain
+    sh("security delete-keychain #{kc.name}", error_callback: ->(result) { })
+    sh("security create-keychain -p #{kc.pass} #{kc.name}")
+    sh("security set-keychain-settings -t 3600 -l #{kc.name}")
+    sh("security unlock-keychain -p #{kc.pass} #{kc.name}")
+    sh("security list-keychains -d user -s login.keychain #{kc.name}")
+
     match(
       type: 'appstore',
       readonly: true,
@@ -223,6 +230,12 @@ platform :ios do
       keychain_name: kc.name,
       keychain_password: kc.pass
     )
+
+    # Fix certificate access permissions
+    sh("security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k #{kc.pass} #{kc.name}")
+
+    # Debug
+    sh("security find-identity -v -p codesigning #{kc.name}")
 
     build_ios_app(
       scheme: 'StatusIm',
