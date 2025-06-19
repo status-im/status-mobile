@@ -153,6 +153,9 @@ android {
         cmake {
             // This version must match cmakeVersions inside nix/pkgs/android-sdk/compose.nix
             version "3.22.1"
+            // https://breautek.com/articles/preparing-for-16kb-android-binaries.html
+            arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+            cppFlags ""
         }
     }
 
