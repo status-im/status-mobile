@@ -18,7 +18,7 @@ androidenv.composeAndroidPackages {
   platformVersions = [ "34" ];
   # This version must match cmake version inside android/app/build.gradle
   cmakeVersions = [ "3.22.1" ];
-  ndkVersion = "25.2.9519653";
+  ndkVersion = "27.0.12077973";
   includeNDK = true;
   includeExtras = [
     "extras;android;m2repository"
