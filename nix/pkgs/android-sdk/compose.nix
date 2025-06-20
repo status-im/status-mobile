@@ -13,7 +13,7 @@ assert lib.assertMsg (stdenv.system != "aarch64-darwin")
 androidenv.composeAndroidPackages {
   cmdLineToolsVersion = "9.0";
   toolsVersion = "26.1.1";
-  platformToolsVersion = "33.0.3";
+  platformToolsVersion = "34.0.4";
   buildToolsVersions = [ "34.0.0" ];
   platformVersions = [ "34" ];
   # This version must match cmake version inside android/app/build.gradle
