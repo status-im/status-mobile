@@ -153,9 +153,6 @@ android {
         cmake {
             // This version must match cmakeVersions inside nix/pkgs/android-sdk/compose.nix
             version "3.22.1"
-            // https://breautek.com/articles/preparing-for-16kb-android-binaries.html
-            arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
-            cppFlags ""
         }
     }
 
@@ -174,6 +171,15 @@ android {
         versionName getVersionName()
         missingDimensionStrategy 'react-native-camera', 'general'
         manifestPlaceholders = [commitHash: getCommitHash()]
+
+        externalNativeBuild {
+            cmake {
+                // https://breautek.com/articles/preparing-for-16kb-android-binaries.html
+                arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+                cppFlags ""
+            }
+        }
+
         /* this needs to be empty if we want APKs split by ABIs */
         if (!getEnvOrConfig('ANDROID_ABI_SPLIT').toBoolean()) {
             ndk {
