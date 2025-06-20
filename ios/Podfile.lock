@@ -1278,7 +1278,19 @@ PODS:
     - React-Core
   - RNPermissions (4.1.5):
     - React-Core
-  - RNReanimated (3.6.1):
+  - RNReanimated (3.15.5):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
+    - ReactCommon/turbomodule/core
+    - RNReanimated/reanimated (= 3.15.5)
+    - RNReanimated/worklets (= 3.15.5)
+  - RNReanimated/reanimated (3.15.5):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
+    - ReactCommon/turbomodule/core
+  - RNReanimated/worklets (3.15.5):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1638,7 +1650,7 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 9347e719c3d52d8d7b9074b2c32407dd027305e9
   FirebaseMessaging: 00ece041b71ddb52a2862ffdee73fb6e9824bd0c
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: c0eca6ffed0a6fde1965ef26dcc7bf528f052af4
+  glog: 53cc9a00a2af0495ac1613e9fe3df6e646a3f405
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   hermes-engine: 1d1835b2cc54c381909d94d1b3c8e0a2f1a94a0e
@@ -1728,7 +1740,7 @@ SPEC CHECKSUMS:
   RNKeychain: a65256b6ca6ba6976132cc4124b238a5b13b3d9c
   RNLinearGradient: ccaaebce083b54180da61d992e7fa56abfe000d6
   RNPermissions: 08e619529cced22695f4b6d0efcc0a233e278903
-  RNReanimated: dee37576492f1a375017515f5c77e66e5eec696b
+  RNReanimated: a98c639fc19c83510d510cc4d952ca6960e9c22e
   RNShare: 859ff710211285676b0bcedd156c12437ea1d564
   RNSVG: 80584470ff1ffc7994923ea135a3e5ad825546b9
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
