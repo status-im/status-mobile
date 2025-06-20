@@ -26,6 +26,26 @@ in {
     react-native = callPackage ./deps/react-native { };
   };
 
+  # fails on MacOS for some reason
+  edencommon = super.edencommon.overrideAttrs (old: {
+    doCheck = false;
+    cmakeFlags = (old.cmakeFlags or []) ++ [
+      "-DBUILD_TESTING=OFF"
+    ];
+  });
+
+  watchman = super.watchman.overrideAttrs (old: {
+    doCheck = false;
+    buildInputs = (old.buildInputs or []) ++ [
+      super.python3Packages.setuptools
+      super.python3Packages.pip
+    ];
+    nativeBuildInputs = (old.nativeBuildInputs or []) ++ [
+      super.python3Packages.setuptools
+      super.python3Packages.pip
+    ];
+  });
+
   # Clojure's linter receives frequent upgrades, and we want to take advantage
   # of the latest available rules.
   clj-kondo = super.clj-kondo.override rec {
