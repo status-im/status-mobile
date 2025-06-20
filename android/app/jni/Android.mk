@@ -6,6 +6,8 @@ LOCAL_MODULE    := status-logs
 LOCAL_SRC_FILES := Log.c
 
 LOCAL_CPPFLAGS  := -std=c++11 -fexceptions -I$(LOCAL_PATH)/include
+# to fix upgrade to ndk 27
+LOCAL_CFLAGS    := -Wno-error=implicit-function-declaration
 LOCAL_LDFLAGS := -llog
 
 include $(BUILD_SHARED_LIBRARY)
