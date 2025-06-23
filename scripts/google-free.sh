@@ -8,5 +8,5 @@ sed -i -e '$aGOOGLE_FREE=1' .env.release
 # remove firebase (uses google dependencies) and google-services.json for the fdroid-build
 yarn remove @react-native-firebase/app
 yarn remove @react-native-firebase/messaging
-rm android/app/google-services.json
-rm android/app/googleServices.gradle
+rm -f android/app/google-services.json
+rm -f android/app/googleServices.gradle
