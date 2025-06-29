@@ -71,18 +71,9 @@
     :else (rf/dispatch [:wallet/stop-and-clean-suggested-routes])))
 
 (defn- insufficient-asset-amount?
-  [{:keys [token-symbol native-token input-state limit-exceeded? enough-assets?]}]
-  (let [native-token-selected?     (= token-symbol (:symbol native-token))
-        zero-owned-native-token?   (money/equal-to (:total-balance native-token) 0)
-        input-at-max-owned-amount? (money/equal-to
-                                    (controlled-input/value-bn input-state)
-                                    (controlled-input/upper-limit-bn input-state))
-        exceeded-input?            (if native-token-selected?
-                                     input-at-max-owned-amount?
-                                     zero-owned-native-token?)]
-    (or exceeded-input?
-        limit-exceeded?
-        (false? enough-assets?))))
+  [{:keys [limit-exceeded? enough-assets?]}]
+  (or limit-exceeded?
+      (false? enough-assets?)))
 
 (defn view
   ;; crypto-decimals, limit-crypto and initial-crypto-currency? args are needed
@@ -135,7 +126,6 @@
                                          (money/crypto->fiat token-balance conversion-rate)))
         input-value                   (controlled-input/input-value input-state)
         valid-input?                  (not (or (controlled-input/empty-value? input-state)
-                                               (controlled-input/zero-or-negative-value? input-state)
                                                (controlled-input/input-error input-state)))
         amount-in-crypto              (if crypto-currency?
                                         input-value
@@ -151,9 +141,6 @@
         limit-exceeded?               (controlled-input/upper-limit-exceeded? input-state)
         not-enough-asset?             (insufficient-asset-amount?
                                        {:enough-assets?  enough-assets?
-                                        :token-symbol    token-symbol
-                                        :native-token    native-token
-                                        :input-state     input-state
                                         :limit-exceeded? limit-exceeded?})
         should-try-again?             (and (not limit-exceeded?)
                                            no-routes-found?
