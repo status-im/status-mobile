@@ -235,9 +235,6 @@
 
 (defn new->old-route-path
   [new-path]
-  (tap> {:new-path (-> new-path
-                       (dissoc :to-chain)
-                       (dissoc :from-chain))})
   (let [to-bignumber (fn [k] (-> new-path k money/bignumber))]
     {:approval-fee              (to-bignumber :approval-fee)
      :approval-l-1-fee          (to-bignumber :approval-l-1-fee)
@@ -307,7 +304,7 @@
     amount-in                  :amount-in}]
   (let [bonder-fees      (utils.money/token->unit bonder-fees token-decimals)
         amount-to-bridge (utils.money/token->unit amount-in token-decimals)]
-    (> amount-to-bridge bonder-fees)))
+    (>= amount-to-bridge bonder-fees)))
 
 (defn- remove-multichain-routes
   [routes]
