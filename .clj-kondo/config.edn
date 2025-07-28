@@ -1,0 +1,113 @@
+{:config-paths ["status-im"]
+ :output       {:exclude-files ["src/user.cljs" "src/dev/user.cljs"]}
+ :lint-as      {legacy.status-im.utils.views/defview clojure.core/defn
+                legacy.status-im.utils.views/letsubs clojure.core/let
+                reagent.core/with-let                clojure.core/let
+                legacy.status-im.utils.fx/defn       clj-kondo.lint-as/def-catch-all
+                utils.re-frame/defn                  clojure.core/defn
+                quo.react/with-deps-check            clojure.core/fn
+                quo.previews.preview/list-comp       clojure.core/for
+                legacy.status-im.utils.styles/def    clojure.core/def
+                legacy.status-im.utils.styles/defn   clojure.core/defn
+                test-helpers.unit/deftest-sub        clojure.core/defn
+                test-helpers.unit/deftest-event      clojure.core/defn
+
+                taoensso.tufte/defnp                 clojure.core/defn}
+ :linters      {:clojure-lsp/unused-public-var {:exclude-when-defined-by #{utils.re-frame/defn}
+                                                :exclude                 #{
+                                                                           ;; even if we are not
+                                                                           ;; using color now, we
+                                                                           ;; will need it later
+                                                                           quo.foundations.colors
+
+                                                                           ;; same for funcs from
+                                                                           ;; native-module
+                                                                           native-module.core
+
+                                                                           ;; some funcs used
+                                                                           ;; temporarily during
+                                                                           ;; development
+                                                                           test-helpers.component
+                                                                           test-helpers.unit
+
+                                                                           ;; not sure if unused
+                                                                           ;; functions here should
+                                                                           ;; be removed:
+                                                                           keycard.keycard
+                                                                           react-native.fs}}
+                :case-duplicate-test           {:level :error}
+                :case-quoted-test              {:level :error}
+                :case-symbol-test              {:level :error}
+                :clj-kondo-config              {:level :error}
+                :cond-else                     {:level :error}
+                :condition-always-true         {:level :error}
+                :conflicting-alias             {:level :error}
+                :consistent-alias              {:level   :error
+                                                :aliases {clojure.set             set
+                                                          clojure.string          string
+                                                          clojure.walk            walk
+                                                          malli.core              malli
+                                                          malli.dev.pretty        malli.pretty
+                                                          malli.dev.virhe         malli.virhe
+                                                          malli.error             malli.error
+                                                          malli.generator         malli.generator
+                                                          malli.transform         malli.transform
+                                                          malli.util              malli.util
+                                                          promesa.core            promesa
+                                                          schema.core             schema
+                                                          status-im.feature-flags ff
+                                                          taoensso.timbre         log}}
+                :deprecated-namespace          {:level :warning}
+                :docstring-blank               {:level :error}
+                :equals-true                   {:level :error}
+                :inline-def                    {:level :error}
+                :invalid-arity                 {:skip-args [legacy.status-im.utils.fx/defn
+                                                            utils.re-frame/defn
+                                                            utils.re-frame/merge]}
+                :loop-without-recur            {:level :error}
+                :minus-one                     {:level :error}
+                :misplaced-docstring           {:level :error}
+                :missing-body-in-when          {:level :error}
+                :missing-clause-in-try         {:level :error}
+                :missing-else-branch           {:level :error}
+                :multiple-async-in-deftest     {:level :error}
+                :not-empty?                    {:level :error}
+                :plus-one                      {:level :error}
+                :redundant-do                  {:level :error}
+                :redundant-let                 {:level :error}
+                :refer-all                     {:level :error}
+                ;; ignore error in config itself saying that `:shadowed-fn-param` is unknown
+                #_{:clj-kondo/ignore [:clj-kondo-config]}
+                :shadowed-fn-param             {:level :error}
+                :shadowed-var                  {:level   :error
+                                                ;; We temporarily use :include to define an
+                                                ;; allowlist of core Clojure vars. In the
+                                                ;; future, as we progressively fix shadowed
+                                                ;; vars, we should be able to delete this
+                                                ;; option and lint all vars.
+                                                :exclude [type name]}
+                :self-requiring-namespace      {:level :error}
+                :single-operand-comparison     {:level :error}
+                :syntax                        {:level :error}
+                :unbound-destructuring-default {:level :error}
+                :underscore-in-namespace       {:level :error}
+                :uninitialized-var             {:level :error}
+                :unknown-require-option        {:level :error}
+                :unreachable-code              {:level :error}
+                :unresolved-namespace          {:level :error}
+                ;; TODO remove number when this is fixed
+                ;; https://github.com/borkdude/clj-kondo/issues/867
+                :unresolved-symbol             {:exclude [PersistentPriorityMap.EMPTY
+                                                          number
+                                                          legacy.status-im.test-helpers/restore-app-db
+                                                          (cljs.test/is [match-strict?])]}
+                :unresolved-var                {:level :error}
+                :unsorted-required-namespaces  {:level :error}
+                :unused-alias                  {:level :warning}
+                :unused-binding                {:level :error}
+                :unused-import                 {:level :error}
+                :unused-namespace              {:level :error}
+                :unused-private-var            {:level :error}
+                :unused-referred-var           {:level :error}
+                :use                           {:level :error}}
+ :config-in-ns {mocks.js-dependencies {:linters {:clojure-lsp/unused-public-var {:level :off}}}}}
