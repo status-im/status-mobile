@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v10.29.6",
-    "commit-sha1": "d9d9fd2391efe378757779806826cbb253a78c42",
-    "src-sha256": "01xalqi53i16v38svpv6j71yqzzs7wfm4k73abhpq9l0rsqksx34"
+    "version": "fix/make-router-only-use-active-networks",
+    "commit-sha1": "34fb07cb5da85effa020f00e32c5c8a7dc52614b",
+    "src-sha256": "1rx363zzh7b6w4s2avxc2nfzfxqbh2zgdn602aagff8hll3v562r"
 }
