@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "cherrypick/token-collision-logic",
+    "commit-sha1": "a232c2ff9cf44c50386f5542b784b71d80f6d87a",
+    "src-sha256": "1g4paa4d7lw0skz5y5s3hl0wmsdsd6z0hrz697rwxnicb22pmi7w"
+}
