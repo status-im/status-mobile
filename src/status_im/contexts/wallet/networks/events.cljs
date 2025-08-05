@@ -73,8 +73,6 @@
    {:fx [[:dispatch [:wallet/reset-accounts-tokens]]
          [:dispatch [:wallet/reload-cached-balances]]
          [:dispatch [:wallet/reload-collectibles]]
-         [:dispatch [:wallet.tokens/reset-tokens]]
-         [:dispatch [:wallet.tokens/get-token-list]]
          [:dispatch [:wallet/check-new-networks-seen]]]}))
 
 (rf/reg-event-fx :wallet/update-network-active
