@@ -13,6 +13,7 @@
               (first (filter #(or (= (:chain-id %) chain-id)
                                   (= (:related-chain-id %) chain-id))
                              networks))))
+       (remove nil?)
        set))
 
 (defn balance-is-sufficient-to-use-chain

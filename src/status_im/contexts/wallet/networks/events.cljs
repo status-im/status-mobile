@@ -73,8 +73,6 @@
    {:fx [[:dispatch [:wallet/reset-accounts-tokens]]
          [:dispatch [:wallet/reload-cached-balances]]
          [:dispatch [:wallet/reload-collectibles]]
-         [:dispatch [:wallet.tokens/reset-tokens]]
-         [:dispatch [:wallet.tokens/get-token-list]]
          [:dispatch [:wallet/check-new-networks-seen]]]}))
 
 (rf/reg-event-fx :wallet/update-network-active
@@ -104,7 +102,9 @@
  (fn [{:keys [db]} [testnet?]]
    {:db (assoc-in db [:profile/profile :test-networks-enabled?] testnet?)
     :fx [[:dispatch [:profile/toggle-testnet-mode-banner]]
-         [:dispatch [:wallet/on-active-networks-change]]]}))
+         [:dispatch [:wallet/on-active-networks-change]]
+         [:dispatch [:wallet.tokens/reset-tokens]]
+         [:dispatch [:wallet.tokens/get-token-list]]]}))
 
 (rf/reg-event-fx
  :wallet/mark-new-networks-as-seen
