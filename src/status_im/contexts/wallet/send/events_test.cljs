@@ -572,7 +572,7 @@
             expected-result {:db (-> (make-send-structure {:tx-type      tx-type
                                                            :token-symbol "ETH"
                                                            :token        (assoc (first tokens)
-                                                                                :networks #{nil}
+                                                                                :networks #{}
                                                                                 :total-balance
                                                                                 (money/bignumber
                                                                                  6))})
