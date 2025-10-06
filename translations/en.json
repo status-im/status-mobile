@@ -924,6 +924,7 @@
   "enable-camera": "Enable camera",
   "enable-light-client": "Enable Light Client?\n\nYou’ll need to log in again.",
   "enable-link-previews": "Enable link previews in chat?",
+  "enable-message-syncing": "Enable message syncing",
   "enable-network-access": "Enable network access",
   "enable-network-to-sign-requests": "to sign requests from",
   "enable-news-notifications-third-party": "Include notifications delivered through third-party providers",

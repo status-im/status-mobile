@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v10.29.7",
-    "commit-sha1": "5985b16962320ad622428361f072e2e375062a4a",
-    "src-sha256": "13xwp7k1hgvmjknipkaan5mhbqb5pxf1fca1l7wgy9hxswv9ylpa"
+    "version": "chore/cherry-pick-local-backup",
+    "commit-sha1": "b7c853da18c1a35b9240423da72097203f0430f1",
+    "src-sha256": "0cmf0ikrv8qm80lfk2hq3r0q8zyly4j9c7dkn3cdpzab7f6n5fqp"
 }

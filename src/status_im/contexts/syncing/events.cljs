@@ -95,7 +95,7 @@
 
 (rf/defn preparations-for-connection-string
   {:events [:syncing/get-connection-string]}
-  [{:keys [db]} sha3-pwd on-valid-connection-string]
+  [{:keys [db]} sha3-pwd message-syncing-enabled on-valid-connection-string]
   (let [error             (get-in db [:profile/login :error])
         handle-connection (fn [response]
                             (when (sync-utils/valid-connection-string? response)
@@ -105,11 +105,13 @@
     (when-not (and error (string/blank? error))
       (let [key-uid    (get-in db [:profile/profile :key-uid])
             config-map (.stringify js/JSON
-                                   (clj->js {:senderConfig {:keyUID       key-uid
+                                   (clj->js {:senderConfig {:keyUID key-uid
                                                             :keystorePath ""
-                                                            :password     (security/safe-unmask-data
-                                                                           sha3-pwd)
-                                                            :deviceType   platform/os}
+                                                            :password (security/safe-unmask-data
+                                                                       sha3-pwd)
+                                                            :deviceType platform/os
+                                                            :messageSyncingEnabled
+                                                            message-syncing-enabled}
                                              :serverConfig {:timeout 0}}))]
         (native-module/get-connection-string-for-bootstrapping-another-device
          config-map

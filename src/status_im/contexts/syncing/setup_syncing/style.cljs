@@ -41,3 +41,10 @@
 (def valid-cs-container
   {:flex   1
    :margin 12})
+
+(def sync-message-container
+  {:margin-top     16
+   :margin-left    20
+   :margin-bottom  16
+   :flex-direction :row
+   :align-items    :center})

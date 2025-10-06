@@ -30,6 +30,7 @@
         code                          (reagent/atom nil)
         delay-ms                      (reagent/atom nil)
         timestamp                     (reagent/atom nil)
+        enable-message-syncing        (reagent/atom false)
         set-code                      (fn [connection-string]
                                         (when (sync-utils/valid-connection-string? connection-string)
                                           (reset! timestamp (* 1000
@@ -55,6 +56,7 @@
                                         (reset! valid-for-ms code-valid-for-ms))
         on-auth-success               (fn [entered-password]
                                         (rf/dispatch [:syncing/get-connection-string entered-password
+                                                      @enable-message-syncing
                                                       set-code]))]
     (fn []
       [rn/view {:style (style/container-main)}
@@ -126,7 +128,17 @@
                :on-success            on-auth-success
                :auth-button-label     (i18n/label :t/reveal-sync-code)
                :auth-button-icon-left :i/reveal}]])]]
+
         [rn/view {:style style/sync-code}
+         [rn/view
+          {:style style/sync-message-container}
+          [quo/selectors
+           {:type                :checkbox
+            :blur?               true
+            :checked             @enable-message-syncing
+            :on-change           #(reset! enable-message-syncing %)
+            :customization-color customization-color}]
+          [quo/text {:style {:margin-left 10}} (i18n/label :t/enable-message-syncing)]]
          [quo/divider-label {:tight? false} (i18n/label :t/have-a-sync-code?)]
          [quo/action-drawer
           [[{:icon     :i/scan
