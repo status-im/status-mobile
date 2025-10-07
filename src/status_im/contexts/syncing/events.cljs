@@ -1,6 +1,7 @@
 (ns status-im.contexts.syncing.events
   (:require
     [clojure.string :as string]
+    [legacy.status-im.ui.components.react :as react]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
@@ -166,3 +167,17 @@
    (log/error "Failed to toggle installation"
               {:error           error
                :installation-id installation-id})))
+
+(re-frame/reg-fx
+ ::share-backup-file
+ (fn [{:keys [url]}]
+   (if platform/android?
+     (native-module/share-logs url (fn [error] (log/error (i18n/label :t/backup-sharing-error) error)))
+     (.share ^js react/sharing
+             (clj->js {:title (i18n/label :t/local-backup)
+                       :url   url})))))
+
+(rf/defn share-backup-file
+  {:events [:syncing/share-backup-file]}
+  [_ file-path]
+  {::share-backup-file {:url file-path}})

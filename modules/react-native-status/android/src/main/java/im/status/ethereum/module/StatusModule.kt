@@ -109,6 +109,17 @@ class StatusModule(private val reactContext: ReactApplicationContext, private va
     }
 
     @ReactMethod
+    fun performLocalBackup(callback: Callback) {
+        Log.d(TAG, "performLocalBackup")
+        StatusBackendClient.executeStatusGoRequestWithCallback(
+            endpoint = "PerformLocalBackup",
+            requestBody = "",
+            statusgoFunction = { Statusgo.performLocalBackup() },
+            callback = callback
+        )
+    }
+
+    @ReactMethod
     fun intendedPanic(message: String) {
         StatusBackendClient.executeStatusGoRequest(
             endpoint = "IntendedPanic",

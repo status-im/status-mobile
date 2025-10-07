@@ -117,6 +117,7 @@
     [status-im.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
     [status-im.contexts.syncing.syncing-devices-list.view :as syncing-devices-list]
+    [status-im.contexts.syncing.backup.view :as backup]
     [status-im.contexts.wallet.account.edit-account.view :as wallet-edit-account]
     [status-im.contexts.wallet.account.share-address.view :as wallet-share-address]
     [status-im.contexts.wallet.account.view :as wallet-accounts]
@@ -422,6 +423,12 @@
                 :alias-id :settings.paired-devices}
     :options   options/transparent-modal-screen-options
     :component syncing-devices-list/view}
+
+   {:name      :screen/backup
+    :metrics   {:track?   true
+                :alias-id :settings.backup}
+    :options   options/transparent-modal-screen-options
+    :component backup/view}
 
    {:name      :screen/settings.language-and-currency
     :metrics   {:track? true}

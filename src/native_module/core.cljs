@@ -361,6 +361,11 @@
   (log/debug "[native-module] get-node-config")
   (.getNodeConfig ^js (status) callback))
 
+(defn perform-local-backup
+  [callback]
+  (log/debug "[native-module] perform-local-backup")
+  (.performLocalBackup ^js (status) callback))
+
 (defn toggle-webview-debug
   [on]
   (log/debug "[native-module] toggle-webview-debug" on)

@@ -109,6 +109,18 @@ RCT_EXPORT_METHOD(getNodeConfig:(RCTResponseSenderBlock)callback) {
                                                callback:callback];
 }
 
+RCT_EXPORT_METHOD(performLocalBackup:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"performLocalBackup() method called");
+#endif
+    [StatusBackendClient executeStatusGoRequestWithCallback:@"PerformLocalBackup"
+                                                     body:@""
+                                         statusgoFunction:^NSString *{
+        return StatusgoPerformLocalBackup();
+    }
+                                               callback:callback];
+}
+
 RCT_EXPORT_METHOD(intendedPanic:(NSString *)message) {
 #if DEBUG
     NSLog(@"IntendedPanic() method called");

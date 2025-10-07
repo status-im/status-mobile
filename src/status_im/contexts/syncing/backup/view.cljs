@@ -1,0 +1,51 @@
+(ns status-im.contexts.syncing.backup.view
+  (:require
+    [native-module.core :as native-module]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [status-im.contexts.syncing.syncing-devices-list.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.transforms :as types]))
+
+(defn go-back
+  []
+  (rf/dispatch [:navigate-back]))
+
+(defn share-backup-file
+  [result]
+  (let [parsed-result (types/json->clj result)
+        file-path     (:filePath parsed-result)]
+    (rf/dispatch [:toasts/upsert
+                  {:type :positive
+                   :text (i18n/label :t/backup-completed)}])
+    (rf/dispatch [:syncing/share-backup-file file-path]))
+)
+
+(defn view
+  []
+  (let [profile-color (rf/sub [:profile/customization-color])]
+    [quo/overlay {:type :shell :top-inset? true}
+     [quo/page-nav
+      {:type       :no-title
+       :background :blur
+       :icon-name  :i/arrow-left
+       :on-press   go-back}]
+     [rn/scroll-view
+      {:content-container-style         style/page-container
+       :style                           {:flex 1}
+       :shows-vertical-scroll-indicator false}
+      [rn/view {:style style/title-container}
+       [quo/text
+        {:size   :heading-1
+         :weight :semi-bold
+         :style  {:color colors/white}}
+        (i18n/label :t/backup)]]
+      [quo/button
+       {:type                :primary
+        :background          :blur
+        :size                40
+        :customization-color profile-color
+        :on-press            #(native-module/perform-local-backup share-backup-file)}
+       (i18n/label :t/backup-data-locally)]]]))
