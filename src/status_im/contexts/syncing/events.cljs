@@ -172,7 +172,7 @@
  ::share-backup-file
  (fn [{:keys [url]}]
    (if platform/android?
-     (native-module/share-logs url (fn [error] (log/error (i18n/label :t/backup-sharing-error) error)))
+     (native-module/share-backup-file url (fn [error] (log/error (i18n/label :t/backup-sharing-error) error)))
      (.share ^js react/sharing
              (clj->js {:title (i18n/label :t/local-backup)
                        :url   url})))))

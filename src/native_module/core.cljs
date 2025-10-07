@@ -311,6 +311,11 @@
   (log/debug "[native-module] share-logs")
   (.shareLogs ^js (log-manager) fileUri callback))
 
+(defn share-backup-file
+  [fileUri callback]
+  (log/debug "[native-module] share-backup-file")
+  (.shareBackupFile ^js (log-manager) fileUri callback))
+
 (defn close-application
   []
   (log/debug "[native-module] close-application")
