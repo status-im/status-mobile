@@ -1,6 +1,4 @@
-(ns status-im.contexts.syncing.backup.style
-  (:require
-    [quo.foundations.colors :as colors]))
+(ns status-im.contexts.syncing.backup.style)
 
 (def page-container
   {:flex               1
@@ -13,6 +11,6 @@
    :margin-top      12
    :margin-bottom   12})
 
-(def subtitle
-  {:margin-top 20
-   :color      colors/white-opa-40})
+(def category-container
+  {:margin-horizontal  0
+   :padding-horizontal 0})

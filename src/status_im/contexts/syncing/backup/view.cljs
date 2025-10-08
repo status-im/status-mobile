@@ -4,7 +4,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
-    [status-im.contexts.syncing.syncing-devices-list.style :as style]
+    [status-im.contexts.syncing.backup.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.transforms :as types]))
@@ -20,12 +20,18 @@
     (rf/dispatch [:toasts/upsert
                   {:type :positive
                    :text (i18n/label :t/backup-completed)}])
-    (rf/dispatch [:syncing/share-backup-file file-path]))
-)
+    (rf/dispatch [:syncing/share-backup-file file-path])))
+
+(defn on-toggle-messages-backup
+  [enabled?]
+  (if enabled?
+    (rf/dispatch [:profile.settings/show-messages-backup-confirmation])
+    (rf/dispatch [:profile.settings/set-messages-backup-enabled false])))
 
 (defn view
   []
-  (let [profile-color (rf/sub [:profile/customization-color])]
+  (let [profile-color              (rf/sub [:profile/customization-color])
+        messages-backup-enabled?   (rf/sub [:profile/messages-backup-enabled?])]
     [quo/overlay {:type :shell :top-inset? true}
      [quo/page-nav
       {:type       :no-title
@@ -42,6 +48,16 @@
          :weight :semi-bold
          :style  {:color colors/white}}
         (i18n/label :t/backup)]]
+      [quo/category
+       {:blur?           true
+        :list-type       :settings
+        :container-style style/category-container
+        :data            [{:title        (i18n/label :t/backup-messages-locally)
+                           :blur?        true
+                           :action       :selector
+                           :action-props {:type      :toggle
+                                          :checked?  messages-backup-enabled?
+                                          :on-change #(on-toggle-messages-backup %)}}]}]
       [quo/button
        {:type                :primary
         :background          :blur

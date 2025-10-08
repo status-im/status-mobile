@@ -40,6 +40,12 @@
    (boolean syncing-on-mobile-network?)))
 
 (re-frame/reg-sub
+ :profile/messages-backup-enabled?
+ :<- [:profile/profile]
+ (fn [{:keys [messages-backup-enabled?]}]
+   (boolean messages-backup-enabled?)))
+
+(re-frame/reg-sub
  :profile/currency-symbol
  :<- [:currencies]
  :<- [:profile/currency]
