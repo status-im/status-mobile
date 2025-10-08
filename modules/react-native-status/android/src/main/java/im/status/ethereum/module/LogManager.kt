@@ -192,11 +192,32 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
     }
 
     @ReactMethod
-    fun shareBackupFile(fileUri: String, callback: Callback) {
-        Log.d(TAG, "shareBackupFile: $fileUri")
+    fun shareBackupFile(filePath: String, callback: Callback) {
+        Log.d(TAG, "shareBackupFile: $filePath")
 
         try {
-            val uri = Uri.parse(fileUri)
+            val context = reactApplicationContext
+            val sourceFile = File(filePath)
+
+            if (!sourceFile.exists()) {
+                val errorMsg = "Backup file does not exist: $filePath"
+                Log.e(TAG, errorMsg)
+                callback.invoke(errorMsg)
+                return
+            }
+
+            // Copy backup file to cache directory for FileProvider access
+            val backupCacheDir = File(context.cacheDir, "backup")
+            backupCacheDir.mkdirs()
+
+            val cachedFile = File(backupCacheDir, sourceFile.name)
+            sourceFile.copyTo(cachedFile, overwrite = true)
+            Log.d(TAG, "Copied backup to cache: ${cachedFile.absolutePath}")
+
+            // Convert cached file path to content URI using FileProvider
+            val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", cachedFile)
+            Log.d(TAG, "FileProvider URI: $uri")
+
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "application/octet-stream"
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -207,8 +228,12 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
             chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             reactContext.startActivity(chooser)
 
+            // Clean up cached file after a short delay to allow sharing to complete
+            cachedFile.deleteOnExit()
+
         } catch (e: Exception) {
             Log.e(TAG, "Error sharing backup file: ${e.message}")
+            e.printStackTrace()
             callback.invoke(e.message)
         }
     }
