@@ -30,8 +30,8 @@
 
 (defn view
   []
-  (let [profile-color              (rf/sub [:profile/customization-color])
-        messages-backup-enabled?   (rf/sub [:profile/messages-backup-enabled?])]
+  (let [profile-color            (rf/sub [:profile/customization-color])
+        messages-backup-enabled? (rf/sub [:profile/messages-backup-enabled?])]
     [quo/overlay {:type :shell :top-inset? true}
      [quo/page-nav
       {:type       :no-title
@@ -49,15 +49,16 @@
          :style  {:color colors/white}}
         (i18n/label :t/backup)]]
       [quo/category
-       {:blur?           true
-        :list-type       :settings
+       {:blur? true
+        :list-type :settings
         :container-style style/category-container
-        :data            [{:title        (i18n/label :t/backup-messages-locally)
-                           :blur?        true
-                           :action       :selector
-                           :action-props {:type      :toggle
-                                          :checked?  messages-backup-enabled?
-                                          :on-change #(on-toggle-messages-backup %)}}]}]
+        :data
+        [{:title        (i18n/label :t/backup-messages-locally)
+          :blur?        true
+          :action       :selector
+          :action-props {:type      :toggle
+                         :checked?  messages-backup-enabled?
+                         :on-change #(on-toggle-messages-backup %)}}]}]
       [quo/button
        {:type                :primary
         :background          :blur
