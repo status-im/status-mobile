@@ -174,7 +174,11 @@
    (if platform/android?
      (native-module/share-backup-file url
                                       (fn [error]
-                                        (log/error (i18n/label :t/backup-sharing-error) error)))
+                                        (when error
+                                          (log/error (i18n/label :t/backup-sharing-error) error)
+                                          (rf/dispatch [:toasts/upsert
+                                                        {:type :negative
+                                                         :text (i18n/label :t/backup-sharing-error)}]))))
      (.share ^js react/sharing
              (clj->js {:title (i18n/label :t/local-backup)
                        :url   url})))))

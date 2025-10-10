@@ -1,5 +1,6 @@
 (ns status-im.contexts.syncing.backup.view
   (:require
+    [clojure.string :as string]
     [native-module.core :as native-module]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
@@ -17,10 +18,15 @@
   [result]
   (let [parsed-result (types/json->clj result)
         file-path     (:filePath parsed-result)]
-    (rf/dispatch [:toasts/upsert
-                  {:type :positive
-                   :text (i18n/label :t/backup-completed)}])
-    (rf/dispatch [:syncing/share-backup-file file-path])))
+    (if (and file-path (not (string/blank? file-path)))
+      (do
+        (rf/dispatch [:toasts/upsert
+                      {:type :positive
+                       :text (i18n/label :t/backup-completed)}])
+        (rf/dispatch [:syncing/share-backup-file file-path]))
+      (rf/dispatch [:toasts/upsert
+                    {:type :negative
+                     :text "Backup failed: no file path returned"}]))))
 
 (defn on-toggle-messages-backup
   [enabled?]
