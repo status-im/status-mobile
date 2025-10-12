@@ -26,7 +26,7 @@
         (rf/dispatch [:syncing/share-backup-file file-path]))
       (rf/dispatch [:toasts/upsert
                     {:type :negative
-                     :text "Backup failed: no file path returned"}]))))
+                     :text (str "Backup failed: " (or (:error parsed-result) "no file path"))}]))))
 
 (defn on-toggle-messages-backup
   [enabled?]

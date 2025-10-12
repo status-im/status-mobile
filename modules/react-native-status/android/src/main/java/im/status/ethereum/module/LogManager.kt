@@ -206,30 +206,21 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
                 return
             }
 
-            // Copy backup file to cache directory for FileProvider access
-            val backupCacheDir = File(context.cacheDir, "backup")
-            backupCacheDir.mkdirs()
-
-            val cachedFile = File(backupCacheDir, sourceFile.name)
-            sourceFile.copyTo(cachedFile, overwrite = true)
-            Log.d(TAG, "Copied backup to cache: ${cachedFile.absolutePath}")
-
-            // Convert cached file path to content URI using FileProvider
-            val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", cachedFile)
+            // Share directly from files/backups directory using FileProvider
+            val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", sourceFile)
             Log.d(TAG, "FileProvider URI: $uri")
 
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "application/octet-stream"
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            intent.putExtra(Intent.EXTRA_STREAM, uri)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "application/octet-stream"
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
 
-            val chooser = Intent.createChooser(intent, "Share Backup File")
-            chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val chooser = Intent.createChooser(intent, "Share Backup File").apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
             reactContext.startActivity(chooser)
-
-            // Clean up cached file after a short delay to allow sharing to complete
-            cachedFile.deleteOnExit()
 
         } catch (e: Exception) {
             Log.e(TAG, "Error sharing backup file: ${e.message}")
