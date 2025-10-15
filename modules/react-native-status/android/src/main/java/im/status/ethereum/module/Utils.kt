@@ -44,6 +44,14 @@ class Utils(private val reactContext: ReactApplicationContext) : ReactContextBas
         return pathCombine(reactContext.noBackupFilesDir.absolutePath, "/mmkv")
     }
 
+    fun getBackupDirectory(): File {
+        val backupDir = File(reactContext.filesDir, "backups")
+        if (!backupDir.exists()) {
+            backupDir.mkdirs()
+        }
+        return backupDir
+    }
+
     fun getLogDirectory(usePublicLogDir: Boolean): File? {
         return if (usePublicLogDir) {
             StatusBackendClient.getInstance()?.let { client ->

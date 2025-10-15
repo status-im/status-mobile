@@ -112,6 +112,7 @@
     [status-im.contexts.shell.qr-reader.view :as shell-qr-reader]
     [status-im.contexts.shell.share.view :as share]
     [status-im.contexts.shell.view :as shell]
+    [status-im.contexts.syncing.backup.view :as backup]
     [status-im.contexts.syncing.find-sync-code.view :as find-sync-code]
     [status-im.contexts.syncing.how-to-pair.view :as how-to-pair]
     [status-im.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
@@ -422,6 +423,12 @@
                 :alias-id :settings.paired-devices}
     :options   options/transparent-modal-screen-options
     :component syncing-devices-list/view}
+
+   {:name      :screen/backup
+    :metrics   {:track?   true
+                :alias-id :settings.backup}
+    :options   options/transparent-modal-screen-options
+    :component backup/view}
 
    {:name      :screen/settings.language-and-currency
     :metrics   {:track? true}

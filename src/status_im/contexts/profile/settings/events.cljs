@@ -82,6 +82,25 @@
          new-value (if enable? constants/default-telemetry-server-url "")]
      {:dispatch [:profile.settings/profile-update :telemetry-server-url new-value]})))
 
+(rf/reg-event-fx :profile.settings/show-messages-backup-confirmation
+ (fn [_]
+   {:fx [[:ui/show-confirmation
+          {:title               (i18n/label :t/enable-local-messages-backup)
+           :content             (i18n/label :t/enable-local-messages-backup-description)
+           :confirm-button-text (i18n/label :t/enable)
+           :cancel-button-text  (i18n/label :t/cancel)
+           :on-accept           #(rf/dispatch [:profile.settings/set-messages-backup-enabled true])
+           :on-cancel           nil}]]}))
+
+(rf/reg-event-fx :profile.settings/set-messages-backup-enabled
+ (fn [{:keys [db]} [enabled?]]
+   {:db (assoc-in db [:profile/profile :messages-backup-enabled?] enabled?)
+    :fx [[:json-rpc/call
+          [{:method     "settings_saveSetting"
+            :params     [:messages-backup-enabled? enabled?]
+            :on-success #(log/debug "successfully set messages-backup-enabled" enabled?)
+            :on-error   #(log/error "failed to set messages-backup-enabled" %)}]]]}))
+
 (rf/reg-event-fx :profile.settings/change-appearance
  (fn [_ [theme]]
    {:fx [[:dispatch [:profile.settings/profile-update :appearance theme]]

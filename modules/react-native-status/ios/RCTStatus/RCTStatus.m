@@ -109,6 +109,55 @@ RCT_EXPORT_METHOD(getNodeConfig:(RCTResponseSenderBlock)callback) {
                                                callback:callback];
 }
 
+- (NSString *)setBackupPath:(NSString *)backupPath {
+    NSDictionary *payload = @{
+        @"jsonrpc": @"2.0",
+        @"id": @1,
+        @"method": @"settings_saveSetting",
+        @"params": @[@"backup-path", backupPath]
+    };
+
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:payload options:0 error:&error];
+    if (error) {
+        NSLog(@"Error creating JSON for setBackupPath: %@", error);
+        return nil;
+    }
+
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    return StatusgoCallPrivateRPC(jsonString);
+}
+
+RCT_EXPORT_METHOD(performLocalBackup:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"performLocalBackup() method called");
+#endif
+
+    @try {
+        // Get backup directory path
+        NSString *backupPath = [Utils getBackupDirectory];
+        NSLog(@"Setting backup path: %@", backupPath);
+
+        // Set backup path in status-go settings
+        NSString *settingsResult = [self setBackupPath:backupPath];
+        NSLog(@"Set backup path result: %@", settingsResult);
+
+        // Perform the actual backup
+        [StatusBackendClient executeStatusGoRequestWithCallback:@"PerformLocalBackup"
+                                                         body:@""
+                                             statusgoFunction:^NSString *{
+            return StatusgoPerformLocalBackup();
+        }
+                                                   callback:callback];
+    } @catch (NSException *exception) {
+        NSLog(@"Error in performLocalBackup: %@", exception);
+        NSDictionary *errorResult = @{@"error": exception.reason ?: @"Unknown error"};
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:errorResult options:0 error:nil];
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        callback(@[jsonString]);
+    }
+}
+
 RCT_EXPORT_METHOD(intendedPanic:(NSString *)message) {
 #if DEBUG
     NSLog(@"IntendedPanic() method called");

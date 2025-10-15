@@ -10,6 +10,7 @@ import statusgo.Statusgo
 import org.json.JSONException
 import android.view.WindowManager
 import org.json.JSONObject
+import org.json.JSONArray
 
 class StatusModule(private val reactContext: ReactApplicationContext, private val rootedDevice: Boolean) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, SignalHandler {
 
@@ -106,6 +107,49 @@ class StatusModule(private val reactContext: ReactApplicationContext, private va
             statusgoFunction = { Statusgo.getNodeConfig() },
             callback = callback
         )
+    }
+
+    private fun setBackupPath(backupPath: String): String {
+        val payload = JSONObject().apply {
+            put("jsonrpc", "2.0")
+            put("id", 1)
+            put("method", "settings_saveSetting")
+            put("params", JSONArray().apply {
+                put("backup-path")
+                put(backupPath)
+            })
+        }
+
+        return Statusgo.callPrivateRPC(payload.toString())
+    }
+
+    @ReactMethod
+    fun performLocalBackup(callback: Callback) {
+        Log.d(TAG, "performLocalBackup")
+        try {
+            // Get backup directory path
+            val backupDir = utils.getBackupDirectory()
+            val backupPath = backupDir.absolutePath
+            Log.d(TAG, "Setting backup path: $backupPath")
+
+            // Set backup path in status-go settings
+            val settingsResult = setBackupPath(backupPath)
+            Log.d(TAG, "Set backup path result: $settingsResult")
+
+            // Perform the actual backup
+            StatusBackendClient.executeStatusGoRequestWithCallback(
+                endpoint = "PerformLocalBackup",
+                requestBody = "",
+                statusgoFunction = { Statusgo.performLocalBackup() },
+                callback = callback
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in performLocalBackup: ${e.message}")
+            val errorResult = JSONObject().apply {
+                put("error", e.message ?: "Unknown error")
+            }
+            callback.invoke(errorResult.toString())
+        }
     }
 
     @ReactMethod

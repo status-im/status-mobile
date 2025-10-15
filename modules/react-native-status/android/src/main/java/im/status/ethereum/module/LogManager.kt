@@ -191,6 +191,44 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
         }
     }
 
+    @ReactMethod
+    fun shareBackupFile(filePath: String, callback: Callback) {
+        Log.d(TAG, "shareBackupFile: $filePath")
+
+        try {
+            val context = reactApplicationContext
+            val sourceFile = File(filePath)
+
+            if (!sourceFile.exists()) {
+                val errorMsg = "Backup file does not exist: $filePath"
+                Log.e(TAG, errorMsg)
+                callback.invoke(errorMsg)
+                return
+            }
+
+            // Share directly from files/backups directory using FileProvider
+            val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", sourceFile)
+            Log.d(TAG, "FileProvider URI: $uri")
+
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "application/octet-stream"
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            val chooser = Intent.createChooser(intent, "Share Backup File").apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            reactContext.startActivity(chooser)
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error sharing backup file: ${e.message}")
+            e.printStackTrace()
+            callback.invoke(e.message)
+        }
+    }
+
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun logFileDirectory(usePublicLogDir: Boolean): String? {
         Log.d(TAG, "logFileDirectory: usePublicLogDir=$usePublicLogDir")

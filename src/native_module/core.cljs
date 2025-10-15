@@ -311,6 +311,11 @@
   (log/debug "[native-module] share-logs")
   (.shareLogs ^js (log-manager) fileUri callback))
 
+(defn share-backup-file
+  [fileUri callback]
+  (log/debug "[native-module] share-backup-file")
+  (.shareBackupFile ^js (log-manager) fileUri callback))
+
 (defn close-application
   []
   (log/debug "[native-module] close-application")
@@ -360,6 +365,11 @@
   [callback]
   (log/debug "[native-module] get-node-config")
   (.getNodeConfig ^js (status) callback))
+
+(defn perform-local-backup
+  [callback]
+  (log/debug "[native-module] perform-local-backup")
+  (.performLocalBackup ^js (status) callback))
 
 (defn toggle-webview-debug
   [on]

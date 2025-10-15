@@ -10,6 +10,10 @@
   []
   (rf/dispatch [:open-modal :screen/paired-devices]))
 
+(defn- open-backup-screen
+  []
+  (rf/dispatch [:open-modal :screen/backup]))
+
 (defn- open-data-confirmation-sheet
   []
   (rf/dispatch
@@ -47,6 +51,12 @@
                     :image-props       :i/mobile
                     :image             :icon
                     :blur?             true
-                    :action            :arrow}]
+                    :action            :arrow}
+                   {:title       (i18n/label :t/backup)
+                    :on-press    open-backup-screen
+                    :image-props :i/file
+                    :image       :icon
+                    :blur?       true
+                    :action      :arrow}]
        :blur?     true
        :list-type :settings}]]))

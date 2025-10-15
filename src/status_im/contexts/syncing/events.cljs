@@ -1,6 +1,7 @@
 (ns status-im.contexts.syncing.events
   (:require
     [clojure.string :as string]
+    [legacy.status-im.ui.components.react :as react]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
@@ -95,7 +96,7 @@
 
 (rf/defn preparations-for-connection-string
   {:events [:syncing/get-connection-string]}
-  [{:keys [db]} sha3-pwd on-valid-connection-string]
+  [{:keys [db]} sha3-pwd message-syncing-enabled on-valid-connection-string]
   (let [error             (get-in db [:profile/login :error])
         handle-connection (fn [response]
                             (when (sync-utils/valid-connection-string? response)
@@ -105,11 +106,13 @@
     (when-not (and error (string/blank? error))
       (let [key-uid    (get-in db [:profile/profile :key-uid])
             config-map (.stringify js/JSON
-                                   (clj->js {:senderConfig {:keyUID       key-uid
+                                   (clj->js {:senderConfig {:keyUID key-uid
                                                             :keystorePath ""
-                                                            :password     (security/safe-unmask-data
-                                                                           sha3-pwd)
-                                                            :deviceType   platform/os}
+                                                            :password (security/safe-unmask-data
+                                                                       sha3-pwd)
+                                                            :deviceType platform/os
+                                                            :messageSyncingEnabled
+                                                            message-syncing-enabled}
                                              :serverConfig {:timeout 0}}))]
         (native-module/get-connection-string-for-bootstrapping-another-device
          config-map
@@ -164,3 +167,23 @@
    (log/error "Failed to toggle installation"
               {:error           error
                :installation-id installation-id})))
+
+(re-frame/reg-fx
+ ::share-backup-file
+ (fn [{:keys [url]}]
+   (if platform/android?
+     (native-module/share-backup-file url
+                                      (fn [error]
+                                        (when error
+                                          (log/error (i18n/label :t/backup-sharing-error) error)
+                                          (rf/dispatch [:toasts/upsert
+                                                        {:type :negative
+                                                         :text (i18n/label :t/backup-sharing-error)}]))))
+     (.share ^js react/sharing
+             (clj->js {:title (i18n/label :t/local-backup)
+                       :url   url})))))
+
+(rf/defn share-backup-file
+  {:events [:syncing/share-backup-file]}
+  [_ file-path]
+  {::share-backup-file {:url file-path}})

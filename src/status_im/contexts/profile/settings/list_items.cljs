@@ -72,7 +72,7 @@
      :image       :icon
      :blur?       true
      :action      :arrow}
-    {:title       (i18n/label :t/syncing)
+    {:title       (i18n/label :t/syncing-and-backup)
      :on-press    #(rf/dispatch [:open-modal :screen/settings.syncing])
      :image-props :i/syncing
      :image       :icon

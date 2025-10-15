@@ -73,6 +73,20 @@ RCT_EXPORT_MODULE();
     return [json valueForKey:@"key-uid"];
 }
 
++ (NSString *)getBackupDirectory {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *rootUrl = [self getRootUrl];
+    NSURL *backupUrl = [rootUrl URLByAppendingPathComponent:@"backups"];
+
+    // Create directory if it doesn't exist
+    [fileManager createDirectoryAtURL:backupUrl
+          withIntermediateDirectories:YES
+                           attributes:nil
+                                error:nil];
+
+    return backupUrl.path;
+}
+
 + (NSString *) getExportDbFilePath {
     StatusBackendClient *client = [StatusBackendClient sharedInstance];
     if (client.serverEnabled && client.rootDataDir) {

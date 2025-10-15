@@ -106,6 +106,12 @@ def build_ios_adhoc(readonly: false, pr_build: false)
 
   kc = Keychain.new('fastlane')
 
+  sh("security delete-keychain #{kc.name}", error_callback: ->(result) { })
+  sh("security create-keychain -p #{kc.pass} #{kc.name}")
+  sh("security set-keychain-settings -t 3600 -l #{kc.name}")
+  sh("security unlock-keychain -p #{kc.pass} #{kc.name}")
+  sh("security list-keychains -d user -s login.keychain #{kc.name}")
+
   match(
     type: 'adhoc',
     readonly: readonly,
@@ -115,6 +121,16 @@ def build_ios_adhoc(readonly: false, pr_build: false)
     keychain_name: kc.name,
     keychain_password: kc.pass
   )
+
+  sh("curl -o /tmp/AppleWWDRCAG3.cer https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer")
+  sh("security import /tmp/AppleWWDRCAG3.cer -k #{kc.name} -T /usr/bin/codesign -T /usr/bin/security", error_callback: ->(result) { })
+
+  sh("curl -o /tmp/AppleWWDRCA.cer https://developer.apple.com/certificationauthority/AppleWWDRCA.cer")
+  sh("security import /tmp/AppleWWDRCA.cer -k #{kc.name} -T /usr/bin/codesign -T /usr/bin/security", error_callback: ->(result) { })
+
+  sh("security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k #{kc.pass} #{kc.name}")
+
+  sh("security find-identity -v -p codesigning #{kc.name}")
 
   build_ios_app(
     scheme: scheme,
