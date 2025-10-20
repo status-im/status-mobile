@@ -975,7 +975,7 @@
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CUSTOM_PRODUCT_NAME = "Status Debug";
+				CUSTOM_PRODUCT_NAME = "Status Legacy Debug";
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				EXCLUDED_ARCHS = "";
@@ -1058,7 +1058,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CUSTOM_PRODUCT_NAME = Status;
+				CUSTOM_PRODUCT_NAME = "Status Legacy";
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				EXCLUDED_ARCHS = "";
@@ -1133,7 +1133,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CUSTOM_PRODUCT_NAME = "Status Debug";
+				CUSTOM_PRODUCT_NAME = "Status Legacy Debug";
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
@@ -1213,7 +1213,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CUSTOM_PRODUCT_NAME = Status;
+				CUSTOM_PRODUCT_NAME = "Status Legacy";
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 8B5X2M6H2Y;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
