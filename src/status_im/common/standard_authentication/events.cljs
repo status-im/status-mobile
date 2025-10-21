@@ -116,13 +116,19 @@
 (rf/reg-event-fx :standard-auth/get-keychain-key get-keychain-key)
 
 (defn on-biometric-success
-  [_ [on-auth-success]]
-  {:fx [[:dispatch
-         [:standard-auth/get-keychain-key
-          (fn [masked-key]
-            (rf/dispatch [:standard-auth/finish-auth
-                          {:on-auth-success on-auth-success
-                           :masked-password masked-key}]))]]]})
+  [{:keys [db]} [on-auth-success]]
+  (let [key-uid (get-in db [:profile/profile :key-uid])]
+    {:fx [[:dispatch
+           [:standard-auth/get-keychain-key
+            (fn [masked-key]
+              ;; Check if the password in keychain is already hashed
+              (-> (keychain/get-password-migration! key-uid identity)
+                  (.then (fn [migrated?]
+                           (let [password
+                                 (if migrated? masked-key (security/hash-masked-password masked-key))]
+                             (rf/dispatch [:standard-auth/finish-auth
+                                           {:on-auth-success on-auth-success
+                                            :masked-password password}]))))))]]]}))
 
 (schema/=> on-biometric-success events-schema/?on-biometric-success)
 (rf/reg-event-fx :standard-auth/on-biometric-success on-biometric-success)
