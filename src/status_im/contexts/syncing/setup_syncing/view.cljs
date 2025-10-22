@@ -55,7 +55,9 @@
                                         (reset! timestamp nil)
                                         (reset! valid-for-ms code-valid-for-ms))
         on-auth-success               (fn [entered-password]
-                                        (rf/dispatch [:syncing/get-connection-string entered-password
+                                        (js/console.log "==== on-auth-success in view called with entered-password:" entered-password)
+                                        (rf/dispatch [:syncing/get-connection-string
+                                                      entered-password
                                                       @enable-message-syncing
                                                       set-code]))]
     (fn []

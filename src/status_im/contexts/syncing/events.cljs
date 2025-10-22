@@ -97,23 +97,30 @@
 (rf/defn preparations-for-connection-string
   {:events [:syncing/get-connection-string]}
   [{:keys [db]} sha3-pwd message-syncing-enabled on-valid-connection-string]
+  (log/info "==== :syncing/get-connection-string called with sha3-pwd:" sha3-pwd)
   (let [error             (get-in db [:profile/login :error])
         handle-connection (fn [response]
+                            (log/info "==== handle-connection called with response:" response)
+                            (log/info "==== valid-connection-string?" (sync-utils/valid-connection-string? response))
                             (when (sync-utils/valid-connection-string? response)
+                              (log/info "==== calling on-valid-connection-string callback")
                               (on-valid-connection-string response)
                               (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender])
                               (rf/dispatch [:hide-bottom-sheet])))]
+    (log/info "==== error from db:" error)
     (when-not (and error (string/blank? error))
       (let [key-uid    (get-in db [:profile/profile :key-uid])
+            unmasked-pwd (security/safe-unmask-data sha3-pwd)
             config-map (.stringify js/JSON
                                    (clj->js {:senderConfig {:keyUID key-uid
                                                             :keystorePath ""
-                                                            :password (security/safe-unmask-data
-                                                                       sha3-pwd)
+                                                            :password unmasked-pwd
                                                             :deviceType platform/os
                                                             :messageSyncingEnabled
                                                             message-syncing-enabled}
                                              :serverConfig {:timeout 0}}))]
+        (log/info "==== unmasked password:" unmasked-pwd)
+        (log/info "==== calling native-module/get-connection-string-for-bootstrapping-another-device")
         (native-module/get-connection-string-for-bootstrapping-another-device
          config-map
          handle-connection)))))

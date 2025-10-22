@@ -116,19 +116,15 @@
 (rf/reg-event-fx :standard-auth/get-keychain-key get-keychain-key)
 
 (defn on-biometric-success
-  [{:keys [db]} [on-auth-success]]
-  (let [key-uid (get-in db [:profile/profile :key-uid])]
-    {:fx [[:dispatch
-           [:standard-auth/get-keychain-key
-            (fn [masked-key]
-              ;; Check if the password in keychain is already hashed
-              (-> (keychain/get-password-migration! key-uid identity)
-                  (.then (fn [migrated?]
-                           (let [password
-                                 (if migrated? masked-key (security/hash-masked-password masked-key))]
-                             (rf/dispatch [:standard-auth/finish-auth
-                                           {:on-auth-success on-auth-success
-                                            :masked-password password}]))))))]]]}))
+  [_ [on-auth-success]]
+  (log/info "==== on-biometric-success called")
+  {:fx [[:dispatch
+         [:standard-auth/get-keychain-key
+          (fn [masked-key]
+            (log/info "==== keychain key retrieved, masked-key:" masked-key)
+            (rf/dispatch [:standard-auth/finish-auth
+                          {:on-auth-success on-auth-success
+                           :masked-password masked-key}]))]]]})
 
 (schema/=> on-biometric-success events-schema/?on-biometric-success)
 (rf/reg-event-fx :standard-auth/on-biometric-success on-biometric-success)
@@ -152,9 +148,13 @@
     (let [auth-method        (rf/sub [:auth-method])
           biometric-enabled? (= auth-method keychain/auth-method-biometric)]
       [enter-password/view
-       {:on-enter-password   #(rf/dispatch [:standard-auth/finish-auth
-                                            {:masked-password (security/hash-masked-password %)
-                                             :on-auth-success on-auth-success}])
+       {:on-enter-password   #(do
+                                (log/info "==== password entered, hashing it")
+                                (let [hashed (security/hash-masked-password %)]
+                                  (log/info "==== hashed password:" hashed)
+                                  (rf/dispatch [:standard-auth/finish-auth
+                                                {:masked-password hashed
+                                                 :on-auth-success on-auth-success}])))
         :on-press-biometrics (when (and (not hide-biometrics-button?) biometric-enabled?)
                                #(rf/dispatch [:standard-auth/authorize-with-biometric args]))
         :button-icon-left    auth-button-icon-left
@@ -208,10 +208,15 @@
 
 (defn- finish-auth
   [{:keys [db]} [{:keys [masked-password on-auth-success]}]]
-  (let [on-auth-success-callback         #(on-auth-success masked-password)
+  (log/info "==== finish-auth called with masked-password:" masked-password)
+  (let [on-auth-success-callback         #(do
+                                            (log/info "==== calling on-auth-success callback with password:" masked-password)
+                                            (on-auth-success masked-password))
         has-partially-operable-accounts? (-> (get-in db [:wallet :accounts])
                                              data-store/partially-operable-accounts?)
         keycard-profile?                 (utils/keycard-profile? db)]
+    (log/info "==== finish-auth: has-partially-operable-accounts?" has-partially-operable-accounts?
+              "keycard-profile?" keycard-profile?)
     {:fx [[:dispatch [:standard-auth/set-success true]]
           [:dispatch [:standard-auth/reset-login-password]]
           (if (and has-partially-operable-accounts? (not keycard-profile?))
