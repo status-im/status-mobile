@@ -24,6 +24,16 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
 
     private val utils = Utils(reactContext)
 
+    companion object {
+        private const val TAG = "LogManager"
+        private const val statusLogFileName = "Status.log"
+        private const val logsZipFileName = "Status-debug-logs.zip"
+        const val CREATE_BACKUP_FILE_REQUEST_CODE = 9001
+
+        var pendingBackupFilePath: String? = null
+        var pendingBackupCallback: Callback? = null
+    }
+
     override fun getName() = "LogManager"
 
     private fun showErrorMessage(message: String) {
@@ -206,24 +216,26 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
                 return
             }
 
-            // Share directly from files/backups directory using FileProvider
-            val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", sourceFile)
-            Log.d(TAG, "FileProvider URI: $uri")
-
-            val intent = Intent(Intent.ACTION_SEND).apply {
+            // Use Storage Access Framework to let user choose where to save
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
                 type = "application/octet-stream"
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                putExtra(Intent.EXTRA_STREAM, uri)
+                putExtra(Intent.EXTRA_TITLE, sourceFile.name)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
 
-            val chooser = Intent.createChooser(intent, "Share Backup File").apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            reactContext.startActivity(chooser)
+            // Store file path and callback for later use in activity result
+            pendingBackupFilePath = filePath
+            pendingBackupCallback = callback
+
+            currentActivity?.startActivityForResult(intent, CREATE_BACKUP_FILE_REQUEST_CODE)
+                ?: run {
+                    Log.e(TAG, "No current activity available")
+                    callback.invoke("No activity available to show file picker")
+                }
 
         } catch (e: Exception) {
-            Log.e(TAG, "Error sharing backup file: ${e.message}")
+            Log.e(TAG, "Error initiating backup file save: ${e.message}")
             e.printStackTrace()
             callback.invoke(e.message)
         }
@@ -279,9 +291,37 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
         )
     }
 
-    companion object {
-        private const val TAG = "LogManager"
-        private const val statusLogFileName = "Status.log"
-        private const val logsZipFileName = "Status-debug-logs.zip"
+    fun onBackupFileSelected(uri: Uri?) {
+        val filePath = pendingBackupFilePath
+        val callback = pendingBackupCallback
+
+        if (uri == null || filePath == null || callback == null) {
+            callback?.invoke("File save cancelled or invalid")
+            pendingBackupFilePath = null
+            pendingBackupCallback = null
+            return
+        }
+
+        try {
+            val sourceFile = File(filePath)
+            val context = reactApplicationContext
+
+            context.contentResolver.openOutputStream(uri)?.use { output ->
+                sourceFile.inputStream().use { input ->
+                    input.copyTo(output)
+                }
+            }
+
+            Log.d(TAG, "Backup file saved successfully to user-selected location")
+            callback.invoke(null)
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saving backup file: ${e.message}")
+            e.printStackTrace()
+            callback.invoke(e.message)
+        } finally {
+            pendingBackupFilePath = null
+            pendingBackupCallback = null
+        }
     }
 }

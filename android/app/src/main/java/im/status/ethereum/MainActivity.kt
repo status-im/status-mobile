@@ -32,6 +32,7 @@ import com.reactnativenavigation.NavigationActivity
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView
 import im.status.ethereum.MainApplication
 import im.status.ethereum.module.StatusThreadPoolExecutor
+import im.status.ethereum.module.LogManager
 import java.util.Properties
 
 class MainActivity : NavigationActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
@@ -231,6 +232,31 @@ class MainActivity : NavigationActivity(), ActivityCompat.OnRequestPermissionsRe
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (mPermissionListener != null && mPermissionListener!!.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
             mPermissionListener = null
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == LogManager.CREATE_BACKUP_FILE_REQUEST_CODE) {
+            val uri = if (resultCode == RESULT_OK) data?.data else null
+
+            // Get LogManager instance and call the handler
+            try {
+                val reactContext = (application as MainApplication).reactNativeHost
+                    .getReactInstanceManager()
+                    .getCurrentReactContext()
+
+                if (reactContext != null) {
+                    val logManager = reactContext.getNativeModule(LogManager::class.java)
+                    logManager?.onBackupFileSelected(uri)
+                } else {
+                    Log.e("MainActivity", "React context is null, cannot handle backup file selection")
+                }
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Error handling backup file selection: ${e.message}")
+                e.printStackTrace()
+            }
         }
     }
 }
