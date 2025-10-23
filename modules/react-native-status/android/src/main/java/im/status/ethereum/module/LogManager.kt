@@ -221,18 +221,21 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "application/octet-stream"
                 putExtra(Intent.EXTRA_TITLE, sourceFile.name)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
 
             // Store file path and callback for later use in activity result
             pendingBackupFilePath = filePath
             pendingBackupCallback = callback
 
-            currentActivity?.startActivityForResult(intent, CREATE_BACKUP_FILE_REQUEST_CODE)
-                ?: run {
-                    Log.e(TAG, "No current activity available")
-                    callback.invoke("No activity available to show file picker")
-                }
+            val activity = currentActivity
+            if (activity != null) {
+                activity.startActivityForResult(intent, CREATE_BACKUP_FILE_REQUEST_CODE)
+            } else {
+                Log.e(TAG, "No current activity available")
+                pendingBackupFilePath = null
+                pendingBackupCallback = null
+                callback.invoke("No activity available to show file picker")
+            }
 
         } catch (e: Exception) {
             Log.e(TAG, "Error initiating backup file save: ${e.message}")
