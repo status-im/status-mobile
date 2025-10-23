@@ -11,6 +11,7 @@
     [status-im.common.standard-authentication.core :as standard-auth]
     [status-im.contexts.syncing.setup-syncing.style :as style]
     [status-im.contexts.syncing.utils :as sync-utils]
+    [taoensso.timbre :as log]
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -25,6 +26,7 @@
 
 (defn view
   []
+  (log/info "==== setup-syncing view component mounting/re-creating")
   (let [{:keys [customization-color]} (rf/sub [:profile/profile-with-image])
         valid-for-ms                  (reagent/atom code-valid-for-ms)
         code                          (reagent/atom nil)
@@ -32,12 +34,16 @@
         timestamp                     (reagent/atom nil)
         enable-message-syncing        (reagent/atom false)
         set-code                      (fn [connection-string]
+                                        (log/info "==== set-code called with connection-string:" connection-string)
+                                        (log/info "==== valid-connection-string?" (sync-utils/valid-connection-string? connection-string))
                                         (when (sync-utils/valid-connection-string? connection-string)
+                                          (log/info "==== validation passed, resetting atoms")
                                           (reset! timestamp (* 1000
                                                                (js/Math.ceil (/ (datetime/timestamp)
                                                                                 1000))))
                                           (reset! delay-ms 1000)
-                                          (reset! code connection-string)))
+                                          (reset! code connection-string)
+                                          (log/info "==== atoms reset - code:" @code "timestamp:" @timestamp "delay-ms:" @delay-ms)))
         clock                         (fn []
                                         (if (pos? (- code-valid-for-ms
                                                      (- (* 1000
@@ -55,12 +61,15 @@
                                         (reset! timestamp nil)
                                         (reset! valid-for-ms code-valid-for-ms))
         on-auth-success               (fn [entered-password]
-                                        (js/console.log "==== on-auth-success in view called with entered-password:" entered-password)
+                                        (log/info "==== on-auth-success in view called with entered-password:" entered-password)
+                                        (log/info "==== set-code function reference:" set-code)
+                                        (log/info "==== current code atom value:" @code)
                                         (rf/dispatch [:syncing/get-connection-string
                                                       entered-password
                                                       @enable-message-syncing
                                                       set-code]))]
     (fn []
+      (log/info "==== setup-syncing render function called, code atom value:" @code)
       [rn/view {:style (style/container-main)}
        [:f> f-use-interval clock cleanup-clock @delay-ms]
        [rn/scroll-view {}
