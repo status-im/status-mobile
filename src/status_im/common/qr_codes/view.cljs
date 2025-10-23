@@ -1,6 +1,7 @@
 (ns status-im.common.qr-codes.view
   (:require
     [quo.core :as quo]
+    [taoensso.timbre :as log]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
 
@@ -30,11 +31,15 @@
       - l-name
       - customization-color"
   [{:keys [url size] :as props}]
-  (let [qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
+  (log/info "==== qr-code component called with url:" url "size:" size)
+  (let [media-port        (rf/sub [:mediaserver/port])
+        qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
                              {:url         url
-                              :port        (rf/sub [:mediaserver/port])
+                              :port        media-port
                               :qr-size     (or (and size (int size)) 400)
                               :error-level :highest})]
+    (log/info "==== qr-code mediaserver port:" media-port)
+    (log/info "==== qr-code generated URI:" qr-media-server-uri)
     [quo/qr-code
      (assoc props
             :qr-image-uri

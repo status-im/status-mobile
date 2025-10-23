@@ -89,15 +89,17 @@
             :style  {:color colors/white}}
            (i18n/label :t/setup-syncing)]]
          [rn/view {:style style/qr-container}
-          (if (sync-utils/valid-connection-string? @code)
-            [qr-codes/qr-code {:url @code}]
-            [rn/view {:style {:flex-direction :row}}
-             [rn/image
-              {:source (resources/get-image :qr-code)
-               :style  {:width            "100%"
-                        :background-color colors/white-opa-70
-                        :border-radius    12
-                        :aspect-ratio     1}}]])
+          (let [is-valid? (sync-utils/valid-connection-string? @code)]
+            (log/info "==== QR render check - code:" @code "valid?" is-valid?)
+            (if is-valid?
+              [qr-codes/qr-code {:url @code}]
+              [rn/view {:style {:flex-direction :row}}
+               [rn/image
+                {:source (resources/get-image :qr-code)
+                 :style  {:width            "100%"
+                          :background-color colors/white-opa-70
+                          :border-radius    12
+                          :aspect-ratio     1}}]]))
           (when (sync-utils/valid-connection-string? @code)
             [rn/view
              {:style style/valid-cs-container}
