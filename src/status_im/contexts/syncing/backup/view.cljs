@@ -5,6 +5,7 @@
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [status-im.contexts.syncing.backup.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -24,6 +25,26 @@
                       {:type :positive
                        :text (i18n/label :t/backup-completed)}])
         (rf/dispatch [:syncing/share-backup-file file-path]))
+      (rf/dispatch [:toasts/upsert
+                    {:type :negative
+                     :text (str "Backup failed: " (or (:error parsed-result) "no file path"))}]))))
+
+(defn save-backup-file-locally
+  [result]
+  (let [parsed-result (types/json->clj result)
+        file-path     (:filePath parsed-result)]
+    (if (and file-path (not (string/blank? file-path)))
+      (rf/dispatch [:syncing/save-backup-file-locally file-path])
+      (rf/dispatch [:toasts/upsert
+                    {:type :negative
+                     :text (str "Backup failed: " (or (:error parsed-result) "no file path"))}]))))
+
+(defn save-backup-file-with-picker
+  [result]
+  (let [parsed-result (types/json->clj result)
+        file-path     (:filePath parsed-result)]
+    (if (and file-path (not (string/blank? file-path)))
+      (rf/dispatch [:syncing/save-backup-file-with-picker file-path])
       (rf/dispatch [:toasts/upsert
                     {:type :negative
                      :text (str "Backup failed: " (or (:error parsed-result) "no file path"))}]))))
@@ -70,5 +91,8 @@
         :background          :blur
         :size                40
         :customization-color profile-color
-        :on-press            #(native-module/perform-local-backup share-backup-file)}
+        :on-press            #(native-module/perform-local-backup
+                               (if platform/android?
+                                 save-backup-file-with-picker
+                                 share-backup-file))}
        (i18n/label :t/backup-data-locally)]]]))

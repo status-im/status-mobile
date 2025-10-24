@@ -187,3 +187,54 @@
   {:events [:syncing/share-backup-file]}
   [_ file-path]
   {::share-backup-file {:url file-path}})
+
+(re-frame/reg-fx
+ ::save-backup-file-locally
+ (fn [{:keys [url]}]
+   (if platform/android?
+     (native-module/save-backup-file-locally url
+                                             (fn [error]
+                                               (if error
+                                                 (do
+                                                   (log/error "Failed to save backup file" error)
+                                                   (rf/dispatch [:toasts/upsert
+                                                                 {:type :negative
+                                                                  :text (str "Failed to save backup: "
+                                                                             error)}]))
+                                                 (rf/dispatch [:toasts/upsert
+                                                               {:type :positive
+                                                                :text "Backup saved to Downloads"}]))))
+     (.share ^js react/sharing
+             (clj->js {:title (i18n/label :t/local-backup)
+                       :url   url})))))
+
+(rf/defn save-backup-file-locally
+  {:events [:syncing/save-backup-file-locally]}
+  [_ file-path]
+  {::save-backup-file-locally {:url file-path}})
+
+(re-frame/reg-fx
+ ::save-backup-file-with-picker
+ (fn [{:keys [url]}]
+   (if platform/android?
+     (native-module/save-backup-file-with-picker
+      url
+      (fn [error]
+        (if error
+          (do
+            (log/error "Failed to save backup file" error)
+            (when (not= error "User cancelled")
+              (rf/dispatch [:toasts/upsert
+                            {:type :negative
+                             :text (str "Failed to save backup: " error)}])))
+          (rf/dispatch [:toasts/upsert
+                        {:type :positive
+                         :text "Backup saved successfully"}]))))
+     (.share ^js react/sharing
+             (clj->js {:title (i18n/label :t/local-backup)
+                       :url   url})))))
+
+(rf/defn save-backup-file-with-picker
+  {:events [:syncing/save-backup-file-with-picker]}
+  [_ file-path]
+  {::save-backup-file-with-picker {:url file-path}})

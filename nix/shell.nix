@@ -38,6 +38,10 @@ in mkShell {
   LANG="en_US.UTF-8";
   LANGUAGE="en_US.UTF-8";
 
+  # Prevent Yarn from checking packageManager field in parent directories
+  # https://github.com/yarnpkg/yarn/blob/740c38c3a962c30ddb344a919bbfb7065620714b/src/cli/index.js#L292C21-L292C33
+  SKIP_YARN_COREPACK_CHECK="1";
+
   # Important to load our own Nix binary cache.
   NIX_CONFIG = builtins.readFile ./nix.conf;
 
