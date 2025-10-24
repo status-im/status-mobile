@@ -12,6 +12,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.FileProvider
+import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -24,11 +25,35 @@ import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-class LogManager(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class LogManager(private val reactContext: ReactApplicationContext) :
+    ReactContextBaseJavaModule(reactContext), ActivityEventListener {
+
+    companion object {
+        private const val TAG = "LogManager"
+        private const val CREATE_BACKUP_FILE_REQUEST = 8001
+        private const val statusLogFileName = "Status.log"
+        private const val logsZipFileName = "Status-debug-logs.zip"
+    }
 
     private val utils = Utils(reactContext)
+    private var pendingBackupFilePath: String? = null
+    private var pendingBackupCallback: Callback? = null
+
+    init {
+        reactContext.addActivityEventListener(this)
+    }
 
     override fun getName() = "LogManager"
+
+    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == CREATE_BACKUP_FILE_REQUEST) {
+            handleBackupFileSelection(resultCode, data)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        // Not needed for our use case
+    }
 
     private fun showErrorMessage(message: String) {
         val activity = currentActivity
@@ -301,6 +326,94 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
         }
     }
 
+    @ReactMethod
+    fun saveBackupFileWithPicker(filePath: String, callback: Callback) {
+        Log.d(TAG, "saveBackupFileWithPicker: $filePath")
+
+        try {
+            val sourceFile = File(filePath)
+
+            if (!sourceFile.exists()) {
+                val errorMsg = "Backup file does not exist: $filePath"
+                Log.e(TAG, errorMsg)
+                callback.invoke(errorMsg)
+                return
+            }
+
+            val fileName = sourceFile.name
+            Log.d(TAG, "Launching file picker for: $fileName")
+
+            // Store the file path and callback for later use
+            pendingBackupFilePath = filePath
+            pendingBackupCallback = callback
+
+            // Create an intent to let user choose where to save the file
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/octet-stream"
+                putExtra(Intent.EXTRA_TITLE, fileName)
+            }
+
+            val activity = currentActivity
+            if (activity == null) {
+                callback.invoke("Activity not available")
+                pendingBackupFilePath = null
+                pendingBackupCallback = null
+                return
+            }
+
+            activity.startActivityForResult(intent, CREATE_BACKUP_FILE_REQUEST)
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error launching file picker: ${e.message}")
+            e.printStackTrace()
+            callback.invoke(e.message)
+            pendingBackupFilePath = null
+            pendingBackupCallback = null
+        }
+    }
+
+    private fun handleBackupFileSelection(resultCode: Int, data: Intent?) {
+        val callback = pendingBackupCallback
+        val filePath = pendingBackupFilePath
+
+        // Clear pending state
+        pendingBackupCallback = null
+        pendingBackupFilePath = null
+
+        if (callback == null || filePath == null) {
+            Log.e(TAG, "No pending backup operation")
+            return
+        }
+
+        if (resultCode != Activity.RESULT_OK || data?.data == null) {
+            Log.d(TAG, "User cancelled file picker")
+            callback.invoke("User cancelled")
+            return
+        }
+
+        try {
+            val destinationUri = data.data!!
+            val sourceFile = File(filePath)
+
+            Log.d(TAG, "Copying backup to selected location: $destinationUri")
+
+            reactContext.contentResolver.openOutputStream(destinationUri)?.use { outputStream ->
+                FileInputStream(sourceFile).use { inputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+            }
+
+            Log.d(TAG, "Backup saved successfully to selected location")
+            callback.invoke(null)
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saving backup to selected location: ${e.message}")
+            e.printStackTrace()
+            callback.invoke(e.message)
+        }
+    }
+
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun logFileDirectory(usePublicLogDir: Boolean): String? {
         Log.d(TAG, "logFileDirectory: usePublicLogDir=$usePublicLogDir")
@@ -349,11 +462,5 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
             requestBody = setPreLoginLogEnabledRequest,
             statusgoFunction = { Statusgo.setPreLoginLogEnabled(setPreLoginLogEnabledRequest) }
         )
-    }
-
-    companion object {
-        private const val TAG = "LogManager"
-        private const val statusLogFileName = "Status.log"
-        private const val logsZipFileName = "Status-debug-logs.zip"
     }
 }

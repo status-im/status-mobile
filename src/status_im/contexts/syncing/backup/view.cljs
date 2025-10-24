@@ -39,6 +39,16 @@
                     {:type :negative
                      :text (str "Backup failed: " (or (:error parsed-result) "no file path"))}]))))
 
+(defn save-backup-file-with-picker
+  [result]
+  (let [parsed-result (types/json->clj result)
+        file-path     (:filePath parsed-result)]
+    (if (and file-path (not (string/blank? file-path)))
+      (rf/dispatch [:syncing/save-backup-file-with-picker file-path])
+      (rf/dispatch [:toasts/upsert
+                    {:type :negative
+                     :text (str "Backup failed: " (or (:error parsed-result) "no file path"))}]))))
+
 (defn on-toggle-messages-backup
   [enabled?]
   (if enabled?
@@ -83,6 +93,6 @@
         :customization-color profile-color
         :on-press            #(native-module/perform-local-backup
                                (if platform/android?
-                                 save-backup-file-locally
+                                 save-backup-file-with-picker
                                  share-backup-file))}
        (i18n/label :t/backup-data-locally)]]]))

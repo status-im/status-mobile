@@ -321,6 +321,11 @@
   (log/debug "[native-module] save-backup-file-locally")
   (.saveBackupFileLocally ^js (log-manager) fileUri callback))
 
+(defn save-backup-file-with-picker
+  [fileUri callback]
+  (log/debug "[native-module] save-backup-file-with-picker")
+  (.saveBackupFileWithPicker ^js (log-manager) fileUri callback))
+
 (defn close-application
   []
   (log/debug "[native-module] close-application")
