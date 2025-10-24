@@ -2,10 +2,14 @@ package im.status.ethereum.module
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ContentValues
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.FileProvider
 import com.facebook.react.bridge.Callback
@@ -224,6 +228,74 @@ class LogManager(private val reactContext: ReactApplicationContext) : ReactConte
 
         } catch (e: Exception) {
             Log.e(TAG, "Error sharing backup file: ${e.message}")
+            e.printStackTrace()
+            callback.invoke(e.message)
+        }
+    }
+
+    @ReactMethod
+    fun saveBackupFileLocally(filePath: String, callback: Callback) {
+        Log.d(TAG, "saveBackupFileLocally: $filePath")
+
+        try {
+            val context = reactApplicationContext
+            val sourceFile = File(filePath)
+
+            if (!sourceFile.exists()) {
+                val errorMsg = "Backup file does not exist: $filePath"
+                Log.e(TAG, errorMsg)
+                callback.invoke(errorMsg)
+                return
+            }
+
+            val fileName = sourceFile.name
+            Log.d(TAG, "Saving backup file: $fileName")
+
+            // Use MediaStore API for Android 10+ (API 29+)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                    put(MediaStore.Downloads.MIME_TYPE, "application/octet-stream")
+                    put(MediaStore.Downloads.IS_PENDING, 1)
+                }
+
+                val resolver = context.contentResolver
+                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+
+                if (uri == null) {
+                    callback.invoke("Failed to create file in Downloads")
+                    return
+                }
+
+                resolver.openOutputStream(uri)?.use { outputStream ->
+                    FileInputStream(sourceFile).use { inputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                }
+
+                contentValues.clear()
+                contentValues.put(MediaStore.Downloads.IS_PENDING, 0)
+                resolver.update(uri, contentValues, null, null)
+
+                Log.d(TAG, "Backup saved successfully to Downloads: $fileName")
+                callback.invoke(null)
+            } else {
+                // Fallback for Android 9 and below
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val destFile = File(downloadsDir, fileName)
+
+                FileInputStream(sourceFile).use { input ->
+                    FileOutputStream(destFile).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+
+                Log.d(TAG, "Backup saved successfully to Downloads: $fileName")
+                callback.invoke(null)
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saving backup file: ${e.message}")
             e.printStackTrace()
             callback.invoke(e.message)
         }

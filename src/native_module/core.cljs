@@ -316,6 +316,11 @@
   (log/debug "[native-module] share-backup-file")
   (.shareBackupFile ^js (log-manager) fileUri callback))
 
+(defn save-backup-file-locally
+  [fileUri callback]
+  (log/debug "[native-module] save-backup-file-locally")
+  (.saveBackupFileLocally ^js (log-manager) fileUri callback))
+
 (defn close-application
   []
   (log/debug "[native-module] close-application")
