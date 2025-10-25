@@ -27,7 +27,8 @@
      :container-style style/close-button}]])
 
 (defn- content
-  [{:keys [theme type button-label on-button-press message colors-map customization-color]}]
+  [{:keys [theme type button-label on-button-press message colors-map customization-color
+           button-icon-right]}]
   [rn/view {:style {:flex 1}}
    [text/text
     {:size  :paragraph-2
@@ -40,22 +41,24 @@
        :size                24
        :customization-color customization-color
        :on-press            on-button-press
-       :container-style     style/content-button}
+       :container-style     style/content-button
+       :icon-right          button-icon-right}
       button-label])])
 
 (defn view
   "[view opts \"message\"]
    opts
-   {:type            :default/:informative/:error
-    :closed?         bool (false)  ;; Information box's state
-    :icon            keyword, required (:i/info)
-    :icon-size       int (16)
-    :no-icon-color?  bool (false)
-    :style           map
-    :button-label    string
-    :on-button-press function
-    :on-close        function"
-  [{:keys [type closed? blur? icon style button-label
+   {:type              :default/:informative/:error
+    :closed?           bool (false)  ;; Information box's state
+    :icon              keyword, required (:i/info)
+    :icon-size         int (16)
+    :no-icon-color?    bool (false)
+    :style             map
+    :button-label      string
+    :on-button-press   function
+    :on-close          function
+    :button-icon-right keyword to place an icon to the right of the button's label"
+  [{:keys [type closed? blur? icon style button-label button-icon-right
            on-button-press on-close no-icon-color? icon-size customization-color]
     :or   {customization-color :primary}}
    message]
@@ -67,12 +70,12 @@
           include-button?         (not (string/blank? button-label))]
       [rn/view
        {:accessibility-label :information-box
-        :style               (merge (style/container {:theme               theme
-                                                      :colors-map          colors-map
-                                                      :customization-color customization-color
-                                                      :type                type
-                                                      :include-button?     include-button?})
-                                    style)}
+        :style               [(style/container {:theme               theme
+                                                :colors-map          colors-map
+                                                :customization-color customization-color
+                                                :type                type
+                                                :include-button?     include-button?})
+                              style]}
        [icons/icon (or icon :i/info)
         {:color           (style/get-color-by-type colors-map theme type :icon)
          :no-color        no-icon-color?
@@ -85,6 +88,7 @@
          :on-button-press     on-button-press
          :colors-map          colors-map
          :customization-color customization-color
-         :message             message}]
+         :message             message
+         :button-icon-right   button-icon-right}]
        (when on-close
          [close-button {:theme theme :colors-map colors-map :on-close on-close}])])))

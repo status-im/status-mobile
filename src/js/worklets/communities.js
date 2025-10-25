@@ -10,20 +10,45 @@ import {
 
 import { Platform } from 'react-native';
 
+export function useStartScrollValue(isCollapsed, collapseThreshold) {
+  return useDerivedValue(() => {
+    return isCollapsed ? -collapseThreshold.value : 0;
+  });
+}
+
+export function useScrollValue(isCollapsed, collapseThreshold) {
+  return useDerivedValue(() => {
+    return isCollapsed ? collapseThreshold.value : 0;
+  });
+}
+
+export function useDerivedValueAdd(sharedValue, value) {
+  return useDerivedValue(() => {
+    return sharedValue.value + value;
+  });
+}
+
+export function useDerivedValueMul(sharedValue, value) {
+  return useDerivedValue(() => {
+    return sharedValue.value * value;
+  });
+}
+
 export function useLogoStyles({
+  initialState,
   scrollAmount,
-  expandHeaderThreshold,
+  collapseThreshold,
   sheetDisplacementThreshold,
   textMovementThreshold,
 }) {
   return useAnimatedStyle(() => {
-    const firstDisplacement = scrollAmount.value < expandHeaderThreshold;
-    if (firstDisplacement) {
+    const isFirstDisplacement = initialState.value === 'expanded' || scrollAmount.value < collapseThreshold.value;
+    if (isFirstDisplacement) {
       return {
         transform: [
           { translateX: 20 },
-          { translateY: interpolate(scrollAmount.value, [0, expandHeaderThreshold], [0, -42.5], 'clamp') },
-          { scale: interpolate(scrollAmount.value, [0, textMovementThreshold], [1, 0.4], 'clamp') },
+          { translateY: interpolate(scrollAmount.value, [0, collapseThreshold.value], [0, -42.5], 'clamp') },
+          { scale: interpolate(scrollAmount.value, [0, textMovementThreshold.value], [1, 0.4], 'clamp') },
         ],
       };
     } else {
@@ -33,7 +58,7 @@ export function useLogoStyles({
           {
             translateY: interpolate(
               scrollAmount.value,
-              [expandHeaderThreshold, sheetDisplacementThreshold],
+              [collapseThreshold.value, sheetDisplacementThreshold.value],
               [-42.5, -50.5],
               'clamp',
             ),
@@ -45,19 +70,19 @@ export function useLogoStyles({
   });
 }
 
-export function useSheetStyles({ scrollAmount, expandHeaderThreshold, sheetDisplacementThreshold }) {
+export function useSheetStyles({ initialState, scrollAmount, collapseThreshold, sheetDisplacementThreshold }) {
   return useAnimatedStyle(() => {
-    const firstDisplacement = scrollAmount.value < expandHeaderThreshold;
-    if (firstDisplacement) {
+    const isFirstDisplacement = initialState.value === 'expanded' || scrollAmount.value < collapseThreshold.value;
+    if (isFirstDisplacement) {
       return {
-        transform: [{ translateY: interpolate(scrollAmount.value, [0, expandHeaderThreshold], [40, 0], 'clamp') }],
+        transform: [{ translateY: interpolate(scrollAmount.value, [0, collapseThreshold.value], [40, 0], 'clamp') }],
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
       };
     } else {
       const radius = interpolate(
         scrollAmount.value,
-        [expandHeaderThreshold, sheetDisplacementThreshold],
+        [collapseThreshold.value, sheetDisplacementThreshold.value],
         [20, 0],
         'clamp',
       );
@@ -66,7 +91,7 @@ export function useSheetStyles({ scrollAmount, expandHeaderThreshold, sheetDispl
           {
             translateY: interpolate(
               scrollAmount.value,
-              [expandHeaderThreshold, sheetDisplacementThreshold],
+              [collapseThreshold.value, sheetDisplacementThreshold.value],
               [0, -8],
               'clamp',
             ),
@@ -79,35 +104,56 @@ export function useSheetStyles({ scrollAmount, expandHeaderThreshold, sheetDispl
   });
 }
 
-export function useNameStyles({ scrollAmount, expandHeaderThreshold, textMovementThreshold }) {
+export function useNameStyles({ initialState, scrollAmount, collapseThreshold, textMovementThreshold }) {
   return useAnimatedStyle(() => {
-    const animationProgress = interpolate(
-      scrollAmount.value,
-      [textMovementThreshold, expandHeaderThreshold],
-      [0, 40],
-      'clamp',
-    );
+    let horizontalPosition;
+    if (initialState.value === 'collapsed') {
+      horizontalPosition = 40;
+    } else if (initialState.value === 'expanded') {
+      horizontalPosition = 0;
+    } else {
+      horizontalPosition = interpolate(
+        scrollAmount.value,
+        [textMovementThreshold.value, collapseThreshold.value],
+        [0, 40],
+        'clamp',
+      );
+    }
+
+    let verticalPosition;
+    if (initialState.value === 'collapsed') {
+      verticalPosition = -44.5;
+    } else if (initialState.value === 'expanded') {
+      verticalPosition = 0;
+    } else {
+      verticalPosition = interpolate(
+        scrollAmount.value,
+        [textMovementThreshold.value, collapseThreshold.value],
+        [0, -44.5],
+        'clamp',
+      );
+    }
+
     return {
-      marginRight: animationProgress,
-      transform: [
-        { translateX: animationProgress },
-        {
-          translateY: interpolate(
-            scrollAmount.value,
-            [textMovementThreshold, expandHeaderThreshold],
-            [0, -44.5],
-            'clamp',
-          ),
-        },
-      ],
+      marginRight: horizontalPosition,
+      transform: [{ translateX: horizontalPosition }, { translateY: verticalPosition }],
     };
   });
 }
 
-export function useInfoStyles({ scrollAmount, infoOpacityThreshold }) {
+export function useInfoStyles({ initialState, scrollAmount, collapseThreshold, infoOpacityThresholdFactor }) {
   return useAnimatedStyle(() => {
+    let opacity;
+    if (initialState.value === 'collapsed') {
+      opacity = 0;
+    } else if (initialState.value === 'expanded') {
+      opacity = 1;
+    } else {
+      const infoOpacityThreshold = collapseThreshold.value * infoOpacityThresholdFactor;
+      opacity = interpolate(scrollAmount.value, [0, infoOpacityThreshold], [1, 0.2], 'extend');
+    }
     return {
-      opacity: interpolate(scrollAmount.value, [0, infoOpacityThreshold], [1, 0.2], 'extend'),
+      opacity: opacity,
     };
   });
 }
@@ -115,19 +161,24 @@ export function useInfoStyles({ scrollAmount, infoOpacityThreshold }) {
 export function useChannelsStyles({
   scrollAmount,
   headerHeight,
-  expandHeaderThreshold,
+  collapseThreshold,
   sheetDisplacementThreshold,
   expandHeaderLimit,
 }) {
   return useAnimatedStyle(() => {
     const headerDisplacement = (headerHeight.value - 55.5) * -1;
-    const firstDisplacement = scrollAmount.value < expandHeaderThreshold;
-    const secondDisplacement = scrollAmount.value > sheetDisplacementThreshold;
+    const firstDisplacement = scrollAmount.value < collapseThreshold.value;
+    const secondDisplacement = scrollAmount.value > sheetDisplacementThreshold.value;
     if (firstDisplacement) {
       return {
         transform: [
           {
-            translateY: interpolate(scrollAmount.value, [0, expandHeaderThreshold], [39, headerDisplacement], 'clamp'),
+            translateY: interpolate(
+              scrollAmount.value,
+              [0, collapseThreshold.value],
+              [39, headerDisplacement],
+              'clamp',
+            ),
           },
         ],
       };
@@ -137,7 +188,7 @@ export function useChannelsStyles({
           {
             translateY: interpolate(
               scrollAmount.value,
-              [sheetDisplacementThreshold, expandHeaderLimit],
+              [sheetDisplacementThreshold.value, expandHeaderLimit.value],
               [headerDisplacement - 8, headerDisplacement - 64],
               'clamp',
             ),
@@ -150,7 +201,7 @@ export function useChannelsStyles({
           {
             translateY: interpolate(
               scrollAmount.value,
-              [expandHeaderThreshold, sheetDisplacementThreshold],
+              [collapseThreshold.value, sheetDisplacementThreshold.value],
               [headerDisplacement, headerDisplacement - 8],
               'clamp',
             ),
@@ -158,19 +209,24 @@ export function useChannelsStyles({
         ],
       };
     }
-  }, [headerHeight.value]);
+  });
 }
 
 export function useScrollTo({ animatedRef, scrollAmount, expandHeaderLimit }) {
   const isAndroid = Platform.OS === 'android';
   return useDerivedValue(() => {
-    scrollTo(animatedRef, 0, scrollAmount.value - expandHeaderLimit, isAndroid);
+    scrollTo(animatedRef, 0, scrollAmount.value - expandHeaderLimit.value, isAndroid);
   });
 }
 
-export function useHeaderOpacity({ scrollAmount, expandHeaderThreshold, sheetDisplacementThreshold }) {
+export function useHeaderOpacity({ scrollAmount, collapseThreshold, sheetDisplacementThreshold }) {
   return useDerivedValue(() => {
-    return interpolate(scrollAmount.value, [expandHeaderThreshold, sheetDisplacementThreshold], [0, 1], 'clamp');
+    return interpolate(
+      scrollAmount.value,
+      [collapseThreshold.value, sheetDisplacementThreshold.value],
+      [0, 1],
+      'clamp',
+    );
   });
 }
 
@@ -180,9 +236,15 @@ export function useOppositeHeaderOpacity(headerOpacity) {
   });
 }
 
-export function useNavContentOpacity({ scrollAmount, sheetDisplacementThreshold, expandHeaderLimit }) {
+export function useNavContentOpacity({
+  scrollAmount,
+  navbarContentThresholdFactor,
+  sheetDisplacementThreshold,
+  expandHeaderLimit,
+}) {
   return useDerivedValue(() => {
-    return interpolate(scrollAmount.value, [sheetDisplacementThreshold, expandHeaderLimit], [0, 1], 'clamp');
+    const navbarContentThreshold = sheetDisplacementThreshold.value + navbarContentThresholdFactor;
+    return interpolate(scrollAmount.value, [navbarContentThreshold, expandHeaderLimit.value], [0, 1], 'clamp');
   });
 }
 
@@ -240,7 +302,7 @@ export function onPanUpdate({ scrollStart, scrollAmount, maxScroll, expandHeader
     if (newScrollAmount <= 0) {
       scrollAmount.value = 0;
     } else {
-      const limit = expandHeaderLimit + maxScroll.value;
+      const limit = expandHeaderLimit.value + maxScroll.value;
       scrollAmount.value = newScrollAmount <= limit ? newScrollAmount : limit;
     }
   };
@@ -251,26 +313,27 @@ export function onPanEnd({
   scrollAmount,
   maxScroll,
   expandHeaderLimit,
-  expandHeaderThreshold,
-  snapHeaderThreshold,
+  collapseThreshold,
+  snapHeaderThresholdFactor,
   animationDuration,
 }) {
   const isIOS = Platform.OS === 'ios';
   return function (event) {
     'worklet';
     scrollStart.value = -scrollAmount.value;
+    const snapHeaderThreshold = collapseThreshold.value * snapHeaderThresholdFactor;
     const endAnimation = onScrollAnimationEnd(
       scrollAmount,
       scrollStart,
-      expandHeaderThreshold,
+      collapseThreshold.value,
       snapHeaderThreshold,
-      expandHeaderLimit,
+      expandHeaderLimit.value,
       animationDuration,
     );
-    if (scrollAmount.value < expandHeaderLimit) {
+    if (scrollAmount.value < expandHeaderLimit.value) {
       endAnimation();
     } else {
-      const maxValue = maxScroll.value + expandHeaderLimit;
+      const maxValue = maxScroll.value + expandHeaderLimit.value;
       const decelerationRate = isIOS ? { deceleration: 0.998 } : { deceleration: 0.996 };
 
       scrollStart.value = withDecay({

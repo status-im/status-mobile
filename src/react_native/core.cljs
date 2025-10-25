@@ -187,13 +187,15 @@
   (react/useMemo handler (get-js-deps deps)))
 
 (defn delay-render
-  [content]
-  (let [[render? set-render] (use-state false)]
-    (use-mount
-     (fn []
-       (js/setTimeout #(set-render true) 0)))
-    (when render?
-      content)))
+  ([content]
+   (delay-render {:ms 0} content))
+  ([{:keys [ms]} & children]
+   (let [[render? set-render] (use-state false)]
+     (use-mount
+      (fn []
+        (js/setTimeout #(set-render true) ms)))
+     (when render?
+       (into [:<>] children)))))
 
 (def layout-animation (.-LayoutAnimation ^js react-native))
 (def configure-next (.-configureNext ^js layout-animation))

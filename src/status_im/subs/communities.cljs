@@ -74,6 +74,13 @@
    (js-keys (:members community))))
 
 (re-frame/reg-sub
+ :communities/community-members-count
+ (fn [[_ community-id]]
+   (re-frame/subscribe [:communities/community-members community-id]))
+ (fn [members _]
+   (count members)))
+
+(re-frame/reg-sub
  :communities/community-chat-members
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])])
@@ -393,20 +400,23 @@
  (fn [[_ community-id]]
    (re-frame/subscribe [:communities/community community-id]))
  (fn [{:keys [joined spectated images description color activeMembersCount tags
-              permissions role-permissions?]
+              permissions role-permissions? memberRole]
        :as   community}]
    (when community
-     {:joined?              joined
-      :spectated?           spectated
-      :cover-image          (-> images :banner :uri)
-      :logo                 (-> images :large :uri)
-      :community-name       (:name community)
-      :description          description
-      :color                color
-      :active-members-count activeMembersCount
-      :tags                 tags
-      :permissions          permissions
-      :role-permissions?    role-permissions?})))
+     (let [owner? (= memberRole constants/community-member-role-owner)]
+       {:joined?              joined
+        :spectated?           spectated
+        :cover-image          (-> images :banner :uri)
+        :logo                 (-> images :large :uri)
+        :community-name       (:name community)
+        :description          description
+        :color                color
+        :active-members-count activeMembersCount
+        :tags                 tags
+        :permissions          permissions
+        :role-permissions?    role-permissions?
+        :owner?               owner?
+        :collapsed?           (and joined (not owner?))}))))
 
 (re-frame/reg-sub
  :communities/collapsed-categories-for-community

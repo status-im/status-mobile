@@ -453,6 +453,10 @@
     "../src/js/worklets/core.js"                       worklet-factory
     "../src/js/worklets/communities.js"                #js {"useLogoStyles"            #js {}
                                                             "useSheetStyles"           #js {}
+                                                            "useStartScrollValue"      #js {}
+                                                            "useScrollValue"           #js {}
+                                                            "useDerivedValueAdd"       #js {}
+                                                            "useDerivedValueMul"       #js {}
                                                             "useNameStyles"            #js {}
                                                             "useInfoStyles"            #js {}
                                                             "useChannelsStyles"        #js {}

@@ -2,6 +2,7 @@
   (:require
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]))
 
 (defn fetching-placeholder
@@ -16,8 +17,11 @@
   [background-color]
   {:width            "100%"
    :background-color background-color
-   :height           (+ 20 ;; Area hidden by sheet on top but visible with rounded borders
+   :height           (+ 20 ; Area hidden by sheet on top but visible with rounded borders
                         92
+                        ;; On Android we count the navigation bar page-nav padding top
+                        ;; because it isn't overlapped with the safe-area top.
+                        (when platform/android? 12)
                         safe-area/top)})
 
 (def cover-image {:flex 1})
@@ -36,16 +40,18 @@
                                            theme)}])
 
 (def ^:private page-nav-container-base-style
-  {:height (+ 12 ;; padding-top
-              12 ;; padding-bottom
-              32) ;; button size
+  {:height (+ 12 ; padding-top
+              12 ; padding-bottom
+              32) ; button size
    :width  "100%"})
 
 (defn page-nav-container
   [opposite-header-opacity]
   [rn/stylesheet-absolute-fill
    page-nav-container-base-style
-   {:top     (- safe-area/top 12) ;; -12 to place the button next to the safe-area
+   {:top     (if platform/android?
+               safe-area/top
+               (- safe-area/top 12)) ; -12 to place the button next to the safe-area
     :opacity 1}
    {:opacity opposite-header-opacity}])
 
@@ -53,7 +59,9 @@
   [header-opacity]
   [rn/stylesheet-absolute-fill
    page-nav-container-base-style
-   {:top     (- safe-area/top 12) ;; -12 to place the button next to the safe-area
+   {:top     (if platform/android?
+               safe-area/top
+               (- safe-area/top 12)) ; -12 to place the button next to the safe-area
     :opacity 0}
    {:opacity header-opacity}])
 
@@ -135,3 +143,8 @@
 
 (def community-sheet-position
   {:top (+ -20 -40)})
+
+(def promote-community
+  {:padding-top        4
+   :padding-bottom     20
+   :padding-horizontal 20})
