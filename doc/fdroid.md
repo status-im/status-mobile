@@ -67,7 +67,7 @@ Builds:
 ```
 It contains a list of objects defining each release of the application. In order to add a new release simply copy a previous release object and adjust the following values:
 
-* `versionName` - String version like `1.12.0`.
+* `versionName` - String version like `2.34.4`.
 * `versionCode` - Android `versionCode`. Normally it is generated from timestamp at build time.
 * `commit` - Specific commit SHA1 from which the given release was built.
 
@@ -75,7 +75,7 @@ The `versionCode` should be the same as the one in build that was uploaded to Pl
 It can be found in the build logs or by using:
 ```
  > make shell TARGET=android
- > apkanalyzer manifest version-code StatusIm-Mobile-v1.12.0.apk
+ > apkanalyzer manifest version-code StatusIm-Mobile-v2.34.4.apk
 2021022512
 ```
 
@@ -91,41 +91,113 @@ Prefix is necessary to avoid F-Droid people merging the PR before it's ready.
 
 # Checking Builds
 
+## Prepare docker image
 The simplest way to test if the app builds via F-Droid is to use the Docker image:
 https://gitlab.com/fdroid/docker-executable-fdroidserver
 
 Which is available under `registry.gitlab.com/fdroid/docker-executable-fdroidserver:latest`.
 
-Because we use Nix to build the mobile app we need to slightly modify the image with this `Dockerfile`:
+Because we use Nix to build the mobile app we need to slightly modify the image with this updates to the original `Dockerfile`:
 ```Dockerfile
-FROM registry.gitlab.com/fdroid/docker-executable-fdroidserver:latest
+FROM registry.gitlab.com/fdroid/fdroidserver:buildserver
+
+# ADD: ensure proper user and id to build with (next 5 lines):
 ARG BUILDER_UID=1000
 ENV BUILDER_USER=vagrant
-RUN useradd -u $BUILDER_UID $BUILDER_USER
-RUN mkdir -m 0755 /nix /home/$BUILDER_USER \
- && chown -R $BUILDER_USER /nix /home/$BUILDER_USER
+RUN usermod -u $BUILDER_UID $BUILDER_USER
+RUN mkdir -p -m 0755 /nix /home/$BUILDER_USER \
+    && chown -R $BUILDER_USER /nix /home/$BUILDER_USER
+
+RUN . /etc/profile.d/bsenv.sh \
+    && git clone --depth 1 https://gitlab.com/fdroid/fdroidserver.git "${fdroidserver}"
+
+# Install additional utilities required by actual builds
+# build-tools 32.0.0 is needed for a good apksigner
+RUN . /etc/profile.d/bsenv.sh \
+    && apt-get update && apt-get install --yes \
+        patch \
+        autoconf libtool pkg-config \
+        ant \
+        make xz-utils \ # ADD: additional packages
+    && echo y | sdkmanager "build-tools;32.0.0" \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN git config --system safe.directory '*'
+
+ENV PATH="${PATH}:${fdroidserver}"
+
+VOLUME ["/repo"]
+WORKDIR /repo
+
+ENTRYPOINT ["sh", "-c", ". /etc/profile.d/bsenv.sh && GRADLE_USER_HOME=${home_vagrant}/.gradle ${fdroidserver}/fdroid \"$@\"", "-s"]
+CMD ["--help"]
 ```
 Build it using:
 ```
 docker build --build-arg=BUILDER_UID=$UID -t statusteam/docker-executable-fdroidserver:latest .
 ```
-Then clone the [fdroiddata](https://gitlab.com/fdroid/fdroiddata) and [fdroidserver](https://gitlab.com/fdroid/fdroidserver) repos and use it to test the build of a specific Status Android app version: `1.12.0`
+
+## Run the build
+
+**Docker Memory Settings**
+
+F-Droid builds are memory-intensive. Ensure Docker has at least 20GB of memory allocated:
+
+1. Open Docker Desktop
+2. Go to **Settings → Resources**
+3. Set **Memory** to at least 16GB (it fails on 8GB)
+4. Click **Apply & Restart**
+
+Verify the setting:
+```bash
+docker info | grep -E "Memory|CPUs"
+```
+
+
+Then clone the [fdroiddata](https://gitlab.com/fdroid/fdroiddata) and [fdroidserver](https://gitlab.com/fdroid/fdroidserver) repos and use it to test the build of a specific Status Android app version: `2.34.4`.
+Make sure you've updated local file at `metadata/im.status.ethereum.yml`to contain the version you need to build
 ```
 git clone https://gitlab.com/fdroid/fdroidserver
 git clone https://gitlab.com/fdroid/fdroiddata
+# modify metadata/im.status.ethereum.yml at this point
+
 docker run --rm \
-  -u $UID:$GID -e USER=vagrant \
+  -u $UID:$(id -g) \
+  -e USER=vagrant \
   -v $PWD/fdroiddata:/repo \
   -v $PWD/fdroidserver:/fdroidserver \
   statusteam/docker-executable-fdroidserver:latest \
-  build im.status.ethereum
+  build im.status.ethereum:2025102415     <-- here you specify the versionCode of your version
 ```
 We have to create a user and specify the UID because Nix cannot run as `root` and that is the default user for the F-Droid Docker image. By adding our own user and setting the UID we also make it possible to mount folders like `fdroiddata` and `fdroidserver`.
+
+**Build command explanation:**
+- `-u $UID:$(id -g)` - Run as current user for proper file permissions
+- `-e USER=vagrant` - Set USER environment variable
+- `-v $PWD/fdroiddata:/repo` - Mount fdroiddata as /repo in container
+- `-v $PWD/fdroidserver:/fdroidserver` - Mount fdroidserver tools
+- `build im.status.ethereum:2025102415` - Build command with app ID and version code
 
 You can specify a `--verbose` flag for `build` command for additional information.
 You can provide `--storage-opt size=30G` flag if Docker complains about running out of space.
 
 You should also run `lint` and `rewritemeta` for the App ID to verify and fix the YAML metadata formatting.
+
+** Monitor Build Progress **
+
+In another terminal, you can monitor the build logs:
+
+```bash
+tail -f fdroiddata/logs/im.status.ethereum.log
+```
+
+## Check build success
+
+Once the build completes successfully, the unsigned APK will be located at:
+
+```bash
+fdroiddata/unsigned/im.status.ethereum_2025102415.apk
+```
 
 # Scanning Builds Locally
 
