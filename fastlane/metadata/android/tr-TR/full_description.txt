@@ -1,0 +1,18 @@
+Status, takma adlı gizlilik odaklı mesajlaşmayı ve güvenli kripto cüzdanını tek bir güçlü iletişim aracında birleştiriyor. Arkadaşlarınızla ve büyüyen topluluklarla sohbet edin. Dijital varlıkları satın alın, saklayın ve değiştirin.
+
+Status, Ethereum işletim sisteminizdir.
+
+GÜVENLİ ETHEREUM CÜZDANI
+Status kripto cüzdanı, ETH, SNT, DAI gibi sabit paralar ve koleksiyonluk eşyalar gibi Ethereum varlıklarını güvenli bir şekilde göndermenize, saklamanıza ve değiştirmenize olanak tanır. Ana ağ, Base, Arbitrum ve Optimism'i destekleyen çok zincirli Ethereum cüzdan uygulamamızla kripto paranızın ve dijital varlıklarınızın kontrolünü güvenle ele alın. Status blok zinciri cüzdanı şu anda yalnızca ETH, ERC-20, ERC-721 ve ERC-1155 varlıklarını destekliyor; Bitcoin'i desteklemiyor.
+
+ÖZEL MESAJLAŞMACI
+İletişimlerinizi kimse gözetlemeden özel 1:1 ve özel grup sohbetleri gönderin. Status, daha fazla gizlilik ve güvenli mesajlaşma için merkezi mesaj iletimlerini ortadan kaldıran bir mesajlaşma uygulamasıdır. Tüm mesajlar uçtan uca şifrelemeyle şifrelenir. Ayrıca, hiçbir mesaj yazarının veya hedeflenen alıcının kim olduğunu ifşa etmez, bu nedenle hiç kimse, Status bile kimin kiminle konuştuğunu veya ne söylendiğini bilmez.
+
+DEFI İLE KAZANIN
+Kripto paranızı Maker, Aave, Uniswap, Synthetix, PoolTogether, Zerion, Kyber ve daha fazlası gibi en son merkezi olmayan finans uygulamaları ve merkezi olmayan borsalarla (DEX) çalıştırın.
+
+TOPLULUĞUNUZLA BAĞLANTI KURUN
+En sevdiğiniz toplulukları ve arkadaşlarınızla keşfedin, bağlantı kurun ve sohbet edin. İster küçük bir arkadaş grubu, ister bir sanatçı kolektifi, kripto tüccarları veya bir sonraki büyük organizasyon olsun - Status topluluklarıyla mesajlaşın ve iletişim kurun.
+
+ÖZEL HESAP OLUŞTURMA
+Sahte anonim hesap oluşturma ile gizli kalın. Ücretsiz hesabınızı oluştururken ASLA bir telefon numarası, e-posta adresi veya banka hesabı girmeniz gerekmeyecek. Cüzdan özel anahtarlarınız yerel olarak oluşturulur ve yalnızca sizin fonlarınıza ve finansal işlemlerinize erişebilmenizi sağlamak için güvenli bir şekilde saklanır.
