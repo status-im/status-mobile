@@ -1,12 +1,19 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.9.24'
+library 'status-jenkins-lib@release-status-legacy-in-container'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
 
 pipeline {
-  agent { label 'linux && x86_64 && nix-2.24' }
-
+  agent {
+    docker {
+      label 'linuxcontainer'
+      image 'harbor.status.im/infra/ci-build-containers:linux-base-1.0.1'
+      args '--volume=/nix:/nix ' +
+           '--volume=/etc/nix:/etc/nix ' +
+           '--volume=/tmp:/tmp '
+    }
+  }
   options {
     timestamps()
     /* Prevent Jenkins jobs from running forever */
@@ -40,6 +47,7 @@ pipeline {
     PLATFORM = "android${utils.isE2EBuild() ? "-e2e" : ""}"
     BUILD_ENV = 'prod'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
+    NIX_BUILD_TMP = '/tmp/nix-build'
     FASTLANE_DISABLE_COLORS = 1
     SENTRY_PRODUCTION = "${utils.isReleaseBuild() ? 'true' : 'false'}"
   }
@@ -48,6 +56,9 @@ pipeline {
     stage('Prep') {
       steps {
         script {
+          /* Create shared temp dir for Nix build secrets files.
+           * Needs to be on a real mount visible to the host Nix daemon. */
+          sh 'mkdir -p /tmp/nix-build && chmod 777 /tmp/nix-build'
           utils.symlinkEnv()
           println("Build Number: ${utils.genBuildNumber()}")
         }
