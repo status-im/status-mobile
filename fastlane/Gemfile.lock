@@ -3,11 +3,18 @@ GEM
   specs:
     CFPropertyList (3.0.6)
       rexml
-    activesupport (7.0.8)
-      concurrent-ruby (~> 1.0, >= 1.0.2)
+    activesupport (7.2.3.1)
+      base64
+      benchmark (>= 0.3)
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.3.1)
+      connection_pool (>= 2.2.5)
+      drb
       i18n (>= 1.6, < 2)
-      minitest (>= 5.1)
-      tzinfo (~> 2.0)
+      logger (>= 1.4.2)
+      minitest (>= 5.1, < 6)
+      securerandom (>= 0.3)
+      tzinfo (~> 2.0, >= 2.0.5)
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
     artifactory (3.0.15)
@@ -29,17 +36,22 @@ GEM
     aws-sigv4 (1.8.0)
       aws-eventstream (~> 1, >= 1.0.2)
     babosa (1.0.4)
+    base64 (0.3.0)
+    benchmark (0.5.0)
+    bigdecimal (4.0.1)
     claide (1.1.0)
     colored (1.2)
     colored2 (3.1.2)
     commander (4.6.0)
       highline (~> 2.0.0)
-    concurrent-ruby (1.2.2)
+    concurrent-ruby (1.3.6)
+    connection_pool (3.0.2)
     declarative (0.0.20)
     digest-crc (0.6.5)
       rake (>= 12.0.0, < 14.0.0)
     domain_name (0.6.20231109)
     dotenv (2.8.1)
+    drb (2.2.3)
     emoji_regex (3.2.3)
     excon (0.108.0)
     faraday (1.10.3)
@@ -154,14 +166,15 @@ GEM
     http-cookie (1.0.5)
       domain_name (~> 0.5)
     httpclient (2.8.3)
-    i18n (1.14.1)
+    i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     jmespath (1.6.2)
     json (2.7.1)
     jwt (2.7.1)
+    logger (1.7.0)
     mini_magick (4.12.0)
     mini_mime (1.1.5)
-    minitest (5.20.0)
+    minitest (5.27.0)
     multi_json (1.15.0)
     multipart-post (2.3.0)
     nanaimo (0.3.0)
@@ -180,6 +193,7 @@ GEM
     rouge (2.0.7)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
+    securerandom (0.4.1)
     security (0.1.3)
     signet (0.18.0)
       addressable (~> 2.8)
@@ -219,9 +233,10 @@ PLATFORMS
   arm64-darwin-22
   arm64-darwin-23
   x86_64-darwin-22
+  x86_64-linux
 
 DEPENDENCIES
-  activesupport (>= 6.1.7.3, < 7.1.0)
+  activesupport (>= 6.1.7.3, < 7.3.0)
   fastlane (>= 2.131.0)
 
 BUNDLED WITH
