@@ -8,8 +8,8 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-    addressable (2.8.6)
-      public_suffix (>= 2.0.2, < 6.0)
+    addressable (2.9.0)
+      public_suffix (>= 2.0.2, < 8.0)
     artifactory (3.0.15)
     atomos (0.1.3)
     aws-eventstream (1.3.0)
@@ -169,7 +169,7 @@ GEM
     optparse (0.1.1)
     os (1.1.4)
     plist (3.7.0)
-    public_suffix (5.0.4)
+    public_suffix (7.0.5)
     rake (13.1.0)
     representable (3.2.0)
       declarative (< 0.1.0)
@@ -219,6 +219,7 @@ PLATFORMS
   arm64-darwin-22
   arm64-darwin-23
   x86_64-darwin-22
+  x86_64-linux
 
 DEPENDENCIES
   activesupport (>= 6.1.7.3, < 7.1.0)
