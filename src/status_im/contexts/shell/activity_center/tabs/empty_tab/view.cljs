@@ -10,15 +10,16 @@
     [utils.re-frame :as rf]))
 
 (def ^:private empty-tab-description
-  {types/no-type              (i18n/label :t/empty-notifications-all-tab)
-   types/admin                (i18n/label :t/empty-notifications-admin-tab)
-   types/mention              (i18n/label :t/empty-notifications-mentions-tab)
-   types/reply                (i18n/label :t/empty-notifications-replies-tab)
-   types/contact-request      (i18n/label :t/empty-notifications-contact-requests-tab)
+  {types/no-type (i18n/label :t/empty-notifications-all-tab)
+   types/admin (i18n/label :t/empty-notifications-admin-tab)
+   types/news-feed (i18n/label :t/empty-notifications-news-tab)
+   types/mention (i18n/label :t/empty-notifications-mentions-tab)
+   types/reply (i18n/label :t/empty-notifications-replies-tab)
+   types/contact-request (i18n/label :t/empty-notifications-contact-requests-tab)
    types/contact-verification (i18n/label :t/empty-notifications-identity-verification-tab)
-   types/tx                   (i18n/label :t/empty-notifications-transactions-tab)
-   types/membership           (i18n/label :t/empty-notifications-membership-tab)
-   types/system               (i18n/label :t/empty-notifications-system-tab)})
+   types/tx (i18n/label :t/empty-notifications-transactions-tab)
+   types/membership (i18n/label :t/empty-notifications-membership-tab)
+   types/system (i18n/label :t/empty-notifications-system-tab)})
 
 (defn empty-tab
   []

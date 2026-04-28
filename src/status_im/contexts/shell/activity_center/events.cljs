@@ -1,6 +1,7 @@
 (ns status-im.contexts.shell.activity-center.events
   (:require
-    [legacy.status-im.data-store.activities :as activities]
+   [clojure.set :as set]
+   [legacy.status-im.data-store.activities :as activities]
     [legacy.status-im.data-store.chats :as data-store.chats]
     [re-frame.core :as re-frame]
     [status-im.common.json-rpc.events :as json-rpc]
@@ -70,17 +71,26 @@
        (sort-by (juxt :timestamp :id)
                 #(compare %2 %1))))
 
+(defn- supported-notification-type?
+  [notification-type]
+  (if (set? notification-type)
+    (set/subset? notification-type types/all-supported)
+    (contains? types/all-supported notification-type)))
+
 (rf/defn notifications-reconcile
   {:events [:activity-center.notifications/reconcile]}
   [{:keys [db]} new-notifications]
   (when (seq new-notifications)
-    {:db         (update-in db
-                            [:activity-center :notifications]
-                            update-notifications
-                            new-notifications
-                            (get-in db [:activity-center :filter]))
-     :dispatch-n [[:activity-center.notifications/fetch-unread-count]
-                  [:activity-center.notifications/fetch-pending-contact-requests]]}))
+    (let [supported-notifications (filter #(supported-notification-type? (:type %))
+                                          new-notifications)]
+      (cond-> {:dispatch-n [[:activity-center.notifications/fetch-unread-count]
+                             [:activity-center.notifications/fetch-pending-contact-requests]]}
+        (seq supported-notifications)
+        (assoc :db (update-in db
+                              [:activity-center :notifications]
+                              update-notifications
+                              supported-notifications
+                              (get-in db [:activity-center :filter])))))))
 
 (rf/defn notifications-reconcile-from-response
   {:events [:activity-center/reconcile-notifications-from-response]}
@@ -387,7 +397,9 @@
 (rf/defn notifications-fetch-success
   {:events [:activity-center.notifications/fetch-success]}
   [{:keys [db]} reset-data? {:keys [cursor notifications]}]
-  (let [processed (map activities/<-rpc notifications)]
+  (let [processed (->> notifications
+                       (map activities/<-rpc)
+                       (filter #(supported-notification-type? (:type %))))]
     {:db (-> db
              (assoc-in [:activity-center :cursor] cursor)
              (update :activity-center dissoc :loading?)

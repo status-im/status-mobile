@@ -901,6 +901,7 @@
   "empty-chat-description-public-share-this": "share this chat.",
   "empty-keycard-required": "Requires an empty Keycard",
   "empty-notifications-admin-tab": "No unread admin notifications",
+  "empty-notifications-news-tab": "No unread news notifications",
   "empty-notifications-all-tab": "No unread notifications",
   "empty-notifications-contact-requests-tab": "No contact requests notifications",
   "empty-notifications-identity-verification-tab": "No identity verification requests",
