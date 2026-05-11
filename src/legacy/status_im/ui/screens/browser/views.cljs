@@ -180,7 +180,8 @@
 (views/defview browser-component
   [{:keys [error? url browser-id unsafe? can-go-back? ignore-unsafe
            can-go-forward? resolving? network-id url-original dapp? dapp
-           show-permission show-tooltip name dapps-account resources-permission?]}]
+           show-permission show-tooltip name dapps-account resources-permission?
+           bridge-token]}]
   {:should-component-update (fn [_ _ args]
                               (let [[_ props] args]
                                 (not (nil? (:url props)))))}
@@ -221,7 +222,8 @@
                                                                          (.. ^js % -nativeEvent -data)])
         :on-load                                    #(re-frame/dispatch [:browser/loading-started])
         :on-error                                   #(re-frame/dispatch [:browser/error-occured])
-        :injected-java-script-before-content-loaded (js-res/ethereum-provider (str network-id))
+        :injected-java-script-before-content-loaded (js-res/ethereum-provider (str network-id)
+                                                                              bridge-token)
         ;; https://github.com/status-im/status-mobile/issues/17854
         :allows-inline-media-playback               true}])]
    [navigation
@@ -275,4 +277,5 @@
          :show-tooltip          show-tooltip
          :name                  name
          :dapps-account         dapps-account
+         :bridge-token          (:bridge-token current-browser)
          :resources-permission? webview-allow-permission-requests?}]])))
