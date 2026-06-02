@@ -29,6 +29,7 @@ GEM
     aws-sigv4 (1.8.0)
       aws-eventstream (~> 1, >= 1.0.2)
     babosa (1.0.4)
+    base64 (0.3.0)
     claide (1.1.0)
     colored (1.2)
     colored2 (3.1.2)
@@ -158,7 +159,8 @@ GEM
       concurrent-ruby (~> 1.0)
     jmespath (1.6.2)
     json (2.7.1)
-    jwt (2.7.1)
+    jwt (2.10.3)
+      base64
     mini_magick (4.12.0)
     mini_mime (1.1.5)
     minitest (5.20.0)
@@ -219,6 +221,7 @@ PLATFORMS
   arm64-darwin-22
   arm64-darwin-23
   x86_64-darwin-22
+  x86_64-linux
 
 DEPENDENCIES
   activesupport (>= 6.1.7.3, < 7.1.0)
