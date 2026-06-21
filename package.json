@@ -75,7 +75,7 @@
     "react-syntax-highlighter": "^15.5.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
+    "@babel/core": "^7.29.6",
     "@babel/generator": "^7.20.0",
     "@babel/helper-builder-react-jsx": "^7.20.0",
     "@babel/plugin-transform-block-scoping": "^7.20.0",
