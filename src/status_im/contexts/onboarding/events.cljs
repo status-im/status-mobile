@@ -210,7 +210,7 @@
   [{:keys [db]} key-uid]
   (let [multiaccounts (dissoc (:profile/profiles-overview db) key-uid)]
     {:db (assoc db :profile/profiles-overview multiaccounts)
-     :fx (cond-> []
+     :fx (cond-> [[:keychain/clear-user-password key-uid]]
            (ff/enabled? ::ff/settings.news-notifications)
            (conj [:dispatch
                   [:profile/remove-local-profile-storage
