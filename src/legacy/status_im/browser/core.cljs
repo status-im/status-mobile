@@ -296,6 +296,7 @@
   [{:keys [db] :as cofx} url]
   (let [normalized-url (url/normalize-and-decode-url url)
         browser        {:browser-id    (random/id)
+                        :bridge-token  (random/guid)
                         :history-index 0
                         :history       [normalized-url]}]
     (if (links/universal-link? normalized-url)
@@ -317,7 +318,9 @@
   "Opens an existing browser with it's history"
   {:events [:browser.ui/browser-item-selected]}
   [{:keys [db] :as cofx} browser-id]
-  (let [browser (get-in db [:browser/browsers browser-id])]
+  (let [stored-browser (get-in db [:browser/browsers browser-id])
+        browser        (cond-> stored-browser
+                         (nil? (:bridge-token stored-browser)) (assoc :bridge-token (random/guid)))]
     (rf/merge cofx
               {:db         (assoc db
                                   :browser/options
@@ -413,22 +416,31 @@
                                                                                     browser)
         data                                                                       (types/json->clj
                                                                                     message)
-        {{:keys [url]} :navState :keys [type permission payload messageId params]} data
+        {{:keys [url]} :navState :keys [type permission payload messageId params bridgeToken]} data
         {:keys [dapp? name]}                                                       browser
         dapp-name                                                                  (if dapp?
                                                                                      name
                                                                                      (url/url-host
                                                                                       url-original))]
-    (cond
-      (and (= type constants/history-state-changed)
-           (not= "about:blank" url))
-      (update-browser-on-nav-change cofx url nil)
+    (when (and browser bridgeToken (= bridgeToken (:bridge-token browser)))
+      (cond
+        (and (= type constants/history-state-changed)
+             (not= "about:blank" url))
+        (update-browser-on-nav-change cofx url nil)
 
-      (= type constants/web3-send-async-read-only)
-      (web3-send-async-read-only cofx dapp-name payload messageId)
+        (= type constants/web3-send-async-read-only)
+        (web3-send-async-read-only cofx dapp-name payload messageId)
 
       (= type constants/api-request)
-      (browser.permissions/process-permission cofx dapp-name permission messageId params))))
+      (browser.permissions/process-permission cofx dapp-name permission messageId params)))))
+
+(defn bridge-callback-script
+  [message]
+  (let [encoded-message (types/clj->json (types/clj->json message))]
+    (str
+     "(function() { var __send = function() { if (ReactNativeWebView.onMessage) { ReactNativeWebView.onMessage("
+     encoded-message
+     ");} else {setTimeout(__send, 0)}}; __send();})();")))
 
 (re-frame/reg-fx
  :browser/resolve-ens-contenthash
@@ -438,13 +450,8 @@
 (re-frame/reg-fx
  :browser/send-to-bridge
  (fn [message]
-   (let
-     [^js webview @webview-ref/webview-ref
-      msg
-      (str
-       "(function() { var __send = function() { if (ReactNativeWebView.onMessage) { ReactNativeWebView.onMessage('"
-       (types/clj->json message)
-       "');} else {setTimeout(__send, 0)}}; __send();})();")]
+   (let [^js webview @webview-ref/webview-ref
+         msg             (bridge-callback-script message)]
      (when (and message webview)
        (.injectJavaScript webview msg)))))
 

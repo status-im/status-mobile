@@ -2,9 +2,12 @@
   if (typeof EthereumProvider === 'undefined') {
     var callbackId = 0;
     var callbacks = {};
+    var bridgeToken = '__STATUS_APP_BRIDGE_TOKEN__';
+    var bridgePostMessage = ReactNativeWebView.postMessage.bind(ReactNativeWebView);
 
     var bridgeSend = function (data) {
-      ReactNativeWebView.postMessage(JSON.stringify(data));
+      data.bridgeToken = bridgeToken;
+      bridgePostMessage(JSON.stringify(data));
     };
 
     var history = window.history;
