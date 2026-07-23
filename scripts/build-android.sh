@@ -3,16 +3,17 @@
 # Needed to fail on must_get_env()
 set -e
 
-GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
+GIT_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)
 source "${GIT_ROOT}/scripts/colors.sh"
 
 function must_get_env() {
-  declare -n VAR_VALUE="$1"
+  local VAR_NAME="$1"
+  declare -n VAR_VALUE="$VAR_NAME"
   if [[ -n "${VAR_VALUE}" ]]; then
       echo "${VAR_VALUE}"
       return
   fi
-  echo -e "${RED}No required env variable:${RST} ${BLD}${!VAR_VALUE}${RST}" 1>&2
+  echo -e "${RED}No required env variable:${RST} ${BLD}${VAR_NAME}${RST}" 1>&2
   exit 1
 }
 
@@ -25,7 +26,7 @@ nixOpts=()
 
 # We create if now so the trap knows its location
 export SECRETS_FILE_PATH=$(mktemp)
-chmod 644 ${SECRETS_FILE_PATH}
+chmod 644 "${SECRETS_FILE_PATH}"
 # If secrets file was created we want to remove it.
 trap "rm -vf ${SECRETS_FILE_PATH}" EXIT ERR INT QUIT
 
@@ -84,6 +85,5 @@ if [[ "$(uname -s)" =~ Darwin ]]; then
 else
   nixOpts+=("--option" "build-use-sandbox" "true")
 fi
-
 
 "${GIT_ROOT}/nix/scripts/build.sh" targets.mobile.android.build "${nixOpts[@]}"
