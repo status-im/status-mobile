@@ -302,3 +302,10 @@
              (seq admins)  (assoc :owner {:title (i18n/label :t/owner) :data admins})
              (seq online)  (assoc :online {:title (i18n/label :t/online) :data online})
              (seq offline) (assoc :offline {:title (i18n/label :t/offline) :data offline}))))))
+
+(re-frame/reg-sub
+ :contacts/contact-trust-status
+ (fn [[_ chat-id]]
+   [(re-frame/subscribe [:contacts/contact-by-identity chat-id])])
+ (fn [[contact]]
+   (get contact :trust-status constants/contact-trust-status-unknown)))

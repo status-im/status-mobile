@@ -10,6 +10,7 @@
     [status-im.contexts.chat.actions.view :as chat-actions]
     [status-im.contexts.chat.contacts.drawers.nickname-drawer.view :as nickname-drawer]
     [status-im.contexts.communities.actions.chat.view :as communities-chat-actions]
+    [status-im.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -129,6 +130,14 @@
                   :button-text         (i18n/label :t/block-user)
                   :on-press            #(hide-sheet-and-dispatch [:contact/block-contact
                                                                   public-key])}])}]))
+
+(defn handle-trust-mark-action
+  [{:keys [public-key trust-status] :as item}]
+  (hide-sheet-and-dispatch
+   (if (= trust-status
+          constants/contact-trust-status-untrustworthy)
+     [:contact/remove-trust-status public-key (profile.utils/displayed-name item)]
+     [:contact/mark-as-untrusted-sheet item])))
 
 (defn mute-chat-entry
   [chat-id chat-type muted-till]
@@ -260,7 +269,7 @@
   (entry {:icon                :i/remove-user
           :label               (i18n/label :t/remove-from-contacts)
           :on-press            #(hide-sheet-and-dispatch [:contact.ui/remove-contact-pressed contact])
-          :danger?             false
+          :danger?             true
           :accessibility-label :remove-from-contacts
           :sub-label           nil
           :chevron?            false}))
@@ -300,17 +309,19 @@
           :sub-label           nil
           :chevron?            false}))
 
-;; TODO(OmarBasem): Requires status-go impl.
-(defn mark-untrustworthy-entry
-  []
-  (entry {:icon                :i/alert
-          :label               (i18n/label :t/mark-untrustworthy)
-          :on-press            #(js/alert "TODO: to be implemented, requires status-go impl.")
+(defn change-trust-status-entry
+  [{:keys [trust-status] :as item}]
+  (entry {:icon                :i/untrustworthy
+          :label               (i18n/label (if (= trust-status
+                                                  constants/contact-trust-status-untrustworthy)
+                                             :t/remove-untrusted-mark
+                                             :t/mark-as-untrusted))
+          :on-press            #(handle-trust-mark-action item)
           :danger?             true
-          :accessibility-label :mark-untrustworthy
+          :add-divider?        true
+          :accessibility-label :mark-as-untrusted
           :sub-label           nil
-          :chevron?            false
-          :add-divider?        true}))
+          :chevron?            false}))
 
 (defn block-user-entry
   [item]
@@ -445,8 +456,7 @@
        (show-qr-entry public-key)
        (share-profile-entry public-key)]
       [(when-not (= current-pub-key public-key)
-         (when config/show-not-implemented-features?
-           (mark-untrustworthy-entry)))
+         (change-trust-status-entry contact))
        (when added? (remove-from-contacts-entry contact))
        (when-not (= current-pub-key public-key) (block-user-entry contact))]
       (when (and admin? chat-id)

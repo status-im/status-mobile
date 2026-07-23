@@ -249,7 +249,9 @@
           (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
         {:keys [ens-verified added?] :as contact} (when-not group-chat
                                                     (rf/sub [:contacts/contact-by-address chat-id]))
-        unread-messages? (pos? unviewed-messages-count)]
+        unread-messages? (pos? unviewed-messages-count)
+        trust-status (rf/sub [:contacts/contact-trust-status chat-id])
+        untrustworthy? (= constants/contact-trust-status-untrustworthy trust-status)]
     [rn/view {:style {:flex-direction :row}}
      [avatar-view
       {:contact   contact
@@ -266,6 +268,7 @@
          :verified?      ens-verified
          :contact?       added?
          :muted?         muted
+         :untrustworthy? untrustworthy?
          :time-str       (datetime/to-short-str timestamp)
          :style          {:flex-shrink 1}}]
        [last-message-preview group-chat last-message muted unread-messages?]]]

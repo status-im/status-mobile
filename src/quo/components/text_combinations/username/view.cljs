@@ -40,17 +40,17 @@
       :color               (colors/resolve-color color theme)}]))
 
 (defn status-icon
-  [{:keys [theme name-type status]
+  [{:keys [name-type status]
     :or   {name-type :default}}]
   [rn/view {:style (style/status-icon-container name-type status)}
    (case status
-     :verified              [icon-20 :i/verified theme :success]
-     :contact               [icon-20 :i/contact theme :blue]
-     :untrustworthy         [icon-20 :i/untrustworthy theme :danger]
-     :blocked               [icon-20 :i/block theme :danger]
+     :verified              [icon-20 :i/verified :success]
+     :contact               [icon-20 :i/contact :blue]
+     :untrustworthy         [icon-20 :i/untrustworthy :danger]
+     :blocked               [icon-20 :i/block :danger]
      :untrustworthy-contact [:<>
-                             [icon-20 :i/untrustworthy theme :danger]
-                             [icon-20 :i/contact theme :blue]]
+                             [icon-20 :i/untrustworthy :danger]
+                             [icon-20 :i/contact :blue]]
      nil)])
 
 (defn view
